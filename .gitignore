@@ -1,0 +1,24 @@
+.runtime/
+.claude/
+.logs/
+__pycache__/
+state.json
+CLAUDE.md
+CLAUDE.local.md
+.beads/
+mail/
+
+# Python
+*.egg-info/
+*.egg
+dist/
+build/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# SynthBench data & results (downloaded, not committed)
+data/
+results/
+*.json.bak
