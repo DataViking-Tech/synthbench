@@ -1,0 +1,1355 @@
+{
+  "benchmark": "synthbench",
+  "version": "0.1.0",
+  "timestamp": "2026-04-10T23:22:10.481474+00:00",
+  "config": {
+    "dataset": "opinionsqa",
+    "provider": "openrouter/anthropic/claude-sonnet-4",
+    "samples_per_question": 10,
+    "n_requested": 50,
+    "n_evaluated": 50
+  },
+  "aggregate": {
+    "mean_jsd": 0.386656,
+    "median_jsd": 0.340679,
+    "mean_kendall_tau": 0.326906,
+    "composite_parity": 0.638398,
+    "n_questions": 50,
+    "elapsed_seconds": 166.8
+  },
+  "per_question": [
+    {
+      "key": "SAFECRIME_W26",
+      "text": "How safe, if at all, would you say your local community is from crime? Would you say it is",
+      "options": [
+        "Very safe",
+        "Somewhat safe",
+        "Not too safe",
+        "Not at all safe",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all safe": 0.0262,
+        "Not too safe": 0.1185,
+        "Refused": 0.0024,
+        "Somewhat safe": 0.5725,
+        "Very safe": 0.2805
+      },
+      "model_distribution": {
+        "Very safe": 1.0,
+        "Somewhat safe": 0.0,
+        "Not too safe": 0.0,
+        "Not at all safe": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.514442,
+      "kendall_tau": 0.316228,
+      "parity": 0.571836,
+      "n_samples": 10
+    },
+    {
+      "key": "WORLDDANGER_W26",
+      "text": "Compared to 50 years ago, do you think",
+      "options": [
+        "We live in a safer world",
+        "We live in a more dangerous world",
+        "The world we live in is neither safer nor more dangerous",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0026,
+        "The world we live in is neither safer nor more dangerous": 0.1982,
+        "We live in a more dangerous world": 0.7025,
+        "We live in a safer world": 0.0967
+      },
+      "model_distribution": {
+        "We live in a safer world": 0.0,
+        "We live in a more dangerous world": 1.0,
+        "The world we live in is neither safer nor more dangerous": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.1676,
+      "kendall_tau": 0.707107,
+      "parity": 0.842977,
+      "n_samples": 10
+    },
+    {
+      "key": "WORRYG_W26",
+      "text": "How much, if at all, do you worry about the following happening to you? Having a personal health crisis",
+      "options": [
+        "Worry a lot",
+        "Worry a little",
+        "Do not worry at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Do not worry at all": 0.178,
+        "Refused": 0.0026,
+        "Worry a little": 0.5924,
+        "Worry a lot": 0.227
+      },
+      "model_distribution": {
+        "Worry a lot": 0.0,
+        "Worry a little": 0.0,
+        "Do not worry at all": 1.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.63915,
+      "kendall_tau": -0.235702,
+      "parity": 0.371499,
+      "n_samples": 10
+    },
+    {
+      "key": "GUN_W26",
+      "text": "Do you personally own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+      "options": [
+        "Yes, I own a gun",
+        "No, I don't own any guns",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, I don't own any guns": 0.6677,
+        "Refused": 0.0134,
+        "Yes, I own a gun": 0.3189
+      },
+      "model_distribution": {
+        "Yes, I own a gun": 0.0,
+        "No, I don't own any guns": 0.5,
+        "Refused": 0.5
+      },
+      "jsd": 0.379991,
+      "kendall_tau": 0.0,
+      "parity": 0.560005,
+      "n_samples": 10
+    },
+    {
+      "key": "GUN1_W26",
+      "text": "Does anyone else in your household own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+      "options": [
+        "Yes, someone else in my household owns a gun",
+        "No, no one else in my household owns a gun",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, no one else in my household owns a gun": 0.709,
+        "Refused": 0.0149,
+        "Yes, someone else in my household owns a gun": 0.2762
+      },
+      "model_distribution": {
+        "Yes, someone else in my household owns a gun": 0.0,
+        "No, no one else in my household owns a gun": 0.0,
+        "Refused": 1.0
+      },
+      "jsd": 0.944037,
+      "kendall_tau": -0.816497,
+      "parity": 0.073857,
+      "n_samples": 10
+    },
+    {
+      "key": "EVERSHOT_W26",
+      "text": "Regardless of whether or not you own a gun, have you ever fired a gun?",
+      "options": [
+        "Yes, I have fired a gun",
+        "No, I have never fired a gun",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, I have never fired a gun": 0.2303,
+        "Refused": 0.0029,
+        "Yes, I have fired a gun": 0.7668
+      },
+      "model_distribution": {
+        "Yes, I have fired a gun": 0.0,
+        "No, I have never fired a gun": 0.0,
+        "Refused": 1.0
+      },
+      "jsd": 0.98577,
+      "kendall_tau": -0.816497,
+      "parity": 0.052991,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNSOCIETY_W26",
+      "text": "Do you feel that society in general tends to look at most gun owners in a positive way or a negative way?",
+      "options": [
+        "Positive way",
+        "Negative way",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Negative way": 0.5633,
+        "Positive way": 0.4194,
+        "Refused": 0.0173
+      },
+      "model_distribution": {
+        "Positive way": 0.0,
+        "Negative way": 1.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.26291,
+      "kendall_tau": 0.816497,
+      "parity": 0.822669,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNCOMMUNITY_W26",
+      "text": "Do you feel that people in your local community tend to look at most gun owners in a positive way or a negative way?",
+      "options": [
+        "Positive way",
+        "Negative way",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Negative way": 0.3539,
+        "Positive way": 0.6257,
+        "Refused": 0.0204
+      },
+      "model_distribution": {
+        "Positive way": 0.0,
+        "Negative way": 0.0,
+        "Refused": 1.0
+      },
+      "jsd": 0.927878,
+      "kendall_tau": -0.816497,
+      "parity": 0.081937,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNCOURSES_W26",
+      "text": "Have you ever taken any gun safety courses such as weapons training, hunter safety or firearm safety?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.6144,
+        "Refused": 0.0053,
+        "Yes": 0.3803
+      },
+      "model_distribution": {
+        "Yes": 0.0,
+        "No": 0.6,
+        "Refused": 0.4
+      },
+      "jsd": 0.372529,
+      "kendall_tau": 0.333333,
+      "parity": 0.647069,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNCONTRIBA_W26",
+      "text": "How much, if at all, do you think the ease with which people can legally obtain guns contributes to gun violence in the ",
+      "options": [
+        "A great deal",
+        "A fair amount",
+        "Not too much",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A fair amount": 0.28,
+        "A great deal": 0.3143,
+        "Not at all": 0.1387,
+        "Not too much": 0.2625,
+        "Refused": 0.0046
+      },
+      "model_distribution": {
+        "A great deal": 1.0,
+        "A fair amount": 0.0,
+        "Not too much": 0.0,
+        "Not at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.478483,
+      "kendall_tau": 0.632456,
+      "parity": 0.668872,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNCONTRIBB_W26",
+      "text": "How much, if at all, do you think the ease with which people can illegally obtain guns contributes to gun violence in th",
+      "options": [
+        "A great deal",
+        "A fair amount",
+        "Not too much",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A fair amount": 0.3016,
+        "A great deal": 0.5809,
+        "Not at all": 0.0333,
+        "Not too much": 0.0811,
+        "Refused": 0.0031
+      },
+      "model_distribution": {
+        "A great deal": 1.0,
+        "A fair amount": 0.0,
+        "Not too much": 0.0,
+        "Not at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.250139,
+      "kendall_tau": 0.632456,
+      "parity": 0.783045,
+      "n_samples": 10
+    },
+    {
+      "key": "GROWUPVIOL_W26",
+      "text": "How much of a problem was gun violence in the community where you spent the majority of time when you were growing up?",
+      "options": [
+        "A very big problem",
+        "A moderately big problem",
+        "A small problem",
+        "Not a problem at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A moderately big problem": 0.066,
+        "A small problem": 0.2445,
+        "A very big problem": 0.0269,
+        "Not a problem at all": 0.6593,
+        "Refused": 0.0034
+      },
+      "model_distribution": {
+        "A very big problem": 1.0,
+        "A moderately big problem": 0.0,
+        "A small problem": 0.0,
+        "Not a problem at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.910254,
+      "kendall_tau": -0.316228,
+      "parity": 0.215816,
+      "n_samples": 10
+    },
+    {
+      "key": "GROWUPGUN1_W26",
+      "text": "Thinking about when you were growing up, as far as you know, were there ever any guns in your household or not?",
+      "options": [
+        "Yes, there were guns in my household",
+        "No, there were no guns in my household",
+        "I am not sure if there were guns in my household",
+        "Refused"
+      ],
+      "human_distribution": {
+        "I am not sure if there were guns in my household": 0.0648,
+        "No, there were no guns in my household": 0.4155,
+        "Refused": 0.0041,
+        "Yes, there were guns in my household": 0.5156
+      },
+      "model_distribution": {
+        "Yes, there were guns in my household": 0.1,
+        "No, there were no guns in my household": 0.0,
+        "I am not sure if there were guns in my household": 0.0,
+        "Refused": 0.9
+      },
+      "jsd": 0.784144,
+      "kendall_tau": -0.182574,
+      "parity": 0.312284,
+      "n_samples": 10
+    },
+    {
+      "key": "GROWUPGUN7_W26",
+      "text": "How often, if ever, did you use air guns, such as paintball, BB or pellet guns when you were growing up?",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.2207,
+        "Never": 0.3978,
+        "Often": 0.1583,
+        "Refused": 0.0034,
+        "Sometimes": 0.2198
+      },
+      "model_distribution": {
+        "Often": 0.1,
+        "Sometimes": 0.0,
+        "Hardly ever": 0.0,
+        "Never": 0.7,
+        "Refused": 0.2
+      },
+      "jsd": 0.344775,
+      "kendall_tau": -0.105409,
+      "parity": 0.55126,
+      "n_samples": 10
+    },
+    {
+      "key": "DEFENDGUN_W26",
+      "text": "Not including in military combat or as part of your job, have you ever used a gun to defend yourself, your family or pos",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.9283,
+        "Refused": 0.005,
+        "Yes": 0.0667
+      },
+      "model_distribution": {
+        "Yes": 0.0,
+        "No": 0.2,
+        "Refused": 0.8
+      },
+      "jsd": 0.597681,
+      "kendall_tau": -0.333333,
+      "parity": 0.367826,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNTHREAT_W26",
+      "text": "Has anyone ever used a gun to threaten or intimidate you or someone in your family?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.7786,
+        "Refused": 0.0036,
+        "Yes": 0.2179
+      },
+      "model_distribution": {
+        "Yes": 0.0,
+        "No": 0.3,
+        "Refused": 0.7
+      },
+      "jsd": 0.523757,
+      "kendall_tau": -0.333333,
+      "parity": 0.404788,
+      "n_samples": 10
+    },
+    {
+      "key": "CRIMEVICTIM_W26",
+      "text": "Have you ever been a victim of a violent crime, whether a gun was used or not?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.8155,
+        "Refused": 0.0041,
+        "Yes": 0.1804
+      },
+      "model_distribution": {
+        "Yes": 0.0,
+        "No": 0.0,
+        "Refused": 1.0
+      },
+      "jsd": 0.980864,
+      "kendall_tau": -0.816497,
+      "parity": 0.055444,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNACTIVITYA_W26",
+      "text": "How often, if ever, do you visit websites about guns, hunting or other shooting sports",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.1696,
+        "Never": 0.6939,
+        "Often": 0.0211,
+        "Refused": 0.0041,
+        "Sometimes": 0.1113
+      },
+      "model_distribution": {
+        "Often": 0.0,
+        "Sometimes": 0.0,
+        "Hardly ever": 0.0,
+        "Never": 1.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.173138,
+      "kendall_tau": 0.632456,
+      "parity": 0.821545,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNACTIVITYB_W26",
+      "text": "How often, if ever, do you watch TV programs about guns or watch gun-oriented videos",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.2598,
+        "Never": 0.5067,
+        "Often": 0.0437,
+        "Refused": 0.0043,
+        "Sometimes": 0.1855
+      },
+      "model_distribution": {
+        "Often": 0.0,
+        "Sometimes": 0.0,
+        "Hardly ever": 0.0,
+        "Never": 1.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.305976,
+      "kendall_tau": 0.632456,
+      "parity": 0.755126,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNACTIVITYC_W26",
+      "text": "How often, if ever, do you listen to gun-oriented podcasts or radio shows",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.1178,
+        "Never": 0.8198,
+        "Often": 0.0072,
+        "Refused": 0.006,
+        "Sometimes": 0.0492
+      },
+      "model_distribution": {
+        "Often": 0.0,
+        "Sometimes": 0.0,
+        "Hardly ever": 0.0,
+        "Never": 1.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.096536,
+      "kendall_tau": 0.632456,
+      "parity": 0.859846,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNACTIVITYD_W26",
+      "text": "How often, if ever, do you participate in online discussion forums about guns",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.1219,
+        "Never": 0.8325,
+        "Often": 0.0065,
+        "Refused": 0.005,
+        "Sometimes": 0.0341
+      },
+      "model_distribution": {
+        "Often": 0.0,
+        "Sometimes": 0.0,
+        "Hardly ever": 0.0,
+        "Never": 1.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.089261,
+      "kendall_tau": 0.632456,
+      "parity": 0.863484,
+      "n_samples": 10
+    },
+    {
+      "key": "GUNACTIVITYE_W26",
+      "text": "How often, if ever, do you attend gun shows",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.144,
+        "Never": 0.7651,
+        "Often": 0.0091,
+        "Refused": 0.0053,
+        "Sometimes": 0.0765
+      },
+      "model_distribution": {
+        "Often": 0.0,
+        "Sometimes": 0.0,
+        "Hardly ever": 0.0,
+        "Never": 1.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.128749,
+      "kendall_tau": 0.632456,
+      "parity": 0.843739,
+      "n_samples": 10
+    },
+    {
+      "key": "CAREREL_W27",
+      "text": "How likely is it that, at some point in your life, you will be responsible for caring for an aging parent or family memb",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not too likely",
+        "Not at all likely",
+        "I am already doing this",
+        "Refused"
+      ],
+      "human_distribution": {
+        "I am already doing this": 0.1004,
+        "Not at all likely": 0.1236,
+        "Not too likely": 0.1313,
+        "Refused": 0.0027,
+        "Somewhat likely": 0.2648,
+        "Very likely": 0.3773
+      },
+      "model_distribution": {
+        "Very likely": 1.0,
+        "Somewhat likely": 0.0,
+        "Not too likely": 0.0,
+        "Not at all likely": 0.0,
+        "I am already doing this": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.4167,
+      "kendall_tau": 0.57735,
+      "parity": 0.685988,
+      "n_samples": 10
+    },
+    {
+      "key": "PREDICTA_W27",
+      "text": "Do you think the following will or will not happen in the next 20 years? Doctors will rely on computer programs to diagn",
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0044,
+        "Will definitely happen": 0.2027,
+        "Will definitely not happen": 0.0119,
+        "Will probably happen": 0.5983,
+        "Will probably not happen": 0.1828
+      },
+      "model_distribution": {
+        "Will definitely happen": 0.0,
+        "Will probably happen": 1.0,
+        "Will probably not happen": 0.0,
+        "Will definitely not happen": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.237652,
+      "kendall_tau": 0.632456,
+      "parity": 0.789288,
+      "n_samples": 10
+    },
+    {
+      "key": "PREDICTB_W27",
+      "text": "Do you think the following will or will not happen in the next 20 years? Most stores and retail businesses will be fully",
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0031,
+        "Will definitely happen": 0.1139,
+        "Will definitely not happen": 0.0167,
+        "Will probably happen": 0.5207,
+        "Will probably not happen": 0.3456
+      },
+      "model_distribution": {
+        "Will definitely happen": 0.0,
+        "Will probably happen": 0.3,
+        "Will probably not happen": 0.7,
+        "Will definitely not happen": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.132735,
+      "kendall_tau": 0.597614,
+      "parity": 0.833036,
+      "n_samples": 10
+    },
+    {
+      "key": "PREDICTC_W27",
+      "text": "Do you think the following will or will not happen in the next 20 years? Most deliveries in cities will be made by robot",
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0024,
+        "Will definitely happen": 0.1098,
+        "Will definitely not happen": 0.0222,
+        "Will probably happen": 0.5277,
+        "Will probably not happen": 0.3378
+      },
+      "model_distribution": {
+        "Will definitely happen": 0.0,
+        "Will probably happen": 1.0,
+        "Will probably not happen": 0.0,
+        "Will definitely not happen": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.289694,
+      "kendall_tau": 0.632456,
+      "parity": 0.763267,
+      "n_samples": 10
+    },
+    {
+      "key": "PREDICTD_W27",
+      "text": "Do you think the following will or will not happen in the next 20 years? When people want to buy most common products, t",
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0075,
+        "Will definitely happen": 0.0459,
+        "Will definitely not happen": 0.0607,
+        "Will probably happen": 0.3168,
+        "Will probably not happen": 0.569
+      },
+      "model_distribution": {
+        "Will definitely happen": 0.0,
+        "Will probably happen": 0.0,
+        "Will probably not happen": 1.0,
+        "Will definitely not happen": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.258723,
+      "kendall_tau": 0.632456,
+      "parity": 0.778752,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS1_W27",
+      "text": "How much have you seen or heard about the effort to develop driverless vehicles - that is, cars and trucks that can oper",
+      "options": [
+        "A lot",
+        "A little",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A little": 0.5548,
+        "A lot": 0.407,
+        "Nothing at all": 0.036,
+        "Refused": 0.0022
+      },
+      "model_distribution": {
+        "A lot": 1.0,
+        "A little": 0.0,
+        "Nothing at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.389509,
+      "kendall_tau": 0.235702,
+      "parity": 0.614171,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS3A_W27",
+      "text": "How enthusiastic are you, if at all, about the development of driverless vehicles?",
+      "options": [
+        "Very enthusiastic",
+        "Somewhat enthusiastic",
+        "Not too enthusiastic",
+        "Not at all enthusiastic",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all enthusiastic": 0.1961,
+        "Not too enthusiastic": 0.3855,
+        "Refused": 0.0022,
+        "Somewhat enthusiastic": 0.2946,
+        "Very enthusiastic": 0.1216
+      },
+      "model_distribution": {
+        "Very enthusiastic": 0.0,
+        "Somewhat enthusiastic": 1.0,
+        "Not too enthusiastic": 0.0,
+        "Not at all enthusiastic": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.499206,
+      "kendall_tau": 0.316228,
+      "parity": 0.579454,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS3B_W27",
+      "text": "How worried are you, if at all, about the development of driverless vehicles?",
+      "options": [
+        "Very worried",
+        "Somewhat worried",
+        "Not too worried",
+        "Not at all worried",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all worried": 0.1127,
+        "Not too worried": 0.3717,
+        "Refused": 0.001,
+        "Somewhat worried": 0.3932,
+        "Very worried": 0.1214
+      },
+      "model_distribution": {
+        "Very worried": 0.0,
+        "Somewhat worried": 0.0,
+        "Not too worried": 1.0,
+        "Not at all worried": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.421917,
+      "kendall_tau": 0.316228,
+      "parity": 0.618098,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS4_W27",
+      "text": "How long, if ever, do you think it will take for most of the vehicles on the road to be driverless, rather than driven b",
+      "options": [
+        "Less than 10 years",
+        "10 to less than 50 years",
+        "50 to less than 100 years",
+        "100 or more years",
+        "It will never happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "10 to less than 50 years": 0.5976,
+        "100 or more years": 0.0397,
+        "50 to less than 100 years": 0.2167,
+        "It will never happen": 0.0709,
+        "Less than 10 years": 0.0735,
+        "Refused": 0.0017
+      },
+      "model_distribution": {
+        "Less than 10 years": 0.0,
+        "10 to less than 50 years": 1.0,
+        "50 to less than 100 years": 0.0,
+        "100 or more years": 0.0,
+        "It will never happen": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.238166,
+      "kendall_tau": 0.57735,
+      "parity": 0.775255,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS5_W27",
+      "text": "Would you, personally, want to ride in a driverless vehicle if you had the opportunity?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.5299,
+        "Refused": 0.0015,
+        "Yes": 0.4687
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.336582,
+      "kendall_tau": 0.0,
+      "parity": 0.581709,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS7A_W27",
+      "text": "How safe would you feel sharing the road with a driverless passenger vehicle?",
+      "options": [
+        "Very safe",
+        "Somewhat safe",
+        "Not too safe",
+        "Not safe at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not safe at all": 0.141,
+        "Not too safe": 0.334,
+        "Refused": 0.0017,
+        "Somewhat safe": 0.3964,
+        "Very safe": 0.127
+      },
+      "model_distribution": {
+        "Very safe": 0.0,
+        "Somewhat safe": 0.9,
+        "Not too safe": 0.1,
+        "Not safe at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.255292,
+      "kendall_tau": 0.83666,
+      "parity": 0.831519,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS7B_W27",
+      "text": "How safe would you feel sharing the road with a driverless freight truck?",
+      "options": [
+        "Very safe",
+        "Somewhat safe",
+        "Not too safe",
+        "Not safe at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not safe at all": 0.2948,
+        "Not too safe": 0.3306,
+        "Refused": 0.0022,
+        "Somewhat safe": 0.2861,
+        "Very safe": 0.0863
+      },
+      "model_distribution": {
+        "Very safe": 0.0,
+        "Somewhat safe": 0.1,
+        "Not too safe": 0.9,
+        "Not safe at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.32414,
+      "kendall_tau": 0.597614,
+      "parity": 0.737333,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS8_W27",
+      "text": "If driverless vehicles become widespread, do you think that the number of people killed or injured in traffic accidents ",
+      "options": [
+        "Increase",
+        "Decrease",
+        "Stay about the same",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Decrease": 0.4215,
+        "Increase": 0.2527,
+        "Refused": 0.0068,
+        "Stay about the same": 0.319
+      },
+      "model_distribution": {
+        "Increase": 0.0,
+        "Decrease": 1.0,
+        "Stay about the same": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.376657,
+      "kendall_tau": 0.707107,
+      "parity": 0.738448,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS9A_W27",
+      "text": "Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles?",
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.3819,
+        "Oppose": 0.1342,
+        "Refused": 0.0051,
+        "Strongly favor": 0.4443,
+        "Strongly oppose": 0.0346
+      },
+      "model_distribution": {
+        "Strongly favor": 0.0,
+        "Favor": 0.8,
+        "Oppose": 0.2,
+        "Strongly oppose": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.301188,
+      "kendall_tau": 0.358569,
+      "parity": 0.689048,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS9B_W27",
+      "text": "Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles?",
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.3497,
+        "Oppose": 0.2817,
+        "Refused": 0.0085,
+        "Strongly favor": 0.31,
+        "Strongly oppose": 0.0501
+      },
+      "model_distribution": {
+        "Strongly favor": 0.0,
+        "Favor": 1.0,
+        "Oppose": 0.0,
+        "Strongly oppose": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.442997,
+      "kendall_tau": 0.632456,
+      "parity": 0.686616,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS9C_W27",
+      "text": "Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles?",
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.3582,
+        "Oppose": 0.1059,
+        "Refused": 0.0046,
+        "Strongly favor": 0.5112,
+        "Strongly oppose": 0.0201
+      },
+      "model_distribution": {
+        "Strongly favor": 0.0,
+        "Favor": 1.0,
+        "Oppose": 0.0,
+        "Strongly oppose": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.434805,
+      "kendall_tau": 0.316228,
+      "parity": 0.611655,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS10A_W27",
+      "text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Elderly ",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.2143,
+        "Refused": 0.0036,
+        "Yes, likely": 0.7821
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.118581,
+      "kendall_tau": 0.816497,
+      "parity": 0.894834,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS10B_W27",
+      "text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Many peo",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.1877,
+        "Refused": 0.0044,
+        "Yes, likely": 0.808
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.103379,
+      "kendall_tau": 0.816497,
+      "parity": 0.902435,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS10C_W27",
+      "text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Owning a",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.557,
+        "Refused": 0.0068,
+        "Yes, likely": 0.4363
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.36385,
+      "kendall_tau": 0.0,
+      "parity": 0.568075,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS10D_W27",
+      "text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Most peo",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.3301,
+        "Refused": 0.0039,
+        "Yes, likely": 0.666
+      },
+      "model_distribution": {
+        "Yes, likely": 0.9,
+        "No, not likely": 0.1,
+        "Refused": 0.0
+      },
+      "jsd": 0.061399,
+      "kendall_tau": 1.0,
+      "parity": 0.969301,
+      "n_samples": 10
+    },
+    {
+      "key": "CARS10E_W27",
+      "text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? There wo",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.7449,
+        "Refused": 0.0046,
+        "Yes, likely": 0.2505
+      },
+      "model_distribution": {
+        "Yes, likely": 0.4,
+        "No, not likely": 0.6,
+        "Refused": 0.0
+      },
+      "jsd": 0.020432,
+      "kendall_tau": 1.0,
+      "parity": 0.989784,
+      "n_samples": 10
+    },
+    {
+      "key": "WORK2_W27",
+      "text": "On a different subject, would you say that society generally places too much importance on working and having a job, not",
+      "options": [
+        "Too much importance",
+        "Not enough importance",
+        "Just about right",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Just about right": 0.3204,
+        "Not enough importance": 0.5209,
+        "Refused": 0.0036,
+        "Too much importance": 0.155
+      },
+      "model_distribution": {
+        "Too much importance": 1.0,
+        "Not enough importance": 0.0,
+        "Just about right": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.671467,
+      "kendall_tau": -0.235702,
+      "parity": 0.355341,
+      "n_samples": 10
+    },
+    {
+      "key": "ROBJOB1_W27",
+      "text": "Please consider the following scenario - in the future, robots and computers with advanced capabilities may be able to d",
+      "options": [
+        "A lot",
+        "A little",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A little": 0.6281,
+        "A lot": 0.2699,
+        "Nothing at all": 0.0984,
+        "Refused": 0.0036
+      },
+      "model_distribution": {
+        "A lot": 1.0,
+        "A little": 0.0,
+        "Nothing at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.526145,
+      "kendall_tau": 0.235702,
+      "parity": 0.545853,
+      "n_samples": 10
+    },
+    {
+      "key": "ROBJOB2_W27",
+      "text": "Based on what you know, does the idea of robots and computers being able to do most of the jobs currently done by humans",
+      "options": [
+        "Extremely realistic",
+        "Somewhat realistic",
+        "Not very realistic",
+        "Not at all realistic",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Extremely realistic": 0.2053,
+        "Not at all realistic": 0.0268,
+        "Not very realistic": 0.1773,
+        "Refused": 0.0036,
+        "Somewhat realistic": 0.5869
+      },
+      "model_distribution": {
+        "Extremely realistic": 0.0,
+        "Somewhat realistic": 1.0,
+        "Not very realistic": 0.0,
+        "Not at all realistic": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.245757,
+      "kendall_tau": 0.632456,
+      "parity": 0.785235,
+      "n_samples": 10
+    },
+    {
+      "key": "ROBJOB3A_W27",
+      "text": "How enthusiastic are you, if at all, about the possibility of robots and computers being able to do most of the jobs cur",
+      "options": [
+        "Very enthusiastic",
+        "Somewhat enthusiastic",
+        "Not too enthusiastic",
+        "Not at all enthusiastic",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all enthusiastic": 0.1763,
+        "Not too enthusiastic": 0.4837,
+        "Refused": 0.0053,
+        "Somewhat enthusiastic": 0.2805,
+        "Very enthusiastic": 0.0542
+      },
+      "model_distribution": {
+        "Very enthusiastic": 0.0,
+        "Somewhat enthusiastic": 0.0,
+        "Not too enthusiastic": 1.0,
+        "Not at all enthusiastic": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.324345,
+      "kendall_tau": 0.632456,
+      "parity": 0.745942,
+      "n_samples": 10
+    },
+    {
+      "key": "ROBJOB3B_W27",
+      "text": "How worried are you, if at all, about the possibility of robots and computers being able to do most of the jobs currentl",
+      "options": [
+        "Very worried",
+        "Somewhat worried",
+        "Not too worried",
+        "Not at all worried",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all worried": 0.0426,
+        "Not too worried": 0.2626,
+        "Refused": 0.0041,
+        "Somewhat worried": 0.4846,
+        "Very worried": 0.206
+      },
+      "model_distribution": {
+        "Very worried": 0.0,
+        "Somewhat worried": 0.8,
+        "Not too worried": 0.2,
+        "Not at all worried": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.157637,
+      "kendall_tau": 0.83666,
+      "parity": 0.880346,
+      "n_samples": 10
+    },
+    {
+      "key": "ROBJOB4A_W27",
+      "text": "Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs cu",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.2191,
+        "Refused": 0.008,
+        "Yes, likely": 0.7729
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.124063,
+      "kendall_tau": 0.816497,
+      "parity": 0.892093,
+      "n_samples": 10
+    },
+    {
+      "key": "ROBJOB4B_W27",
+      "text": "Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs cu",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.3935,
+        "Refused": 0.0046,
+        "Yes, likely": 0.6019
+      },
+      "model_distribution": {
+        "Yes, likely": 0.0,
+        "No, not likely": 1.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.401744,
+      "kendall_tau": 0.0,
+      "parity": 0.549128,
+      "n_samples": 10
+    }
+  ]
+}
