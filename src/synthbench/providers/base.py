@@ -124,3 +124,19 @@ class Provider(ABC):
     @property
     @abstractmethod
     def name(self) -> str: ...
+
+
+def build_persona_system_prompt(base_system: str, persona: PersonaSpec | None) -> str:
+    """Build system prompt with optional persona conditioning.
+
+    When persona is provided, replaces the base system prompt with a
+    demographics-aware framing that instructs the model to respond
+    as a person with those demographic characteristics.
+    """
+    if persona is None:
+        return base_system
+    demo_parts = [f"{k}: {v}" for k, v in persona.demographics.items()]
+    return (
+        f"You are a survey respondent. Demographics: {', '.join(demo_parts)}. "
+        "Answer as this person would."
+    )

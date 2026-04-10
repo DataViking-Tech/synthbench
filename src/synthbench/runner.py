@@ -16,8 +16,9 @@ from synthbench.metrics import (
     synthbench_parity_score,
     refusal_calibration,
     extract_human_refusal_rate,
+    conditioning_fidelity,
 )
-from synthbench.providers.base import Provider
+from synthbench.providers.base import PersonaSpec, Provider
 from synthbench.stats import bootstrap_ci, question_set_hash
 
 
@@ -40,6 +41,17 @@ class QuestionResult:
 
 
 @dataclass
+class DemographicGroupResult:
+    """Results for a single demographic group evaluation."""
+
+    attribute: str
+    group: str
+    p_dist: float
+    p_cond: float
+    n_questions: int
+
+
+@dataclass
 class BenchmarkResult:
     """Full benchmark run results."""
 
@@ -51,6 +63,9 @@ class BenchmarkResult:
     group_scores: dict[str, float] = field(default_factory=dict)
     conditioned_scores: dict[str, float] = field(default_factory=dict)
     default_scores: dict[str, float] = field(default_factory=dict)
+    demographic_breakdown: dict[str, list[DemographicGroupResult]] = field(
+        default_factory=dict
+    )
 
     @property
     def mean_jsd(self) -> float:
@@ -299,7 +314,7 @@ class BenchmarkRunner:
         )
 
     async def _collect_samples_with_refusals(
-        self, question: Question
+        self, question: Question, persona: PersonaSpec | None = None
     ) -> tuple[list[str], int, int]:
         """Call the provider samples_per_question times, tracking refusals.
 
@@ -308,7 +323,9 @@ class BenchmarkRunner:
 
         async def _one_sample():
             async with self._semaphore:
-                resp = await self.provider.respond(question.text, question.options)
+                resp = await self.provider.respond(
+                    question.text, question.options, persona=persona
+                )
                 return resp
 
         tasks = [_one_sample() for _ in range(self.samples_per_question)]
@@ -323,3 +340,157 @@ class BenchmarkRunner:
             if not r.refusal and r.selected_option not in valid_options
         )
         return selected, refusals, parse_failures
+
+    async def _sample_distribution(
+        self, question: Question, persona: PersonaSpec | None = None
+    ) -> dict[str, float]:
+        """Get model response distribution for a question, optionally with persona."""
+        if self.provider.supports_distribution:
+            dist = await self.provider.get_distribution(
+                question.text,
+                question.options,
+                persona=persona,
+                n_samples=self.samples_per_question,
+            )
+            return dict(zip(question.options, dist.probabilities))
+
+        responses, _refusals, _fails = await self._collect_samples_with_refusals(
+            question, persona=persona
+        )
+        total = len(responses) + _refusals
+        counts = Counter(responses)
+        return {opt: counts.get(opt, 0) / max(total, 1) for opt in question.options}
+
+    async def run_with_demographics(
+        self,
+        demographics: list[str],
+        n: int | None = None,
+        progress_callback=None,
+        question_keys: list[str] | None = None,
+    ) -> BenchmarkResult:
+        """Run benchmark with persona-conditioned demographic evaluation.
+
+        For each demographic attribute, evaluates per-group alignment by
+        running conditioned queries with demographic personas and comparing
+        against group-specific human distributions.
+
+        Args:
+            demographics: List of demographic attributes (e.g., ["AGE", "POLIDEOLOGY"]).
+            n: Number of questions to evaluate.
+            progress_callback: Optional progress callback.
+            question_keys: Optional pinned question set.
+
+        Returns:
+            BenchmarkResult enriched with group_scores, conditioned_scores,
+            default_scores, and demographic_breakdown.
+        """
+        t0 = time.monotonic()
+
+        # 1. Run unconditioned baseline
+        baseline = await self.run(
+            n=n, progress_callback=progress_callback, question_keys=question_keys
+        )
+
+        # Build lookup: question_key -> (Question, unconditioned model dist)
+        questions = self.dataset.load(n=n)
+        if question_keys is not None:
+            from synthbench.suites import filter_questions_by_suite
+
+            questions = filter_questions_by_suite(questions, question_keys)
+
+        question_by_key = {q.key: q for q in questions}
+        unconditioned_dists = {
+            qr.key: qr.model_distribution for qr in baseline.questions
+        }
+
+        # 2. Run per-attribute demographic evaluation
+        all_group_scores: dict[str, float] = {}
+        all_conditioned_scores: dict[str, float] = {}
+        all_default_scores: dict[str, float] = {}
+        demographic_breakdown: dict[str, list[DemographicGroupResult]] = {}
+
+        for attr in demographics:
+            demo_dists = self.dataset.load_demographic_distributions(attr)
+            if not demo_dists:
+                continue
+
+            # Collect all groups across questions for this attribute
+            all_groups: set[str] = set()
+            for _qkey, gdata in demo_dists.items():
+                all_groups.update(gdata.keys())
+
+            attr_results: list[DemographicGroupResult] = []
+
+            for group in sorted(all_groups):
+                # Find questions with both baseline data and group-specific data
+                common_keys = [
+                    k
+                    for k in unconditioned_dists
+                    if k in demo_dists and group in demo_dists[k]
+                ]
+                if not common_keys:
+                    continue
+
+                persona = PersonaSpec(
+                    demographics={attr: group}, attribute=attr, group=group
+                )
+
+                conditioned_jsd_total = 0.0
+                unconditioned_jsd_total = 0.0
+                p_cond_total = 0.0
+
+                for qkey in common_keys:
+                    question = question_by_key.get(qkey)
+                    if question is None:
+                        continue
+
+                    group_human = demo_dists[qkey][group]
+                    unconditioned_model = unconditioned_dists[qkey]
+
+                    # Run conditioned evaluation
+                    conditioned_model = await self._sample_distribution(
+                        question, persona=persona
+                    )
+
+                    # Compute JSDs
+                    conditioned_jsd_total += jensen_shannon_divergence(
+                        group_human, conditioned_model
+                    )
+                    unconditioned_jsd_total += jensen_shannon_divergence(
+                        group_human, unconditioned_model
+                    )
+                    p_cond_total += conditioning_fidelity(
+                        conditioned_model, unconditioned_model, group_human
+                    )
+
+                n_q = len(common_keys)
+                group_p_dist = 1.0 - conditioned_jsd_total / n_q
+                group_p_cond = p_cond_total / n_q
+
+                label = f"{attr}:{group}"
+                all_group_scores[label] = group_p_dist
+                all_conditioned_scores[label] = group_p_dist
+                all_default_scores[label] = 1.0 - unconditioned_jsd_total / n_q
+
+                attr_results.append(
+                    DemographicGroupResult(
+                        attribute=attr,
+                        group=group,
+                        p_dist=group_p_dist,
+                        p_cond=group_p_cond,
+                        n_questions=n_q,
+                    )
+                )
+
+            if attr_results:
+                demographic_breakdown[attr] = attr_results
+
+        elapsed = time.monotonic() - t0
+
+        baseline.group_scores = all_group_scores
+        baseline.conditioned_scores = all_conditioned_scores
+        baseline.default_scores = all_default_scores
+        baseline.demographic_breakdown = demographic_breakdown
+        baseline.elapsed_seconds = elapsed
+
+        return baseline

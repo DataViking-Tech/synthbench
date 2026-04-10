@@ -104,6 +104,16 @@ def main():
     default=None,
     help="Directory with baseline results for 'vs Baselines' section.",
 )
+@click.option(
+    "--demographics",
+    default=None,
+    help="Comma-separated demographic attributes to evaluate (e.g., AGE,POLIDEOLOGY).",
+)
+@click.option(
+    "--full-evaluation",
+    is_flag=True,
+    help="Run all 8 demographic attributes (AGE,CREGION,EDUCATION,INCOME,POLIDEOLOGY,POLPARTY,RACE,SEX).",
+)
 def run(
     provider,
     model,
@@ -117,13 +127,33 @@ def run(
     json_only,
     suite,
     baselines_dir,
+    demographics,
+    full_evaluation,
 ):
     """Run a benchmark evaluation.
 
     Example:
         synthbench run --provider raw-anthropic --model haiku --n 100
         synthbench run --provider raw-anthropic --model haiku --suite core
+        synthbench run --provider raw-anthropic --demographics AGE,POLIDEOLOGY
+        synthbench run --provider raw-anthropic --full-evaluation
     """
+    # Resolve demographics
+    demo_list = None
+    if full_evaluation:
+        demo_list = [
+            "AGE",
+            "CREGION",
+            "EDUCATION",
+            "INCOME",
+            "POLIDEOLOGY",
+            "POLPARTY",
+            "RACE",
+            "SEX",
+        ]
+    elif demographics:
+        demo_list = [d.strip().upper() for d in demographics.split(",")]
+
     asyncio.run(
         _run_async(
             provider,
@@ -138,6 +168,7 @@ def run(
             json_only,
             suite,
             baselines_dir,
+            demo_list,
         )
     )
 
@@ -155,6 +186,7 @@ async def _run_async(
     json_only,
     suite,
     baselines_dir,
+    demographics=None,
 ):
     from synthbench.datasets import DATASETS
     from synthbench.providers import load_provider
@@ -210,6 +242,8 @@ async def _run_async(
     click.echo(f"  Dataset:  {ds.name}")
     click.echo(f"  Questions: {suite_label}")
     click.echo(f"  Samples/q: {samples}")
+    if demographics:
+        click.echo(f"  Demographics: {', '.join(demographics)}")
     click.echo()
 
     def progress(done, total, qr):
@@ -221,9 +255,17 @@ async def _run_async(
         )
 
     try:
-        result = await runner.run(
-            n=n, progress_callback=progress, question_keys=question_keys
-        )
+        if demographics:
+            result = await runner.run_with_demographics(
+                demographics=demographics,
+                n=n,
+                progress_callback=progress,
+                question_keys=question_keys,
+            )
+        else:
+            result = await runner.run(
+                n=n, progress_callback=progress, question_keys=question_keys
+            )
     finally:
         await prov.close()
 
@@ -248,6 +290,17 @@ async def _run_async(
             click.echo(f"    {key}: {score:.4f}")
     if result.total_parse_failures > 0:
         click.echo(f"  Parse failures: {result.total_parse_failures}")
+
+    # Demographic breakdown summary
+    if result.demographic_breakdown:
+        click.echo("  Demographic breakdown:")
+        for attr, group_results in result.demographic_breakdown.items():
+            best = max(group_results, key=lambda g: g.p_dist)
+            worst = min(group_results, key=lambda g: g.p_dist)
+            click.echo(
+                f"    {attr}: Best={best.group} (P_dist={best.p_dist:.4f}) "
+                f"/ Worst={worst.group} (P_dist={worst.p_dist:.4f})"
+            )
     click.echo()
 
     if json_only:

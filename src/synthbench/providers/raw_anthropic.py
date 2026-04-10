@@ -4,7 +4,12 @@ from __future__ import annotations
 
 import re
 
-from synthbench.providers.base import PersonaSpec, Provider, Response
+from synthbench.providers.base import (
+    PersonaSpec,
+    Provider,
+    Response,
+    build_persona_system_prompt,
+)
 
 _LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -68,12 +73,13 @@ class RawAnthropicProvider(Provider):
         self, question: str, options: list[str], *, persona: PersonaSpec | None = None
     ) -> Response:
         prompt = _build_prompt(question, options)
+        system = build_persona_system_prompt(_SYSTEM, persona)
 
         message = await self._client.messages.create(
             model=self._model,
             max_tokens=8,
             temperature=1.0,  # Sample, don't argmax
-            system=_SYSTEM,
+            system=system,
             messages=[{"role": "user", "content": prompt}],
         )
 

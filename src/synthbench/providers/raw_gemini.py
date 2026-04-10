@@ -9,7 +9,12 @@ from __future__ import annotations
 import os
 import re
 
-from synthbench.providers.base import PersonaSpec, Provider, Response
+from synthbench.providers.base import (
+    PersonaSpec,
+    Provider,
+    Response,
+    build_persona_system_prompt,
+)
 
 _LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -89,13 +94,14 @@ class RawGeminiProvider(Provider):
         self, question: str, options: list[str], *, persona: PersonaSpec | None = None
     ) -> Response:
         prompt = _build_prompt(question, options)
+        system = build_persona_system_prompt(_SYSTEM, persona)
 
         resp = await self._client.chat.completions.create(
             model=self._model,
             max_tokens=8,
             temperature=1.0,
             messages=[
-                {"role": "system", "content": _SYSTEM},
+                {"role": "system", "content": system},
                 {"role": "user", "content": prompt},
             ],
         )

@@ -49,6 +49,21 @@ def to_json(result: BenchmarkResult) -> dict:
             "question_set_hash": result.q_set_hash,
             "n_parse_failures": result.total_parse_failures,
         },
+        "demographic_breakdown": {
+            attr: [
+                {
+                    "attribute": gr.attribute,
+                    "group": gr.group,
+                    "p_dist": round(gr.p_dist, 6),
+                    "p_cond": round(gr.p_cond, 6),
+                    "n_questions": gr.n_questions,
+                }
+                for gr in groups
+            ]
+            for attr, groups in result.demographic_breakdown.items()
+        }
+        if result.demographic_breakdown
+        else {},
         "per_question": [
             {
                 "key": q.key,
@@ -224,6 +239,35 @@ def to_markdown(
             "",
         ]
     )
+
+    # Demographic breakdown
+    if result.demographic_breakdown:
+        lines.extend(
+            [
+                "## Demographic Breakdown",
+                "",
+            ]
+        )
+        for attr, group_results in result.demographic_breakdown.items():
+            sorted_groups = sorted(group_results, key=lambda g: g.p_dist, reverse=True)
+            best = sorted_groups[0]
+            worst = sorted_groups[-1]
+            lines.extend(
+                [
+                    f"### {attr}",
+                    "",
+                    f"Best: {best.group} (P_dist={best.p_dist:.4f}) "
+                    f"/ Worst: {worst.group} (P_dist={worst.p_dist:.4f})",
+                    "",
+                    "| Group | P_dist | P_cond | Questions |",
+                    "|-------|--------|--------|-----------|",
+                ]
+            )
+            for gr in sorted_groups:
+                lines.append(
+                    f"| {gr.group} | {gr.p_dist:.4f} | {gr.p_cond:.4f} | {gr.n_questions} |"
+                )
+            lines.append("")
 
     # Top 5 best and worst questions
     sorted_by_jsd = sorted(result.questions, key=lambda q: q.jsd)
