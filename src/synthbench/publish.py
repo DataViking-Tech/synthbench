@@ -280,14 +280,42 @@ def _metric_explanations_html() -> str:
   </div>"""
 
 
+def _collect_topic_scores(
+    results: list[dict],
+) -> tuple[dict[str, dict[str, float]], list[str]]:
+    """Collect per-topic composite parity scores from topic-tagged results.
+
+    Returns (provider_topic_scores, sorted_topic_names).
+    """
+    topic_scores: dict[str, dict[str, float]] = {}
+    topics_seen: set[str] = set()
+    for r in results:
+        cfg = r.get("config", {})
+        topic = cfg.get("topic")
+        if not topic:
+            continue
+        provider = cfg.get("provider", "unknown")
+        cp = r.get("aggregate", {}).get("composite_parity", 0)
+        topic_scores.setdefault(provider, {})[topic] = round(cp, 4)
+        topics_seen.add(topic)
+    return topic_scores, sorted(topics_seen)
+
+
 def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     """Build a complete HTML leaderboard page from a list of result dicts.
 
     Results are de-duplicated (best n_evaluated per provider+dataset kept),
     then ranked by composite_parity descending. Includes SVG charts,
-    baseline comparison table, and metric explanations.
+    baseline comparison table, metric explanations, and per-topic columns
+    when topic-tagged results are available.
     """
-    deduped = _dedup_results(results)
+    # Separate overall from topic-tagged results for dedup
+    overall_results = [r for r in results if not r.get("config", {}).get("topic")]
+    topic_results = [r for r in results if r.get("config", {}).get("topic")]
+
+    topic_scores, topics_present = _collect_topic_scores(topic_results)
+
+    deduped = _dedup_results(overall_results if overall_results else results)
 
     # Sort by composite_parity descending
     ranked = sorted(
@@ -325,6 +353,16 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
         n = cfg.get("n_evaluated", 0)
         dataset_name = escape(cfg.get("dataset", "unknown"))
 
+        topic_cells = ""
+        if topics_present:
+            provider_topics = topic_scores.get(provider_raw, {})
+            for t in topics_present:
+                score = provider_topics.get(t)
+                if score is not None:
+                    topic_cells += f'        <td class="num">{score:.4f}</td>\n'
+                else:
+                    topic_cells += '        <td class="num">&mdash;</td>\n'
+
         rows_html.append(
             f"      <tr>\n"
             f'        <td class="rank num">{medal_html}{rank}</td>\n'
@@ -333,6 +371,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             f"        <td>{dataset_name}</td>\n"
             f'        <td class="num">{n}</td>\n'
             f'        <td class="num composite">{composite:.4f}</td>\n'
+            f"{topic_cells}"
             f'        <td class="num">{mean_jsd:.4f}</td>\n'
             f'        <td class="num">{mean_tau:.4f}</td>\n'
             f"        <td>{date_str}</td>\n"
@@ -341,6 +380,12 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     tbody = "\n".join(rows_html)
+
+    # Build topic column headers
+    topic_th = ""
+    if topics_present:
+        for t in topics_present:
+            topic_th += f'        <th class="num">{escape(t.capitalize())}</th>\n'
 
     # Generate chart sections
     sps_chart = _svg_sps_bars(ranked)
@@ -448,7 +493,7 @@ footer a{{color:var(--accent)}}
         <th>Dataset</th>
         <th class="num">N</th>
         <th class="num">Composite Parity</th>
-        <th class="num">JSD</th>
+{topic_th}        <th class="num">JSD</th>
         <th class="num">Tau</th>
         <th>Date</th>
       </tr>

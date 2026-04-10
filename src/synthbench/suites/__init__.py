@@ -7,6 +7,11 @@ Available suites:
   - smoke: 28 questions for quick validation
   - core: 200 questions stratified by topic and entropy
   - full: all questions in the dataset
+
+Topic suites (loaded via load_topic_suite):
+  - political: ~80 questions on elections, party politics, guns, abortion
+  - consumer: ~175 questions on technology, economy, health, work
+  - neutral: ~429 questions that don't match political or consumer keywords
 """
 
 from __future__ import annotations
@@ -17,6 +22,8 @@ from pathlib import Path
 SUITE_DIR = Path(__file__).parent
 
 AVAILABLE_SUITES = ("smoke", "core", "full")
+
+AVAILABLE_TOPICS = ("political", "consumer", "neutral")
 
 
 def load_suite(name: str) -> list[str] | None:
@@ -43,6 +50,33 @@ def load_suite(name: str) -> list[str] | None:
             f"Suite file not found: {path}. "
             f"Run 'synthbench generate-suites' to create pinned question sets."
         )
+
+    with open(path) as f:
+        data = json.load(f)
+
+    return data["keys"]
+
+
+def load_topic_suite(topic: str) -> list[str]:
+    """Load a topic-based question set by name.
+
+    Args:
+        topic: Topic name ("political", "consumer", "neutral").
+
+    Returns:
+        List of question keys for the topic.
+
+    Raises:
+        ValueError: If topic name is unknown.
+    """
+    if topic not in AVAILABLE_TOPICS:
+        raise ValueError(
+            f"Unknown topic '{topic}'. Available: {list(AVAILABLE_TOPICS)}"
+        )
+
+    path = SUITE_DIR / f"{topic}.json"
+    if not path.exists():
+        raise FileNotFoundError(f"Topic suite file not found: {path}.")
 
     with open(path) as f:
         data = json.load(f)

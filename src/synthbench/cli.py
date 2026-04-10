@@ -99,6 +99,12 @@ def main():
     help="Use a pinned question set (smoke=28, core=200, full=all).",
 )
 @click.option(
+    "--topic",
+    type=click.Choice(["political", "consumer", "neutral"]),
+    default=None,
+    help="Filter to a topic subset (political, consumer, neutral).",
+)
+@click.option(
     "--baselines-dir",
     type=click.Path(exists=True),
     default=None,
@@ -126,6 +132,7 @@ def run(
     url,
     json_only,
     suite,
+    topic,
     baselines_dir,
     demographics,
     full_evaluation,
@@ -135,6 +142,7 @@ def run(
     Example:
         synthbench run --provider raw-anthropic --model haiku --n 100
         synthbench run --provider raw-anthropic --model haiku --suite core
+        synthbench run --provider raw-anthropic --topic consumer
         synthbench run --provider raw-anthropic --demographics AGE,POLIDEOLOGY
         synthbench run --provider raw-anthropic --full-evaluation
     """
@@ -167,6 +175,7 @@ def run(
             url,
             json_only,
             suite,
+            topic,
             baselines_dir,
             demo_list,
         )
@@ -185,6 +194,7 @@ async def _run_async(
     url,
     json_only,
     suite,
+    topic,
     baselines_dir,
     demographics=None,
 ):
@@ -228,6 +238,18 @@ async def _run_async(
 
         question_keys = load_suite(suite)
 
+    # Load topic suite if specified (intersect with suite if both given)
+    if topic:
+        from synthbench.suites import load_topic_suite
+
+        topic_keys = load_topic_suite(topic)
+        if question_keys is not None:
+            # Intersect: keep only keys in both suite and topic
+            topic_set = set(topic_keys)
+            question_keys = [k for k in question_keys if k in topic_set]
+        else:
+            question_keys = topic_keys
+
     # Run benchmark
     runner = BenchmarkRunner(
         dataset=ds,
@@ -237,6 +259,8 @@ async def _run_async(
     )
 
     suite_label = f"suite={suite}" if suite else (str(n) if n else "all")
+    if topic:
+        suite_label += f" topic={topic}"
     click.echo(f"SynthBench v{__version__}")
     click.echo(f"  Provider: {prov.name}")
     click.echo(f"  Dataset:  {ds.name}")
@@ -268,6 +292,10 @@ async def _run_async(
             )
     finally:
         await prov.close()
+
+    # Tag result with topic if specified
+    if topic:
+        result.config["topic"] = topic
 
     click.echo()  # Newline after progress
     click.echo()
@@ -668,11 +696,18 @@ async def _replicate_async(
     help="Save markdown + JSON output.",
 )
 @click.option("--json", "json_only", is_flag=True, help="Output JSON only.")
-def leaderboard(results_dir, output, json_only):
+@click.option(
+    "--topic",
+    type=click.Choice(["political", "consumer", "neutral"]),
+    default=None,
+    help="Filter to results for a specific topic.",
+)
+def leaderboard(results_dir, output, json_only, topic):
     """Build a ranked leaderboard from all result files in a directory.
 
     Example:
         synthbench leaderboard --results-dir ./results
+        synthbench leaderboard --results-dir ./results --topic consumer
     """
     from synthbench.leaderboard import load_result, build_leaderboard
 
@@ -696,6 +731,13 @@ def leaderboard(results_dir, output, json_only):
     if not results:
         click.echo("No valid SynthBench result files found.", err=True)
         sys.exit(1)
+
+    # Filter by topic if specified
+    if topic:
+        results = [r for r in results if r.get("config", {}).get("topic") == topic]
+        if not results:
+            click.echo(f"No results found for topic '{topic}'.", err=True)
+            sys.exit(1)
 
     md, lb_json = build_leaderboard(results)
 

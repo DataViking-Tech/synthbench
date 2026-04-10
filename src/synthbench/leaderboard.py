@@ -106,11 +106,33 @@ def _elapsed_row(aggregates: list[dict]) -> str:
     return "| Elapsed | " + " | ".join(cells) + " |"
 
 
+def _collect_topic_scores(
+    results: list[dict],
+) -> dict[str, dict[str, float]]:
+    """Collect per-topic composite parity scores from results with topic tags.
+
+    Returns {provider: {topic: composite_parity}} for results that have
+    a config.topic field.
+    """
+    topic_scores: dict[str, dict[str, float]] = {}
+    for r in results:
+        cfg = r.get("config", {})
+        topic = cfg.get("topic")
+        if not topic:
+            continue
+        provider = cfg.get("provider", "unknown")
+        cp = r.get("aggregate", {}).get("composite_parity", 0)
+        topic_scores.setdefault(provider, {})[topic] = round(cp, 4)
+    return topic_scores
+
+
 def build_leaderboard(results: list[dict]) -> tuple[str, dict]:
     """Build a ranked leaderboard from multiple result dicts.
 
-    When multiple runs exist for the same provider+dataset combination,
+    When multiple runs exist for the same provider+dataset+topic combination,
     only the run with the largest n_evaluated is kept.
+
+    If results with topic tags exist, per-topic columns are included.
 
     Returns:
         (markdown_table, leaderboard_json) where leaderboard_json has the
@@ -122,9 +144,24 @@ def build_leaderboard(results: list[dict]) -> tuple[str, dict]:
             "generated": _now_iso(),
         }
 
-    # De-duplicate: keep the run with the most questions per provider+dataset
+    # Separate topic-tagged results from overall results
+    overall_results = [r for r in results if not r.get("config", {}).get("topic")]
+    topic_results = [r for r in results if r.get("config", {}).get("topic")]
+
+    # Collect topic scores per provider
+    topic_scores = _collect_topic_scores(topic_results)
+    topics_present = sorted(
+        {
+            r.get("config", {}).get("topic")
+            for r in topic_results
+            if r.get("config", {}).get("topic")
+        }
+    )
+
+    # De-duplicate overall: keep the run with the most questions per provider+dataset
+    target = overall_results if overall_results else results
     best: dict[tuple[str, str], dict] = {}
-    for r in results:
+    for r in target:
         cfg = r.get("config", {})
         provider = cfg.get("provider", "unknown")
         dataset = cfg.get("dataset", "unknown")
@@ -150,9 +187,10 @@ def build_leaderboard(results: list[dict]) -> tuple[str, dict]:
         ts = r.get("timestamp", "")
         date_str = ts[:10] if len(ts) >= 10 else "--"
 
+        provider = cfg.get("provider", "unknown")
         entry = {
             "rank": rank,
-            "provider": cfg.get("provider", "unknown"),
+            "provider": provider,
             "dataset": cfg.get("dataset", "unknown"),
             "n": cfg.get("n_evaluated", 0),
             "composite_parity": round(agg.get("composite_parity", 0), 4),
@@ -160,26 +198,58 @@ def build_leaderboard(results: list[dict]) -> tuple[str, dict]:
             "mean_kendall_tau": round(agg.get("mean_kendall_tau", 0), 4),
             "date": date_str,
         }
+
+        # Add per-topic scores if available
+        if provider in topic_scores:
+            entry["topic_scores"] = topic_scores[provider]
+
         entries.append(entry)
 
     # Build markdown
-    lines = [
-        "# SynthBench Leaderboard",
-        "",
-        "| Rank | Provider | Dataset | N | Parity | JSD | tau | Date |",
-        "|------|----------|---------|---|--------|-----|-----|------|",
-    ]
-    for e in entries:
-        lines.append(
-            f"| {e['rank']} "
-            f"| {e['provider']} "
-            f"| {e['dataset']} "
-            f"| {e['n']} "
-            f"| {e['composite_parity']:.4f} "
-            f"| {e['mean_jsd']:.4f} "
-            f"| {e['mean_kendall_tau']:.4f} "
-            f"| {e['date']} |"
-        )
+    if topics_present:
+        topic_headers = " | ".join(t.capitalize() for t in topics_present)
+        topic_seps = " | ".join("---" for _ in topics_present)
+        lines = [
+            "# SynthBench Leaderboard",
+            "",
+            f"| Rank | Provider | Dataset | N | Parity | {topic_headers} | JSD | tau | Date |",
+            f"|------|----------|---------|---|--------|{topic_seps}|-----|-----|------|",
+        ]
+        for e in entries:
+            topic_cells = []
+            for t in topics_present:
+                score = e.get("topic_scores", {}).get(t)
+                topic_cells.append(f"{score:.4f}" if score is not None else "--")
+            topic_str = " | ".join(topic_cells)
+            lines.append(
+                f"| {e['rank']} "
+                f"| {e['provider']} "
+                f"| {e['dataset']} "
+                f"| {e['n']} "
+                f"| {e['composite_parity']:.4f} "
+                f"| {topic_str} "
+                f"| {e['mean_jsd']:.4f} "
+                f"| {e['mean_kendall_tau']:.4f} "
+                f"| {e['date']} |"
+            )
+    else:
+        lines = [
+            "# SynthBench Leaderboard",
+            "",
+            "| Rank | Provider | Dataset | N | Parity | JSD | tau | Date |",
+            "|------|----------|---------|---|--------|-----|-----|------|",
+        ]
+        for e in entries:
+            lines.append(
+                f"| {e['rank']} "
+                f"| {e['provider']} "
+                f"| {e['dataset']} "
+                f"| {e['n']} "
+                f"| {e['composite_parity']:.4f} "
+                f"| {e['mean_jsd']:.4f} "
+                f"| {e['mean_kendall_tau']:.4f} "
+                f"| {e['date']} |"
+            )
     lines.append("")
 
     leaderboard_json = {
