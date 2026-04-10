@@ -12,6 +12,17 @@ from synthbench.runner import BenchmarkResult
 
 def to_json(result: BenchmarkResult) -> dict:
     """Convert a benchmark result to a JSON-serializable dict."""
+    scores: dict[str, object] = {
+        "sps": round(result.sps, 6),
+        "p_dist": round(result.p_dist, 6),
+        "p_rank": round(result.p_rank, 6),
+        "p_refuse": round(result.p_refuse, 6),
+    }
+    if result.p_sub is not None:
+        scores["p_sub"] = round(result.p_sub, 6)
+    if result.p_cond is not None:
+        scores["p_cond"] = round(result.p_cond, 6)
+
     return {
         "benchmark": "synthbench",
         "version": __version__,
@@ -21,6 +32,7 @@ def to_json(result: BenchmarkResult) -> dict:
             "provider": result.provider_name,
             **result.config,
         },
+        "scores": scores,
         "aggregate": {
             "mean_jsd": round(result.mean_jsd, 6),
             "median_jsd": round(result.median_jsd, 6),
@@ -44,14 +56,24 @@ def to_json(result: BenchmarkResult) -> dict:
                 "kendall_tau": round(q.kendall_tau, 6),
                 "parity": round(q.parity, 6),
                 "n_samples": q.n_samples,
+                "model_refusal_rate": round(q.model_refusal_rate, 6),
+                "human_refusal_rate": round(q.human_refusal_rate, 6),
             }
             for q in result.questions
         ],
     }
 
 
+def _bar(score: float, width: int = 10) -> str:
+    """Render a score as a bar chart segment."""
+    filled = round(score * width)
+    return "\u2588" * filled + "\u2591" * (width - filled)
+
+
 def to_markdown(result: BenchmarkResult) -> str:
-    """Generate a markdown score card."""
+    """Generate a markdown score card with full SPS breakdown."""
+    components = result.sps_components
+
     lines = [
         "# SynthBench Score Card",
         "",
@@ -60,24 +82,49 @@ def to_markdown(result: BenchmarkResult) -> str:
         f"**Samples per question:** {result.config.get('samples_per_question', '?')}",
         f"**Elapsed:** {result.elapsed_seconds:.1f}s",
         "",
-        "## Aggregate Scores",
+        "## SynthBench Parity Score (SPS)",
+        "",
+        f"**SPS: {result.sps:.4f}** (from {len(components)} metrics)",
+        "",
+        "| Metric | Score | |",
+        "|--------|------:|---|",
+    ]
+
+    metric_labels = {
+        "p_dist": "P_dist  Distributional",
+        "p_rank": "P_rank  Rank-Order",
+        "p_cond": "P_cond  Conditioning",
+        "p_sub": "P_sub   Subgroup",
+        "p_refuse": "P_refuse Refusal Cal.",
+    }
+    for key in ("p_dist", "p_rank", "p_cond", "p_sub", "p_refuse"):
+        if key in components:
+            label = metric_labels[key]
+            score = components[key]
+            lines.append(f"| {label} | {score:.4f} | {_bar(score)} |")
+
+    lines.extend([
+        "",
+        "## Raw Metrics",
         "",
         "| Metric | Value |",
         "|--------|-------|",
         f"| Mean JSD | {result.mean_jsd:.4f} |",
         f"| Median JSD | {result.median_jsd:.4f} |",
         f"| Mean Kendall's tau | {result.mean_kendall_tau:.4f} |",
-        f"| **Composite Parity** | **{result.composite_parity:.4f}** |",
+        f"| Composite Parity (legacy) | {result.composite_parity:.4f} |",
         "",
         "## Interpretation",
         "",
-        "- **JSD** (Jensen-Shannon Divergence): 0 = identical distributions, "
-        "1 = maximally different. Lower is better.",
-        "- **Kendall's tau**: -1 = reversed ranking, 0 = no correlation, "
-        "+1 = identical ranking. Higher is better.",
-        "- **Composite Parity**: 0 = no parity, 1 = perfect parity. Higher is better.",
+        "- **SPS** (SynthBench Parity Score): Equal-weighted mean of component metrics. "
+        "0 = no parity, 1 = perfect parity.",
+        "- **P_dist**: 1 - mean(JSD). How closely distributions match.",
+        "- **P_rank**: (1 + mean(tau)) / 2. Whether option rankings agree.",
+        "- **P_refuse**: 1 - mean(|refusal_diff|). Whether refusal rates match human patterns.",
+        "- **P_cond**: Improvement from persona conditioning (when available).",
+        "- **P_sub**: Consistency across demographic subgroups (when available).",
         "",
-    ]
+    ])
 
     # Top 5 best and worst questions
     sorted_by_jsd = sorted(result.questions, key=lambda q: q.jsd)

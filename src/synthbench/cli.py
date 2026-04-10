@@ -159,6 +159,13 @@ async def _run_async(
     click.echo()  # Newline after progress
     click.echo()
 
+    # Per-metric SPS summary
+    components = result.sps_components
+    click.echo(f"  SPS: {result.sps:.4f}  ({len(components)} metrics)")
+    for key, score in components.items():
+        click.echo(f"    {key}: {score:.4f}")
+    click.echo()
+
     if json_only:
         click.echo(json.dumps(report.to_json(result), indent=2))
     else:

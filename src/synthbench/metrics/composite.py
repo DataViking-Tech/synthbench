@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+# The 5 Phase-1 SPS metrics in canonical order
+SPS_METRICS = ("p_dist", "p_rank", "p_cond", "p_sub", "p_refuse")
+
 
 def parity_score(
     jsd: float,
@@ -31,3 +34,39 @@ def parity_score(
 
     total_weight = jsd_weight + tau_weight
     return (jsd_weight * jsd_score + tau_weight * tau_score) / total_weight
+
+
+def synthbench_parity_score(
+    metrics: dict[str, float],
+    weights: dict[str, float] | None = None,
+) -> float:
+    """Compute the SynthBench Parity Score (SPS) from available component metrics.
+
+    Equal-weighted mean of available metrics (0.20 each in Phase 1 when all 5
+    are present). When a metric can't be computed, it is excluded and the
+    remaining metrics are reweighted to sum to 1.0.
+
+    Args:
+        metrics: Mapping of metric name to score. Keys should be from
+            SPS_METRICS (p_dist, p_rank, p_cond, p_sub, p_refuse).
+            Only present keys are included in the average.
+        weights: Optional custom weights per metric. If None, equal weights.
+
+    Returns:
+        SPS in [0, 1]. Higher = better overall parity.
+        Returns 0.0 if no metrics provided.
+    """
+    available = {k: v for k, v in metrics.items() if k in SPS_METRICS}
+    if not available:
+        return 0.0
+
+    if weights is None:
+        # Equal weighting across available metrics
+        return sum(available.values()) / len(available)
+
+    # Custom weights — only use weights for available metrics, then renormalize
+    weighted_sum = sum(weights.get(k, 0.0) * v for k, v in available.items())
+    total_weight = sum(weights.get(k, 0.0) for k in available)
+    if total_weight == 0.0:
+        return 0.0
+    return weighted_sum / total_weight

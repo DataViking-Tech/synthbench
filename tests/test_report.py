@@ -55,6 +55,23 @@ def test_to_json_structure(sample_result):
     assert len(data["per_question"]) == 2
 
 
+def test_to_json_has_scores(sample_result):
+    data = to_json(sample_result)
+    assert "scores" in data
+    scores = data["scores"]
+    assert "sps" in scores
+    assert "p_dist" in scores
+    assert "p_rank" in scores
+    assert "p_refuse" in scores
+
+
+def test_to_json_per_question_has_refusal(sample_result):
+    data = to_json(sample_result)
+    for q in data["per_question"]:
+        assert "model_refusal_rate" in q
+        assert "human_refusal_rate" in q
+
+
 def test_to_json_round_trip(sample_result):
     data = to_json(sample_result)
     serialized = json.dumps(data)
@@ -67,5 +84,7 @@ def test_to_markdown_contains_scores(sample_result):
     assert "SynthBench Score Card" in md
     assert "test/mock" in md
     assert "Mean JSD" in md
-    assert "Kendall" in md
-    assert "Composite Parity" in md
+    assert "SPS" in md
+    assert "P_dist" in md
+    assert "P_rank" in md
+    assert "P_refuse" in md
