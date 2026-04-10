@@ -79,8 +79,71 @@ def _bar(score: float, width: int = 10) -> str:
     return "\u2588" * filled + "\u2591" * (width - filled)
 
 
-def to_markdown(result: BenchmarkResult) -> str:
-    """Generate a markdown score card with full SPS breakdown."""
+def _load_baselines(baselines_dir: Path | None) -> dict[str, dict]:
+    """Load baseline result JSONs from a directory.
+
+    Returns a dict mapping provider name to the result dict with the
+    most n_evaluated questions.
+    """
+    if baselines_dir is None or not baselines_dir.is_dir():
+        return {}
+
+    baselines: dict[str, dict] = {}
+    for jf in baselines_dir.glob("*.json"):
+        try:
+            with open(jf) as f:
+                data = json.load(f)
+        except (json.JSONDecodeError, KeyError):
+            continue
+        if data.get("benchmark") != "synthbench":
+            continue
+        provider = data.get("config", {}).get("provider", "")
+        if provider not in ("random-baseline", "majority-baseline"):
+            continue
+        n_eval = data.get("config", {}).get("n_evaluated", 0)
+        existing = baselines.get(provider)
+        if existing is None or n_eval > existing.get("config", {}).get(
+            "n_evaluated", 0
+        ):
+            baselines[provider] = data
+
+    return baselines
+
+
+def _vs_baselines_section(composite: float, baselines: dict[str, dict]) -> list[str]:
+    """Generate the 'vs Baselines' markdown section."""
+    if not baselines:
+        return []
+
+    lines = [
+        "## vs Baselines",
+        "",
+        "| Baseline | Score | Delta | % |",
+        "|----------|------:|------:|--:|",
+    ]
+
+    for name in sorted(baselines.keys()):
+        base_cp = baselines[name].get("aggregate", {}).get("composite_parity", 0)
+        delta = composite - base_cp
+        pct = (delta / base_cp * 100) if base_cp > 0 else 0
+        sign = "+" if delta >= 0 else ""
+        lines.append(
+            f"| {name} | {base_cp:.4f} | {sign}{delta:.4f} | {sign}{pct:.0f}% |"
+        )
+
+    lines.append("")
+    return lines
+
+
+def to_markdown(
+    result: BenchmarkResult,
+    baselines_dir: Path | None = None,
+) -> str:
+    """Generate a markdown score card with full SPS breakdown.
+
+    If *baselines_dir* is provided (or defaults to ``leaderboard-results/``
+    relative to cwd), includes a "vs Baselines" section showing deltas.
+    """
     components = result.sps_components
     cis = result.per_metric_ci
 
@@ -135,6 +198,20 @@ def to_markdown(result: BenchmarkResult) -> str:
             f"| Mean Kendall's tau | {result.mean_kendall_tau:.4f} |",
             f"| Composite Parity (legacy) | {result.composite_parity:.4f} |",
             "",
+        ]
+    )
+
+    # vs Baselines section
+    baselines = _load_baselines(baselines_dir)
+    if not baselines:
+        # Try default location
+        default_dir = Path("leaderboard-results")
+        if default_dir.is_dir():
+            baselines = _load_baselines(default_dir)
+    lines.extend(_vs_baselines_section(result.composite_parity, baselines))
+
+    lines.extend(
+        [
             "## Interpretation",
             "",
             "- **SPS** (SynthBench Parity Score): Equal-weighted mean of component metrics. "

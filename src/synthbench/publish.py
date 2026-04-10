@@ -7,14 +7,29 @@ from datetime import datetime, timezone
 from pathlib import Path
 from html import escape
 
+BASELINE_PROVIDERS = {"random-baseline", "majority-baseline"}
 
-def generate_html(results: list[dict], version: str = "0.1.0") -> str:
-    """Build a complete HTML leaderboard page from a list of result dicts.
 
-    Results are de-duplicated (best n_evaluated per provider+dataset kept),
-    then ranked by composite_parity descending.
+def _extract_metrics(result: dict) -> dict[str, float]:
+    """Extract SPS component metrics from a result dict.
+
+    Computes P_dist and P_rank from aggregate data. Returns a dict with
+    keys: composite_parity, p_dist, p_rank, mean_jsd, mean_kendall_tau.
     """
-    # De-duplicate: keep the run with the most questions per provider+dataset
+    agg = result.get("aggregate", {})
+    mean_jsd = agg.get("mean_jsd", 0)
+    mean_tau = agg.get("mean_kendall_tau", 0)
+    return {
+        "composite_parity": agg.get("composite_parity", 0),
+        "p_dist": 1.0 - mean_jsd,
+        "p_rank": (1.0 + mean_tau) / 2.0,
+        "mean_jsd": mean_jsd,
+        "mean_kendall_tau": mean_tau,
+    }
+
+
+def _dedup_results(results: list[dict]) -> list[dict]:
+    """De-duplicate results: keep the run with the most n_evaluated per provider+dataset."""
     best: dict[tuple[str, str], dict] = {}
     for r in results:
         cfg = r.get("config", {})
@@ -22,17 +37,266 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
         dataset = cfg.get("dataset", "unknown")
         n_eval = cfg.get("n_evaluated", 0)
         key = (provider, dataset)
-
         existing = best.get(key)
         if existing is None or n_eval > existing["config"].get("n_evaluated", 0):
             best[key] = r
+    return list(best.values())
+
+
+def _split_baselines(
+    ranked: list[dict],
+) -> tuple[list[dict], dict[str, dict]]:
+    """Separate model results from baseline results."""
+    models = []
+    baselines: dict[str, dict] = {}
+    for r in ranked:
+        provider = r.get("config", {}).get("provider", "unknown")
+        if provider in BASELINE_PROVIDERS:
+            baselines[provider] = r
+        else:
+            models.append(r)
+    return models, baselines
+
+
+def _svg_sps_bars(ranked: list[dict]) -> str:
+    """Generate an inline SVG horizontal bar chart of Composite Parity scores."""
+    n = len(ranked)
+    if n == 0:
+        return ""
+
+    bar_h = 28
+    gap = 6
+    label_w = 220
+    chart_w = 400
+    w = label_w + chart_w + 60
+    h = n * (bar_h + gap) + 40
+
+    bars = []
+    for i, r in enumerate(ranked):
+        cfg = r.get("config", {})
+        provider = cfg.get("provider", "unknown")
+        cp = r.get("aggregate", {}).get("composite_parity", 0)
+        is_baseline = provider in BASELINE_PROVIDERS
+
+        y = i * (bar_h + gap) + 30
+        bar_width = cp * chart_w
+        color = "#8b949e" if is_baseline else "#58a6ff"
+
+        bars.append(
+            f'<text x="{label_w - 8}" y="{y + bar_h * 0.7}" '
+            f'text-anchor="end" font-size="12" fill="#e6edf3">'
+            f"{escape(provider)}</text>"
+        )
+        bars.append(
+            f'<rect x="{label_w}" y="{y}" width="{bar_width:.1f}" '
+            f'height="{bar_h}" rx="3" fill="{color}" opacity="0.85" />'
+        )
+        bars.append(
+            f'<text x="{label_w + bar_width + 6}" y="{y + bar_h * 0.7}" '
+            f'font-size="11" fill="#e6edf3">{cp:.4f}</text>'
+        )
+
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
+        f'width="100%" style="font-family:sans-serif;max-width:{w}px">\n'
+        f'<text x="{w / 2}" y="18" text-anchor="middle" font-size="14" '
+        f'fill="#e6edf3" font-weight="600">Composite Parity by Model</text>\n'
+        + "\n".join(bars)
+        + "\n</svg>"
+    )
+
+
+def _svg_metric_bars(ranked: list[dict]) -> str:
+    """Generate inline SVG grouped bars for P_dist, P_rank per model."""
+    models = [
+        r
+        for r in ranked
+        if r.get("config", {}).get("provider", "") not in BASELINE_PROVIDERS
+    ]
+    if not models:
+        return ""
+
+    n = len(models)
+    group_h = 50
+    gap = 12
+    label_w = 220
+    chart_w = 400
+    w = label_w + chart_w + 60
+    h = n * (group_h + gap) + 60
+
+    colors = {"P_dist": "#3fb950", "P_rank": "#58a6ff"}
+    bar_h = 20
+
+    bars = []
+    for i, r in enumerate(models):
+        cfg = r.get("config", {})
+        provider = cfg.get("provider", "unknown")
+        m = _extract_metrics(r)
+        y_base = i * (group_h + gap) + 40
+
+        bars.append(
+            f'<text x="{label_w - 8}" y="{y_base + group_h * 0.5}" '
+            f'text-anchor="end" font-size="12" fill="#e6edf3">'
+            f"{escape(provider)}</text>"
+        )
+
+        for j, (key, label) in enumerate([("p_dist", "P_dist"), ("p_rank", "P_rank")]):
+            val = m[key]
+            y = y_base + j * (bar_h + 4)
+            bw = val * chart_w
+            bars.append(
+                f'<rect x="{label_w}" y="{y}" width="{bw:.1f}" '
+                f'height="{bar_h}" rx="2" fill="{colors[label]}" opacity="0.8" />'
+            )
+            bars.append(
+                f'<text x="{label_w + bw + 5}" y="{y + bar_h * 0.72}" '
+                f'font-size="10" fill="#e6edf3">{label} {val:.4f}</text>'
+            )
+
+    # Legend
+    legend_y = h - 12
+    bars.append(
+        f'<rect x="{label_w}" y="{legend_y}" width="12" height="12" fill="#3fb950" />'
+        f'<text x="{label_w + 16}" y="{legend_y + 10}" font-size="10" fill="#8b949e">'
+        f"P_dist (1 - JSD)</text>"
+    )
+    bars.append(
+        f'<rect x="{label_w + 140}" y="{legend_y}" width="12" height="12" fill="#58a6ff" />'
+        f'<text x="{label_w + 156}" y="{legend_y + 10}" font-size="10" fill="#8b949e">'
+        f"P_rank ((1+tau)/2)</text>"
+    )
+
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
+        f'width="100%" style="font-family:sans-serif;max-width:{w}px">\n'
+        f'<text x="{w / 2}" y="22" text-anchor="middle" font-size="14" '
+        f'fill="#e6edf3" font-weight="600">Per-Metric Breakdown</text>\n'
+        + "\n".join(bars)
+        + "\n</svg>"
+    )
+
+
+def _baseline_delta_html(ranked: list[dict], baselines: dict[str, dict]) -> str:
+    """Build an HTML table showing delta vs each baseline."""
+    if not baselines:
+        return ""
+
+    models = [
+        r
+        for r in ranked
+        if r.get("config", {}).get("provider", "") not in BASELINE_PROVIDERS
+    ]
+    if not models:
+        return ""
+
+    baseline_names = sorted(baselines.keys())
+    baseline_scores = {
+        name: baselines[name].get("aggregate", {}).get("composite_parity", 0)
+        for name in baseline_names
+    }
+
+    header_cells = "".join(
+        f'<th class="num" colspan="2">{escape(name)}</th>' for name in baseline_names
+    )
+    subheader_cells = "".join(
+        '<th class="num">Delta</th><th class="num">%</th>' for _ in baseline_names
+    )
+
+    rows = []
+    for r in models:
+        cfg = r.get("config", {})
+        provider = cfg.get("provider", "unknown")
+        cp = r.get("aggregate", {}).get("composite_parity", 0)
+
+        cells = f'<td class="provider-name">{escape(provider)}</td>'
+        cells += f'<td class="num composite">{cp:.4f}</td>'
+
+        for name in baseline_names:
+            base_cp = baseline_scores[name]
+            delta = cp - base_cp
+            pct = (delta / base_cp * 100) if base_cp > 0 else 0
+            sign = "+" if delta >= 0 else ""
+            color = "var(--green)" if delta > 0 else "var(--red)"
+            cells += (
+                f'<td class="num" style="color:{color}">{sign}{delta:.4f}</td>'
+                f'<td class="num" style="color:{color}">{sign}{pct:.0f}%</td>'
+            )
+
+        rows.append(f"      <tr>{cells}</tr>")
+
+    rows_html = "\n".join(rows)
+    return f"""
+  <h2 class="section-title">vs Baselines</h2>
+  <table class="leaderboard-table">
+    <thead>
+      <tr>
+        <th>Provider</th>
+        <th class="num">Composite</th>
+        {header_cells}
+      </tr>
+      <tr>
+        <th></th><th></th>
+        {subheader_cells}
+      </tr>
+    </thead>
+    <tbody>
+{rows_html}
+    </tbody>
+  </table>"""
+
+
+def _metric_explanations_html() -> str:
+    """Return HTML section explaining each metric."""
+    return """
+  <h2 class="section-title">Metric Explanations</h2>
+  <div class="about">
+    <p><strong>Composite Parity</strong> combines distributional similarity and rank-order
+       agreement into a single 0&ndash;1 score. <code>(1 - JSD + (1 + tau)/2) / 2</code>. Higher is better.</p>
+    <p><strong>P_dist (Distributional Parity)</strong> = <code>1 - mean(JSD)</code>.
+       Measures how closely a provider's response distribution matches the human distribution.
+       Jensen-Shannon divergence is bounded [0, 1], symmetric, and handles zero entries.
+       A perfect match yields P_dist = 1.</p>
+    <p><strong>P_rank (Rank-Order Parity)</strong> = <code>(1 + mean(tau)) / 2</code>.
+       Kendall's tau-b on probability rankings, normalized to [0, 1].
+       Captures whether the provider gets the <em>ordering</em> of options right,
+       even when exact proportions differ.</p>
+    <p><strong>P_refuse (Refusal Calibration)</strong> = <code>1 - mean(|R_provider - R_human|)</code>.
+       Whether the provider's refusal rate matches human refusal patterns.
+       Human refusal patterns carry signal: questions about religion see higher refusals
+       from non-religious respondents; income questions see higher refusals from high earners.</p>
+    <p><strong>Mean JSD</strong>: Average Jensen-Shannon divergence across all questions. Lower is better (0 = identical distributions).</p>
+    <p><strong>Kendall's tau</strong>: Rank correlation between human and model response option rankings.
+       Range [-1, 1]. 1 = perfect agreement, 0 = no correlation.</p>
+  </div>
+  <div class="about" style="margin-top:1rem">
+    <p><strong>Baselines</strong> give meaning to scores:</p>
+    <p><strong>Random Baseline</strong>: Uniform distribution over all options. The absolute floor &mdash;
+       any provider scoring at or below random is adding negative value.</p>
+    <p><strong>Majority-Class Baseline</strong>: Always picks the mode of the population distribution.
+       Scores well on consensus questions, poorly on divisive ones. Shows the value of
+       distributional modeling.</p>
+    <p>See <a href="https://github.com/DataViking-Tech/synthbench/blob/main/METHODOLOGY.md">METHODOLOGY.md</a>
+       for the full metric framework and design rationale.</p>
+  </div>"""
+
+
+def generate_html(results: list[dict], version: str = "0.1.0") -> str:
+    """Build a complete HTML leaderboard page from a list of result dicts.
+
+    Results are de-duplicated (best n_evaluated per provider+dataset kept),
+    then ranked by composite_parity descending. Includes SVG charts,
+    baseline comparison table, and metric explanations.
+    """
+    deduped = _dedup_results(results)
 
     # Sort by composite_parity descending
     ranked = sorted(
-        best.values(),
+        deduped,
         key=lambda r: r.get("aggregate", {}).get("composite_parity", 0),
         reverse=True,
     )
+
+    models, baselines = _split_baselines(ranked)
 
     rows_html = []
     medals = {1: "&#x1f947;", 2: "&#x1f948;", 3: "&#x1f949;"}
@@ -78,6 +342,12 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     tbody = "\n".join(rows_html)
 
+    # Generate chart sections
+    sps_chart = _svg_sps_bars(ranked)
+    metric_chart = _svg_metric_bars(ranked)
+    baseline_table = _baseline_delta_html(ranked, baselines)
+    explanations = _metric_explanations_html()
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,6 +376,11 @@ header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
 .about{{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem;font-size:0.95rem;color:var(--text-muted)}}
 .about p+p{{margin-top:0.75rem}}
 .about strong{{color:var(--text)}}
+.about code{{background:var(--bg);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.88rem}}
+
+.section-title{{font-size:1.3rem;font-weight:600;margin:2.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)}}
+
+.chart-section{{margin:2rem 0;padding:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:8px}}
 
 .leaderboard-table{{width:100%;border-collapse:collapse;font-size:0.9rem}}
 .leaderboard-table thead{{position:sticky;top:0}}
@@ -151,7 +426,7 @@ footer a{{color:var(--accent)}}
   <p class="tagline">Open benchmark for synthetic survey respondent quality</p>
   <div class="links">
     <a href="https://github.com/DataViking-Tech/synthbench">GitHub</a>
-    <a href="https://github.com/DataViking-Tech/synthbench#methodology">Methodology</a>
+    <a href="https://github.com/DataViking-Tech/synthbench/blob/main/METHODOLOGY.md">Methodology</a>
     <a href="https://github.com/DataViking-Tech/synthbench#submit-results">Submit Results</a>
   </div>
 </header>
@@ -182,6 +457,18 @@ footer a{{color:var(--accent)}}
 {tbody}
     </tbody>
   </table>
+
+  <div class="chart-section">
+{sps_chart}
+  </div>
+
+  <div class="chart-section">
+{metric_chart}
+  </div>
+
+{baseline_table}
+
+{explanations}
 </div>
 
 <footer>

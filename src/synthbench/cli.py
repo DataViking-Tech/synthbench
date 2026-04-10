@@ -98,6 +98,12 @@ def main():
     default=None,
     help="Use a pinned question set (smoke=28, core=200, full=all).",
 )
+@click.option(
+    "--baselines-dir",
+    type=click.Path(exists=True),
+    default=None,
+    help="Directory with baseline results for 'vs Baselines' section.",
+)
 def run(
     provider,
     model,
@@ -110,6 +116,7 @@ def run(
     url,
     json_only,
     suite,
+    baselines_dir,
 ):
     """Run a benchmark evaluation.
 
@@ -130,6 +137,7 @@ def run(
             url,
             json_only,
             suite,
+            baselines_dir,
         )
     )
 
@@ -146,6 +154,7 @@ async def _run_async(
     url,
     json_only,
     suite,
+    baselines_dir,
 ):
     from synthbench.datasets import DATASETS
     from synthbench.providers import load_provider
@@ -245,7 +254,8 @@ async def _run_async(
         click.echo(json.dumps(report.to_json(result), indent=2))
     else:
         # Print markdown summary to terminal
-        click.echo(report.to_markdown(result))
+        bl_dir = Path(baselines_dir) if baselines_dir else None
+        click.echo(report.to_markdown(result, baselines_dir=bl_dir))
 
         # Save files
         json_path, md_path = report.save(result, output)
@@ -347,6 +357,8 @@ def compare(files, output):
     # Pairwise significance test for exactly 2 results
     if len(files) == 2:
         r1, r2 = results
+        cfg1 = r1.get("config", {}).get("provider", "A")
+        cfg2 = r2.get("config", {}).get("provider", "B")
         pq1 = {q["key"]: q["parity"] for q in r1.get("per_question", [])}
         pq2 = {q["key"]: q["parity"] for q in r2.get("per_question", [])}
         common_keys = sorted(set(pq1) & set(pq2))
@@ -356,19 +368,25 @@ def compare(files, output):
             scores_b = [pq2[k] for k in common_keys]
             delta, p_val, verdict = paired_bootstrap_test(scores_a, scores_b, seed=42)
 
-            click.echo("## Pairwise Significance Test")
+            alpha = 0.05
+            sig_str = (
+                f"SIGNIFICANT at alpha={alpha}"
+                if verdict == "significant"
+                else f"NOT significant at alpha={alpha}"
+            )
+
             click.echo()
+            click.echo("## Statistical Significance")
+            click.echo()
+            click.echo(f"  {cfg1} vs {cfg2}")
             click.echo(f"  Paired questions: {len(common_keys)}")
-            click.echo(f"  Delta: {delta:+.4f}")
-            click.echo(f"  p-value: {p_val:.4f}")
-            click.echo(f"  Verdict: {verdict.upper()}")
+            click.echo(f"  Delta SPS = {delta:+.4f}, p = {p_val:.4f}, {sig_str}")
             click.echo()
 
-            md += "\n## Pairwise Significance Test\n\n"
+            md += "\n## Statistical Significance\n\n"
+            md += f"- {cfg1} vs {cfg2}\n"
             md += f"- Paired questions: {len(common_keys)}\n"
-            md += f"- Delta: {delta:+.4f}\n"
-            md += f"- p-value: {p_val:.4f}\n"
-            md += f"- Verdict: **{verdict.upper()}**\n"
+            md += f"- Delta SPS = {delta:+.4f}, p = {p_val:.4f}, **{sig_str}**\n"
         else:
             click.echo("\nNo common questions for significance test.", err=True)
 

@@ -26,6 +26,11 @@ header .tagline{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}
 .about{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem;font-size:0.95rem;color:var(--text-muted)}
 .about p+p{margin-top:0.75rem}
 .about strong{color:var(--text)}
+.about code{background:var(--bg);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.88rem}
+
+.section-title{font-size:1.3rem;font-weight:600;margin:2.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)}
+
+.chart-section{margin:2rem 0;padding:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:8px}
 
 .leaderboard-table{width:100%;border-collapse:collapse;font-size:0.9rem}
 .leaderboard-table thead{position:sticky;top:0}
@@ -71,7 +76,7 @@ footer a{color:var(--accent)}
   <p class="tagline">Open benchmark for synthetic survey respondent quality</p>
   <div class="links">
     <a href="https://github.com/DataViking-Tech/synthbench">GitHub</a>
-    <a href="https://github.com/DataViking-Tech/synthbench#methodology">Methodology</a>
+    <a href="https://github.com/DataViking-Tech/synthbench/blob/main/METHODOLOGY.md">Methodology</a>
     <a href="https://github.com/DataViking-Tech/synthbench#submit-results">Submit Results</a>
   </div>
 </header>
@@ -191,6 +196,139 @@ footer a{color:var(--accent)}
       </tr>
     </tbody>
   </table>
+
+  <div class="chart-section">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 346" width="100%" style="font-family:sans-serif;max-width:680px">
+<text x="340.0" y="18" text-anchor="middle" font-size="14" fill="#e6edf3" font-weight="600">Composite Parity by Model</text>
+<text x="212" y="49.599999999999994" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/meta-llama/llama-3.3-70b-instruct</text>
+<rect x="220" y="30" width="302.4" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
+<text x="528.4192" y="49.599999999999994" font-size="11" fill="#e6edf3">0.7560</text>
+<text x="212" y="83.6" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/google/gemini-2.5-flash</text>
+<rect x="220" y="64" width="300.4" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
+<text x="526.4431999999999" y="83.6" font-size="11" fill="#e6edf3">0.7511</text>
+<text x="212" y="117.6" text-anchor="end" font-size="12" fill="#e6edf3">raw-gemini/gemini-2.5-flash-lite</text>
+<rect x="220" y="98" width="295.1" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
+<text x="521.1351999999999" y="117.6" font-size="11" fill="#e6edf3">0.7378</text>
+<text x="212" y="151.6" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/openai/gpt-4o-mini</text>
+<rect x="220" y="132" width="291.6" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
+<text x="517.5952" y="151.6" font-size="11" fill="#e6edf3">0.7290</text>
+<text x="212" y="185.6" text-anchor="end" font-size="12" fill="#e6edf3">raw-anthropic/claude-haiku-4-5-20251001</text>
+<rect x="220" y="166" width="289.5" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
+<text x="515.5268000000001" y="185.6" font-size="11" fill="#e6edf3">0.7238</text>
+<text x="212" y="219.6" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/openai/gpt-4o</text>
+<rect x="220" y="200" width="281.5" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
+<text x="507.4608" y="219.6" font-size="11" fill="#e6edf3">0.7037</text>
+<text x="212" y="253.6" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/anthropic/claude-sonnet-4</text>
+<rect x="220" y="234" width="255.4" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
+<text x="481.3592" y="253.6" font-size="11" fill="#e6edf3">0.6384</text>
+<text x="212" y="287.6" text-anchor="end" font-size="12" fill="#e6edf3">random-baseline</text>
+<rect x="220" y="268" width="255.1" height="28" rx="3" fill="#8b949e" opacity="0.85" />
+<text x="481.1268" y="287.6" font-size="11" fill="#e6edf3">0.6378</text>
+<text x="212" y="321.6" text-anchor="end" font-size="12" fill="#e6edf3">majority-baseline</text>
+<rect x="220" y="302" width="219.3" height="28" rx="3" fill="#8b949e" opacity="0.85" />
+<text x="445.3044" y="321.6" font-size="11" fill="#e6edf3">0.5483</text>
+</svg>
+  </div>
+
+  <div class="chart-section">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 494" width="100%" style="font-family:sans-serif;max-width:680px">
+<text x="340.0" y="22" text-anchor="middle" font-size="14" fill="#e6edf3" font-weight="600">Per-Metric Breakdown</text>
+<text x="212" y="65.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/meta-llama/llama-3.3-70b-instruct</text>
+<rect x="220" y="40" width="289.8" height="20" rx="2" fill="#3fb950" opacity="0.8" />
+<text x="514.8244" y="54.4" font-size="10" fill="#e6edf3">P_dist 0.7246</text>
+<rect x="220" y="64" width="315.0" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
+<text x="540.0142" y="78.4" font-size="10" fill="#e6edf3">P_rank 0.7875</text>
+<text x="212" y="127.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/google/gemini-2.5-flash</text>
+<rect x="220" y="102" width="296.4" height="20" rx="2" fill="#3fb950" opacity="0.8" />
+<text x="521.3835999999999" y="116.4" font-size="10" fill="#e6edf3">P_dist 0.7410</text>
+<rect x="220" y="126" width="304.5" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
+<text x="529.5026" y="140.4" font-size="10" fill="#e6edf3">P_rank 0.7613</text>
+<text x="212" y="189.0" text-anchor="end" font-size="12" fill="#e6edf3">raw-gemini/gemini-2.5-flash-lite</text>
+<rect x="220" y="164" width="293.9" height="20" rx="2" fill="#3fb950" opacity="0.8" />
+<text x="518.8915999999999" y="178.4" font-size="10" fill="#e6edf3">P_dist 0.7347</text>
+<rect x="220" y="188" width="296.4" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
+<text x="521.3788" y="202.4" font-size="10" fill="#e6edf3">P_rank 0.7409</text>
+<text x="212" y="251.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/openai/gpt-4o-mini</text>
+<rect x="220" y="226" width="281.6" height="20" rx="2" fill="#3fb950" opacity="0.8" />
+<text x="506.64439999999996" y="240.4" font-size="10" fill="#e6edf3">P_dist 0.7041</text>
+<rect x="220" y="250" width="301.5" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
+<text x="526.546" y="264.4" font-size="10" fill="#e6edf3">P_rank 0.7539</text>
+<text x="212" y="313.0" text-anchor="end" font-size="12" fill="#e6edf3">raw-anthropic/claude-haiku-4-5-20251001</text>
+<rect x="220" y="288" width="276.8" height="20" rx="2" fill="#3fb950" opacity="0.8" />
+<text x="501.77" y="302.4" font-size="10" fill="#e6edf3">P_dist 0.6919</text>
+<rect x="220" y="312" width="302.3" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
+<text x="527.2836" y="326.4" font-size="10" fill="#e6edf3">P_rank 0.7557</text>
+<text x="212" y="375.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/openai/gpt-4o</text>
+<rect x="220" y="350" width="279.7" height="20" rx="2" fill="#3fb950" opacity="0.8" />
+<text x="504.7412" y="364.4" font-size="10" fill="#e6edf3">P_dist 0.6994</text>
+<rect x="220" y="374" width="283.2" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
+<text x="508.1806" y="388.4" font-size="10" fill="#e6edf3">P_rank 0.7080</text>
+<text x="212" y="437.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/anthropic/claude-sonnet-4</text>
+<rect x="220" y="412" width="245.3" height="20" rx="2" fill="#3fb950" opacity="0.8" />
+<text x="470.3376" y="426.4" font-size="10" fill="#e6edf3">P_dist 0.6133</text>
+<rect x="220" y="436" width="265.4" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
+<text x="490.3812" y="450.4" font-size="10" fill="#e6edf3">P_rank 0.6635</text>
+<rect x="220" y="482" width="12" height="12" fill="#3fb950" /><text x="236" y="492" font-size="10" fill="#8b949e">P_dist (1 - JSD)</text>
+<rect x="360" y="482" width="12" height="12" fill="#58a6ff" /><text x="376" y="492" font-size="10" fill="#8b949e">P_rank ((1+tau)/2)</text>
+</svg>
+  </div>
+
+
+  <h2 class="section-title">vs Baselines</h2>
+  <table class="leaderboard-table">
+    <thead>
+      <tr>
+        <th>Provider</th>
+        <th class="num">Composite</th>
+        <th class="num" colspan="2">majority-baseline</th><th class="num" colspan="2">random-baseline</th>
+      </tr>
+      <tr>
+        <th></th><th></th>
+        <th class="num">Delta</th><th class="num">%</th><th class="num">Delta</th><th class="num">%</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="provider-name">openrouter/meta-llama/llama-3.3-70b-instruct</td><td class="num composite">0.7560</td><td class="num" style="color:var(--green)">+0.2078</td><td class="num" style="color:var(--green)">+38%</td><td class="num" style="color:var(--green)">+0.1182</td><td class="num" style="color:var(--green)">+19%</td></tr>
+      <tr><td class="provider-name">openrouter/google/gemini-2.5-flash</td><td class="num composite">0.7511</td><td class="num" style="color:var(--green)">+0.2028</td><td class="num" style="color:var(--green)">+37%</td><td class="num" style="color:var(--green)">+0.1133</td><td class="num" style="color:var(--green)">+18%</td></tr>
+      <tr><td class="provider-name">raw-gemini/gemini-2.5-flash-lite</td><td class="num composite">0.7378</td><td class="num" style="color:var(--green)">+0.1896</td><td class="num" style="color:var(--green)">+35%</td><td class="num" style="color:var(--green)">+0.1000</td><td class="num" style="color:var(--green)">+16%</td></tr>
+      <tr><td class="provider-name">openrouter/openai/gpt-4o-mini</td><td class="num composite">0.7290</td><td class="num" style="color:var(--green)">+0.1807</td><td class="num" style="color:var(--green)">+33%</td><td class="num" style="color:var(--green)">+0.0912</td><td class="num" style="color:var(--green)">+14%</td></tr>
+      <tr><td class="provider-name">raw-anthropic/claude-haiku-4-5-20251001</td><td class="num composite">0.7238</td><td class="num" style="color:var(--green)">+0.1756</td><td class="num" style="color:var(--green)">+32%</td><td class="num" style="color:var(--green)">+0.0860</td><td class="num" style="color:var(--green)">+13%</td></tr>
+      <tr><td class="provider-name">openrouter/openai/gpt-4o</td><td class="num composite">0.7037</td><td class="num" style="color:var(--green)">+0.1554</td><td class="num" style="color:var(--green)">+28%</td><td class="num" style="color:var(--green)">+0.0658</td><td class="num" style="color:var(--green)">+10%</td></tr>
+      <tr><td class="provider-name">openrouter/anthropic/claude-sonnet-4</td><td class="num composite">0.6384</td><td class="num" style="color:var(--green)">+0.0901</td><td class="num" style="color:var(--green)">+16%</td><td class="num" style="color:var(--green)">+0.0006</td><td class="num" style="color:var(--green)">+0%</td></tr>
+    </tbody>
+  </table>
+
+
+  <h2 class="section-title">Metric Explanations</h2>
+  <div class="about">
+    <p><strong>Composite Parity</strong> combines distributional similarity and rank-order
+       agreement into a single 0&ndash;1 score. <code>(1 - JSD + (1 + tau)/2) / 2</code>. Higher is better.</p>
+    <p><strong>P_dist (Distributional Parity)</strong> = <code>1 - mean(JSD)</code>.
+       Measures how closely a provider's response distribution matches the human distribution.
+       Jensen-Shannon divergence is bounded [0, 1], symmetric, and handles zero entries.
+       A perfect match yields P_dist = 1.</p>
+    <p><strong>P_rank (Rank-Order Parity)</strong> = <code>(1 + mean(tau)) / 2</code>.
+       Kendall's tau-b on probability rankings, normalized to [0, 1].
+       Captures whether the provider gets the <em>ordering</em> of options right,
+       even when exact proportions differ.</p>
+    <p><strong>P_refuse (Refusal Calibration)</strong> = <code>1 - mean(|R_provider - R_human|)</code>.
+       Whether the provider's refusal rate matches human refusal patterns.
+       Human refusal patterns carry signal: questions about religion see higher refusals
+       from non-religious respondents; income questions see higher refusals from high earners.</p>
+    <p><strong>Mean JSD</strong>: Average Jensen-Shannon divergence across all questions. Lower is better (0 = identical distributions).</p>
+    <p><strong>Kendall's tau</strong>: Rank correlation between human and model response option rankings.
+       Range [-1, 1]. 1 = perfect agreement, 0 = no correlation.</p>
+  </div>
+  <div class="about" style="margin-top:1rem">
+    <p><strong>Baselines</strong> give meaning to scores:</p>
+    <p><strong>Random Baseline</strong>: Uniform distribution over all options. The absolute floor &mdash;
+       any provider scoring at or below random is adding negative value.</p>
+    <p><strong>Majority-Class Baseline</strong>: Always picks the mode of the population distribution.
+       Scores well on consensus questions, poorly on divisive ones. Shows the value of
+       distributional modeling.</p>
+    <p>See <a href="https://github.com/DataViking-Tech/synthbench/blob/main/METHODOLOGY.md">METHODOLOGY.md</a>
+       for the full metric framework and design rationale.</p>
+  </div>
 </div>
 
 <footer>
