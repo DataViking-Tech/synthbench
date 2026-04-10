@@ -15,5 +15,9 @@ class MajorityBaselineProvider(Provider):
     def name(self) -> str:
         return "majority-baseline"
 
-    async def respond(self, question: str, options: list[str], *, persona: PersonaSpec | None = None) -> Response:
-        return Response(selected_option=options[0], raw_text="Always selects first option")
+    async def respond(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
+        return Response(
+            selected_option=options[0], raw_text="Always selects first option"
+        )

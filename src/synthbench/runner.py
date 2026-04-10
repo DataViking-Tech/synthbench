@@ -104,6 +104,7 @@ class BenchmarkResult:
         if not self.group_scores:
             return None
         from synthbench.metrics import subgroup_consistency
+
         return subgroup_consistency(self.group_scores)
 
     @property
@@ -173,8 +174,7 @@ class BenchmarkResult:
 
         # P_refuse CI from per-question refusal diffs
         refuse_diffs = [
-            abs(q.model_refusal_rate - q.human_refusal_rate)
-            for q in self.questions
+            abs(q.model_refusal_rate - q.human_refusal_rate) for q in self.questions
         ]
         r = bootstrap_ci(refuse_diffs, _mean, seed=44)
         cis["p_refuse"] = (round(1.0 - r.ci_upper, 6), round(1.0 - r.ci_lower, 6))
@@ -224,6 +224,7 @@ class BenchmarkRunner:
         # Filter by pinned question set if provided
         if question_keys is not None:
             from synthbench.suites import filter_questions_by_suite
+
             questions = filter_questions_by_suite(questions, question_keys)
 
         results = []
@@ -253,7 +254,8 @@ class BenchmarkRunner:
 
         if self.provider.supports_distribution:
             dist = await self.provider.get_distribution(
-                question.text, question.options,
+                question.text,
+                question.options,
                 n_samples=self.samples_per_question,
             )
             model_dist = dict(zip(question.options, dist.probabilities))
@@ -261,7 +263,11 @@ class BenchmarkRunner:
             n_samples = dist.n_samples or self.samples_per_question
             n_parse_failures = 0
         else:
-            responses, refusals, parse_fails = await self._collect_samples_with_refusals(question)
+            (
+                responses,
+                refusals,
+                parse_fails,
+            ) = await self._collect_samples_with_refusals(question)
             counts = Counter(responses)
             total = len(responses) + refusals
             model_dist = {
@@ -312,7 +318,8 @@ class BenchmarkRunner:
         refusals = sum(1 for r in results if r.refusal)
         valid_options = set(question.options)
         parse_failures = sum(
-            1 for r in results
+            1
+            for r in results
             if not r.refusal and r.selected_option not in valid_options
         )
         return selected, refusals, parse_failures

@@ -1,4 +1,8 @@
-from synthbench.metrics.composite import parity_score, synthbench_parity_score, SPS_METRICS
+from synthbench.metrics.composite import (
+    parity_score,
+    synthbench_parity_score,
+    SPS_METRICS,
+)
 from synthbench.metrics.conditioning import conditioning_fidelity
 from synthbench.metrics.distributional import jensen_shannon_divergence
 from synthbench.metrics.ranking import kendall_tau_b

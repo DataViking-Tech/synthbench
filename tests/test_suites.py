@@ -6,7 +6,12 @@ import json
 
 import pytest
 
-from synthbench.suites import load_suite, filter_questions_by_suite, AVAILABLE_SUITES, SUITE_DIR
+from synthbench.suites import (
+    load_suite,
+    filter_questions_by_suite,
+    AVAILABLE_SUITES,
+    SUITE_DIR,
+)
 from synthbench.datasets.base import Question
 
 
@@ -56,9 +61,15 @@ class TestLoadSuite:
 class TestFilterQuestionsBySuite:
     def test_filters_and_orders(self):
         qs = [
-            Question(key="Q3", text="Q3?", options=["A"], human_distribution={"A": 1.0}),
-            Question(key="Q1", text="Q1?", options=["A"], human_distribution={"A": 1.0}),
-            Question(key="Q2", text="Q2?", options=["A"], human_distribution={"A": 1.0}),
+            Question(
+                key="Q3", text="Q3?", options=["A"], human_distribution={"A": 1.0}
+            ),
+            Question(
+                key="Q1", text="Q1?", options=["A"], human_distribution={"A": 1.0}
+            ),
+            Question(
+                key="Q2", text="Q2?", options=["A"], human_distribution={"A": 1.0}
+            ),
         ]
         filtered = filter_questions_by_suite(qs, ["Q2", "Q1"])
         assert len(filtered) == 2
@@ -67,7 +78,9 @@ class TestFilterQuestionsBySuite:
 
     def test_missing_keys_skipped(self):
         qs = [
-            Question(key="Q1", text="Q1?", options=["A"], human_distribution={"A": 1.0}),
+            Question(
+                key="Q1", text="Q1?", options=["A"], human_distribution={"A": 1.0}
+            ),
         ]
         filtered = filter_questions_by_suite(qs, ["Q1", "Q_MISSING"])
         assert len(filtered) == 1
@@ -75,7 +88,9 @@ class TestFilterQuestionsBySuite:
 
     def test_empty_suite_returns_empty(self):
         qs = [
-            Question(key="Q1", text="Q1?", options=["A"], human_distribution={"A": 1.0}),
+            Question(
+                key="Q1", text="Q1?", options=["A"], human_distribution={"A": 1.0}
+            ),
         ]
         filtered = filter_questions_by_suite(qs, [])
         assert len(filtered) == 0

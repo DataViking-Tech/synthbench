@@ -5,9 +5,7 @@ from __future__ import annotations
 from scipy.stats import kendalltau
 
 
-def kendall_tau_b(
-    p: dict[str, float], q: dict[str, float]
-) -> float:
+def kendall_tau_b(p: dict[str, float], q: dict[str, float]) -> float:
     """Compute Kendall's tau-b rank correlation between two distributions.
 
     Measures whether the model ranks options in the same order as humans.

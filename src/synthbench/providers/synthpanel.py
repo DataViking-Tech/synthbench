@@ -79,7 +79,9 @@ class SynthPanelProvider(Provider):
     # ------------------------------------------------------------------
     # Library path
     # ------------------------------------------------------------------
-    async def _respond_library(self, question: str, options: list[str], *, persona: PersonaSpec | None = None) -> Response:
+    async def _respond_library(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
         """Use the synthpanel Python API."""
         sp = self._synthpanel
 
@@ -117,7 +119,9 @@ class SynthPanelProvider(Provider):
             metadata = None
         else:
             # Assume it's a dataclass / object with attributes
-            selected = getattr(result, "selected_option", getattr(result, "answer", str(result)))
+            selected = getattr(
+                result, "selected_option", getattr(result, "answer", str(result))
+            )
             raw_text = getattr(result, "raw_text", str(result))
             metadata = getattr(result, "metadata", None)
 
@@ -134,17 +138,23 @@ class SynthPanelProvider(Provider):
     # ------------------------------------------------------------------
     # CLI path
     # ------------------------------------------------------------------
-    async def _respond_cli(self, question: str, options: list[str], *, persona: PersonaSpec | None = None) -> Response:
+    async def _respond_cli(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
         """Shell out to the synthpanel CLI."""
         options_str = ",".join(options)
 
         proc = await asyncio.create_subprocess_exec(
             "synthpanel",
             "ask",
-            "--question", question,
-            "--options", options_str,
-            "--model", self._model,
-            "--format", "json",
+            "--question",
+            question,
+            "--options",
+            options_str,
+            "--model",
+            self._model,
+            "--format",
+            "json",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
@@ -180,7 +190,9 @@ class SynthPanelProvider(Provider):
     # ------------------------------------------------------------------
     # Public interface
     # ------------------------------------------------------------------
-    async def respond(self, question: str, options: list[str], *, persona: PersonaSpec | None = None) -> Response:
+    async def respond(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
         if self._use_library:
             return await self._respond_library(question, options, persona=persona)
         return await self._respond_cli(question, options, persona=persona)

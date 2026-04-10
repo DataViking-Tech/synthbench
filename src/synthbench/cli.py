@@ -33,40 +33,47 @@ def main():
 
 @main.command()
 @click.option(
-    "--provider", "-p",
+    "--provider",
+    "-p",
     required=True,
     help="Provider name (raw-anthropic, raw-openai, raw-gemini, openrouter, ollama, synthpanel, http).",
 )
 @click.option(
-    "--model", "-m",
+    "--model",
+    "-m",
     default="haiku",
     help="Model name or alias (haiku, sonnet, gpt-4o-mini, etc.).",
 )
 @click.option(
-    "--dataset", "-d",
+    "--dataset",
+    "-d",
     default="opinionsqa",
     help="Dataset to benchmark against.",
 )
 @click.option(
-    "--n", "-n",
+    "--n",
+    "-n",
     type=int,
     default=None,
     help="Number of questions to evaluate (default: all).",
 )
 @click.option(
-    "--samples", "-s",
+    "--samples",
+    "-s",
     type=int,
     default=30,
     help="Samples per question for distribution estimation.",
 )
 @click.option(
-    "--concurrency", "-c",
+    "--concurrency",
+    "-c",
     type=int,
     default=10,
     help="Max concurrent API requests.",
 )
 @click.option(
-    "--output", "-o",
+    "--output",
+    "-o",
     type=click.Path(),
     default="results",
     help="Output directory for score cards.",
@@ -82,27 +89,63 @@ def main():
     default=None,
     help="Endpoint URL (required for --provider http).",
 )
-@click.option("--json-only", is_flag=True, help="Output JSON to stdout instead of files.")
+@click.option(
+    "--json-only", is_flag=True, help="Output JSON to stdout instead of files."
+)
 @click.option(
     "--suite",
     type=click.Choice(["smoke", "core", "full"]),
     default=None,
     help="Use a pinned question set (smoke=28, core=200, full=all).",
 )
-def run(provider, model, dataset, n, samples, concurrency, output, data_dir, url, json_only, suite):
+def run(
+    provider,
+    model,
+    dataset,
+    n,
+    samples,
+    concurrency,
+    output,
+    data_dir,
+    url,
+    json_only,
+    suite,
+):
     """Run a benchmark evaluation.
 
     Example:
         synthbench run --provider raw-anthropic --model haiku --n 100
         synthbench run --provider raw-anthropic --model haiku --suite core
     """
-    asyncio.run(_run_async(
-        provider, model, dataset, n, samples, concurrency, output, data_dir, url, json_only, suite,
-    ))
+    asyncio.run(
+        _run_async(
+            provider,
+            model,
+            dataset,
+            n,
+            samples,
+            concurrency,
+            output,
+            data_dir,
+            url,
+            json_only,
+            suite,
+        )
+    )
 
 
 async def _run_async(
-    provider_name, model, dataset_name, n, samples, concurrency, output, data_dir, url, json_only, suite,
+    provider_name,
+    model,
+    dataset_name,
+    n,
+    samples,
+    concurrency,
+    output,
+    data_dir,
+    url,
+    json_only,
+    suite,
 ):
     from synthbench.datasets import DATASETS
     from synthbench.providers import load_provider
@@ -114,7 +157,9 @@ async def _run_async(
 
     # Load dataset
     if dataset_name not in DATASETS:
-        click.echo(f"Unknown dataset '{dataset_name}'. Available: {list(DATASETS)}", err=True)
+        click.echo(
+            f"Unknown dataset '{dataset_name}'. Available: {list(DATASETS)}", err=True
+        )
         sys.exit(1)
 
     ds_kwargs = {}
@@ -139,6 +184,7 @@ async def _run_async(
     question_keys = None
     if suite:
         from synthbench.suites import load_suite
+
         question_keys = load_suite(suite)
 
     # Run benchmark
@@ -166,7 +212,9 @@ async def _run_async(
         )
 
     try:
-        result = await runner.run(n=n, progress_callback=progress, question_keys=question_keys)
+        result = await runner.run(
+            n=n, progress_callback=progress, question_keys=question_keys
+        )
     finally:
         await prov.close()
 
@@ -178,7 +226,9 @@ async def _run_async(
     cis = result.per_metric_ci
     sps_ci = cis.get("sps")
     if sps_ci:
-        click.echo(f"  SPS: {result.sps:.4f} [{sps_ci[0]:.4f}, {sps_ci[1]:.4f}]  ({len(components)} metrics)")
+        click.echo(
+            f"  SPS: {result.sps:.4f} [{sps_ci[0]:.4f}, {sps_ci[1]:.4f}]  ({len(components)} metrics)"
+        )
     else:
         click.echo(f"  SPS: {result.sps:.4f}  ({len(components)} metrics)")
     for key, score in components.items():
@@ -249,7 +299,9 @@ def download(dataset, data_dir):
     from synthbench.datasets import DATASETS
 
     if dataset not in DATASETS:
-        click.echo(f"Unknown dataset '{dataset}'. Available: {list(DATASETS)}", err=True)
+        click.echo(
+            f"Unknown dataset '{dataset}'. Available: {list(DATASETS)}", err=True
+        )
         sys.exit(1)
 
     ds_kwargs = {}
@@ -268,7 +320,9 @@ def download(dataset, data_dir):
 
 @main.command()
 @click.argument("files", nargs=-1, required=True, type=click.Path(exists=True))
-@click.option("--output", "-o", type=click.Path(), default=None, help="Save comparison to file.")
+@click.option(
+    "--output", "-o", type=click.Path(), default=None, help="Save comparison to file."
+)
 def compare(files, output):
     """Compare 2+ result JSON files side-by-side with significance testing.
 
@@ -330,8 +384,12 @@ def compare(files, output):
 @click.option("--n", "-n", type=int, default=None, help="Questions per run.")
 @click.option("--samples", "-s", type=int, default=30, help="Samples per question.")
 @click.option("--n-runs", type=int, default=5, help="Number of independent runs.")
-@click.option("--concurrency", "-c", type=int, default=10, help="Max concurrent requests.")
-@click.option("--data-dir", type=click.Path(), default=None, help="Custom data directory.")
+@click.option(
+    "--concurrency", "-c", type=int, default=10, help="Max concurrent requests."
+)
+@click.option(
+    "--data-dir", type=click.Path(), default=None, help="Custom data directory."
+)
 @click.option("--url", default=None, help="Endpoint URL for http provider.")
 @click.option(
     "--suite",
@@ -339,8 +397,22 @@ def compare(files, output):
     default=None,
     help="Use a pinned question set.",
 )
-@click.option("--output", "-o", type=click.Path(), default="results", help="Output directory.")
-def replicate(provider, model, dataset, n, samples, n_runs, concurrency, data_dir, url, suite, output):
+@click.option(
+    "--output", "-o", type=click.Path(), default="results", help="Output directory."
+)
+def replicate(
+    provider,
+    model,
+    dataset,
+    n,
+    samples,
+    n_runs,
+    concurrency,
+    data_dir,
+    url,
+    suite,
+    output,
+):
     """Run a benchmark N times and report stability metrics.
 
     Answers: "how stable is this provider's score?"
@@ -348,13 +420,35 @@ def replicate(provider, model, dataset, n, samples, n_runs, concurrency, data_di
     Example:
         synthbench replicate --provider raw-anthropic --n-runs 5 --suite core
     """
-    asyncio.run(_replicate_async(
-        provider, model, dataset, n, samples, n_runs, concurrency, data_dir, url, suite, output,
-    ))
+    asyncio.run(
+        _replicate_async(
+            provider,
+            model,
+            dataset,
+            n,
+            samples,
+            n_runs,
+            concurrency,
+            data_dir,
+            url,
+            suite,
+            output,
+        )
+    )
 
 
 async def _replicate_async(
-    provider_name, model, dataset_name, n, samples, n_runs, concurrency, data_dir, url, suite, output,
+    provider_name,
+    model,
+    dataset_name,
+    n,
+    samples,
+    n_runs,
+    concurrency,
+    data_dir,
+    url,
+    suite,
+    output,
 ):
     from synthbench.datasets import DATASETS
     from synthbench.providers import load_provider
@@ -385,6 +479,7 @@ async def _replicate_async(
     question_keys = None
     if suite:
         from synthbench.suites import load_suite
+
         question_keys = load_suite(suite)
 
     runner = BenchmarkRunner(
@@ -463,6 +558,7 @@ async def _replicate_async(
     out_dir = Path(output)
     out_dir.mkdir(parents=True, exist_ok=True)
     from datetime import datetime
+
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     provider_slug = prov.name.replace("/", "_")
 
@@ -487,12 +583,19 @@ async def _replicate_async(
 
 @main.command()
 @click.option(
-    "--results-dir", "-d",
+    "--results-dir",
+    "-d",
     type=click.Path(exists=True),
     default="results",
     help="Directory containing result JSON files.",
 )
-@click.option("--output", "-o", type=click.Path(), default=None, help="Save markdown + JSON output.")
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    default=None,
+    help="Save markdown + JSON output.",
+)
 @click.option("--json", "json_only", is_flag=True, help="Output JSON only.")
 def leaderboard(results_dir, output, json_only):
     """Build a ranked leaderboard from all result files in a directory.
@@ -544,13 +647,15 @@ def leaderboard(results_dir, output, json_only):
 
 @main.command()
 @click.option(
-    "--results-dir", "-d",
+    "--results-dir",
+    "-d",
     type=click.Path(exists=True),
     default="leaderboard-results",
     help="Directory containing result JSON files.",
 )
 @click.option(
-    "--output", "-o",
+    "--output",
+    "-o",
     type=click.Path(),
     default="docs",
     help="Output directory for the static site.",

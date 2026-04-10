@@ -292,15 +292,21 @@ class OpinionsQADataset(Dataset):
             reader = csv.DictReader(f)
             return list(reader)
 
-
     # The 8 universal demographic attributes in OpinionsQA
     DEMOGRAPHIC_ATTRIBUTES = [
-        "AGE", "CREGION", "EDUCATION", "INCOME",
-        "POLIDEOLOGY", "POLPARTY", "RACE", "SEX",
+        "AGE",
+        "CREGION",
+        "EDUCATION",
+        "INCOME",
+        "POLIDEOLOGY",
+        "POLPARTY",
+        "RACE",
+        "SEX",
     ]
 
     def load_demographic_distributions(
-        self, attribute: str,
+        self,
+        attribute: str,
     ) -> dict[str, dict[str, dict[str, float]]]:
         """Load per-group human distributions for a demographic attribute.
 
@@ -349,8 +355,7 @@ class OpinionsQADataset(Dataset):
                     if total <= 0:
                         continue
                     groups[sub_key] = {
-                        opt: float(val) / total
-                        for opt, val in counts.items()
+                        opt: float(val) / total for opt, val in counts.items()
                     }
 
                 if groups:

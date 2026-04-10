@@ -59,7 +59,9 @@ def compare_results(results: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def _metric_row(label: str, aggregates: list[dict], key: str, bold: bool = False) -> str:
+def _metric_row(
+    label: str, aggregates: list[dict], key: str, bold: bool = False
+) -> str:
     """Format a metric row with 4-decimal formatting."""
     cells = []
     for agg in aggregates:
@@ -115,7 +117,10 @@ def build_leaderboard(results: list[dict]) -> tuple[str, dict]:
         structure {"leaderboard": [...], "generated": "ISO timestamp"}.
     """
     if not results:
-        return "No results for leaderboard.\n", {"leaderboard": [], "generated": _now_iso()}
+        return "No results for leaderboard.\n", {
+            "leaderboard": [],
+            "generated": _now_iso(),
+        }
 
     # De-duplicate: keep the run with the most questions per provider+dataset
     best: dict[tuple[str, str], dict] = {}

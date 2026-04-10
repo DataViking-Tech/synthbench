@@ -40,8 +40,7 @@ def refusal_calibration(
 
     n = min(len(provider_refusal_rates), len(human_refusal_rates))
     total_diff = sum(
-        abs(provider_refusal_rates[i] - human_refusal_rates[i])
-        for i in range(n)
+        abs(provider_refusal_rates[i] - human_refusal_rates[i]) for i in range(n)
     )
     mean_diff = total_diff / n
 
@@ -77,7 +76,8 @@ def extract_human_refusal_rate(human_distribution: dict[str, float]) -> float:
         Refusal rate in [0, 1].
     """
     refusal_keys = [
-        k for k in human_distribution
+        k
+        for k in human_distribution
         if re.search(r"\brefused?\b", k, re.IGNORECASE)
         or re.search(r"\bdon'?t know\b", k, re.IGNORECASE)
     ]

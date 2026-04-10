@@ -9,6 +9,7 @@ from pathlib import Path
 
 try:
     import matplotlib
+
     matplotlib.use("Agg")  # Non-interactive backend
     import matplotlib.pyplot as plt
 
@@ -103,8 +104,21 @@ def _jsd_histogram(result: dict, output_dir: Path) -> Path | None:
 
     if HAS_MATPLOTLIB:
         fig, ax = plt.subplots(figsize=(8, 5))
-        ax.hist(jsd_values, bins=20, range=(0, 1), color="#4f8fba", edgecolor="#2d5f7a", alpha=0.85)
-        ax.axvline(mean_jsd, color="#e74c3c", linestyle="--", linewidth=1.5, label=f"Mean = {mean_jsd:.4f}")
+        ax.hist(
+            jsd_values,
+            bins=20,
+            range=(0, 1),
+            color="#4f8fba",
+            edgecolor="#2d5f7a",
+            alpha=0.85,
+        )
+        ax.axvline(
+            mean_jsd,
+            color="#e74c3c",
+            linestyle="--",
+            linewidth=1.5,
+            label=f"Mean = {mean_jsd:.4f}",
+        )
         ax.set_xlabel("JSD")
         ax.set_ylabel("Count")
         ax.set_title(f"JSD Distribution -- {provider} (mean={mean_jsd:.4f})")
@@ -193,21 +207,35 @@ def _parity_scatter(result: dict, output_dir: Path) -> Path | None:
         fig, ax = plt.subplots(figsize=(8, 6))
 
         sc = ax.scatter(
-            jsd_vals, tau_vals,
-            c=parity_vals, cmap="RdYlGn", vmin=0, vmax=1,
-            s=40, alpha=0.7, edgecolors="none",
+            jsd_vals,
+            tau_vals,
+            c=parity_vals,
+            cmap="RdYlGn",
+            vmin=0,
+            vmax=1,
+            s=40,
+            alpha=0.7,
+            edgecolors="none",
         )
 
         # Highlight best/worst
         for idx in best_5:
             ax.scatter(
-                jsd_vals[idx], tau_vals[idx],
-                s=100, facecolors="none", edgecolors="#27ae60", linewidths=2,
+                jsd_vals[idx],
+                tau_vals[idx],
+                s=100,
+                facecolors="none",
+                edgecolors="#27ae60",
+                linewidths=2,
             )
         for idx in worst_5:
             ax.scatter(
-                jsd_vals[idx], tau_vals[idx],
-                s=100, facecolors="none", edgecolors="#c0392b", linewidths=2,
+                jsd_vals[idx],
+                tau_vals[idx],
+                s=100,
+                facecolors="none",
+                edgecolors="#c0392b",
+                linewidths=2,
             )
 
         ax.set_xlabel("JSD")
@@ -218,13 +246,30 @@ def _parity_scatter(result: dict, output_dir: Path) -> Path | None:
 
         # Legend entries for best/worst markers
         from matplotlib.lines import Line2D
+
         legend_elements = [
-            Line2D([0], [0], marker="o", color="w", markerfacecolor="none",
-                   markeredgecolor="#27ae60", markersize=10, markeredgewidth=2,
-                   label="Top 5 best"),
-            Line2D([0], [0], marker="o", color="w", markerfacecolor="none",
-                   markeredgecolor="#c0392b", markersize=10, markeredgewidth=2,
-                   label="Top 5 worst"),
+            Line2D(
+                [0],
+                [0],
+                marker="o",
+                color="w",
+                markerfacecolor="none",
+                markeredgecolor="#27ae60",
+                markersize=10,
+                markeredgewidth=2,
+                label="Top 5 best",
+            ),
+            Line2D(
+                [0],
+                [0],
+                marker="o",
+                color="w",
+                markerfacecolor="none",
+                markeredgecolor="#c0392b",
+                markersize=10,
+                markeredgewidth=2,
+                label="Top 5 worst",
+            ),
         ]
         ax.legend(handles=legend_elements, loc="lower left")
 
@@ -327,7 +372,7 @@ def _svg_comparison_bars(
         clean_label = labels[gi].replace("\n", " ")
         rects.append(
             f'<text x="{lx:.1f}" y="{ly}" text-anchor="middle" font-size="10">'
-            f'{clean_label}</text>'
+            f"{clean_label}</text>"
         )
 
     # Legend
@@ -381,7 +426,9 @@ def _svg_scatter(
         cx = to_x(jsd[i])
         cy = to_y(tau[i])
         color = parity_color(parity[i])
-        dots.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="4" fill="{color}" opacity="0.7" />')
+        dots.append(
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="4" fill="{color}" opacity="0.7" />'
+        )
 
         if i in best_5:
             dots.append(

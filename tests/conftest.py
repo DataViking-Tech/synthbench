@@ -14,7 +14,12 @@ SAMPLE_QUESTIONS = [
     Question(
         key="ABORTION_W82",
         text="Do you think abortion should be legal in all or most cases, or illegal in all or most cases?",
-        options=["Legal in all cases", "Legal in most cases", "Illegal in most cases", "Illegal in all cases"],
+        options=[
+            "Legal in all cases",
+            "Legal in most cases",
+            "Illegal in most cases",
+            "Illegal in all cases",
+        ],
         human_distribution={
             "Legal in all cases": 0.27,
             "Legal in most cases": 0.33,
@@ -50,7 +55,12 @@ SAMPLE_QUESTIONS = [
     Question(
         key="TRUST_GOV_W27",
         text="How much of the time do you think you can trust the government in Washington to do what is right?",
-        options=["Just about always", "Most of the time", "Only some of the time", "Never"],
+        options=[
+            "Just about always",
+            "Most of the time",
+            "Only some of the time",
+            "Never",
+        ],
         human_distribution={
             "Just about always": 0.03,
             "Most of the time": 0.14,
@@ -96,7 +106,9 @@ class MockProvider(Provider):
     def name(self) -> str:
         return "mock/deterministic"
 
-    async def respond(self, question: str, options: list[str], *, persona: PersonaSpec | None = None) -> Response:
+    async def respond(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
         # Always return the first option (simulates a biased model)
         return Response(selected_option=options[0])
 
@@ -106,13 +118,16 @@ class RandomProvider(Provider):
 
     def __init__(self):
         import random
+
         self._rng = random.Random(42)
 
     @property
     def name(self) -> str:
         return "mock/random"
 
-    async def respond(self, question: str, options: list[str], *, persona: PersonaSpec | None = None) -> Response:
+    async def respond(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
         return Response(selected_option=self._rng.choice(options))
 
 

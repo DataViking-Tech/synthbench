@@ -123,49 +123,55 @@ def to_markdown(result: BenchmarkResult) -> str:
             ci_str = _fmt_ci(key, score)
             lines.append(f"| {label} | {ci_str} | {_bar(score)} |")
 
-    lines.extend([
-        "",
-        "## Raw Metrics",
-        "",
-        "| Metric | Value |",
-        "|--------|-------|",
-        f"| Mean JSD | {result.mean_jsd:.4f} |",
-        f"| Median JSD | {result.median_jsd:.4f} |",
-        f"| Mean Kendall's tau | {result.mean_kendall_tau:.4f} |",
-        f"| Composite Parity (legacy) | {result.composite_parity:.4f} |",
-        "",
-        "## Interpretation",
-        "",
-        "- **SPS** (SynthBench Parity Score): Equal-weighted mean of component metrics. "
-        "0 = no parity, 1 = perfect parity.",
-        "- **P_dist**: 1 - mean(JSD). How closely distributions match.",
-        "- **P_rank**: (1 + mean(tau)) / 2. Whether option rankings agree.",
-        "- **P_refuse**: 1 - mean(|refusal_diff|). Whether refusal rates match human patterns.",
-        "- **P_cond**: Improvement from persona conditioning (when available).",
-        "- **P_sub**: Consistency across demographic subgroups (when available).",
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Raw Metrics",
+            "",
+            "| Metric | Value |",
+            "|--------|-------|",
+            f"| Mean JSD | {result.mean_jsd:.4f} |",
+            f"| Median JSD | {result.median_jsd:.4f} |",
+            f"| Mean Kendall's tau | {result.mean_kendall_tau:.4f} |",
+            f"| Composite Parity (legacy) | {result.composite_parity:.4f} |",
+            "",
+            "## Interpretation",
+            "",
+            "- **SPS** (SynthBench Parity Score): Equal-weighted mean of component metrics. "
+            "0 = no parity, 1 = perfect parity.",
+            "- **P_dist**: 1 - mean(JSD). How closely distributions match.",
+            "- **P_rank**: (1 + mean(tau)) / 2. Whether option rankings agree.",
+            "- **P_refuse**: 1 - mean(|refusal_diff|). Whether refusal rates match human patterns.",
+            "- **P_cond**: Improvement from persona conditioning (when available).",
+            "- **P_sub**: Consistency across demographic subgroups (when available).",
+            "",
+        ]
+    )
 
     # Top 5 best and worst questions
     sorted_by_jsd = sorted(result.questions, key=lambda q: q.jsd)
 
     if len(sorted_by_jsd) >= 5:
-        lines.extend([
-            "## Best Matches (lowest JSD)",
-            "",
-            "| Question | JSD | tau |",
-            "|----------|-----|-----|",
-        ])
+        lines.extend(
+            [
+                "## Best Matches (lowest JSD)",
+                "",
+                "| Question | JSD | tau |",
+                "|----------|-----|-----|",
+            ]
+        )
         for q in sorted_by_jsd[:5]:
             lines.append(f"| {q.text[:60]}... | {q.jsd:.4f} | {q.kendall_tau:.4f} |")
 
-        lines.extend([
-            "",
-            "## Worst Matches (highest JSD)",
-            "",
-            "| Question | JSD | tau |",
-            "|----------|-----|-----|",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Worst Matches (highest JSD)",
+                "",
+                "| Question | JSD | tau |",
+                "|----------|-----|-----|",
+            ]
+        )
         for q in sorted_by_jsd[-5:]:
             lines.append(f"| {q.text[:60]}... | {q.jsd:.4f} | {q.kendall_tau:.4f} |")
 

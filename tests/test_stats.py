@@ -65,6 +65,7 @@ class TestBootstrapCI:
     def test_ci_bounds_reasonable_for_known_distribution(self):
         """For a large sample from [0, 1], the 95% CI for the mean should be tight around 0.5."""
         import random
+
         rng = random.Random(42)
         data = [rng.random() for _ in range(200)]
         r = bootstrap_ci(data, _mean, seed=42)

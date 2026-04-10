@@ -64,8 +64,8 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
         rows_html.append(
             f"      <tr>\n"
             f'        <td class="rank num">{medal_html}{rank}</td>\n'
-            f"        <td><span class=\"provider-name\">{escape(provider_name)}</span>"
-            f"<br><span class=\"model-name\">{model_display}</span></td>\n"
+            f'        <td><span class="provider-name">{escape(provider_name)}</span>'
+            f'<br><span class="model-name">{model_display}</span></td>\n'
             f"        <td>{dataset_name}</td>\n"
             f'        <td class="num">{n}</td>\n'
             f'        <td class="num composite">{composite:.4f}</td>\n'
@@ -193,7 +193,9 @@ footer a{{color:var(--accent)}}
 </html>"""
 
 
-def publish_leaderboard(results_dir: Path, output_dir: Path, version: str = "0.1.0") -> Path:
+def publish_leaderboard(
+    results_dir: Path, output_dir: Path, version: str = "0.1.0"
+) -> Path:
     """Load all result JSONs from results_dir and write docs/index.html.
 
     Returns the path to the generated index.html.

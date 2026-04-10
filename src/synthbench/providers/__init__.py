@@ -19,9 +19,17 @@ def load_provider(name: str, **kwargs) -> Provider:
         raise KeyError(f"Unknown provider '{name}'. Available: {list(PROVIDERS)}")
     module_path, class_name = PROVIDERS[name].rsplit(":", 1)
     import importlib
+
     mod = importlib.import_module(module_path)
     cls = getattr(mod, class_name)
     return cls(**kwargs)
 
 
-__all__ = ["Distribution", "PersonaSpec", "Provider", "Response", "PROVIDERS", "load_provider"]
+__all__ = [
+    "Distribution",
+    "PersonaSpec",
+    "Provider",
+    "Response",
+    "PROVIDERS",
+    "load_provider",
+]

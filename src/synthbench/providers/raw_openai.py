@@ -8,7 +8,9 @@ from synthbench.providers.base import PersonaSpec, Provider, Response
 
 _LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-_SYSTEM = "You are answering a survey. Select the single option that best reflects your view."
+_SYSTEM = (
+    "You are answering a survey. Select the single option that best reflects your view."
+)
 
 _PROMPT_TEMPLATE = """\
 Question: {question}
@@ -20,9 +22,7 @@ Respond with ONLY the letter of your choice (e.g., "A"). Do not explain."""
 
 
 def _build_prompt(question: str, options: list[str]) -> str:
-    options_block = "\n".join(
-        f"({_LETTERS[i]}) {opt}" for i, opt in enumerate(options)
-    )
+    options_block = "\n".join(f"({_LETTERS[i]}) {opt}" for i, opt in enumerate(options))
     return _PROMPT_TEMPLATE.format(question=question, options_block=options_block)
 
 
@@ -58,7 +58,9 @@ class RawOpenAIProvider(Provider):
     def name(self) -> str:
         return f"raw-openai/{self._model}"
 
-    async def respond(self, question: str, options: list[str], *, persona: PersonaSpec | None = None) -> Response:
+    async def respond(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
         prompt = _build_prompt(question, options)
 
         resp = await self._client.chat.completions.create(
@@ -79,7 +81,10 @@ class RawOpenAIProvider(Provider):
         return Response(
             selected_option=selected,
             raw_text=raw_text,
-            metadata={"model": self._model, "finish_reason": resp.choices[0].finish_reason},
+            metadata={
+                "model": self._model,
+                "finish_reason": resp.choices[0].finish_reason,
+            },
         )
 
     async def close(self) -> None:

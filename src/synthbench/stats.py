@@ -114,15 +114,15 @@ def _ndtri(p: float) -> float:
         # Central region
         q = p - 0.5
         r = q * q
-        return ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) / (
-            ((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1.0
-        )
+        return (
+            (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q
+        ) / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1.0)
     else:
         # Upper tail
         q = math.sqrt(-2.0 * math.log(1.0 - p))
-        return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / (
-            (((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1.0
-        )
+        return -(
+            ((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]
+        ) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1.0)
 
 
 def _chi2_sf(x: float, df: int) -> float:
@@ -227,7 +227,9 @@ def bootstrap_ci(
     count_below = sum(1 for t in theta_star if t < theta_hat)
     prop_below = count_below / n_resamples
     # Clamp to avoid _ndtri(0) or _ndtri(1)
-    prop_below = max(1 / (n_resamples + 1), min(n_resamples / (n_resamples + 1), prop_below))
+    prop_below = max(
+        1 / (n_resamples + 1), min(n_resamples / (n_resamples + 1), prop_below)
+    )
     z0 = _ndtri(prop_below)
 
     # 5. Acceleration via jackknife
@@ -329,7 +331,9 @@ def chi_squared_test(
         expected = {k: exp_val for k in observed}
     else:
         if set(expected.keys()) != set(observed.keys()):
-            raise ValueError(f"expected keys {set(expected.keys())} don't match observed keys {set(observed.keys())}")
+            raise ValueError(
+                f"expected keys {set(expected.keys())} don't match observed keys {set(observed.keys())}"
+            )
 
     # Chi-squared statistic
     chi2 = sum((observed[k] - expected[k]) ** 2 / expected[k] for k in observed)
@@ -673,7 +677,9 @@ def krippendorff_alpha(
         raise ValueError("reliability_data must not be empty")
 
     if level_of_measurement not in _VALID_LEVELS:
-        raise ValueError(f"level_of_measurement must be one of {sorted(_VALID_LEVELS)}, got {level_of_measurement!r}")
+        raise ValueError(
+            f"level_of_measurement must be one of {sorted(_VALID_LEVELS)}, got {level_of_measurement!r}"
+        )
 
     n_raters = len(reliability_data)
     n_items = len(reliability_data[0])
@@ -706,7 +712,9 @@ def krippendorff_alpha(
 
     for item_idx in range(n_items):
         values_for_item = [
-            reliability_data[r][item_idx] for r in range(n_raters) if reliability_data[r][item_idx] is not None
+            reliability_data[r][item_idx]
+            for r in range(n_raters)
+            if reliability_data[r][item_idx] is not None
         ]
         m_u = len(values_for_item)
         if m_u < 2:
@@ -897,7 +905,9 @@ def convergence_report(
                 )
 
     if len(question_texts) != n_questions:
-        raise ValueError(f"question_texts has {len(question_texts)} entries but data has {n_questions} questions")
+        raise ValueError(
+            f"question_texts has {len(question_texts)} entries but data has {n_questions} questions"
+        )
 
     findings: list[FindingConvergence] = []
 
@@ -920,7 +930,9 @@ def convergence_report(
         model_top_choices: dict[str, str] = {}
 
         for model in model_names:
-            responses_m = [multi_model_responses[model][n][q] for n in range(n_personas)]
+            responses_m = [
+                multi_model_responses[model][n][q] for n in range(n_personas)
+            ]
             counts = Counter(responses_m)
             total = len(responses_m)
             distribution = {cat: cnt / total for cat, cnt in sorted(counts.items())}
@@ -944,9 +956,7 @@ def convergence_report(
 
         # Interpretation
         if level == ConvergenceLevel.STRONG:
-            interpretation = (
-                f"Strong convergence (alpha={alpha_q:.2f}). All models agree: {majority_top} is the top choice."
-            )
+            interpretation = f"Strong convergence (alpha={alpha_q:.2f}). All models agree: {majority_top} is the top choice."
         elif level == ConvergenceLevel.MODERATE:
             interpretation = (
                 f"Moderate convergence (alpha={alpha_q:.2f}). "
@@ -1112,7 +1122,9 @@ def _agglomerative_ward(
             d_jk = _get_dist(best_j, k)
             # Ward's Lance-Williams:
             # d(new, k) = ((n_k + n_i)*d(i,k) + (n_k + n_j)*d(j,k) - n_k*d(i,j)) / (n_k + n_i + n_j)
-            d_new = ((n_k + n_i) * d_ik + (n_k + n_j) * d_jk - n_k * d_ij) / (n_k + n_i + n_j)
+            d_new = ((n_k + n_i) * d_ik + (n_k + n_j) * d_jk - n_k * d_ij) / (
+                n_k + n_i + n_j
+            )
             key = (min(new_id, k), max(new_id, k))
             dist[key] = d_new
 
@@ -1204,7 +1216,9 @@ def silhouette_score(
         if len(members_ci) <= 1:
             a_i = 0.0
         else:
-            a_i = sum(distance_matrix[i][j] for j in members_ci if j != i) / (len(members_ci) - 1)
+            a_i = sum(distance_matrix[i][j] for j in members_ci if j != i) / (
+                len(members_ci) - 1
+            )
 
         # b(i): min mean distance to any other cluster
         b_i = float("inf")
@@ -1259,7 +1273,9 @@ def cluster_personas(
     q = len(persona_responses[names[0]])
     for name in names:
         if len(persona_responses[name]) != q:
-            raise ValueError(f"Persona {name!r} has {len(persona_responses[name])} responses, expected {q}")
+            raise ValueError(
+                f"Persona {name!r} has {len(persona_responses[name])} responses, expected {q}"
+            )
 
     # Cap max_k at N-1
     max_k = min(max_k, n - 1)

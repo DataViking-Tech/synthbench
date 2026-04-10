@@ -6,7 +6,11 @@ import pytest
 
 from synthbench.metrics.distributional import jensen_shannon_divergence
 from synthbench.metrics.ranking import kendall_tau_b
-from synthbench.metrics.composite import parity_score, synthbench_parity_score, SPS_METRICS
+from synthbench.metrics.composite import (
+    parity_score,
+    synthbench_parity_score,
+    SPS_METRICS,
+)
 from synthbench.metrics.subgroup import subgroup_consistency
 from synthbench.metrics.refusal import (
     refusal_calibration,
@@ -111,6 +115,7 @@ class TestParityScore:
 
     def test_range(self):
         import random
+
         rng = random.Random(42)
         for _ in range(100):
             jsd = rng.random()
@@ -146,6 +151,7 @@ class TestSubgroupConsistency:
 
     def test_range_zero_to_one(self):
         import random
+
         rng = random.Random(42)
         for _ in range(100):
             n = rng.randint(2, 10)
@@ -177,6 +183,7 @@ class TestRefusalCalibration:
 
     def test_range_zero_to_one(self):
         import random
+
         rng = random.Random(42)
         for _ in range(100):
             n = rng.randint(1, 20)
@@ -250,13 +257,16 @@ class TestConditioningFidelity:
 
     def test_range_zero_to_one(self):
         import random
+
         rng = random.Random(42)
         for _ in range(50):
             keys = ["A", "B", "C"]
+
             def _rand_dist():
                 vals = [rng.random() for _ in keys]
                 total = sum(vals)
                 return {k: v / total for k, v in zip(keys, vals)}
+
             result = conditioning_fidelity(_rand_dist(), _rand_dist(), _rand_dist())
             assert 0.0 <= result <= 1.0
 

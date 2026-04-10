@@ -26,18 +26,27 @@ class TestKrippendorffGolden:
     ]
 
     def test_alpha_value(self):
-        result = krippendorff_alpha(self.RELIABILITY_DATA, level_of_measurement="nominal")
+        result = krippendorff_alpha(
+            self.RELIABILITY_DATA, level_of_measurement="nominal"
+        )
         assert result.alpha == pytest.approx(0.871, abs=0.01)
 
     def test_metadata(self):
-        result = krippendorff_alpha(self.RELIABILITY_DATA, level_of_measurement="nominal")
+        result = krippendorff_alpha(
+            self.RELIABILITY_DATA, level_of_measurement="nominal"
+        )
         assert result.n_raters == 4
         assert result.n_items == 12
         assert result.level == "nominal"
 
     def test_interpretation_strong(self):
-        result = krippendorff_alpha(self.RELIABILITY_DATA, level_of_measurement="nominal")
-        assert "Strong" in result.interpretation or "reliable" in result.interpretation.lower()
+        result = krippendorff_alpha(
+            self.RELIABILITY_DATA, level_of_measurement="nominal"
+        )
+        assert (
+            "Strong" in result.interpretation
+            or "reliable" in result.interpretation.lower()
+        )
 
 
 class TestBootstrapCIGolden:

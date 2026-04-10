@@ -17,6 +17,8 @@ class RandomBaselineProvider(Provider):
     def name(self) -> str:
         return "random-baseline"
 
-    async def respond(self, question: str, options: list[str], *, persona: PersonaSpec | None = None) -> Response:
+    async def respond(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
         idx = self._rng.randint(0, len(options) - 1)
         return Response(selected_option=options[idx], raw_text="Random selection")

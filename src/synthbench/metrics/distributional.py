@@ -6,9 +6,7 @@ import numpy as np
 from scipy.spatial.distance import jensenshannon
 
 
-def jensen_shannon_divergence(
-    p: dict[str, float], q: dict[str, float]
-) -> float:
+def jensen_shannon_divergence(p: dict[str, float], q: dict[str, float]) -> float:
     """Compute Jensen-Shannon divergence between two distributions.
 
     Both distributions must be over the same set of keys (options).

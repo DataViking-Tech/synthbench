@@ -32,9 +32,7 @@ def load_suite(name: str) -> list[str] | None:
         ValueError: If suite name is unknown.
     """
     if name not in AVAILABLE_SUITES:
-        raise ValueError(
-            f"Unknown suite '{name}'. Available: {list(AVAILABLE_SUITES)}"
-        )
+        raise ValueError(f"Unknown suite '{name}'. Available: {list(AVAILABLE_SUITES)}")
 
     if name == "full":
         return None  # Signal to use all questions
