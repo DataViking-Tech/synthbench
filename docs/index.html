@@ -130,8 +130,12 @@ footer a{color:var(--accent)}
 
   <div class="about metric-legend">
     <p><strong>SPS</strong> (SynthBench Parity Score) measures how well AI reproduces human survey responses.
-       Higher is better (0&nbsp;=&nbsp;random, 1&nbsp;=&nbsp;human-identical).
-       Scores below show SPS and component metrics P_dist, P_rank, P_refuse.</p>
+       Higher is better (0&nbsp;=&nbsp;random, 1&nbsp;=&nbsp;human-identical).</p>
+    <p style="margin-top:0.5rem;font-size:0.88rem">
+       <strong>P_dist</strong> &mdash; distributional match (1 &minus; JSD).
+       <strong>P_rank</strong> &mdash; rank-order agreement (normalized Kendall&rsquo;s &tau;).
+       <strong>P_refuse</strong> &mdash; refusal-rate calibration (1 &minus; mean |&Delta;refusal|).
+       All [0,&thinsp;1]; higher = better.</p>
   </div>
 
   <table class="leaderboard-table" id="leaderboard">
@@ -142,12 +146,13 @@ footer a{color:var(--accent)}
         <th>Model</th>
         <th>Dataset</th>
         <th class="num sortable" data-sort="n">N</th>
-        <th class="num sortable" data-sort="sps">SPS <span class="sort-arrow">&#x25BC;</span></th>
+        <th class="num sortable" data-sort="sps" title="SynthBench Parity Score: overall fidelity (0=random, 1=human-identical)">SPS <span class="sort-arrow">&#x25BC;</span></th>
         <th class="num sortable" data-sort="vs-random">vs Random</th>
         <th class="num sortable" data-sort="vs-majority">vs Majority</th>
         <th class="num">Topics</th>
-        <th class="num sortable" data-sort="jsd">JSD</th>
-        <th class="num sortable" data-sort="tau">Tau</th>
+        <th class="num" title="Refusal calibration: 1 − mean |Δrefusal|">P_refuse</th>
+        <th class="num sortable" data-sort="jsd" title="Mean Jensen-Shannon divergence (lower = closer to human distributions)">JSD</th>
+        <th class="num sortable" data-sort="tau" title="Mean Kendall&rsquo;s tau-b rank correlation (higher = better rank agreement)">Tau</th>
         <th>Date</th>
       </tr>
     </thead>
@@ -158,10 +163,11 @@ footer a{color:var(--accent)}
         <td><span class="model-name">meta-llama/llama-3.3-70b-instruct</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
-        <td class="num composite">0.7560</td>
+        <td class="num composite">0.7560<span style="font-size:0.75rem;color:var(--text-muted);margin-left:4px">1 run</span></td>
         <td class="num" style="color:var(--green)">+0.1169</td>
         <td class="num" style="color:var(--green)">+0.2077</td>
         <td class="num"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="16" style="vertical-align:middle"><rect x="2" y="4.6" width="13" height="10.4" rx="1" fill="#3fb950" opacity="0.85"/></svg></td>
+        <td class="num">&mdash;</td>
         <td class="num">0.2754</td>
         <td class="num">0.5751</td>
         <td>2026-04-10</td>
@@ -172,9 +178,10 @@ footer a{color:var(--accent)}
         <td><span class="model-name">google/gemini-2.5-flash</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
-        <td class="num composite">0.7511</td>
+        <td class="num composite">0.7511<span style="font-size:0.75rem;color:var(--text-muted);margin-left:4px">1 run</span></td>
         <td class="num" style="color:var(--green)">+0.1120</td>
         <td class="num" style="color:var(--green)">+0.2028</td>
+        <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">0.2590</td>
         <td class="num">0.5225</td>
@@ -190,12 +197,13 @@ footer a{color:var(--accent)}
         <td class="num" style="color:var(--green)">+0.1076</td>
         <td class="num" style="color:var(--green)">+0.1984</td>
         <td class="num"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="16" style="vertical-align:middle"><rect x="2" y="4.3" width="13" height="10.7" rx="1" fill="#3fb950" opacity="0.85"/><rect x="32" y="4.6" width="13" height="10.4" rx="1" fill="#f0c040" opacity="0.85"/></svg></td>
+        <td class="num">0.9942</td>
         <td class="num">0.2793</td>
         <td class="num">0.5453</td>
         <td>2026-04-11</td>
       </tr>
       <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td colspan="12" class="detail-cell">
+        <td colspan="13" class="detail-cell">
           <div class="detail-content">
             <div class="detail-section"><strong>Runs:</strong> <div class="detail-item">n=30 samples=100 SPS=0.7539 JSD=0.2736 tau=0.5628</div><div class="detail-item">n=30 samples=100 SPS=0.7533 JSD=0.2769 tau=0.5669</div><div class="detail-item">n=30 samples=30 SPS=0.7496 JSD=0.2848 tau=0.5678</div><div class="detail-item">n=30 samples=5 SPS=0.7495 JSD=0.2777 tau=0.5534</div><div class="detail-item">n=30 samples=50 SPS=0.7480 JSD=0.2803 tau=0.5526</div><div class="detail-item">n=30 samples=30 SPS=0.7472 JSD=0.2794 tau=0.5477</div><div class="detail-item">n=30 samples=5 SPS=0.7467 JSD=0.2793 tau=0.5453</div><div class="detail-item">n=30 samples=30 SPS=0.7452 JSD=0.2866 tau=0.5540</div><div class="detail-item">n=30 samples=30 SPS=0.7432 JSD=0.2834 tau=0.5396</div><div class="detail-item">n=30 samples=5 SPS=0.7421 JSD=0.2888 tau=0.5459</div><div class="detail-item">n=30 samples=10 SPS=0.7417 JSD=0.2884 tau=0.5435</div><div class="detail-item">n=30 samples=10 SPS=0.7414 JSD=0.2889 tau=0.5433</div><div class="detail-item">n=30 samples=5 SPS=0.7389 JSD=0.2926 tau=0.5409</div><div class="detail-item">n=30 samples=50 SPS=0.7368 JSD=0.2956 tau=0.5385</div><div class="detail-item">n=30 samples=10 SPS=0.7335 JSD=0.2952 tau=0.5244</div><div class="detail-item">n=30 samples=10 SPS=0.7330 JSD=0.3019 tau=0.5356</div></div>
             <div class="detail-section"><strong>Convergence:</strong> <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" style="vertical-align:middle"><polyline points="2.0,11.2 21.0,18.0 40.0,15.7 59.0,9.6 78.0,2.0" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg></div>
@@ -208,16 +216,17 @@ footer a{color:var(--accent)}
         <td><span class="model-name">gemini-2.5-flash-lite</span></td>
         <td>opinionsqa</td>
         <td class="num">100</td>
-        <td class="num composite">0.7378</td>
+        <td class="num composite">0.7378<span style="font-size:0.75rem;color:var(--text-muted);margin-left:4px">1 run</span></td>
         <td class="num" style="color:var(--green)">+0.0987</td>
         <td class="num" style="color:var(--green)">+0.1895</td>
+        <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">0.2653</td>
         <td class="num">0.4819</td>
         <td>2026-04-10</td>
       </tr>
       <tr class="detail-row" data-provider="raw-gemini/gemini-2.5-flash-lite_opinionsqa" style="display:none">
-        <td colspan="12" class="detail-cell">
+        <td colspan="13" class="detail-cell">
           <div class="detail-content">
             <div class="detail-section"><strong>Runs:</strong> <div class="detail-item">n=50 samples=10 SPS=0.7619 JSD=0.2531 tau=0.5538</div><div class="detail-item">n=100 samples=30 SPS=0.7378 JSD=0.2653 tau=0.4819</div></div>
             <div class="detail-section"><strong>Convergence:</strong> <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" style="vertical-align:middle"><polyline points="2.0,2.0 78.0,18.0" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg></div>
@@ -230,16 +239,17 @@ footer a{color:var(--accent)}
         <td><span class="model-name">openai/gpt-4o-mini</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
-        <td class="num composite">0.7290</td>
+        <td class="num composite">0.7290<span style="font-size:0.75rem;color:var(--text-muted);margin-left:4px">1 run</span></td>
         <td class="num" style="color:var(--green)">+0.0899</td>
         <td class="num" style="color:var(--green)">+0.1807</td>
         <td class="num"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="16" style="vertical-align:middle"><rect x="2" y="4.3" width="13" height="10.7" rx="1" fill="#3fb950" opacity="0.85"/></svg></td>
+        <td class="num">&mdash;</td>
         <td class="num">0.2959</td>
         <td class="num">0.5077</td>
         <td>2026-04-10</td>
       </tr>
       <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td colspan="12" class="detail-cell">
+        <td colspan="13" class="detail-cell">
           <div class="detail-content">
             <div class="detail-section"><strong>Runs:</strong> <div class="detail-item">n=30 samples=100 SPS=0.7573 JSD=0.2708 tau=0.5708</div><div class="detail-item">n=30 samples=100 SPS=0.7560 JSD=0.2764 tau=0.5766</div><div class="detail-item">n=30 samples=50 SPS=0.7500 JSD=0.2768 tau=0.5535</div><div class="detail-item">n=30 samples=30 SPS=0.7483 JSD=0.2856 tau=0.5643</div><div class="detail-item">n=30 samples=50 SPS=0.7451 JSD=0.2834 tau=0.5471</div><div class="detail-item">n=30 samples=10 SPS=0.7440 JSD=0.2796 tau=0.5353</div><div class="detail-item">n=30 samples=5 SPS=0.7424 JSD=0.2874 tau=0.5444</div><div class="detail-item">n=30 samples=30 SPS=0.7394 JSD=0.2951 tau=0.5479</div><div class="detail-item">n=30 samples=10 SPS=0.7365 JSD=0.2912 tau=0.5284</div><div class="detail-item">n=50 samples=10 SPS=0.7290 JSD=0.2959 tau=0.5077</div><div class="detail-item">n=30 samples=5 SPS=0.7169 JSD=0.3179 tau=0.5032</div></div>
             <div class="detail-section"><strong>Convergence:</strong> <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" style="vertical-align:middle"><polyline points="2.0,10.4 21.0,18.0 40.0,12.1 59.0,6.1 78.0,2.0" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg></div>
@@ -252,16 +262,17 @@ footer a{color:var(--accent)}
         <td><span class="model-name">claude-haiku-4-5-20251001</span></td>
         <td>opinionsqa</td>
         <td class="num">100</td>
-        <td class="num composite">0.7238</td>
+        <td class="num composite">0.7238<span style="font-size:0.75rem;color:var(--text-muted);margin-left:4px">1 run</span></td>
         <td class="num" style="color:var(--green)">+0.0847</td>
         <td class="num" style="color:var(--green)">+0.1755</td>
+        <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">0.3081</td>
         <td class="num">0.5114</td>
         <td>2026-04-10</td>
       </tr>
       <tr class="detail-row" data-provider="raw-anthropic/claude-haiku-4-5-20251001_opinionsqa" style="display:none">
-        <td colspan="12" class="detail-cell">
+        <td colspan="13" class="detail-cell">
           <div class="detail-content">
             <div class="detail-section"><strong>Runs:</strong> <div class="detail-item">n=100 samples=30 SPS=0.7238 JSD=0.3081 tau=0.5114</div><div class="detail-item">n=50 samples=10 SPS=0.7147 JSD=0.3197 tau=0.4981</div></div>
             <div class="detail-section"><strong>Convergence:</strong> <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" style="vertical-align:middle"><polyline points="2.0,18.0 78.0,2.0" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg></div>
@@ -274,9 +285,10 @@ footer a{color:var(--accent)}
         <td><span class="model-name">openai/gpt-4o</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
-        <td class="num composite">0.7037</td>
+        <td class="num composite">0.7037<span style="font-size:0.75rem;color:var(--text-muted);margin-left:4px">1 run</span></td>
         <td class="num" style="color:var(--green)">+0.0646</td>
         <td class="num" style="color:var(--green)">+0.1554</td>
+        <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">0.3006</td>
         <td class="num">0.4159</td>
@@ -288,9 +300,10 @@ footer a{color:var(--accent)}
         <td><span class="model-name">anthropic/claude-sonnet-4</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
-        <td class="num composite">0.6384</td>
+        <td class="num composite">0.6384<span style="font-size:0.75rem;color:var(--text-muted);margin-left:4px">1 run</span></td>
         <td class="num" style="color:var(--red)">-0.0007</td>
         <td class="num" style="color:var(--green)">+0.0901</td>
+        <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">0.3867</td>
         <td class="num">0.3269</td>
@@ -306,11 +319,12 @@ footer a{color:var(--accent)}
         <td class="num" style="color:var(--red)">-0.0894</td>
         <td class="num" style="color:var(--green)">+0.0014</td>
         <td class="num">&mdash;</td>
+        <td class="num">0.9931</td>
         <td class="num">0.5128</td>
         <td class="num">0.2245</td>
         <td>2026-04-11</td>
       </tr>
-      <tr class="baseline-divider"><td colspan="12"></td></tr>
+      <tr class="baseline-divider"><td colspan="13"></td></tr>
       <tr class="baseline-row" data-sps="0.6378" data-n="200" data-jsd="0.2004" data-tau="-0.0479">
         <td class="rank num"></td>
         <td class="provider-name baseline-name">random-baseline</td>
@@ -318,6 +332,7 @@ footer a{color:var(--accent)}
         <td>opinionsqa</td>
         <td class="num">200</td>
         <td class="num composite">0.6378</td>
+        <td class="num"></td>
         <td class="num"></td>
         <td class="num"></td>
         <td class="num"></td>
@@ -335,6 +350,7 @@ footer a{color:var(--accent)}
         <td class="num"></td>
         <td class="num"></td>
         <td class="num"></td>
+        <td class="num"></td>
         <td class="num">0.2532</td>
         <td class="num">-0.2019</td>
         <td>2026-04-11</td>
@@ -349,6 +365,7 @@ footer a{color:var(--accent)}
         <td class="num"></td>
         <td class="num"></td>
         <td class="num"></td>
+        <td class="num"></td>
         <td class="num">0.5054</td>
         <td class="num">0.2039</td>
         <td>2026-04-10</td>
@@ -357,6 +374,7 @@ footer a{color:var(--accent)}
   </table>
   <p class="footnote"><strong>Adapter test:</strong> SynthPanel entries use an early, untuned adapter integration and are not representative of production SynthPanel quality. Included for transparency and baseline comparison.</p>
   <p class="footnote">* Scores from small samples (N&nbsp;&lt;&nbsp;50) have higher variance and should be interpreted with caution.</p>
+  <div style="margin-top:0.5rem;margin-bottom:1rem;padding-left:0.25rem"><span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#3fb950;opacity:0.85"></span><span style="font-size:0.8rem;color:var(--text-muted)">Consumer</span></span><span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#58a6ff;opacity:0.85"></span><span style="font-size:0.8rem;color:var(--text-muted)">Neutral</span></span><span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#f0c040;opacity:0.85"></span><span style="font-size:0.8rem;color:var(--text-muted)">Political</span></span></div>
 
   <div class="chart-section">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 482" width="100%" style="font-family:sans-serif;max-width:660px">
@@ -404,33 +422,6 @@ footer a{color:var(--accent)}
 <text x="447.3" y="455.2" font-size="10" fill="#8b949e">0.5483</text>
 </svg>
   </div>
-
-
-  <h2 class="section-title">vs Baselines</h2>
-  <table class="leaderboard-table">
-    <thead>
-      <tr>
-        <th>Provider</th>
-        <th class="num">SPS</th>
-        <th class="num" colspan="2">majority-baseline</th><th class="num" colspan="2">random-baseline</th>
-      </tr>
-      <tr>
-        <th></th><th></th>
-        <th class="num">Delta</th><th class="num">%</th><th class="num">Delta</th><th class="num">%</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td class="provider-name">openrouter/meta-llama/llama-3.3-70b-instruct</td><td class="num composite">0.7560</td><td class="num" style="color:var(--green)">+0.2078</td><td class="num" style="color:var(--green)">+38%</td><td class="num" style="color:var(--green)">+0.1831</td><td class="num" style="color:var(--green)">+32%</td></tr>
-      <tr><td class="provider-name">openrouter/google/gemini-2.5-flash</td><td class="num composite">0.7511</td><td class="num" style="color:var(--green)">+0.2028</td><td class="num" style="color:var(--green)">+37%</td><td class="num" style="color:var(--green)">+0.1782</td><td class="num" style="color:var(--green)">+31%</td></tr>
-      <tr><td class="provider-name">openrouter/anthropic/claude-haiku-4-5</td><td class="num composite">0.7467</td><td class="num" style="color:var(--green)">+0.1984</td><td class="num" style="color:var(--green)">+36%</td><td class="num" style="color:var(--green)">+0.1738</td><td class="num" style="color:var(--green)">+30%</td></tr>
-      <tr><td class="provider-name">raw-gemini/gemini-2.5-flash-lite</td><td class="num composite">0.7378</td><td class="num" style="color:var(--green)">+0.1896</td><td class="num" style="color:var(--green)">+35%</td><td class="num" style="color:var(--green)">+0.1649</td><td class="num" style="color:var(--green)">+29%</td></tr>
-      <tr><td class="provider-name">openrouter/openai/gpt-4o-mini</td><td class="num composite">0.7290</td><td class="num" style="color:var(--green)">+0.1807</td><td class="num" style="color:var(--green)">+33%</td><td class="num" style="color:var(--green)">+0.1561</td><td class="num" style="color:var(--green)">+27%</td></tr>
-      <tr><td class="provider-name">raw-anthropic/claude-haiku-4-5-20251001</td><td class="num composite">0.7238</td><td class="num" style="color:var(--green)">+0.1756</td><td class="num" style="color:var(--green)">+32%</td><td class="num" style="color:var(--green)">+0.1509</td><td class="num" style="color:var(--green)">+26%</td></tr>
-      <tr><td class="provider-name">openrouter/openai/gpt-4o</td><td class="num composite">0.7037</td><td class="num" style="color:var(--green)">+0.1554</td><td class="num" style="color:var(--green)">+28%</td><td class="num" style="color:var(--green)">+0.1307</td><td class="num" style="color:var(--green)">+23%</td></tr>
-      <tr><td class="provider-name">openrouter/anthropic/claude-sonnet-4</td><td class="num composite">0.6384</td><td class="num" style="color:var(--green)">+0.0901</td><td class="num" style="color:var(--green)">+16%</td><td class="num" style="color:var(--green)">+0.0655</td><td class="num" style="color:var(--green)">+11%</td></tr>
-      <tr><td class="provider-name">synthpanel/claude-haiku-4-5-20251001 (adapter test, n=20)</td><td class="num composite">0.5497</td><td class="num" style="color:var(--green)">+0.0015</td><td class="num" style="color:var(--green)">+0%</td><td class="num" style="color:var(--red)">-0.0232</td><td class="num" style="color:var(--red)">-4%</td></tr>
-    </tbody>
-  </table>
 
 
   <h2 class="section-title">Convergence Data</h2>

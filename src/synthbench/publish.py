@@ -292,8 +292,12 @@ def _metric_legend_html() -> str:
     return """
   <div class="about metric-legend">
     <p><strong>SPS</strong> (SynthBench Parity Score) measures how well AI reproduces human survey responses.
-       Higher is better (0&nbsp;=&nbsp;random, 1&nbsp;=&nbsp;human-identical).
-       Scores below show SPS and component metrics P_dist, P_rank, P_refuse.</p>
+       Higher is better (0&nbsp;=&nbsp;random, 1&nbsp;=&nbsp;human-identical).</p>
+    <p style="margin-top:0.5rem;font-size:0.88rem">
+       <strong>P_dist</strong> &mdash; distributional match (1 &minus; JSD).
+       <strong>P_rank</strong> &mdash; rank-order agreement (normalized Kendall&rsquo;s &tau;).
+       <strong>P_refuse</strong> &mdash; refusal-rate calibration (1 &minus; mean |&Delta;refusal|).
+       All [0,&thinsp;1]; higher = better.</p>
   </div>"""
 
 
@@ -480,9 +484,10 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             f'{n_eval}<span class="low-n-marker">*</span>' if low_n else str(n_eval)
         )
 
-        # Composite score + CI whisker (#3)
+        # Composite score + CI whisker (#3) + P_refuse extraction
         cp = e["composite_parity"]
         ci_svg = ""
+        p_refuse_val = None
         # Find the result dict for this entry to get CI data
         for r in ranked:
             r_cfg = r.get("config", {})
@@ -490,9 +495,16 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                 r_cfg.get("provider") == provider_raw
                 and r_cfg.get("dataset") == e["dataset"]
             ):
-                ci = r.get("aggregate", {}).get("per_metric_ci", {}).get("sps")
+                per_ci = r.get("aggregate", {}).get("per_metric_ci", {})
+                ci = per_ci.get("sps")
                 if ci and len(ci) == 2:
                     ci_svg = _ci_whisker_svg(ci[0], ci[1], cp)
+                else:
+                    ci_svg = '<span style="font-size:0.75rem;color:var(--text-muted);margin-left:4px">1 run</span>'
+                # Extract P_refuse from CI midpoint
+                p_refuse_ci = per_ci.get("p_refuse")
+                if p_refuse_ci and len(p_refuse_ci) == 2:
+                    p_refuse_val = (p_refuse_ci[0] + p_refuse_ci[1]) / 2
                 break
 
         topic_cells = ""
@@ -502,6 +514,12 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                 provider_topics, topics_present, topic_colors
             )
             topic_cells = f'        <td class="num">{topic_cell_svg}</td>\n'
+
+        p_refuse_cell = ""
+        if p_refuse_val is not None:
+            p_refuse_cell = f'        <td class="num">{p_refuse_val:.4f}</td>\n'
+        else:
+            p_refuse_cell = '        <td class="num">&mdash;</td>\n'
 
         baseline_cells = ""
         if has_baselines:
@@ -546,6 +564,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             f'        <td class="num composite">{cp:.4f}{ci_svg}</td>\n'
             f"{baseline_cells}"
             f"{topic_cells}"
+            f"{p_refuse_cell}"
             f'        <td class="num">{e["mean_jsd"]:.4f}</td>\n'
             f'        <td class="num">{e["mean_kendall_tau"]:.4f}</td>\n'
             f"        <td>{e['date']}</td>\n"
@@ -582,7 +601,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                         f"</svg>"
                     )
 
-            n_cols = 9  # rank + provider + model + dataset + N + SPS + JSD + tau + date
+            n_cols = 10  # rank + provider + model + dataset + N + SPS + P_refuse + JSD + tau + date
             if has_baselines:
                 n_cols += 2
             if topics_present:
@@ -611,7 +630,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 
     # #4 Baseline divider + baseline rows
     if baseline_entries:
-        n_cols = 9
+        n_cols = 10  # includes P_refuse column
         if has_baselines:
             n_cols += 2
         if topics_present:
@@ -637,6 +656,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                     else ""
                 )
                 + ('        <td class="num"></td>\n' if topics_present else "")
+                + '        <td class="num"></td>\n'  # P_refuse (empty for baselines)
                 + f'        <td class="num">{e["mean_jsd"]:.4f}</td>\n'
                 f'        <td class="num">{e["mean_kendall_tau"]:.4f}</td>\n'
                 f"        <td>{e['date']}</td>\n"
@@ -648,8 +668,24 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 
     # #7 Single "Topics" column header (replaces per-topic columns)
     topic_th = ""
+    topic_legend_html = ""
     if topics_present:
         topic_th = '        <th class="num">Topics</th>\n'
+        legend_items = []
+        for i, t in enumerate(topics_present):
+            color = topic_colors[i % len(topic_colors)]
+            legend_items.append(
+                f'<span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem">'
+                f'<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:{color};opacity:0.85"></span>'
+                f'<span style="font-size:0.8rem;color:var(--text-muted)">{escape(t.capitalize())}</span></span>'
+            )
+        topic_legend_html = (
+            f'  <div style="margin-top:0.5rem;margin-bottom:1rem;padding-left:0.25rem">'
+            f"{''.join(legend_items)}</div>"
+        )
+
+    # P_refuse column header
+    p_refuse_th = '        <th class="num" title="Refusal calibration: 1 − mean |Δrefusal|">P_refuse</th>\n'
 
     # Baseline column headers
     baseline_th = ""
@@ -658,7 +694,6 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 
     # Generate chart section: dot-plot instead of bar charts (#9)
     dot_plot = _dot_plot_svg(ranked, baselines)
-    baseline_table = _baseline_delta_html(ranked, baselines)
     explanations = _metric_explanations_html()
     metric_legend = _metric_legend_html()
 
@@ -863,9 +898,9 @@ footer a{{color:var(--accent)}}
         <th>Model</th>
         <th>Dataset</th>
         <th class="num sortable" data-sort="n">N</th>
-        <th class="num sortable" data-sort="sps">SPS <span class="sort-arrow">&#x25BC;</span></th>
-{baseline_th}{topic_th}        <th class="num sortable" data-sort="jsd">JSD</th>
-        <th class="num sortable" data-sort="tau">Tau</th>
+        <th class="num sortable" data-sort="sps" title="SynthBench Parity Score: overall fidelity (0=random, 1=human-identical)">SPS <span class="sort-arrow">&#x25BC;</span></th>
+{baseline_th}{topic_th}{p_refuse_th}        <th class="num sortable" data-sort="jsd" title="Mean Jensen-Shannon divergence (lower = closer to human distributions)">JSD</th>
+        <th class="num sortable" data-sort="tau" title="Mean Kendall&rsquo;s tau-b rank correlation (higher = better rank agreement)">Tau</th>
         <th>Date</th>
       </tr>
     </thead>
@@ -875,12 +910,11 @@ footer a{{color:var(--accent)}}
   </table>
   {synthpanel_footnote}
   {low_n_footnote}
+{topic_legend_html}
 
   <div class="chart-section">
 {dot_plot}
   </div>
-
-{baseline_table}
 
 {convergence_html}
 
