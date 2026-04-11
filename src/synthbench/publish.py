@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from html import escape
@@ -132,6 +133,240 @@ def _topic_bars_svg(
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" '
         f'style="vertical-align:middle">' + "".join(parts) + "</svg>"
     )
+
+
+def _hero_model_name(provider: str) -> str:
+    """Extract a short, readable model name for the hero chart."""
+    if provider in BASELINE_PROVIDERS:
+        return provider.replace("-", " ").title()
+    if provider.startswith(SYNTHPANEL_PREFIX):
+        return "SynthPanel"
+    name = provider.rsplit("/", 1)[-1]
+    name = re.sub(r"-\d{8,}$", "", name)
+    name = name.replace("-", " ").title()
+    # Fix common abbreviations that title() mangles
+    for old, new in [("Gpt ", "GPT-"), ("4O ", "4o "), ("4O", "4o")]:
+        name = name.replace(old, new)
+    # Convert trailing "X Y" digit pairs to "X.Y" (version numbers)
+    name = re.sub(r"(\d) (\d)$", r"\1.\2", name)
+    return name
+
+
+def _hero_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
+    """Generate a bold hero SVG with horizontal dots and baseline zone banding.
+
+    Sits above the leaderboard table. Models ranked by SPS with background
+    zones: GREEN (above baseline+0.05), AMBER (within 0.05), RED (below).
+    """
+    # Separate models from baselines
+    models: list[tuple[dict, float, str]] = []
+    for r in ranked:
+        provider = r.get("config", {}).get("provider", "")
+        if provider not in BASELINE_PROVIDERS:
+            cp = r.get("aggregate", {}).get("composite_parity", 0)
+            models.append((r, cp, provider))
+
+    if not models:
+        return ""
+
+    # Random baseline SPS — anchor for zone banding.
+    # Pick the random-baseline with the most data (highest n_evaluated)
+    # since _split_baselines may have kept the wrong dataset entry.
+    random_sps = 0.65
+    best_n = -1
+    for r in ranked:
+        cfg = r.get("config", {})
+        if cfg.get("provider") == "random-baseline":
+            n = cfg.get("n_evaluated", 0)
+            if n > best_n:
+                best_n = n
+                random_sps = r.get("aggregate", {}).get("composite_parity", 0)
+
+    # Zone boundaries
+    amber_lo = random_sps - 0.05
+    amber_hi = random_sps + 0.05
+
+    # SVG layout
+    label_w = 180
+    chart_w = 560
+    pad_r = 60
+    total_w = label_w + chart_w + pad_r
+
+    row_h = 28
+    top_pad = 52
+    bot_pad = 50
+    n = len(models)
+    chart_h = n * row_h
+    total_h = top_pad + chart_h + bot_pad
+
+    # SPS range for x-axis (pad slightly beyond data range)
+    all_sps = [cp for _, cp, _ in models] + [random_sps]
+    sps_min = min(all_sps) - 0.03
+    sps_max = max(all_sps) + 0.025
+    sps_range = sps_max - sps_min
+
+    def x(sps: float) -> float:
+        return label_w + ((sps - sps_min) / sps_range) * chart_w
+
+    chart_top = top_pad
+    chart_bot = top_pad + chart_h
+
+    parts: list[str] = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {total_w} {total_h}" '
+        f'width="100%" style="font-family:-apple-system,BlinkMacSystemFont,'
+        f"'Segoe UI',sans-serif;max-width:{total_w}px\">"
+    ]
+
+    # ── Zone banding ──
+    # Red zone: below amber_lo
+    red_x1 = x(sps_min)
+    red_x2 = x(min(amber_lo, sps_max))
+    if red_x2 > red_x1:
+        parts.append(
+            f'<rect x="{red_x1:.1f}" y="{chart_top}" '
+            f'width="{red_x2 - red_x1:.1f}" height="{chart_h}" '
+            f'style="fill:var(--red)" opacity="0.07"/>'
+        )
+
+    # Amber zone: amber_lo to amber_hi
+    amb_x1 = x(max(amber_lo, sps_min))
+    amb_x2 = x(min(amber_hi, sps_max))
+    if amb_x2 > amb_x1:
+        parts.append(
+            f'<rect x="{amb_x1:.1f}" y="{chart_top}" '
+            f'width="{amb_x2 - amb_x1:.1f}" height="{chart_h}" '
+            f'style="fill:var(--gold)" opacity="0.12"/>'
+        )
+
+    # Green zone: above amber_hi
+    grn_x1 = x(max(amber_hi, sps_min))
+    grn_x2 = x(sps_max)
+    if grn_x2 > grn_x1:
+        parts.append(
+            f'<rect x="{grn_x1:.1f}" y="{chart_top}" '
+            f'width="{grn_x2 - grn_x1:.1f}" height="{chart_h}" '
+            f'style="fill:var(--green)" opacity="0.07"/>'
+        )
+
+    # ── Random baseline vertical line ──
+    bl_x = x(random_sps)
+    parts.append(
+        f'<line x1="{bl_x:.1f}" y1="{chart_top - 5}" '
+        f'x2="{bl_x:.1f}" y2="{chart_bot + 5}" '
+        f'style="stroke:var(--red)" stroke-width="2" '
+        f'stroke-dasharray="6,3" opacity="0.7"/>'
+    )
+    parts.append(
+        f'<text x="{bl_x:.1f}" y="{chart_top - 10}" text-anchor="middle" '
+        f'font-size="10" style="fill:var(--red)" font-weight="600">'
+        f"Random Baseline ({random_sps:.0%})</text>"
+    )
+
+    # ── Model dots and labels ──
+    for i, (_r, cp, provider) in enumerate(models):
+        y = top_pad + i * row_h + row_h / 2
+        dot_x = x(cp)
+        name = _hero_model_name(provider)
+
+        # Zone-based dot color
+        if cp > amber_hi:
+            dot_fill = "var(--green)"
+        elif cp >= amber_lo:
+            dot_fill = "var(--gold)"
+        else:
+            dot_fill = "var(--red)"
+
+        is_first = i == 0
+        radius = 7 if is_first else 4.5
+        fw = "700" if is_first else "400"
+        fs = "12" if is_first else "11"
+
+        # Model label (left of chart)
+        parts.append(
+            f'<text x="{label_w - 10}" y="{y + 4}" text-anchor="end" '
+            f'font-size="{fs}" style="fill:var(--text)" font-weight="{fw}">'
+            f"{escape(name)}</text>"
+        )
+        # Dot
+        parts.append(
+            f'<circle cx="{dot_x:.1f}" cy="{y:.1f}" r="{radius}" '
+            f'style="fill:{dot_fill}" opacity="0.9"/>'
+        )
+        # Score label (right of dot)
+        parts.append(
+            f'<text x="{dot_x + radius + 5:.1f}" y="{y + 3.5}" '
+            f'font-size="10" style="fill:var(--text-muted)">{cp:.2%}</text>'
+        )
+
+    # ── Title and annotation ──
+    best_name = _hero_model_name(models[0][2])
+    best_pct = models[0][1]
+
+    parts.append(
+        f'<text x="{total_w / 2}" y="20" text-anchor="middle" '
+        f'font-size="14" style="fill:var(--text)" font-weight="700">'
+        f"How Well Does AI Reproduce Human Survey Responses?</text>"
+    )
+    annotation = (
+        f"Best: {best_name} at {best_pct:.0%} human parity"
+        f"  \u00b7  Random chance: {random_sps:.0%}"
+    )
+    parts.append(
+        f'<text x="{total_w / 2}" y="38" text-anchor="middle" '
+        f'font-size="11" style="fill:var(--text-muted)">'
+        f"{escape(annotation)}</text>"
+    )
+
+    # ── Zone labels at bottom ──
+    zone_y = chart_bot + 18
+    if red_x2 > red_x1:
+        mid = (red_x1 + red_x2) / 2
+        parts.append(
+            f'<text x="{mid:.1f}" y="{zone_y}" text-anchor="middle" '
+            f'font-size="9" style="fill:var(--red)" opacity="0.8">'
+            f"Below baseline</text>"
+        )
+    if amb_x2 > amb_x1:
+        mid = (amb_x1 + amb_x2) / 2
+        parts.append(
+            f'<text x="{mid:.1f}" y="{zone_y}" text-anchor="middle" '
+            f'font-size="9" style="fill:var(--gold)" opacity="0.8">'
+            f"Near baseline</text>"
+        )
+    if grn_x2 > grn_x1:
+        mid = (grn_x1 + grn_x2) / 2
+        parts.append(
+            f'<text x="{mid:.1f}" y="{zone_y}" text-anchor="middle" '
+            f'font-size="9" style="fill:var(--green)" opacity="0.8">'
+            f"Above baseline</text>"
+        )
+
+    # ── SPS axis ticks ──
+    tick_y = chart_bot + 35
+    step = 0.05
+    tick_val = round(sps_min / step) * step
+    while tick_val <= sps_max + 0.001:
+        if tick_val >= sps_min:
+            tx = x(tick_val)
+            parts.append(
+                f'<line x1="{tx:.1f}" y1="{chart_bot}" '
+                f'x2="{tx:.1f}" y2="{chart_bot + 4}" '
+                f'style="stroke:var(--text-muted)" stroke-width="0.5" opacity="0.5"/>'
+            )
+            parts.append(
+                f'<text x="{tx:.1f}" y="{tick_y}" text-anchor="middle" '
+                f'font-size="9" style="fill:var(--text-muted)">{tick_val:.0%}</text>'
+            )
+        tick_val += step
+
+    # Axis label
+    parts.append(
+        f'<text x="{label_w + chart_w / 2}" y="{tick_y + 12}" text-anchor="middle" '
+        f'font-size="9" style="fill:var(--text-muted)">SPS (SynthBench Parity Score)</text>'
+    )
+
+    parts.append("</svg>")
+    return "\n".join(parts)
 
 
 def _dot_plot_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
@@ -706,6 +941,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
         baseline_th = '        <th class="num sortable" data-sort="vs-random" title="SPS improvement over uniform random baseline">vs Random</th>\n        <th class="num sortable" data-sort="vs-majority" title="SPS improvement over always-pick-the-mode baseline">vs Majority</th>\n'
 
     # Generate chart section: dot-plot instead of bar charts (#9)
+    hero_chart = _hero_svg(ranked, baselines)
     dot_plot = _dot_plot_svg(ranked, baselines)
     explanations = _metric_explanations_html()
     metric_legend = _metric_legend_html(topic_legend_inline)
@@ -809,6 +1045,13 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="SynthBench Leaderboard">
+<meta property="og:description" content="Open benchmark measuring how well AI reproduces human survey responses. Ranked by SPS (SynthBench Parity Score).">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dataviking-tech.github.io/synthbench/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SynthBench Leaderboard">
+<meta name="twitter:description" content="Open benchmark measuring how well AI reproduces human survey responses.">
 <title>SynthBench Leaderboard</title>
 <style>
 *,*::before,*::after{{box-sizing:border-box;margin:0;padding:0}}
@@ -838,6 +1081,9 @@ header{{text-align:center;padding:3rem 1rem 2rem}}
 header h1{{font-size:2.2rem;font-weight:700;letter-spacing:-0.5px}}
 header h1 span{{color:var(--accent)}}
 header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
+
+.hero-chart{{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem}}
+.hero-chart svg{{display:block;margin:0 auto}}
 
 .about{{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem;font-size:0.95rem;color:var(--text-muted)}}
 .about p+p{{margin-top:0.75rem}}
@@ -944,6 +1190,10 @@ footer a{{color:var(--accent)}}
 </header>
 
 <div class="container">
+  <div class="hero-chart">
+{hero_chart}
+  </div>
+
   <div class="about">
     <p>SynthBench measures how well synthetic respondent systems reproduce real human survey response distributions.
        Scores are computed against ground-truth data from <strong>OpinionsQA</strong> (Santurkar et al., ICML 2023) &mdash;
