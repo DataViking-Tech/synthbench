@@ -1,9 +1,8 @@
 """SynthPanel full-pipeline provider.
 
-Benchmarks the complete SynthPanel pipeline by shelling out to the
-``synthpanel`` CLI.  For each respond() call, builds temporary persona
-and instrument YAML files, runs ``synthpanel panel run``, and parses
-the JSON output.
+Benchmarks the complete SynthPanel pipeline.  Prefers direct Python API
+import when available (zero subprocess overhead); falls back to the
+``synthpanel`` CLI.
 """
 
 from __future__ import annotations
@@ -14,11 +13,24 @@ import re
 import shutil
 import tempfile
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from typing import Any
 
 from synthbench.providers.base import Distribution, PersonaSpec, Provider, Response
 
 _LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+# ---------------------------------------------------------------------------
+# Optional direct API import (requires synth_panel on Python 3.10+)
+# ---------------------------------------------------------------------------
+try:
+    from synth_panel.llm.client import LLMClient
+    from synth_panel.llm.models import CompletionRequest, InputMessage, TextBlock
+
+    _HAS_SYNTH_PANEL_API = True
+except (ImportError, TypeError):
+    _HAS_SYNTH_PANEL_API = False
 
 
 def _parse_letter(text: str, options: list[str]) -> str | None:
@@ -104,11 +116,58 @@ def _build_persona_yaml(persona: PersonaSpec | None, count: int = 1) -> str:
     return "personas:\n" + "".join(entries)
 
 
-class SynthPanelProvider(Provider):
-    """Benchmark the full SynthPanel pipeline via the CLI.
+# ---------------------------------------------------------------------------
+# Prompt helpers for the direct API path
+# ---------------------------------------------------------------------------
 
-    Shells out to ``synthpanel panel run`` for each respond() call,
-    using temporary instrument and persona YAML files.
+
+def _build_system_prompt(persona: PersonaSpec | None) -> str:
+    """Build a system prompt matching synthpanel's ``persona_system_prompt``."""
+    if persona is None:
+        return (
+            "You are role-playing as Survey Respondent. "
+            "Occupation: survey respondent. "
+            "Background: A general survey respondent. "
+            "Personality traits: Responds thoughtfully and authentically. "
+            "Answer questions in character. Be authentic to this persona's "
+            "perspective, experiences, and communication style. "
+            "Give concise, direct answers."
+        )
+
+    demo_parts = [f"{k}: {v}" for k, v in persona.demographics.items()]
+    demo_summary = ", ".join(demo_parts)
+    name = f"Respondent ({demo_summary})"
+    background = persona.biography or f"A person with {demo_summary.lower()}."
+
+    parts = [f"You are role-playing as {name}."]
+    for k, v in persona.demographics.items():
+        parts.append(f"{k.capitalize()}: {v}.")
+    parts.append("Occupation: survey respondent.")
+    parts.append(f"Background: {background}.")
+    parts.append(
+        "Personality traits: Responds authentically based on their "
+        "demographic background."
+    )
+    parts.append(
+        "Answer questions in character. Be authentic to this persona's "
+        "perspective, experiences, and communication style. "
+        "Give concise, direct answers."
+    )
+    return " ".join(parts)
+
+
+def _build_question_text(question: str, options: list[str]) -> str:
+    """Build question prompt with lettered options."""
+    opts_lines = "\n".join(f"({_LETTERS[i]}) {opt}" for i, opt in enumerate(options))
+    return f"{question}\n\n{opts_lines}"
+
+
+class SynthPanelProvider(Provider):
+    """Benchmark the full SynthPanel pipeline.
+
+    When ``synth_panel`` is importable, uses the Python API directly —
+    no subprocess overhead (~1s saved per call).  Otherwise falls back
+    to ``synthpanel panel run`` via subprocess.
 
     Supports synthpanel v0.6.0+ flags: --models, --temperature, --profile.
     """
@@ -121,19 +180,27 @@ class SynthPanelProvider(Provider):
         synthpanel_path: str | None = None,
         **kwargs,
     ):
-        if synthpanel_path:
-            self._synthpanel_bin = synthpanel_path
-        else:
-            found = shutil.which("synthpanel")
-            if found is None:
-                raise ImportError(
-                    "synthpanel is not installed or not on PATH. "
-                    "Install synthpanel or pass synthpanel_path= explicitly."
-                )
-            self._synthpanel_bin = found
         self._model = model
         self._temperature = temperature
         self._profile = profile
+        self._use_api = _HAS_SYNTH_PANEL_API
+        self._client: Any = None
+        self._executor: ThreadPoolExecutor | None = None
+
+        if self._use_api:
+            self._client = LLMClient()
+            self._executor = ThreadPoolExecutor(max_workers=16)
+        else:
+            if synthpanel_path:
+                self._synthpanel_bin = synthpanel_path
+            else:
+                found = shutil.which("synthpanel")
+                if found is None:
+                    raise ImportError(
+                        "synthpanel is not installed or not on PATH. "
+                        "Install synthpanel or pass synthpanel_path= explicitly."
+                    )
+                self._synthpanel_bin = found
 
     @property
     def name(self) -> str:
@@ -144,34 +211,66 @@ class SynthPanelProvider(Provider):
             parts.append(f"profile={self._profile}")
         return " ".join(parts)
 
-    def _build_cmd(self, inst_path: str, pers_path: str) -> list[str]:
-        """Build the synthpanel CLI command (no --no-synthesis)."""
-        cmd = [
-            self._synthpanel_bin,
-            "--output-format",
-            "json",
-        ]
-        if self._profile:
-            cmd.extend(["--profile", self._profile])
-        cmd.extend(
-            [
-                "panel",
-                "run",
-                "--personas",
-                pers_path,
-                "--instrument",
-                inst_path,
-                "--models",
-                f"{self._model}:1.0",
-            ]
-        )
-        if self._temperature is not None:
-            cmd.extend(["--temperature", str(self._temperature)])
-        return cmd
+    @property
+    def supports_distribution(self) -> bool:
+        return True
+
+    # ==================================================================
+    # respond()
+    # ==================================================================
 
     async def respond(
         self, question: str, options: list[str], *, persona: PersonaSpec | None = None
     ) -> Response:
+        if self._use_api:
+            return await self._respond_api(question, options, persona)
+        return await self._respond_cli(question, options, persona)
+
+    # ── Direct API path ──────────────────────────────────────────
+
+    async def _respond_api(
+        self, question: str, options: list[str], persona: PersonaSpec | None
+    ) -> Response:
+        """Direct LLM call — no subprocess overhead."""
+        system = _build_system_prompt(persona)
+        user_text = _build_question_text(question, options)
+
+        request = CompletionRequest(
+            model=self._model,
+            max_tokens=1024,
+            messages=[InputMessage(role="user", content=[TextBlock(text=user_text)])],
+            system=system,
+            temperature=self._temperature,
+        )
+
+        loop = asyncio.get_running_loop()
+        response = await loop.run_in_executor(
+            self._executor, self._client.send, request
+        )
+
+        raw_text = response.text
+        selected = _parse_letter(raw_text, options)
+        if selected is None:
+            selected = options[0]
+
+        return Response(
+            selected_option=selected,
+            raw_text=raw_text,
+            metadata={
+                "model": response.model,
+                "usage": {
+                    "input_tokens": response.usage.input_tokens,
+                    "output_tokens": response.usage.output_tokens,
+                },
+            },
+        )
+
+    # ── CLI fallback path ────────────────────────────────────────
+
+    async def _respond_cli(
+        self, question: str, options: list[str], persona: PersonaSpec | None
+    ) -> Response:
+        """CLI subprocess fallback for a single question."""
         instrument_yaml = _build_instrument_yaml(question, options)
         persona_yaml = _build_persona_yaml(persona)
 
@@ -194,6 +293,10 @@ class SynthPanelProvider(Provider):
             Path(inst_path).unlink(missing_ok=True)
             Path(pers_path).unlink(missing_ok=True)
 
+    # ==================================================================
+    # get_distribution()
+    # ==================================================================
+
     async def get_distribution(
         self,
         question: str,
@@ -201,6 +304,75 @@ class SynthPanelProvider(Provider):
         *,
         persona: PersonaSpec | None = None,
         n_samples: int | None = None,
+    ) -> Distribution:
+        if self._use_api:
+            return await self._get_distribution_api(
+                question, options, persona, n_samples
+            )
+        return await self._get_distribution_cli(question, options, persona, n_samples)
+
+    # ── Direct API path ──────────────────────────────────────────
+
+    async def _get_distribution_api(
+        self,
+        question: str,
+        options: list[str],
+        persona: PersonaSpec | None,
+        n_samples: int | None,
+    ) -> Distribution:
+        """Concurrent direct API calls — no subprocess overhead."""
+        effective_samples = n_samples if n_samples is not None else 30
+        system = _build_system_prompt(persona)
+        user_text = _build_question_text(question, options)
+
+        request = CompletionRequest(
+            model=self._model,
+            max_tokens=1024,
+            messages=[InputMessage(role="user", content=[TextBlock(text=user_text)])],
+            system=system,
+            temperature=self._temperature,
+        )
+
+        loop = asyncio.get_running_loop()
+        futures = [
+            loop.run_in_executor(self._executor, self._client.send, request)
+            for _ in range(effective_samples)
+        ]
+        results = await asyncio.gather(*futures, return_exceptions=True)
+
+        responses: list[str] = []
+        refusals = 0
+        for result in results:
+            if isinstance(result, Exception):
+                refusals += 1
+                continue
+            raw_text = result.text
+            selected = _parse_letter(raw_text, options)
+            if selected is None:
+                refusals += 1
+            else:
+                responses.append(selected)
+
+        total = len(responses) + refusals
+        counts = Counter(responses)
+        probs = [counts.get(opt, 0) / max(total, 1) for opt in options]
+        refusal_prob = refusals / max(total, 1)
+
+        return Distribution(
+            probabilities=probs,
+            refusal_probability=refusal_prob,
+            method="sampling",
+            n_samples=total,
+        )
+
+    # ── CLI fallback path ────────────────────────────────────────
+
+    async def _get_distribution_cli(
+        self,
+        question: str,
+        options: list[str],
+        persona: PersonaSpec | None,
+        n_samples: int | None,
     ) -> Distribution:
         """Batch N identical personas into one synthpanel invocation."""
         effective_samples = n_samples if n_samples is not None else 30
@@ -227,6 +399,35 @@ class SynthPanelProvider(Provider):
         finally:
             Path(inst_path).unlink(missing_ok=True)
             Path(pers_path).unlink(missing_ok=True)
+
+    # ==================================================================
+    # CLI subprocess helpers
+    # ==================================================================
+
+    def _build_cmd(self, inst_path: str, pers_path: str) -> list[str]:
+        """Build the synthpanel CLI command (no --no-synthesis)."""
+        cmd = [
+            self._synthpanel_bin,
+            "--output-format",
+            "json",
+        ]
+        if self._profile:
+            cmd.extend(["--profile", self._profile])
+        cmd.extend(
+            [
+                "panel",
+                "run",
+                "--personas",
+                pers_path,
+                "--instrument",
+                inst_path,
+                "--models",
+                f"{self._model}:1.0",
+            ]
+        )
+        if self._temperature is not None:
+            cmd.extend(["--temperature", str(self._temperature)])
+        return cmd
 
     async def _run_cli(
         self, inst_path: str, pers_path: str, options: list[str]
@@ -366,4 +567,5 @@ class SynthPanelProvider(Provider):
         )
 
     async def close(self) -> None:
-        pass
+        if self._executor is not None:
+            self._executor.shutdown(wait=False)
