@@ -120,6 +120,11 @@ def main():
     is_flag=True,
     help="Run all 8 demographic attributes (AGE,CREGION,EDUCATION,INCOME,POLIDEOLOGY,POLPARTY,RACE,SEX).",
 )
+@click.option(
+    "--country",
+    default=None,
+    help="Country for GlobalOpinionQA ground truth (e.g., France, Japan).",
+)
 def run(
     provider,
     model,
@@ -136,6 +141,7 @@ def run(
     baselines_dir,
     demographics,
     full_evaluation,
+    country,
 ):
     """Run a benchmark evaluation.
 
@@ -178,6 +184,7 @@ def run(
             topic,
             baselines_dir,
             demo_list,
+            country,
         )
     )
 
@@ -197,6 +204,7 @@ async def _run_async(
     topic,
     baselines_dir,
     demographics=None,
+    country=None,
 ):
     from synthbench.datasets import DATASETS
     from synthbench.providers import load_provider
@@ -216,6 +224,8 @@ async def _run_async(
     ds_kwargs = {}
     if data_dir:
         ds_kwargs["data_dir"] = data_dir
+    if country:
+        ds_kwargs["country"] = country
     ds = DATASETS[dataset_name](**ds_kwargs)
 
     # Load provider
