@@ -105,6 +105,17 @@ header .tagline{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}
 
 .footnote{font-size:0.85rem;color:var(--text-muted);margin-top:0.75rem;padding-left:0.5rem;border-left:2px solid var(--border)}
 
+.tab-bar{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1.5rem;overflow-x:auto}
+.tab{padding:0.6rem 1.2rem;border:none;background:none;color:var(--text-muted);font-size:0.9rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color 0.2s,border-color 0.2s;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.heatmap-table .heatmap-cell{font-variant-numeric:tabular-nums;border-radius:4px;padding:0.5rem 0.8rem}
+.dataset-badge{font-size:0.8rem;font-weight:600}
+.fitness-note{font-size:0.82rem;color:var(--text-muted);font-style:italic;max-width:220px}
+
 .secondary-panel{margin-top:2.5rem}
 details.collapsible{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-top:1.5rem;overflow:hidden}
 details.collapsible>summary{padding:1rem 1.5rem;cursor:pointer;font-size:1.1rem;font-weight:600;color:var(--text);list-style:none;display:flex;align-items:center;gap:0.5rem;user-select:none}
@@ -206,7 +217,7 @@ footer a{color:var(--accent)}
 <circle cx="317.9" cy="346.0" r="4.5" style="fill:var(--gold)" opacity="0.9"/>
 <text x="327.4" y="349.5" font-size="10" style="fill:var(--text-muted)">66.47%</text>
 <text x="400.0" y="20" text-anchor="middle" font-size="14" style="fill:var(--text)" font-weight="700">How Well Does AI Reproduce Human Survey Responses?</text>
-<text x="400.0" y="38" text-anchor="middle" font-size="11" style="fill:var(--text-muted)">Best: SynthPanel at 78% human parity  ·  Random chance: 65%</text>
+<text x="400.0" y="38" text-anchor="middle" font-size="11" style="fill:var(--text-muted)">Best: SynthPanel at 78% human parity  ·  Random chance: 65%  ·  GlobalOpinionQA, OpinionsQA, SubPOP</text>
 <text x="302.0" y="378" text-anchor="middle" font-size="9" style="fill:var(--gold)" opacity="0.8">Near baseline</text>
 <text x="582.0" y="378" text-anchor="middle" font-size="9" style="fill:var(--green)" opacity="0.8">Above baseline</text>
 <line x1="273.0" y1="360" x2="273.0" y2="364" style="stroke:var(--text-muted)" stroke-width="0.5" opacity="0.5"/>
@@ -223,8 +234,9 @@ footer a{color:var(--accent)}
 
   <div class="about">
     <p>SynthBench measures how well synthetic respondent systems reproduce real human survey response distributions.
-       Scores are computed against ground-truth data from <strong>OpinionsQA</strong> (Santurkar et al., ICML 2023) &mdash;
-       1,498 questions from the Pew American Trends Panel.</p>
+       Scores are computed against ground-truth data from multiple datasets including
+       <strong>OpinionsQA</strong> (Santurkar et al., ICML 2023),
+       <strong>GlobalOpinionQA</strong>, and <strong>SubPOP</strong>.</p>
     <p class="transparency">SynthBench is maintained by DataViking-Tech, which also develops SynthPanel.
        All results use identical evaluation methodology.</p>
   </div>
@@ -242,6 +254,82 @@ footer a{color:var(--accent)}
     <p style="margin-top:0.5rem;font-size:0.88rem"><strong>Topics</strong> &mdash; <span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--topic-0)"></span><span style="font-size:0.8rem;color:var(--text-muted)">Consumer</span></span><span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--topic-1)"></span><span style="font-size:0.8rem;color:var(--text-muted)">Neutral</span></span><span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--topic-2)"></span><span style="font-size:0.8rem;color:var(--text-muted)">Political</span></span></p>
   </div>
 
+<div class="tab-bar" id="dataset-tabs"><button class="tab active" data-tab="overview">Overview</button><button class="tab" data-tab="globalopinionqa">GlobalOpinionQA</button><button class="tab" data-tab="opinionsqa">OpinionsQA</button><button class="tab" data-tab="subpop">SubPOP</button></div>
+<div class="tab-panel active" id="panel-overview">
+<table class="leaderboard-table heatmap-table">
+  <thead><tr>
+    <th class="rank">Rank</th><th>Model</th>
+    <th class="num">GlobalOpinionQA</th><th class="num">OpinionsQA</th><th class="num">SubPOP</th>
+    <th class="num">Aggregate SPS</th><th>Coverage</th><th>Strengths</th>
+  </tr></thead>
+  <tbody>
+      <tr><td class="rank num"><span class="medal">&#x1f947;</span>1</td><td class="provider-name">SynthPanel (Haiku 4.5)</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.28175)">0.7781</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num composite">0.7781</td><td><span class="dataset-badge" style="color:var(--gold)">1/3 datasets</span></td><td class="fitness-note">&mdash;</td></tr>
+      <tr><td class="rank num"><span class="medal">&#x1f948;</span>2</td><td class="provider-name">Gemini 2.5 Flash</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.25758333333333333)">0.7491</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num composite">0.7491</td><td><span class="dataset-badge" style="color:var(--gold)">1/3 datasets</span></td><td class="fitness-note">&mdash;</td></tr>
+      <tr><td class="rank num"><span class="medal">&#x1f949;</span>3</td><td class="provider-name">Gemini Flash Lite</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.2481666666666667)">0.7378</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num composite">0.7378</td><td><span class="dataset-badge" style="color:var(--gold)">1/3 datasets</span></td><td class="fitness-note">&mdash;</td></tr>
+      <tr><td class="rank num">4</td><td class="provider-name">SynthPanel (Gemini 2.5 Flash Lite)</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.2465)">0.7358</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num composite">0.7358</td><td><span class="dataset-badge" style="color:var(--gold)">1/3 datasets</span></td><td class="fitness-note">&mdash;</td></tr>
+      <tr><td class="rank num">5</td><td class="provider-name">GPT-4o-mini</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.23666666666666664)">0.7240</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num composite">0.7240</td><td><span class="dataset-badge" style="color:var(--gold)">1/3 datasets</span></td><td class="fitness-note">&mdash;</td></tr>
+      <tr><td class="rank num">6</td><td class="provider-name">GPT-4o</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.2361666666666667)">0.7234</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num composite">0.7234</td><td><span class="dataset-badge" style="color:var(--gold)">1/3 datasets</span></td><td class="fitness-note">&mdash;</td></tr>
+      <tr><td class="rank num">7</td><td class="provider-name">Llama 3.3 70B</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.24475000000000002)">0.7337</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.22125)">0.7055</td><td class="num composite">0.7196</td><td><span class="dataset-badge" style="color:var(--gold)">2/3 datasets</span></td><td class="fitness-note">&mdash;</td></tr>
+      <tr><td class="rank num">8</td><td class="provider-name">Claude Haiku 4.5</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.24016666666666664)">0.7282</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.18724999999999997)">0.6647</td><td class="num composite">0.6965</td><td><span class="dataset-badge" style="color:var(--gold)">2/3 datasets</span></td><td class="fitness-note">Avoid politically charged surveys</td></tr>
+      <tr><td class="rank num">9</td><td class="provider-name">Claude Sonnet 4</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num heatmap-cell" style="background:rgba(63,185,80,0.19908333333333328)">0.6789</td><td class="num heatmap-cell" style="background:var(--surface);color:var(--text-muted)">&mdash;</td><td class="num composite">0.6789</td><td><span class="dataset-badge" style="color:var(--gold)">1/3 datasets</span></td><td class="fitness-note">&mdash;</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="tab-panel" id="panel-globalopinionqa">
+<table class="leaderboard-table">
+  <thead><tr>
+    <th class="rank">Rank</th><th>Provider</th><th class="num">N</th><th class="num">SPS</th><th class="num">vs Random</th><th class="num">vs Majority</th><th class="num">JSD</th><th class="num">Tau</th><th>Date</th>
+  </tr></thead>
+  <tbody>
+<tr class="section-divider"><td colspan="9"><span class="section-label">Baselines</span></td></tr>
+<tr class="baseline-row"><td class="rank num"></td><td class="provider-name">Random Baseline</td><td class="num">10</td><td class="num composite">0.5729</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">0.2532</td><td class="num">-0.2019</td><td>2026-04-11</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="tab-panel" id="panel-opinionsqa">
+<table class="leaderboard-table">
+  <thead><tr>
+    <th class="rank">Rank</th><th>Provider</th><th class="num">N</th><th class="num">SPS</th><th class="num">vs Random</th><th class="num">vs Majority</th><th class="num">JSD</th><th class="num">Tau</th><th>Date</th>
+  </tr></thead>
+  <tbody>
+<tr class="section-divider"><td colspan="9"><span class="section-label">Raw LLMs</span></td></tr>
+<tr class=""><td class="rank num"><span class="medal">&#x1f947;</span>1</td><td class="provider-name">Gemini 2.5 Flash</td><td class="num">684</td><td class="num composite">0.7491</td><td class="num" style="color:var(--green)">+0.0996</td><td class="num" style="color:var(--green)">+0.1871</td><td class="num">0.2624</td><td class="num">0.5211</td><td>2026-04-11</td></tr>
+<tr class=""><td class="rank num"><span class="medal">&#x1f948;</span>2</td><td class="provider-name">Gemini Flash Lite</td><td class="num">100</td><td class="num composite">0.7378</td><td class="num" style="color:var(--green)">+0.0883</td><td class="num" style="color:var(--green)">+0.1758</td><td class="num">0.2653</td><td class="num">0.4819</td><td>2026-04-10</td></tr>
+<tr class=""><td class="rank num"><span class="medal">&#x1f949;</span>3</td><td class="provider-name">Llama 3.3 70B</td><td class="num">684</td><td class="num composite">0.7337</td><td class="num" style="color:var(--green)">+0.0842</td><td class="num" style="color:var(--green)">+0.1717</td><td class="num">0.3071</td><td class="num">0.5489</td><td>2026-04-11</td></tr>
+<tr class=""><td class="rank num">4</td><td class="provider-name">Claude Haiku 4.5</td><td class="num">684</td><td class="num composite">0.7282</td><td class="num" style="color:var(--green)">+0.0787</td><td class="num" style="color:var(--green)">+0.1662</td><td class="num">0.3104</td><td class="num">0.5336</td><td>2026-04-11</td></tr>
+<tr class=""><td class="rank num">5</td><td class="provider-name">GPT-4o-mini</td><td class="num">684</td><td class="num composite">0.7240</td><td class="num" style="color:var(--green)">+0.0745</td><td class="num" style="color:var(--green)">+0.1620</td><td class="num">0.3139</td><td class="num">0.5238</td><td>2026-04-11</td></tr>
+<tr class=""><td class="rank num">6</td><td class="provider-name">GPT-4o</td><td class="num">200</td><td class="num composite">0.7234</td><td class="num" style="color:var(--green)">+0.0739</td><td class="num" style="color:var(--green)">+0.1614</td><td class="num">0.2737</td><td class="num">0.4409</td><td>2026-04-11</td></tr>
+<tr class=""><td class="rank num">7</td><td class="provider-name">Claude Sonnet 4</td><td class="num">684</td><td class="num composite">0.6789</td><td class="num" style="color:var(--green)">+0.0294</td><td class="num" style="color:var(--green)">+0.1169</td><td class="num">0.3518</td><td class="num">0.4192</td><td>2026-04-11</td></tr>
+<tr class="section-divider"><td colspan="9"><span class="section-label">Products</span></td></tr>
+<tr class="product-row"><td class="rank num"></td><td class="provider-name">SynthPanel (Haiku 4.5)</td><td class="num">30</td><td class="num composite">0.7781</td><td class="num" style="color:var(--green)">+0.1286</td><td class="num" style="color:var(--green)">+0.2161</td><td class="num">0.2529</td><td class="num">0.6182</td><td>2026-04-11</td></tr>
+<tr class="product-row"><td class="rank num"></td><td class="provider-name">SynthPanel (Gemini 2.5 Flash Lite)</td><td class="num">30</td><td class="num composite">0.7358</td><td class="num" style="color:var(--green)">+0.0863</td><td class="num" style="color:var(--green)">+0.1738</td><td class="num">0.3125</td><td class="num">0.5683</td><td>2026-04-11</td></tr>
+<tr class="section-divider"><td colspan="9"><span class="section-label">Baselines</span></td></tr>
+<tr class="baseline-row"><td class="rank num"></td><td class="provider-name">Random Baseline</td><td class="num">684</td><td class="num composite">0.6495</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">0.1940</td><td class="num">-0.0139</td><td>2026-04-11</td></tr>
+<tr class="baseline-row"><td class="rank num"></td><td class="provider-name">Majority Baseline</td><td class="num">684</td><td class="num composite">0.5620</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">0.4919</td><td class="num">0.2317</td><td>2026-04-11</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="tab-panel" id="panel-subpop">
+<table class="leaderboard-table">
+  <thead><tr>
+    <th class="rank">Rank</th><th>Provider</th><th class="num">N</th><th class="num">SPS</th><th class="num">vs Random</th><th class="num">vs Majority</th><th class="num">JSD</th><th class="num">Tau</th><th>Date</th>
+  </tr></thead>
+  <tbody>
+<tr class="section-divider"><td colspan="9"><span class="section-label">Raw LLMs</span></td></tr>
+<tr class=""><td class="rank num"><span class="medal">&#x1f947;</span>1</td><td class="provider-name">Llama 3.3 70B</td><td class="num">200</td><td class="num composite">0.7055</td><td class="num" style="color:var(--green)">+0.0571</td><td class="num" style="color:var(--green)">+0.1842</td><td class="num">0.3449</td><td class="num">0.5118</td><td>2026-04-11</td></tr>
+<tr class=""><td class="rank num"><span class="medal">&#x1f948;</span>2</td><td class="provider-name">Claude Haiku 4.5</td><td class="num">200</td><td class="num composite">0.6647</td><td class="num" style="color:var(--green)">+0.0163</td><td class="num" style="color:var(--green)">+0.1434</td><td class="num">0.3838</td><td class="num">0.4265</td><td>2026-04-11</td></tr>
+<tr class="section-divider"><td colspan="9"><span class="section-label">Baselines</span></td></tr>
+<tr class="baseline-row"><td class="rank num"></td><td class="provider-name">Random Baseline</td><td class="num">200</td><td class="num composite">0.6484</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">0.1839</td><td class="num">-0.0385</td><td>2026-04-11</td></tr>
+<tr class="baseline-row"><td class="rank num"></td><td class="provider-name">Majority Baseline</td><td class="num">200</td><td class="num composite">0.5213</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">0.5335</td><td class="num">0.1523</td><td>2026-04-11</td></tr>
+  </tbody>
+</table>
+</div>
+  <p class="footnote"><strong>Adapter test:</strong> SynthPanel entries use an early, untuned adapter integration and are not representative of production SynthPanel quality. Included for transparency and baseline comparison.</p>
+  
+
+  <details class="collapsible">
+    <summary>Full Leaderboard (All Datasets)</summary>
+    <div class="collapsible-body">
   <table class="leaderboard-table" id="leaderboard">
     <thead>
       <tr>
@@ -562,8 +650,8 @@ footer a{color:var(--accent)}
       </tr>
     </tbody>
   </table>
-  <p class="footnote"><strong>Adapter test:</strong> SynthPanel entries use an early, untuned adapter integration and are not representative of production SynthPanel quality. Included for transparency and baseline comparison.</p>
-  
+    </div>
+  </details>
 
   <div class="secondary-panel">
     <details class="collapsible">
@@ -1181,6 +1269,18 @@ footer a{color:var(--accent)}
 
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var tab=this.dataset.tab;
+      document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+      document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
+      this.classList.add('active');
+      var panel=document.getElementById('panel-'+tab);
+      if(panel)panel.classList.add('active');
+    });
+  });
+
   // Expandable detail rows via chevron
   document.querySelectorAll('.chevron').forEach(function(el){
     el.addEventListener('click',function(){

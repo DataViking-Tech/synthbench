@@ -156,7 +156,11 @@ def _hero_model_name(provider: str) -> str:
     return name
 
 
-def _hero_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
+def _hero_svg(
+    ranked: list[dict],
+    baselines: dict[str, dict],
+    dataset_label: str = "All Datasets",
+) -> str:
     """Generate a bold hero SVG with horizontal dots and baseline zone banding.
 
     Sits above the leaderboard table. Models ranked by SPS with background
@@ -339,6 +343,7 @@ def _hero_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
     annotation = (
         f"Best: {best_name} at {best_pct:.0%} human parity"
         f"  \u00b7  Random chance: {random_sps:.0%}"
+        f"  \u00b7  {dataset_label}"
     )
     parts.append(
         f'<text x="{total_w / 2}" y="38" text-anchor="middle" '
@@ -1135,6 +1140,251 @@ def _collect_topic_scores(
     return topic_scores, sorted(topics_seen)
 
 
+# ---------------------------------------------------------------------------
+# Multi-dataset helpers: heatmap, fitness notes, per-dataset tables
+# ---------------------------------------------------------------------------
+
+DATASET_LABELS: dict[str, str] = {
+    "opinionsqa": "OpinionsQA",
+    "globalopinionqa": "GlobalOpinionQA",
+    "subpop": "SubPOP",
+}
+
+
+def _sps_bg_style(sps: float | None) -> str:
+    """Return inline background style for a heatmap cell coloured by SPS."""
+    if sps is None:
+        return "background:var(--surface);color:var(--text-muted)"
+    intensity = max(0.0, min(1.0, (sps - 0.5) / 0.3))
+    return f"background:rgba(63,185,80,{intensity * 0.25 + 0.05})"
+
+
+def _fitness_note(provider_topics: dict[str, float]) -> str:
+    """Generate a model-topic fitness note.
+
+    - If political SPS < consumer SPS by 2%+: "Avoid politically charged surveys"
+    - If consistent across topics: "Consistent across all topics"
+    """
+    if not provider_topics or len(provider_topics) < 2:
+        return ""
+    political = provider_topics.get("political")
+    consumer = provider_topics.get("consumer")
+    if political is not None and consumer is not None:
+        if consumer - political >= 0.02:
+            return "Avoid politically charged surveys"
+    values = list(provider_topics.values())
+    spread = max(values) - min(values)
+    if spread < 0.02:
+        return "Consistent across all topics"
+    return ""
+
+
+def _build_heatmap_data(
+    summary_entries: list[dict],
+    datasets: list[str],
+    topic_scores: dict[str, dict[str, float]],
+) -> list[dict]:
+    """Build heatmap rows: one per model (deduplicated by display name).
+
+    Returns list sorted by aggregate SPS descending with keys:
+    name, provider, datasets, aggregate, count, total, fitness.
+    """
+    from synthbench.leaderboard import display_provider_name
+
+    model_data: dict[str, dict] = {}
+    for e in summary_entries:
+        provider = e["provider"]
+        if provider in BASELINE_PROVIDERS:
+            continue
+        name = display_provider_name(provider)
+        dataset = e["dataset"]
+        sps = e["composite_parity"]
+        if name not in model_data:
+            model_data[name] = {"name": name, "provider": provider, "datasets": {}}
+        model_data[name]["datasets"][dataset] = sps
+
+    rows = []
+    for name, data in model_data.items():
+        scores = [data["datasets"][ds] for ds in datasets if ds in data["datasets"]]
+        aggregate = sum(scores) / len(scores) if scores else 0
+        fitness = _fitness_note(topic_scores.get(data["provider"], {}))
+        rows.append(
+            {
+                "name": name,
+                "provider": data["provider"],
+                "datasets": data["datasets"],
+                "aggregate": round(aggregate, 4),
+                "count": len(scores),
+                "total": len(datasets),
+                "fitness": fitness,
+            }
+        )
+
+    rows.sort(key=lambda r: r["aggregate"], reverse=True)
+    return rows
+
+
+def _heatmap_html(heatmap_rows: list[dict], datasets: list[str]) -> str:
+    """Generate heatmap matrix table HTML for the overview tab."""
+    ds_headers = "".join(
+        f'<th class="num">{escape(DATASET_LABELS.get(ds, ds))}</th>' for ds in datasets
+    )
+
+    medals = {0: "&#x1f947;", 1: "&#x1f948;", 2: "&#x1f949;"}
+    trs: list[str] = []
+    for i, row in enumerate(heatmap_rows):
+        medal_html = f'<span class="medal">{medals[i]}</span>' if i in medals else ""
+
+        cells = f'<td class="rank num">{medal_html}{i + 1}</td>'
+        cells += f'<td class="provider-name">{escape(row["name"])}</td>'
+
+        for ds in datasets:
+            sps = row["datasets"].get(ds)
+            if sps is not None:
+                style = _sps_bg_style(sps)
+                cells += f'<td class="num heatmap-cell" style="{style}">{sps:.4f}</td>'
+            else:
+                cells += (
+                    '<td class="num heatmap-cell" '
+                    'style="background:var(--surface);color:var(--text-muted)">'
+                    "&mdash;</td>"
+                )
+
+        cells += f'<td class="num composite">{row["aggregate"]:.4f}</td>'
+
+        badge_color = "var(--green)" if row["count"] == row["total"] else "var(--gold)"
+        cells += (
+            f'<td><span class="dataset-badge" style="color:{badge_color}">'
+            f"{row['count']}/{row['total']} datasets</span></td>"
+        )
+
+        if row["fitness"]:
+            cells += f'<td class="fitness-note">{escape(row["fitness"])}</td>'
+        else:
+            cells += '<td class="fitness-note">&mdash;</td>'
+
+        trs.append(f"      <tr>{cells}</tr>")
+
+    return (
+        '<table class="leaderboard-table heatmap-table">\n'
+        "  <thead><tr>\n"
+        '    <th class="rank">Rank</th><th>Model</th>\n'
+        f"    {ds_headers}\n"
+        '    <th class="num">Aggregate SPS</th><th>Coverage</th>'
+        "<th>Strengths</th>\n"
+        "  </tr></thead>\n"
+        "  <tbody>\n" + "\n".join(trs) + "\n  </tbody>\n"
+        "</table>"
+    )
+
+
+def _dataset_table_html(
+    summary_entries: list[dict],
+    dataset: str,
+    baseline_data: dict[str, dict],
+) -> str:
+    """Generate a ranked leaderboard table filtered to one dataset."""
+    from synthbench.leaderboard import display_provider_name, provider_framework
+
+    ds_entries = [e for e in summary_entries if e["dataset"] == dataset]
+    if not ds_entries:
+        return '<p class="about">No results for this dataset yet.</p>'
+
+    raw = []
+    products = []
+    baselines_list: list[dict] = []
+    for e in ds_entries:
+        fw = e.get("framework") or provider_framework(e["provider"])
+        if fw == "baseline":
+            baselines_list.append(e)
+        elif fw == "product":
+            products.append(e)
+        else:
+            raw.append(e)
+
+    raw.sort(key=lambda e: e["composite_parity"], reverse=True)
+    products.sort(key=lambda e: e["composite_parity"], reverse=True)
+
+    has_bl = bool(baseline_data)
+    n_cols = 7 + (2 if has_bl else 0)
+
+    medal_map = {1: "&#x1f947;", 2: "&#x1f948;", 3: "&#x1f949;"}
+    trs: list[str] = []
+
+    def _add_section(label: str) -> None:
+        trs.append(
+            f'<tr class="section-divider"><td colspan="{n_cols}">'
+            f'<span class="section-label">{escape(label)}</span></td></tr>'
+        )
+
+    def _add_row(
+        e: dict,
+        rank: int | None = None,
+        css_class: str = "",
+    ) -> None:
+        name = display_provider_name(e["provider"])
+        medal = medal_map.get(rank, "") if rank else ""
+        medal_html = f'<span class="medal">{medal}</span>' if medal else ""
+        rank_display = str(rank) if rank else ""
+
+        bl_cells = ""
+        if has_bl:
+            vs_r = e.get("vs_random")
+            vs_m = e.get("vs_majority")
+            for vs in (vs_r, vs_m):
+                if vs:
+                    dv = float(vs)
+                    c = "var(--green)" if dv > 0 else "var(--red)"
+                    bl_cells += f'<td class="num" style="color:{c}">{vs}</td>'
+                else:
+                    bl_cells += '<td class="num">&mdash;</td>'
+
+        trs.append(
+            f'<tr class="{css_class}">'
+            f'<td class="rank num">{medal_html}{rank_display}</td>'
+            f'<td class="provider-name">{escape(name)}</td>'
+            f'<td class="num">{e.get("n", 0)}</td>'
+            f'<td class="num composite">{e["composite_parity"]:.4f}</td>'
+            f"{bl_cells}"
+            f'<td class="num">{e["mean_jsd"]:.4f}</td>'
+            f'<td class="num">{e["mean_kendall_tau"]:.4f}</td>'
+            f"<td>{e['date']}</td>"
+            f"</tr>"
+        )
+
+    if raw:
+        _add_section("Raw LLMs")
+        for rank, e in enumerate(raw, 1):
+            _add_row(e, rank=rank)
+
+    if products:
+        _add_section("Products")
+        for e in products:
+            _add_row(e, css_class="product-row")
+
+    if baselines_list:
+        _add_section("Baselines")
+        for e in baselines_list:
+            _add_row(e, css_class="baseline-row")
+
+    bl_th = ""
+    if has_bl:
+        bl_th = '<th class="num">vs Random</th><th class="num">vs Majority</th>'
+
+    return (
+        '<table class="leaderboard-table">\n'
+        "  <thead><tr>\n"
+        '    <th class="rank">Rank</th><th>Provider</th>'
+        f'<th class="num">N</th><th class="num">SPS</th>'
+        f"{bl_th}"
+        '<th class="num">JSD</th><th class="num">Tau</th>'
+        "<th>Date</th>\n"
+        "  </tr></thead>\n"
+        "  <tbody>\n" + "\n".join(trs) + "\n  </tbody>\n"
+        "</table>"
+    )
+
+
 def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     """Build a complete HTML leaderboard page from a list of result dicts.
 
@@ -1513,7 +1763,15 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
         baseline_th = '        <th class="num sortable" data-sort="vs-random" title="SPS improvement over uniform random baseline">vs Random</th>\n        <th class="num sortable" data-sort="vs-majority" title="SPS improvement over always-pick-the-mode baseline">vs Majority</th>\n'
 
     # Generate chart sections
-    hero_chart = _hero_svg(ranked, baselines)
+    chart_datasets = sorted(
+        {r.get("config", {}).get("dataset", "") for r in ranked} - {""}
+    )
+    ds_label = (
+        ", ".join(DATASET_LABELS.get(d, d) for d in chart_datasets)
+        if chart_datasets
+        else "All Datasets"
+    )
+    hero_chart = _hero_svg(ranked, baselines, dataset_label=ds_label)
     dot_plot = _dot_plot_svg(ranked, baselines)
     per_metric_dot = _per_metric_dot_svg(ranked, baselines)
     topic_bar = _topic_grouped_bar_svg(topic_scores, topics_present, topic_colors)
@@ -1628,6 +1886,39 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             "have higher variance and should be interpreted with caution.</p>"
         )
 
+    # ── Multi-dataset tabs ──
+    all_datasets = sorted(
+        {e["dataset"] for e in summary_entries if e["dataset"] != "unknown"}
+    )
+
+    # Tab bar buttons
+    tab_buttons = ['<button class="tab active" data-tab="overview">Overview</button>']
+    for ds in all_datasets:
+        label = DATASET_LABELS.get(ds, ds)
+        tab_buttons.append(
+            f'<button class="tab" data-tab="{escape(ds)}">{escape(label)}</button>'
+        )
+    tab_bar_html = (
+        '<div class="tab-bar" id="dataset-tabs">' + "".join(tab_buttons) + "</div>"
+    )
+
+    # Overview panel: heatmap
+    heatmap_rows = _build_heatmap_data(summary_entries, all_datasets, topic_scores)
+    overview_panel = (
+        '<div class="tab-panel active" id="panel-overview">\n'
+        + _heatmap_html(heatmap_rows, all_datasets)
+        + "\n</div>"
+    )
+
+    # Per-dataset panels
+    dataset_panels = []
+    for ds in all_datasets:
+        panel_html = _dataset_table_html(summary_entries, ds, baseline_data)
+        dataset_panels.append(
+            f'<div class="tab-panel" id="panel-{escape(ds)}">\n{panel_html}\n</div>'
+        )
+    dataset_panels_html = "\n".join(dataset_panels)
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1735,6 +2026,17 @@ header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
 
 .footnote{{font-size:0.85rem;color:var(--text-muted);margin-top:0.75rem;padding-left:0.5rem;border-left:2px solid var(--border)}}
 
+.tab-bar{{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1.5rem;overflow-x:auto}}
+.tab{{padding:0.6rem 1.2rem;border:none;background:none;color:var(--text-muted);font-size:0.9rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color 0.2s,border-color 0.2s;white-space:nowrap}}
+.tab:hover{{color:var(--text)}}
+.tab.active{{color:var(--accent);border-bottom-color:var(--accent)}}
+.tab-panel{{display:none}}
+.tab-panel.active{{display:block}}
+
+.heatmap-table .heatmap-cell{{font-variant-numeric:tabular-nums;border-radius:4px;padding:0.5rem 0.8rem}}
+.dataset-badge{{font-size:0.8rem;font-weight:600}}
+.fitness-note{{font-size:0.82rem;color:var(--text-muted);font-style:italic;max-width:220px}}
+
 .secondary-panel{{margin-top:2.5rem}}
 details.collapsible{{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-top:1.5rem;overflow:hidden}}
 details.collapsible>summary{{padding:1rem 1.5rem;cursor:pointer;font-size:1.1rem;font-weight:600;color:var(--text);list-style:none;display:flex;align-items:center;gap:0.5rem;user-select:none}}
@@ -1792,14 +2094,24 @@ footer a{{color:var(--accent)}}
 
   <div class="about">
     <p>SynthBench measures how well synthetic respondent systems reproduce real human survey response distributions.
-       Scores are computed against ground-truth data from <strong>OpinionsQA</strong> (Santurkar et al., ICML 2023) &mdash;
-       1,498 questions from the Pew American Trends Panel.</p>
+       Scores are computed against ground-truth data from multiple datasets including
+       <strong>OpinionsQA</strong> (Santurkar et al., ICML 2023),
+       <strong>GlobalOpinionQA</strong>, and <strong>SubPOP</strong>.</p>
     <p class="transparency">SynthBench is maintained by DataViking-Tech, which also develops SynthPanel.
        All results use identical evaluation methodology.</p>
   </div>
 
 {metric_legend}
 
+{tab_bar_html}
+{overview_panel}
+{dataset_panels_html}
+  {synthpanel_footnote}
+  {low_n_footnote}
+
+  <details class="collapsible">
+    <summary>Full Leaderboard (All Datasets)</summary>
+    <div class="collapsible-body">
   <table class="leaderboard-table" id="leaderboard">
     <thead>
       <tr>
@@ -1818,8 +2130,8 @@ footer a{{color:var(--accent)}}
 {tbody}
     </tbody>
   </table>
-  {synthpanel_footnote}
-  {low_n_footnote}
+    </div>
+  </details>
 
   <div class="secondary-panel">
     <details class="collapsible">
@@ -1880,6 +2192,18 @@ footer a{{color:var(--accent)}}
 
 <script>
 document.addEventListener('DOMContentLoaded',function(){{
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(function(btn){{
+    btn.addEventListener('click',function(){{
+      var tab=this.dataset.tab;
+      document.querySelectorAll('.tab').forEach(function(t){{t.classList.remove('active')}});
+      document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active')}});
+      this.classList.add('active');
+      var panel=document.getElementById('panel-'+tab);
+      if(panel)panel.classList.add('active');
+    }});
+  }});
+
   // Expandable detail rows via chevron
   document.querySelectorAll('.chevron').forEach(function(el){{
     el.addEventListener('click',function(){{
