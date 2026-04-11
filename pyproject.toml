@@ -20,7 +20,8 @@ dependencies = [
 anthropic = ["anthropic>=0.18"]
 openai = ["openai>=1.0"]
 viz = ["matplotlib>=3.7"]
-all = ["anthropic>=0.18", "openai>=1.0", "matplotlib>=3.7"]
+hf = ["datasets>=2.14"]
+all = ["anthropic>=0.18", "openai>=1.0", "matplotlib>=3.7", "datasets>=2.14"]
 dev = ["pytest>=7.0", "pytest-asyncio>=0.21"]
 
 [project.scripts]
