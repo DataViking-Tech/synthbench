@@ -217,36 +217,61 @@ def _hero_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
         f"'Segoe UI',sans-serif;max-width:{total_w}px\">"
     ]
 
-    # ── Zone banding ──
-    # Red zone: below amber_lo
-    red_x1 = x(sps_min)
-    red_x2 = x(min(amber_lo, sps_max))
-    if red_x2 > red_x1:
-        parts.append(
-            f'<rect x="{red_x1:.1f}" y="{chart_top}" '
-            f'width="{red_x2 - red_x1:.1f}" height="{chart_h}" '
-            f'style="fill:var(--red)" opacity="0.07"/>'
-        )
+    # ── Zone banding (smooth gradient transitions) ──
+    zone_x_start = x(sps_min)
+    zone_width = chart_w
 
-    # Amber zone: amber_lo to amber_hi
-    amb_x1 = x(max(amber_lo, sps_min))
-    amb_x2 = x(min(amber_hi, sps_max))
-    if amb_x2 > amb_x1:
-        parts.append(
-            f'<rect x="{amb_x1:.1f}" y="{chart_top}" '
-            f'width="{amb_x2 - amb_x1:.1f}" height="{chart_h}" '
-            f'style="fill:var(--gold)" opacity="0.12"/>'
-        )
+    def zone_pct(sps_val: float) -> float:
+        return max(0.0, min(100.0, ((sps_val - sps_min) / sps_range) * 100))
 
-    # Green zone: above amber_hi
-    grn_x1 = x(max(amber_hi, sps_min))
-    grn_x2 = x(sps_max)
-    if grn_x2 > grn_x1:
+    p_lo = zone_pct(amber_lo)
+    p_hi = zone_pct(amber_hi)
+    tw = 3.0  # transition width in percent for soft edges
+
+    parts.append("<defs>")
+    parts.append('<linearGradient id="zone-grad" x1="0%" y1="0%" x2="100%" y2="0%">')
+    parts.append(
+        '<stop offset="0%" style="stop-color:var(--red)" stop-opacity="0.07"/>'
+    )
+    if p_lo > tw:
         parts.append(
-            f'<rect x="{grn_x1:.1f}" y="{chart_top}" '
-            f'width="{grn_x2 - grn_x1:.1f}" height="{chart_h}" '
-            f'style="fill:var(--green)" opacity="0.07"/>'
+            f'<stop offset="{p_lo - tw:.1f}%" style="stop-color:var(--red)" stop-opacity="0.07"/>'
         )
+    parts.append(
+        f'<stop offset="{min(p_lo + tw, 100):.1f}%" style="stop-color:var(--gold)" stop-opacity="0.12"/>'
+    )
+    if p_hi > p_lo + 2 * tw:
+        parts.append(
+            f'<stop offset="{max(p_hi - tw, 0):.1f}%" style="stop-color:var(--gold)" stop-opacity="0.12"/>'
+        )
+    parts.append(
+        f'<stop offset="{min(p_hi + tw, 100):.1f}%" style="stop-color:var(--green)" stop-opacity="0.07"/>'
+    )
+    parts.append(
+        '<stop offset="100%" style="stop-color:var(--green)" stop-opacity="0.07"/>'
+    )
+    parts.append("</linearGradient>")
+    parts.append("</defs>")
+
+    parts.append(
+        f'<rect x="{zone_x_start:.1f}" y="{chart_top}" '
+        f'width="{zone_width:.1f}" height="{chart_h}" '
+        f'fill="url(#zone-grad)"/>'
+    )
+
+    # ── Subtle vertical grid lines at 0.1 SPS intervals ──
+    grid_step = 0.1
+    grid_val = round(sps_min / grid_step) * grid_step
+    while grid_val <= sps_max + 0.001:
+        if grid_val >= sps_min:
+            gx = x(grid_val)
+            parts.append(
+                f'<line x1="{gx:.1f}" y1="{chart_top}" '
+                f'x2="{gx:.1f}" y2="{chart_bot}" '
+                f'style="stroke:var(--text-muted)" stroke-width="0.5" '
+                f'opacity="0.15" stroke-dasharray="3,3"/>'
+            )
+        grid_val += grid_step
 
     # ── Random baseline vertical line ──
     bl_x = x(random_sps)
@@ -319,6 +344,8 @@ def _hero_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
 
     # ── Zone labels at bottom ──
     zone_y = chart_bot + 18
+    red_x1 = x(sps_min)
+    red_x2 = x(min(amber_lo, sps_max))
     if red_x2 > red_x1:
         mid = (red_x1 + red_x2) / 2
         parts.append(
@@ -326,6 +353,8 @@ def _hero_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
             f'font-size="9" style="fill:var(--red)" opacity="0.8">'
             f"Below baseline</text>"
         )
+    amb_x1 = x(max(amber_lo, sps_min))
+    amb_x2 = x(min(amber_hi, sps_max))
     if amb_x2 > amb_x1:
         mid = (amb_x1 + amb_x2) / 2
         parts.append(
@@ -333,6 +362,8 @@ def _hero_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
             f'font-size="9" style="fill:var(--gold)" opacity="0.8">'
             f"Near baseline</text>"
         )
+    grn_x1 = x(max(amber_hi, sps_min))
+    grn_x2 = x(sps_max)
     if grn_x2 > grn_x1:
         mid = (grn_x1 + grn_x2) / 2
         parts.append(
@@ -450,6 +481,460 @@ def _dot_plot_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
         + "\n".join(dots)
         + "\n</svg>"
     )
+
+
+def _convergence_line_svg(convergence_data: dict[str, list[dict]]) -> str:
+    """Generate a line chart showing SPS convergence across sample sizes.
+
+    X-axis: samples per question, Y-axis: SPS.
+    One colored line per model with dots and min/max error bars.
+    """
+    # Only include providers with 3+ sample sizes (true convergence curves)
+    conv_providers = {
+        p: sweeps for p, sweeps in convergence_data.items() if len(sweeps) >= 3
+    }
+    if not conv_providers:
+        return ""
+
+    # Chart dimensions
+    pad_l = 55
+    pad_r = 160
+    pad_t = 40
+    pad_b = 50
+    chart_w = 500
+    chart_h = 220
+    total_w = pad_l + chart_w + pad_r
+    total_h = pad_t + chart_h + pad_b
+
+    # Collect all data points for axis scaling
+    all_samples: set[int] = set()
+    all_sps: list[float] = []
+    for sweeps in conv_providers.values():
+        for s in sweeps:
+            all_samples.add(s["samples"])
+            all_sps.extend(s["runs"])
+
+    sorted_samples = sorted(all_samples)
+    n_pts = len(sorted_samples)
+    sample_idx = {s: i for i, s in enumerate(sorted_samples)}
+
+    # Y-axis range (round to nice 0.05 boundaries)
+    sps_lo = max(0, round((min(all_sps) - 0.02) * 20) / 20)
+    sps_hi = min(1, round((max(all_sps) + 0.02) * 20 + 0.5) / 20)
+    sps_span = sps_hi - sps_lo if sps_hi > sps_lo else 0.1
+
+    def cx(idx: int) -> float:
+        if n_pts <= 1:
+            return pad_l + chart_w / 2
+        return pad_l + idx * chart_w / (n_pts - 1)
+
+    def cy(sps: float) -> float:
+        return pad_t + chart_h - ((sps - sps_lo) / sps_span) * chart_h
+
+    colors = [
+        "var(--accent)",
+        "var(--green)",
+        "var(--gold)",
+        "var(--red)",
+        "var(--topic-4)",
+        "var(--text-muted)",
+    ]
+
+    parts: list[str] = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {total_w} {total_h}" '
+        f'width="100%" style="font-family:-apple-system,BlinkMacSystemFont,'
+        f"'Segoe UI',sans-serif;max-width:{total_w}px\">"
+    ]
+
+    # Title
+    parts.append(
+        f'<text x="{pad_l + chart_w / 2}" y="20" text-anchor="middle" '
+        f'font-size="14" style="fill:var(--text)" font-weight="700">'
+        f"Score Convergence by Sample Size</text>"
+    )
+
+    # Chart border
+    parts.append(
+        f'<rect x="{pad_l}" y="{pad_t}" width="{chart_w}" height="{chart_h}" '
+        f'fill="none" style="stroke:var(--border)" stroke-width="1"/>'
+    )
+
+    # Y-axis grid lines and labels (0.05 steps)
+    y_val = sps_lo
+    while y_val <= sps_hi + 0.001:
+        yy = cy(y_val)
+        parts.append(
+            f'<line x1="{pad_l}" y1="{yy:.1f}" x2="{pad_l + chart_w}" y2="{yy:.1f}" '
+            f'style="stroke:var(--text-muted)" stroke-width="0.5" opacity="0.2"/>'
+        )
+        parts.append(
+            f'<text x="{pad_l - 8}" y="{yy + 4:.1f}" text-anchor="end" '
+            f'font-size="10" style="fill:var(--text-muted)">{y_val:.2f}</text>'
+        )
+        y_val += 0.05
+
+    # X-axis labels and subtle grid
+    for s in sorted_samples:
+        xx = cx(sample_idx[s])
+        parts.append(
+            f'<line x1="{xx:.1f}" y1="{pad_t}" x2="{xx:.1f}" y2="{pad_t + chart_h}" '
+            f'style="stroke:var(--text-muted)" stroke-width="0.5" opacity="0.1"/>'
+        )
+        parts.append(
+            f'<text x="{xx:.1f}" y="{pad_t + chart_h + 18}" text-anchor="middle" '
+            f'font-size="10" style="fill:var(--text-muted)">{s}</text>'
+        )
+
+    # X-axis label
+    parts.append(
+        f'<text x="{pad_l + chart_w / 2}" y="{pad_t + chart_h + 38}" '
+        f'text-anchor="middle" font-size="10" style="fill:var(--text-muted)">'
+        f"Samples per Question</text>"
+    )
+
+    # Lines, dots, and error bars per provider
+    for pi, (provider, sweeps) in enumerate(sorted(conv_providers.items())):
+        color = colors[pi % len(colors)]
+        name = _hero_model_name(provider)
+
+        # Build line from mean values at each sample count
+        points: list[tuple[float, float]] = []
+        for sweep in sweeps:
+            idx = sample_idx[sweep["samples"]]
+            runs = sweep["runs"]
+            mean_val = sum(runs) / len(runs)
+            points.append((cx(idx), cy(mean_val)))
+
+        if len(points) > 1:
+            path_d = "M" + " L".join(f"{px:.1f},{py:.1f}" for px, py in points)
+            parts.append(
+                f'<path d="{path_d}" fill="none" style="stroke:{color}" '
+                f'stroke-width="2" opacity="0.85"/>'
+            )
+
+        # Dots and min/max error bars
+        for sweep in sweeps:
+            idx = sample_idx[sweep["samples"]]
+            runs = sweep["runs"]
+            mean_val = sum(runs) / len(runs)
+            dx = cx(idx)
+            dy = cy(mean_val)
+
+            if len(runs) > 1:
+                y_lo = cy(min(runs))
+                y_hi = cy(max(runs))
+                parts.append(
+                    f'<line x1="{dx:.1f}" y1="{y_lo:.1f}" '
+                    f'x2="{dx:.1f}" y2="{y_hi:.1f}" '
+                    f'style="stroke:{color}" stroke-width="1.5" opacity="0.4"/>'
+                )
+                for cap_y in (y_lo, y_hi):
+                    parts.append(
+                        f'<line x1="{dx - 3:.1f}" y1="{cap_y:.1f}" '
+                        f'x2="{dx + 3:.1f}" y2="{cap_y:.1f}" '
+                        f'style="stroke:{color}" stroke-width="1" opacity="0.4"/>'
+                    )
+
+            parts.append(
+                f'<circle cx="{dx:.1f}" cy="{dy:.1f}" r="3.5" '
+                f'style="fill:{color}" opacity="0.9"/>'
+            )
+
+        # Legend entry
+        ly = pad_t + 10 + pi * 18
+        lx = pad_l + chart_w + 15
+        parts.append(
+            f'<line x1="{lx}" y1="{ly}" x2="{lx + 16}" y2="{ly}" '
+            f'style="stroke:{color}" stroke-width="2"/>'
+        )
+        parts.append(f'<circle cx="{lx + 8}" cy="{ly}" r="2.5" style="fill:{color}"/>')
+        parts.append(
+            f'<text x="{lx + 22}" y="{ly + 4}" font-size="10" '
+            f'style="fill:var(--text-muted)">{escape(name)}</text>'
+        )
+
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
+def _topic_grouped_bar_svg(
+    topic_scores: dict[str, dict[str, float]],
+    topics: list[str],
+    topic_colors: list[str],
+) -> str:
+    """Generate a grouped horizontal bar chart showing per-topic SPS for each model.
+
+    Only includes models that have scores for all topics.
+    """
+    complete = {
+        p: scores
+        for p, scores in topic_scores.items()
+        if all(t in scores for t in topics) and p not in BASELINE_PROVIDERS
+    }
+    if not complete or not topics:
+        return ""
+
+    n_models = len(complete)
+    n_topics = len(topics)
+
+    # Layout
+    pad_l = 180
+    pad_r = 60
+    pad_t = 40
+    pad_b = 45
+    chart_w = 400
+    bar_h = 14
+    bar_gap = 3
+    group_gap = 14
+    group_h = n_topics * (bar_h + bar_gap) + group_gap
+    chart_h = n_models * group_h
+    total_w = pad_l + chart_w + pad_r
+    total_h = pad_t + chart_h + pad_b
+
+    # X-axis range
+    all_vals = [s for scores in complete.values() for s in scores.values()]
+    val_max = min(1.0, max(all_vals) + 0.05) if all_vals else 1.0
+
+    def bar_w(val: float) -> float:
+        return (val / val_max) * chart_w
+
+    parts: list[str] = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {total_w} {total_h}" '
+        f'width="100%" style="font-family:-apple-system,BlinkMacSystemFont,'
+        f"'Segoe UI',sans-serif;max-width:{total_w}px\">"
+    ]
+
+    # Title
+    parts.append(
+        f'<text x="{total_w / 2}" y="20" text-anchor="middle" '
+        f'font-size="14" style="fill:var(--text)" font-weight="700">'
+        f"SPS by Topic</text>"
+    )
+
+    # Vertical grid lines
+    for gv in (0.2, 0.4, 0.6, 0.8, 1.0):
+        if gv <= val_max:
+            gx = pad_l + bar_w(gv)
+            parts.append(
+                f'<line x1="{gx:.1f}" y1="{pad_t}" x2="{gx:.1f}" '
+                f'y2="{pad_t + chart_h}" '
+                f'style="stroke:var(--text-muted)" stroke-width="0.5" opacity="0.15"/>'
+            )
+            parts.append(
+                f'<text x="{gx:.1f}" y="{pad_t + chart_h + 15}" text-anchor="middle" '
+                f'font-size="9" style="fill:var(--text-muted)">{gv:.1f}</text>'
+            )
+
+    # Bars per model
+    sorted_models = sorted(complete.items(), key=lambda x: -max(x[1].values()))
+    for mi, (provider, scores) in enumerate(sorted_models):
+        name = _hero_model_name(provider)
+        group_y = pad_t + mi * group_h
+
+        parts.append(
+            f'<text x="{pad_l - 10}" y="{group_y + group_h / 2 + 4}" '
+            f'text-anchor="end" font-size="11" style="fill:var(--text)">'
+            f"{escape(name)}</text>"
+        )
+
+        for ti, topic in enumerate(topics):
+            val = scores.get(topic, 0)
+            color = topic_colors[ti % len(topic_colors)]
+            by = group_y + ti * (bar_h + bar_gap) + 2
+            bw = bar_w(val)
+
+            parts.append(
+                f'<rect x="{pad_l}" y="{by:.1f}" width="{bw:.1f}" '
+                f'height="{bar_h}" rx="2" '
+                f'style="fill:{color}" opacity="0.8"/>'
+            )
+            parts.append(
+                f'<text x="{pad_l + bw + 5:.1f}" y="{by + bar_h - 2:.1f}" '
+                f'font-size="9" style="fill:var(--text-muted)">{val:.3f}</text>'
+            )
+
+    # Legend
+    legend_y = pad_t + chart_h + 28
+    legend_x = pad_l
+    for ti, topic in enumerate(topics):
+        color = topic_colors[ti % len(topic_colors)]
+        lx = legend_x + ti * 120
+        parts.append(
+            f'<rect x="{lx}" y="{legend_y}" width="12" height="12" rx="2" '
+            f'style="fill:{color}" opacity="0.8"/>'
+        )
+        parts.append(
+            f'<text x="{lx + 16}" y="{legend_y + 10}" font-size="10" '
+            f'style="fill:var(--text-muted)">{escape(topic.capitalize())}</text>'
+        )
+
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
+def _per_metric_dot_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
+    """Generate a dot plot showing P_dist, P_rank, P_refuse per model on a shared 0-1 axis.
+
+    Includes baseline reference lines and CI whiskers where available.
+    """
+    models = [
+        r
+        for r in ranked
+        if r.get("config", {}).get("provider", "") not in BASELINE_PROVIDERS
+    ]
+    if not models:
+        return ""
+
+    metrics = ["p_dist", "p_rank", "p_refuse"]
+    metric_labels = {"p_dist": "P_dist", "p_rank": "P_rank", "p_refuse": "P_refuse"}
+    metric_colors = {
+        "p_dist": "var(--accent)",
+        "p_rank": "var(--green)",
+        "p_refuse": "var(--gold)",
+    }
+
+    # Layout
+    pad_l = 180
+    pad_r = 30
+    pad_t = 45
+    pad_b = 55
+    chart_w = 450
+    row_h = 32
+    n = len(models)
+    chart_h = n * row_h
+    total_w = pad_l + chart_w + pad_r
+    total_h = pad_t + chart_h + pad_b
+
+    def sx(val: float) -> float:
+        return pad_l + val * chart_w
+
+    parts: list[str] = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {total_w} {total_h}" '
+        f'width="100%" style="font-family:-apple-system,BlinkMacSystemFont,'
+        f"'Segoe UI',sans-serif;max-width:{total_w}px\">"
+    ]
+
+    # Title
+    parts.append(
+        f'<text x="{total_w / 2}" y="20" text-anchor="middle" '
+        f'font-size="14" style="fill:var(--text)" font-weight="700">'
+        f"Per-Metric Breakdown</text>"
+    )
+
+    # Baseline reference lines
+    for bl_name, bl_r in baselines.items():
+        bl_sps = bl_r.get("aggregate", {}).get("composite_parity", 0)
+        bx = sx(bl_sps)
+        color = "var(--red)" if "random" in bl_name else "var(--text-muted)"
+        label = "Random" if "random" in bl_name else "Majority"
+        parts.append(
+            f'<line x1="{bx:.1f}" y1="{pad_t}" x2="{bx:.1f}" y2="{pad_t + chart_h}" '
+            f'style="stroke:{color}" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>'
+        )
+        parts.append(
+            f'<text x="{bx:.1f}" y="{pad_t - 6}" text-anchor="middle" '
+            f'font-size="9" style="fill:{color}" opacity="0.7">{label}</text>'
+        )
+
+    # X-axis grid and labels
+    for tick in (0, 0.2, 0.4, 0.6, 0.8, 1.0):
+        tx = sx(tick)
+        parts.append(
+            f'<line x1="{tx:.1f}" y1="{pad_t}" x2="{tx:.1f}" y2="{pad_t + chart_h}" '
+            f'style="stroke:var(--text-muted)" stroke-width="0.5" opacity="0.12"/>'
+        )
+        parts.append(
+            f'<text x="{tx:.1f}" y="{pad_t + chart_h + 15}" text-anchor="middle" '
+            f'font-size="9" style="fill:var(--text-muted)">{tick:.1f}</text>'
+        )
+
+    # Model rows
+    for i, r in enumerate(models):
+        cfg = r.get("config", {})
+        provider = cfg.get("provider", "unknown")
+        agg = r.get("aggregate", {})
+        name = _hero_model_name(provider)
+        y_center = pad_t + i * row_h + row_h / 2
+
+        # Model label
+        parts.append(
+            f'<text x="{pad_l - 10}" y="{y_center + 4}" text-anchor="end" '
+            f'font-size="11" style="fill:var(--text)">{escape(name)}</text>'
+        )
+
+        # Row separator
+        if i > 0:
+            parts.append(
+                f'<line x1="{pad_l}" y1="{pad_t + i * row_h}" '
+                f'x2="{pad_l + chart_w}" y2="{pad_t + i * row_h}" '
+                f'style="stroke:var(--border)" stroke-width="0.5" opacity="0.3"/>'
+            )
+
+        # Compute metric point estimates
+        mean_jsd = agg.get("mean_jsd", 0)
+        mean_tau = agg.get("mean_kendall_tau", 0)
+        per_ci = agg.get("per_metric_ci", {})
+
+        metric_vals: dict[str, float | None] = {
+            "p_dist": 1.0 - mean_jsd,
+            "p_rank": (1.0 + mean_tau) / 2.0,
+        }
+        p_refuse_ci = per_ci.get("p_refuse")
+        if p_refuse_ci and len(p_refuse_ci) == 2:
+            metric_vals["p_refuse"] = (p_refuse_ci[0] + p_refuse_ci[1]) / 2
+        else:
+            metric_vals["p_refuse"] = None
+
+        # Draw dots and CI whiskers for each metric
+        for mi, metric in enumerate(metrics):
+            val = metric_vals.get(metric)
+            if val is None:
+                continue
+            color = metric_colors[metric]
+            dot_x = sx(val)
+            dy_offset = (mi - 1) * 6  # vertical offset to avoid overlap
+            dot_y = y_center + dy_offset
+
+            # CI whisker
+            ci = per_ci.get(metric)
+            if ci and len(ci) == 2:
+                x_lo = sx(ci[0])
+                x_hi = sx(ci[1])
+                parts.append(
+                    f'<line x1="{x_lo:.1f}" y1="{dot_y}" '
+                    f'x2="{x_hi:.1f}" y2="{dot_y}" '
+                    f'style="stroke:{color}" stroke-width="1.5" opacity="0.35"/>'
+                )
+                for cap_x in (x_lo, x_hi):
+                    parts.append(
+                        f'<line x1="{cap_x:.1f}" y1="{dot_y - 3}" '
+                        f'x2="{cap_x:.1f}" y2="{dot_y + 3}" '
+                        f'style="stroke:{color}" stroke-width="1" opacity="0.35"/>'
+                    )
+
+            parts.append(
+                f'<circle cx="{dot_x:.1f}" cy="{dot_y}" r="3.5" '
+                f'style="fill:{color}" opacity="0.85"/>'
+            )
+
+    # Legend
+    legend_y = pad_t + chart_h + 32
+    legend_x = pad_l
+    for mi, metric in enumerate(metrics):
+        color = metric_colors[metric]
+        label = metric_labels[metric]
+        lx = legend_x + mi * 120
+        parts.append(
+            f'<circle cx="{lx + 5}" cy="{legend_y}" r="4" '
+            f'style="fill:{color}" opacity="0.85"/>'
+        )
+        parts.append(
+            f'<text x="{lx + 14}" y="{legend_y + 4}" font-size="10" '
+            f'style="fill:var(--text-muted)">{label}</text>'
+        )
+
+    parts.append("</svg>")
+    return "\n".join(parts)
 
 
 def _baseline_delta_html(ranked: list[dict], baselines: dict[str, dict]) -> str:
@@ -940,25 +1425,28 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     if has_baselines:
         baseline_th = '        <th class="num sortable" data-sort="vs-random" title="SPS improvement over uniform random baseline">vs Random</th>\n        <th class="num sortable" data-sort="vs-majority" title="SPS improvement over always-pick-the-mode baseline">vs Majority</th>\n'
 
-    # Generate chart section: dot-plot instead of bar charts (#9)
+    # Generate chart sections
     hero_chart = _hero_svg(ranked, baselines)
     dot_plot = _dot_plot_svg(ranked, baselines)
+    per_metric_dot = _per_metric_dot_svg(ranked, baselines)
+    topic_bar = _topic_grouped_bar_svg(topic_scores, topics_present, topic_colors)
     explanations = _metric_explanations_html()
     metric_legend = _metric_legend_html(topic_legend_inline)
 
-    # Convergence section — split into "Convergence" (3+ sample sizes) and "Replicate" (fewer)
+    # Convergence section — line chart for convergence, table for replicates
+    convergence_line = _convergence_line_svg(convergence_data)
     convergence_html = ""
     if convergence_data:
-        convergence_rows = []
         replicate_rows = []
         for provider, sweeps in sorted(convergence_data.items()):
+            if len(sweeps) >= 3:
+                continue  # convergence providers handled by line chart
             display_name = _display_provider_name(provider)
-            is_convergence = len(sweeps) >= 3
             for sweep in sweeps:
                 samples = sweep["samples"]
                 runs = sweep["runs"]
                 mean_cp = sum(runs) / len(runs)
-                row = (
+                replicate_rows.append(
                     f"      <tr>\n"
                     f'        <td class="provider-name">{escape(display_name)}</td>\n'
                     f'        <td class="num">{samples}</td>\n'
@@ -968,37 +1456,18 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                     f'        <td class="num">{max(runs):.4f}</td>\n'
                     f"      </tr>"
                 )
-                if is_convergence:
-                    convergence_rows.append(row)
-                else:
-                    replicate_rows.append(row)
 
-        table_header = """    <thead>
-      <tr>
-        <th>Provider</th>
-        <th class="num">Samples/q</th>
-        <th class="num">Runs</th>
-        <th class="num">Mean SPS</th>
-        <th class="num">Min</th>
-        <th class="num">Max</th>
-      </tr>
-    </thead>"""
-
-        if convergence_rows:
-            conv_tbody = "\n".join(convergence_rows)
+        if convergence_line:
             convergence_html += f"""
     <details class="collapsible">
       <summary>Convergence</summary>
       <div class="collapsible-body">
         <div class="about">
-          <p>How scores change as sample count increases. Providers with 3+ different sample counts are shown.</p>
+          <p>How scores change as sample count increases. Dots show mean SPS; error bars span min/max across runs.</p>
         </div>
-        <table class="leaderboard-table">
-{table_header}
-          <tbody>
-{conv_tbody}
-          </tbody>
-        </table>
+        <div class="chart-section">
+{convergence_line}
+        </div>
       </div>
     </details>"""
 
@@ -1012,7 +1481,16 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
           <p>Repeated runs at the same sample size. Useful for measuring score variance, not convergence trends.</p>
         </div>
         <table class="leaderboard-table">
-{table_header}
+    <thead>
+      <tr>
+        <th>Provider</th>
+        <th class="num">Samples/q</th>
+        <th class="num">Runs</th>
+        <th class="num">Mean SPS</th>
+        <th class="num">Min</th>
+        <th class="num">Max</th>
+      </tr>
+    </thead>
           <tbody>
 {rep_tbody}
           </tbody>
@@ -1231,6 +1709,30 @@ footer a{{color:var(--accent)}}
       <div class="collapsible-body">
         <div class="chart-section">
 {dot_plot}
+        </div>
+      </div>
+    </details>
+
+    <details class="collapsible">
+      <summary>Per-Metric Breakdown</summary>
+      <div class="collapsible-body">
+        <div class="about">
+          <p>Each model&rsquo;s P_dist, P_rank, and P_refuse on a shared 0&ndash;1 axis. Whiskers show bootstrap 95% CI where available.</p>
+        </div>
+        <div class="chart-section">
+{per_metric_dot}
+        </div>
+      </div>
+    </details>
+
+    <details class="collapsible">
+      <summary>SPS by Topic</summary>
+      <div class="collapsible-body">
+        <div class="about">
+          <p>Topic-level SPS for models evaluated on consumer, neutral, and political question subsets.</p>
+        </div>
+        <div class="chart-section">
+{topic_bar}
         </div>
       </div>
     </details>
