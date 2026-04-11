@@ -1,0 +1,1082 @@
+{
+  "suite": "paraphrase_test",
+  "version": "0.1.0",
+  "description": "50 OpinionsQA questions with 3 paraphrased variants each for contamination detection",
+  "n_originals": 50,
+  "n_paraphrases_per": 3,
+  "n_total": 200,
+  "items": [
+    {
+      "key": "SAFECRIME_W26",
+      "original_text": "How safe, if at all, would you say your local community is from crime? Would you say it is",
+      "paraphrases": [
+        "In your opinion, how safe, if at all, would you say your local community is from crime? Would you say it is",
+        "In your view, how safe, if at all, would you say your local community is from crime? Would you say it is",
+        "Thinking about this: How safe, if at all, would you say your local community is from crime? Would you say it is"
+      ],
+      "options": [
+        "Very safe",
+        "Somewhat safe",
+        "Not too safe",
+        "Not at all safe",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all safe": 0.026151631477927064,
+        "Not too safe": 0.11852207293666027,
+        "Refused": 0.0023992322456813818,
+        "Somewhat safe": 0.5724568138195777,
+        "Very safe": 0.28047024952015354
+      }
+    },
+    {
+      "key": "WORLDDANGER_W26",
+      "original_text": "Compared to 50 years ago, do you think",
+      "paraphrases": [
+        "Compared to 50 years ago, do you believe",
+        "In your view, compared to 50 years ago, do you think",
+        "Thinking about this: Compared to 50 years ago, do you think"
+      ],
+      "options": [
+        "We live in a safer world",
+        "We live in a more dangerous world",
+        "The world we live in is neither safer nor more dangerous",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.00263915547024952,
+        "The world we live in is neither safer nor more dangerous": 0.19817658349328215,
+        "We live in a more dangerous world": 0.7024952015355086,
+        "We live in a safer world": 0.0966890595009597
+      }
+    },
+    {
+      "key": "WORRYG_W26",
+      "original_text": "How much, if at all, do you worry about the following happening to you? Having a personal health crisis",
+      "paraphrases": [
+        "In your opinion, how much, if at all, do you worry about the following happening to you? Having a personal health crisis",
+        "To what extent, if at all, do you worry about the following happening to you? Having a personal health crisis",
+        "Thinking about this: How much, if at all, do you worry about the following happening to you? Having a personal health crisis"
+      ],
+      "options": [
+        "Worry a lot",
+        "Worry a little",
+        "Do not worry at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Do not worry at all": 0.17802303262955854,
+        "Refused": 0.00263915547024952,
+        "Worry a little": 0.5923704414587332,
+        "Worry a lot": 0.22696737044145873
+      }
+    },
+    {
+      "key": "GUN_W26",
+      "original_text": "Do you personally own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+      "paraphrases": [
+        "In your opinion, do you personally own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+        "Would you say you personally own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+        "Regarding the following \u2014 personally own any guns (not including air guns, such as paintball, BB or pellet guns)?"
+      ],
+      "options": [
+        "Yes, I own a gun",
+        "No, I don't own any guns",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, I don't own any guns": 0.6677063339731286,
+        "Refused": 0.013435700575815739,
+        "Yes, I own a gun": 0.31885796545105566
+      }
+    },
+    {
+      "key": "GUN1_W26",
+      "original_text": "Does anyone else in your household own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+      "paraphrases": [
+        "In your opinion, does anyone else in your household own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+        "Such as paintball, bb or pellet guns), does anyone else in your household own any guns (not including air guns?",
+        "Thinking about this: Does anyone else in your household own any guns (not including air guns, such as paintball, BB or pellet guns)?"
+      ],
+      "options": [
+        "Yes, someone else in my household owns a gun",
+        "No, no one else in my household owns a gun",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, no one else in my household owns a gun": 0.7089731285988484,
+        "Refused": 0.014875239923224568,
+        "Yes, someone else in my household owns a gun": 0.27615163147792704
+      }
+    },
+    {
+      "key": "EVERSHOT_W26",
+      "original_text": "Regardless of whether or not you own a gun, have you ever fired a gun?",
+      "paraphrases": [
+        "In your opinion, regardless of whether or not you own a gun, have you ever fired a gun?",
+        "Have you ever fired a gun, regardless of whether or not you own a gun?",
+        "Thinking about this: Regardless of whether or not you own a gun, have you ever fired a gun?"
+      ],
+      "options": [
+        "Yes, I have fired a gun",
+        "No, I have never fired a gun",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, I have never fired a gun": 0.23032629558541268,
+        "Refused": 0.0028790786948176585,
+        "Yes, I have fired a gun": 0.7667946257197696
+      }
+    },
+    {
+      "key": "GUNSOCIETY_W26",
+      "original_text": "Do you feel that society in general tends to look at most gun owners in a positive way or a negative way?",
+      "paraphrases": [
+        "Do you feel that society in general tends to look at most gun owners in a good way or a negative way?",
+        "Would you say you feel that society in general tends to look at most gun owners in a positive way or a negative way?",
+        "Regarding the following \u2014 feel that society in general tends to look at most gun owners in a positive way or a negative way?"
+      ],
+      "options": [
+        "Positive way",
+        "Negative way",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Negative way": 0.5633397312859885,
+        "Positive way": 0.41938579654510555,
+        "Refused": 0.01727447216890595
+      }
+    },
+    {
+      "key": "GUNCOMMUNITY_W26",
+      "original_text": "Do you feel that people in your local community tend to look at most gun owners in a positive way or a negative way?",
+      "paraphrases": [
+        "Do you feel that people in your local community tend to look at most gun owners in a good way or a negative way?",
+        "Would you say you feel that people in your local community tend to look at most gun owners in a positive way or a negative way?",
+        "Regarding the following \u2014 feel that people in your local community tend to look at most gun owners in a positive way or a negative way?"
+      ],
+      "options": [
+        "Positive way",
+        "Negative way",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Negative way": 0.35388675623800386,
+        "Positive way": 0.6257197696737045,
+        "Refused": 0.020393474088291747
+      }
+    },
+    {
+      "key": "GUNCOURSES_W26",
+      "original_text": "Have you ever taken any gun safety courses such as weapons training, hunter safety or firearm safety?",
+      "paraphrases": [
+        "In your opinion, have you ever taken any gun safety courses such as weapons training, hunter safety or firearm safety?",
+        "Hunter safety or firearm safety, have you ever taken any gun safety courses such as weapons training?",
+        "Thinking about this: Have you ever taken any gun safety courses such as weapons training, hunter safety or firearm safety?"
+      ],
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.614443378119002,
+        "Refused": 0.00527831094049904,
+        "Yes": 0.380278310940499
+      }
+    },
+    {
+      "key": "GUNCONTRIBA_W26",
+      "original_text": "How much, if at all, do you think the ease with which people can legally obtain guns contributes to gun violence in the country today?",
+      "paraphrases": [
+        "How much, if at all, do you believe the ease with which people can legally obtain guns contributes to gun violence in the country today?",
+        "To what extent, if at all, do you think the ease with which people can legally obtain guns contributes to gun violence in the country today?",
+        "Thinking about this: How much, if at all, do you think the ease with which people can legally obtain guns contributes to gun violence in the country today?"
+      ],
+      "options": [
+        "A great deal",
+        "A fair amount",
+        "Not too much",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A fair amount": 0.2799904030710173,
+        "A great deal": 0.31429942418426104,
+        "Not at all": 0.13867562380038387,
+        "Not too much": 0.2624760076775432,
+        "Refused": 0.004558541266794626
+      }
+    },
+    {
+      "key": "GUNCONTRIBB_W26",
+      "original_text": "How much, if at all, do you think the ease with which people can illegally obtain guns contributes to gun violence in the country today?",
+      "paraphrases": [
+        "How much, if at all, do you believe the ease with which people can illegally obtain guns contributes to gun violence in the country today?",
+        "To what extent, if at all, do you think the ease with which people can illegally obtain guns contributes to gun violence in the country today?",
+        "Thinking about this: How much, if at all, do you think the ease with which people can illegally obtain guns contributes to gun violence in the country today?"
+      ],
+      "options": [
+        "A great deal",
+        "A fair amount",
+        "Not too much",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A fair amount": 0.30158349328214973,
+        "A great deal": 0.5808541266794626,
+        "Not at all": 0.03334932821497121,
+        "Not too much": 0.08109404990403071,
+        "Refused": 0.0031190019193857964
+      }
+    },
+    {
+      "key": "GROWUPVIOL_W26",
+      "original_text": "How much of a problem was gun violence in the community where you spent the majority of time when you were growing up?",
+      "paraphrases": [
+        "How much of a issue was gun violence in the community where you spent the majority of time when you were growing up?",
+        "To what extent of a problem was gun violence in the community where you spent the majority of time when you were growing up?",
+        "Thinking about this: How much of a problem was gun violence in the community where you spent the majority of time when you were growing up?"
+      ],
+      "options": [
+        "A very big problem",
+        "A moderately big problem",
+        "A small problem",
+        "Not a problem at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A moderately big problem": 0.065978886756238,
+        "A small problem": 0.24448176583493283,
+        "A very big problem": 0.026871401151631478,
+        "Not a problem at all": 0.6593090211132437,
+        "Refused": 0.0033589251439539347
+      }
+    },
+    {
+      "key": "GROWUPGUN1_W26",
+      "original_text": "Thinking about when you were growing up, as far as you know, were there ever any guns in your household or not?",
+      "paraphrases": [
+        "In your opinion, thinking about when you were growing up, as far as you know, were there ever any guns in your household or not?",
+        "As far as you know, were there ever any guns in your household or not, thinking about when you were growing up?",
+        "Thinking about this: Thinking about when you were growing up, as far as you know, were there ever any guns in your household or not?"
+      ],
+      "options": [
+        "Yes, there were guns in my household",
+        "No, there were no guns in my household",
+        "I am not sure if there were guns in my household",
+        "Refused"
+      ],
+      "human_distribution": {
+        "I am not sure if there were guns in my household": 0.0647792706333973,
+        "No, there were no guns in my household": 0.41554702495201534,
+        "Refused": 0.004078694817658349,
+        "Yes, there were guns in my household": 0.5155950095969289
+      }
+    },
+    {
+      "key": "GROWUPGUN7_W26",
+      "original_text": "How often, if ever, did you use air guns, such as paintball, BB or pellet guns when you were growing up?",
+      "paraphrases": [
+        "In your opinion, how often, if ever, did you use air guns, such as paintball, BB or pellet guns when you were growing up?",
+        "With what frequency, if ever, did you use air guns, such as paintball, BB or pellet guns when you were growing up?",
+        "Thinking about this: How often, if ever, did you use air guns, such as paintball, BB or pellet guns when you were growing up?"
+      ],
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.22072936660268713,
+        "Never": 0.3977927063339731,
+        "Often": 0.15834932821497122,
+        "Refused": 0.0033589251439539347,
+        "Sometimes": 0.21976967370441458
+      }
+    },
+    {
+      "key": "DEFENDGUN_W26",
+      "original_text": "Not including in military combat or as part of your job, have you ever used a gun to defend yourself, your family or possessions, either by firing it or threatening to fire it?",
+      "paraphrases": [
+        "In your opinion, not including in military combat or as part of your job, have you ever used a gun to defend yourself, your family or possessions, either by firing it or threatening to fire it?",
+        "Have you ever used a gun to defend yourself, your family or possessions, either by firing it or threatening to fire it, not including in military combat or as part of your job?",
+        "Thinking about this: Not including in military combat or as part of your job, have you ever used a gun to defend yourself, your family or possessions, either by firing it or threatening to fire it?"
+      ],
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.9282629558541267,
+        "Refused": 0.005038387715930902,
+        "Yes": 0.06669865642994242
+      }
+    },
+    {
+      "key": "GUNTHREAT_W26",
+      "original_text": "Has anyone ever used a gun to threaten or intimidate you or someone in your family?",
+      "paraphrases": [
+        "In your opinion, has anyone ever used a gun to threaten or intimidate you or someone in your family?",
+        "In your view, has anyone ever used a gun to threaten or intimidate you or someone in your family?",
+        "Thinking about this: Has anyone ever used a gun to threaten or intimidate you or someone in your family?"
+      ],
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.7785508637236085,
+        "Refused": 0.003598848368522073,
+        "Yes": 0.21785028790786948
+      }
+    },
+    {
+      "key": "CRIMEVICTIM_W26",
+      "original_text": "Have you ever been a victim of a violent crime, whether a gun was used or not?",
+      "paraphrases": [
+        "In your opinion, have you ever been a victim of a violent crime, whether a gun was used or not?",
+        "Whether a gun was used or not, have you ever been a victim of a violent crime?",
+        "Thinking about this: Have you ever been a victim of a violent crime, whether a gun was used or not?"
+      ],
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.8154990403071017,
+        "Refused": 0.004078694817658349,
+        "Yes": 0.18042226487523993
+      }
+    },
+    {
+      "key": "GUNACTIVITYA_W26",
+      "original_text": "How often, if ever, do you visit websites about guns, hunting or other shooting sports",
+      "paraphrases": [
+        "In your opinion, how often, if ever, do you visit websites about guns, hunting or other shooting sports",
+        "With what frequency, if ever, do you visit websites about guns, hunting or other shooting sports",
+        "Thinking about this: How often, if ever, do you visit websites about guns, hunting or other shooting sports"
+      ],
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.1696257197696737,
+        "Never": 0.6938579654510557,
+        "Often": 0.02111324376199616,
+        "Refused": 0.004078694817658349,
+        "Sometimes": 0.11132437619961612
+      }
+    },
+    {
+      "key": "GUNACTIVITYB_W26",
+      "original_text": "How often, if ever, do you watch TV programs about guns or watch gun-oriented videos",
+      "paraphrases": [
+        "In your opinion, how often, if ever, do you watch TV programs about guns or watch gun-oriented videos",
+        "With what frequency, if ever, do you watch TV programs about guns or watch gun-oriented videos",
+        "Thinking about this: How often, if ever, do you watch TV programs about guns or watch gun-oriented videos"
+      ],
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.2598368522072937,
+        "Never": 0.5067178502879078,
+        "Often": 0.04366602687140115,
+        "Refused": 0.004318618042226488,
+        "Sometimes": 0.18546065259117084
+      }
+    },
+    {
+      "key": "GUNACTIVITYC_W26",
+      "original_text": "How often, if ever, do you listen to gun-oriented podcasts or radio shows",
+      "paraphrases": [
+        "In your opinion, how often, if ever, do you listen to gun-oriented podcasts or radio shows",
+        "With what frequency, if ever, do you listen to gun-oriented podcasts or radio shows",
+        "Thinking about this: How often, if ever, do you listen to gun-oriented podcasts or radio shows"
+      ],
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.11780230326295585,
+        "Never": 0.8198176583493282,
+        "Often": 0.007197696737044146,
+        "Refused": 0.005998080614203455,
+        "Sometimes": 0.04918426103646833
+      }
+    },
+    {
+      "key": "GUNACTIVITYD_W26",
+      "original_text": "How often, if ever, do you participate in online discussion forums about guns",
+      "paraphrases": [
+        "In your opinion, how often, if ever, do you participate in online discussion forums about guns",
+        "With what frequency, if ever, do you participate in online discussion forums about guns",
+        "Thinking about this: How often, if ever, do you participate in online discussion forums about guns"
+      ],
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.1218809980806142,
+        "Never": 0.8325335892514395,
+        "Often": 0.0064779270633397315,
+        "Refused": 0.005038387715930902,
+        "Sometimes": 0.034069097888675626
+      }
+    },
+    {
+      "key": "GUNACTIVITYE_W26",
+      "original_text": "How often, if ever, do you attend gun shows",
+      "paraphrases": [
+        "In your opinion, how often, if ever, do you attend gun shows",
+        "With what frequency, if ever, do you attend gun shows",
+        "Thinking about this: How often, if ever, do you attend gun shows"
+      ],
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.14395393474088292,
+        "Never": 0.7651151631477927,
+        "Often": 0.009117082533589251,
+        "Refused": 0.00527831094049904,
+        "Sometimes": 0.07653550863723609
+      }
+    },
+    {
+      "key": "CAREREL_W27",
+      "original_text": "How likely is it that, at some point in your life, you will be responsible for caring for an aging parent or family member?",
+      "paraphrases": [
+        "In your opinion, how likely is it that, at some point in your life, you will be responsible for caring for an aging parent or family member?",
+        "At some point in your life, you will be responsible for caring for an aging parent or family member, how likely is it that?",
+        "Thinking about this: How likely is it that, at some point in your life, you will be responsible for caring for an aging parent or family member?"
+      ],
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not too likely",
+        "Not at all likely",
+        "I am already doing this",
+        "Refused"
+      ],
+      "human_distribution": {
+        "I am already doing this": 0.1003627569528416,
+        "Not at all likely": 0.12357920193470374,
+        "Not too likely": 0.1313180169286578,
+        "Refused": 0.002660217654171705,
+        "Somewhat likely": 0.26481257557436516,
+        "Very likely": 0.37726723095526
+      }
+    },
+    {
+      "key": "PREDICTA_W27",
+      "original_text": "Do you think the following will or will not happen in the next 20 years? Doctors will rely on computer programs to diagnose most diseases and determine treatments",
+      "paraphrases": [
+        "Do you believe the following will or will not happen in the next 20 years? Doctors will rely on computer programs to diagnose most diseases and determine treatments",
+        "Would you say you think the following will or will not happen in the next 20 years? Doctors will rely on computer programs to diagnose most diseases and determine treatments",
+        "Thinking about this: Do you think the following will or will not happen in the next 20 years? Doctors will rely on computer programs to diagnose most diseases and determine treatments"
+      ],
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.004353083434099154,
+        "Will definitely happen": 0.2026602176541717,
+        "Will definitely not happen": 0.01185006045949214,
+        "Will probably happen": 0.5983071342200725,
+        "Will probably not happen": 0.18282950423216446
+      }
+    },
+    {
+      "key": "PREDICTB_W27",
+      "original_text": "Do you think the following will or will not happen in the next 20 years? Most stores and retail businesses will be fully automated and involve little or no human interaction between customers and employees",
+      "paraphrases": [
+        "Do you believe the following will or will not happen in the next 20 years? Most stores and retail businesses will be fully automated and involve little or no human interaction between customers and employees",
+        "Would you say you think the following will or will not happen in the next 20 years? Most stores and retail businesses will be fully automated and involve little or no human interaction between customers and employees",
+        "Thinking about this: Do you think the following will or will not happen in the next 20 years? Most stores and retail businesses will be fully automated and involve little or no human interaction between customers and employees"
+      ],
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.003143893591293833,
+        "Will definitely happen": 0.11390568319226119,
+        "Will definitely not happen": 0.016686819830713424,
+        "Will probably happen": 0.5206771463119709,
+        "Will probably not happen": 0.34558645707376057
+      }
+    },
+    {
+      "key": "PREDICTC_W27",
+      "original_text": "Do you think the following will or will not happen in the next 20 years? Most deliveries in cities will be made by robots or drones instead of humans",
+      "paraphrases": [
+        "Do you believe the following will or will not happen in the next 20 years? Most deliveries in cities will be made by robots or drones instead of humans",
+        "Would you say you think the following will or will not happen in the next 20 years? Most deliveries in cities will be made by robots or drones instead of humans",
+        "Thinking about this: Do you think the following will or will not happen in the next 20 years? Most deliveries in cities will be made by robots or drones instead of humans"
+      ],
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0024183796856106408,
+        "Will definitely happen": 0.1097944377267231,
+        "Will definitely not happen": 0.022249093107617895,
+        "Will probably happen": 0.5276904474002418,
+        "Will probably not happen": 0.33784764207980655
+      }
+    },
+    {
+      "key": "PREDICTD_W27",
+      "original_text": "Do you think the following will or will not happen in the next 20 years? When people want to buy most common products, they will create them at home using a 3-D printer",
+      "paraphrases": [
+        "Do you believe the following will or will not happen in the next 20 years? When people want to buy most common products, they will create them at home using a 3-D printer",
+        "Would you say you think the following will or will not happen in the next 20 years? When people want to buy most common products, they will create them at home using a 3-D printer",
+        "Thinking about this: Do you think the following will or will not happen in the next 20 years? When people want to buy most common products, they will create them at home using a 3-D printer"
+      ],
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0074969770253929865,
+        "Will definitely happen": 0.045949214026602174,
+        "Will definitely not happen": 0.060701330108827084,
+        "Will probably happen": 0.31680773881499397,
+        "Will probably not happen": 0.5690447400241838
+      }
+    },
+    {
+      "key": "CARS1_W27",
+      "original_text": "How much have you seen or heard about the effort to develop driverless vehicles - that is, cars and trucks that can operate on their own without a human driver?",
+      "paraphrases": [
+        "In your opinion, how much have you seen or heard about the effort to develop driverless vehicles - that is, cars and trucks that can operate on their own without a human driver?",
+        "To what extent have you seen or heard about the effort to develop driverless vehicles - that is, cars and trucks that can operate on their own without a human driver?",
+        "Thinking about this: How much have you seen or heard about the effort to develop driverless vehicles - that is, cars and trucks that can operate on their own without a human driver?"
+      ],
+      "options": [
+        "A lot",
+        "A little",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A little": 0.5547762998790811,
+        "A lot": 0.4070133010882709,
+        "Nothing at all": 0.03603385731559855,
+        "Refused": 0.002176541717049577
+      }
+    },
+    {
+      "key": "CARS3A_W27",
+      "original_text": "How enthusiastic are you, if at all, about the development of driverless vehicles?",
+      "paraphrases": [
+        "In your opinion, how enthusiastic are you, if at all, about the development of driverless vehicles?",
+        "If at all, about the development of driverless vehicles, how enthusiastic are you?",
+        "Thinking about this: How enthusiastic are you, if at all, about the development of driverless vehicles?"
+      ],
+      "options": [
+        "Very enthusiastic",
+        "Somewhat enthusiastic",
+        "Not too enthusiastic",
+        "Not at all enthusiastic",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all enthusiastic": 0.19613059250302298,
+        "Not too enthusiastic": 0.3854897218863362,
+        "Refused": 0.002176541717049577,
+        "Somewhat enthusiastic": 0.29455864570737605,
+        "Very enthusiastic": 0.12164449818621524
+      }
+    },
+    {
+      "key": "CARS3B_W27",
+      "original_text": "How worried are you, if at all, about the development of driverless vehicles?",
+      "paraphrases": [
+        "How concerned are you, if at all, about the development of driverless vehicles?",
+        "If at all, about the development of driverless vehicles, how worried are you?",
+        "Thinking about this: How worried are you, if at all, about the development of driverless vehicles?"
+      ],
+      "options": [
+        "Very worried",
+        "Somewhat worried",
+        "Not too worried",
+        "Not at all worried",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all worried": 0.11269649334945586,
+        "Not too worried": 0.3717049576783555,
+        "Refused": 0.0009673518742442564,
+        "Somewhat worried": 0.3932285368802902,
+        "Very worried": 0.12140266021765417
+      }
+    },
+    {
+      "key": "CARS4_W27",
+      "original_text": "How long, if ever, do you think it will take for most of the vehicles on the road to be driverless, rather than driven by humans?",
+      "paraphrases": [
+        "How long, if ever, do you believe it will take for most of the vehicles on the road to be driverless, rather than driven by humans?",
+        "If ever, do you think it will take for most of the vehicles on the road to be driverless, rather than driven by humans, how long?",
+        "Thinking about this: How long, if ever, do you think it will take for most of the vehicles on the road to be driverless, rather than driven by humans?"
+      ],
+      "options": [
+        "Less than 10 years",
+        "10 to less than 50 years",
+        "50 to less than 100 years",
+        "100 or more years",
+        "It will never happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "10 to less than 50 years": 0.5975816203143893,
+        "100 or more years": 0.03966142684401451,
+        "50 to less than 100 years": 0.21668681983071342,
+        "It will never happen": 0.07085852478839177,
+        "Less than 10 years": 0.07351874244256348,
+        "Refused": 0.0016928657799274486
+      }
+    },
+    {
+      "key": "CARS5_W27",
+      "original_text": "Would you, personally, want to ride in a driverless vehicle if you had the opportunity?",
+      "paraphrases": [
+        "In your opinion, would you, personally, want to ride in a driverless vehicle if you had the opportunity?",
+        "Personally, want to ride in a driverless vehicle if you had the opportunity, would you?",
+        "Thinking about this: Would you, personally, want to ride in a driverless vehicle if you had the opportunity?"
+      ],
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.5298669891172915,
+        "Refused": 0.0014510278113663846,
+        "Yes": 0.4686819830713422
+      }
+    },
+    {
+      "key": "CARS7A_W27",
+      "original_text": "How safe would you feel sharing the road with a driverless passenger vehicle?",
+      "paraphrases": [
+        "In your opinion, how safe would you feel sharing the road with a driverless passenger vehicle?",
+        "In your view, how safe would you feel sharing the road with a driverless passenger vehicle?",
+        "Thinking about this: How safe would you feel sharing the road with a driverless passenger vehicle?"
+      ],
+      "options": [
+        "Very safe",
+        "Somewhat safe",
+        "Not too safe",
+        "Not safe at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not safe at all": 0.14099153567110037,
+        "Not too safe": 0.3339782345828295,
+        "Refused": 0.0016928657799274486,
+        "Somewhat safe": 0.39637243047158405,
+        "Very safe": 0.12696493349455865
+      }
+    },
+    {
+      "key": "CARS7B_W27",
+      "original_text": "How safe would you feel sharing the road with a driverless freight truck?",
+      "paraphrases": [
+        "In your opinion, how safe would you feel sharing the road with a driverless freight truck?",
+        "In your view, how safe would you feel sharing the road with a driverless freight truck?",
+        "Thinking about this: How safe would you feel sharing the road with a driverless freight truck?"
+      ],
+      "options": [
+        "Very safe",
+        "Somewhat safe",
+        "Not too safe",
+        "Not safe at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not safe at all": 0.29480048367593714,
+        "Not too safe": 0.3305925030229746,
+        "Refused": 0.002176541717049577,
+        "Somewhat safe": 0.28609431680773884,
+        "Very safe": 0.08633615477629988
+      }
+    },
+    {
+      "key": "CARS8_W27",
+      "original_text": "If driverless vehicles become widespread, do you think that the number of people killed or injured in traffic accidents will increase, decrease, or stay about the same?",
+      "paraphrases": [
+        "If driverless vehicles become widespread, do you believe that the number of people killed or injured in traffic accidents will increase, decrease, or stay about the same?",
+        "Do you think that the number of people killed or injured in traffic accidents will increase, decrease, or stay about the same, if driverless vehicles become widespread?",
+        "Thinking about this: If driverless vehicles become widespread, do you think that the number of people killed or injured in traffic accidents will increase, decrease, or stay about the same?"
+      ],
+      "options": [
+        "Increase",
+        "Decrease",
+        "Stay about the same",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Decrease": 0.42152357920193473,
+        "Increase": 0.25272067714631197,
+        "Refused": 0.006771463119709794,
+        "Stay about the same": 0.31898428053204353
+      }
+    },
+    {
+      "key": "CARS9A_W27",
+      "original_text": "Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Requiring them to travel in dedicated lanes",
+      "paraphrases": [
+        "Would you strongly support, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Requiring them to travel in dedicated lanes",
+        "In your view, would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Requiring them to travel in dedicated lanes",
+        "Thinking about this: Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Requiring them to travel in dedicated lanes"
+      ],
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.3818621523579202,
+        "Oppose": 0.13422007255139057,
+        "Refused": 0.005078597339782346,
+        "Strongly favor": 0.4442563482466747,
+        "Strongly oppose": 0.034582829504232165
+      }
+    },
+    {
+      "key": "CARS9B_W27",
+      "original_text": "Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Restricting them from traveling near certain areas, such as schools",
+      "paraphrases": [
+        "Would you strongly support, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Restricting them from traveling near certain areas, such as schools",
+        "In your view, would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Restricting them from traveling near certain areas, such as schools",
+        "Thinking about this: Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Restricting them from traveling near certain areas, such as schools"
+      ],
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.34969770253929866,
+        "Oppose": 0.28174123337363965,
+        "Refused": 0.008464328899637243,
+        "Strongly favor": 0.31003627569528414,
+        "Strongly oppose": 0.05006045949214027
+      }
+    },
+    {
+      "key": "CARS9C_W27",
+      "original_text": "Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Requiring them to have a person in the driver's seat who could take control in an emergency situation",
+      "paraphrases": [
+        "Would you strongly support, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Requiring them to have a person in the driver's seat who could take control in an emergency situation",
+        "In your view, would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Requiring them to have a person in the driver's seat who could take control in an emergency situation",
+        "Thinking about this: Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles? Requiring them to have a person in the driver's seat who could take control in an emergency situation"
+      ],
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.35816203143893593,
+        "Oppose": 0.10592503022974607,
+        "Refused": 0.004594921402660218,
+        "Strongly favor": 0.5112454655380895,
+        "Strongly oppose": 0.020072551390568318
+      }
+    },
+    {
+      "key": "CARS10A_W27",
+      "original_text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Elderly and disabled people will be able to live more independently",
+      "paraphrases": [
+        "If driverless vehicles become widespread, which of the following do you believe are likely to happen as a result? Elderly and disabled people will be able to live more independently",
+        "In your view, if driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Elderly and disabled people will be able to live more independently",
+        "Thinking about this: If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Elderly and disabled people will be able to live more independently"
+      ],
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.21426844014510277,
+        "Refused": 0.0036275695284159614,
+        "Yes, likely": 0.7821039903264813
+      }
+    },
+    {
+      "key": "CARS10B_W27",
+      "original_text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Many people who drive for a living would lose their jobs",
+      "paraphrases": [
+        "If driverless vehicles become widespread, which of the following do you believe are likely to happen as a result? Many people who drive for a living would lose their jobs",
+        "In your view, if driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Many people who drive for a living would lose their jobs",
+        "Thinking about this: If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Many people who drive for a living would lose their jobs"
+      ],
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.18766626360338573,
+        "Refused": 0.004353083434099154,
+        "Yes, likely": 0.8079806529625151
+      }
+    },
+    {
+      "key": "CARS10C_W27",
+      "original_text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Owning a car would become much less important to people",
+      "paraphrases": [
+        "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Owning a car would become much less significant to people",
+        "In your view, if driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Owning a car would become much less important to people",
+        "Thinking about this: If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Owning a car would become much less important to people"
+      ],
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.5569528415961306,
+        "Refused": 0.006771463119709794,
+        "Yes, likely": 0.4362756952841596
+      }
+    },
+    {
+      "key": "CARS10D_W27",
+      "original_text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Most people would never learn how to drive a car on their own",
+      "paraphrases": [
+        "If driverless vehicles become widespread, which of the following do you believe are likely to happen as a result? Most people would never learn how to drive a car on their own",
+        "In your view, if driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Most people would never learn how to drive a car on their own",
+        "Thinking about this: If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Most people would never learn how to drive a car on their own"
+      ],
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.3301088270858525,
+        "Refused": 0.0038694074969770256,
+        "Yes, likely": 0.6660217654171705
+      }
+    },
+    {
+      "key": "CARS10E_W27",
+      "original_text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? There would be much less traffic in major cities",
+      "paraphrases": [
+        "If driverless vehicles become widespread, which of the following do you believe are likely to happen as a result? There would be much less traffic in major cities",
+        "In your view, if driverless vehicles become widespread, which of the following do you think are likely to happen as a result? There would be much less traffic in major cities",
+        "Thinking about this: If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? There would be much less traffic in major cities"
+      ],
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.7448609431680774,
+        "Refused": 0.004594921402660218,
+        "Yes, likely": 0.2505441354292624
+      }
+    },
+    {
+      "key": "WORK2_W27",
+      "original_text": "On a different subject, would you say that society generally places too much importance on working and having a job, not enough importance on working and having a job, or is it just about right?",
+      "paraphrases": [
+        "On a different subject, would you say that society generally places excessively importance on working and having a job, not enough importance on working and having a job, or is it just about right?",
+        "Would you say that society generally places too much importance on working and having a job, not enough importance on working and having a job, or is it just about right, on a different subject?",
+        "Thinking about this: On a different subject, would you say that society generally places too much importance on working and having a job, not enough importance on working and having a job, or is it just about right?"
+      ],
+      "options": [
+        "Too much importance",
+        "Not enough importance",
+        "Just about right",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Just about right": 0.32043530834340994,
+        "Not enough importance": 0.5209189842805321,
+        "Refused": 0.0036275695284159614,
+        "Too much importance": 0.15501813784764207
+      }
+    },
+    {
+      "key": "ROBJOB1_W27",
+      "original_text": "Please consider the following scenario - in the future, robots and computers with advanced capabilities may be able to do most of the jobs that are currently done by humans today. How much have you heard, read, or thought about this idea before today?",
+      "paraphrases": [
+        "In your opinion, please consider the following scenario - in the future, robots and computers with advanced capabilities may be able to do most of the jobs that are currently done by humans today. How much have you heard, read, or thought about this idea before today?",
+        "Robots and computers with advanced capabilities may be able to do most of the jobs that are currently done by humans today. how much have you heard, read, or thought about this idea before today, please consider the following scenario - in the future?",
+        "Thinking about this: Please consider the following scenario - in the future, robots and computers with advanced capabilities may be able to do most of the jobs that are currently done by humans today. How much have you heard, read, or thought about this idea before today?"
+      ],
+      "options": [
+        "A lot",
+        "A little",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A little": 0.6280532043530834,
+        "A lot": 0.26989117291414755,
+        "Nothing at all": 0.09842805320435308,
+        "Refused": 0.0036275695284159614
+      }
+    },
+    {
+      "key": "ROBJOB2_W27",
+      "original_text": "Based on what you know, does the idea of robots and computers being able to do most of the jobs currently done by humans in the future seem",
+      "paraphrases": [
+        "In your opinion, based on what you know, does the idea of robots and computers being able to do most of the jobs currently done by humans in the future seem",
+        "In your view, based on what you know, does the idea of robots and computers being able to do most of the jobs currently done by humans in the future seem",
+        "Thinking about this: Based on what you know, does the idea of robots and computers being able to do most of the jobs currently done by humans in the future seem"
+      ],
+      "options": [
+        "Extremely realistic",
+        "Somewhat realistic",
+        "Not very realistic",
+        "Not at all realistic",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Extremely realistic": 0.2053204353083434,
+        "Not at all realistic": 0.026844014510278114,
+        "Not very realistic": 0.17726723095525998,
+        "Refused": 0.0036275695284159614,
+        "Somewhat realistic": 0.5869407496977025
+      }
+    },
+    {
+      "key": "ROBJOB3A_W27",
+      "original_text": "How enthusiastic are you, if at all, about the possibility of robots and computers being able to do most of the jobs currently done by humans in the future, for society as a whole?",
+      "paraphrases": [
+        "In your opinion, how enthusiastic are you, if at all, about the possibility of robots and computers being able to do most of the jobs currently done by humans in the future, for society as a whole?",
+        "If at all, about the possibility of robots and computers being able to do most of the jobs currently done by humans in the future, for society as a whole, how enthusiastic are you?",
+        "Thinking about this: How enthusiastic are you, if at all, about the possibility of robots and computers being able to do most of the jobs currently done by humans in the future, for society as a whole?"
+      ],
+      "options": [
+        "Very enthusiastic",
+        "Somewhat enthusiastic",
+        "Not too enthusiastic",
+        "Not at all enthusiastic",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all enthusiastic": 0.17629987908101571,
+        "Not too enthusiastic": 0.4836759371221282,
+        "Refused": 0.00532043530834341,
+        "Somewhat enthusiastic": 0.28053204353083433,
+        "Very enthusiastic": 0.054171704957678354
+      }
+    },
+    {
+      "key": "ROBJOB3B_W27",
+      "original_text": "How worried are you, if at all, about the possibility of robots and computers being able to do most of the jobs currently done by humans in the future, for society as a whole?",
+      "paraphrases": [
+        "How concerned are you, if at all, about the possibility of robots and computers being able to do most of the jobs currently done by humans in the future, for society as a whole?",
+        "If at all, about the possibility of robots and computers being able to do most of the jobs currently done by humans in the future, for society as a whole, how worried are you?",
+        "Thinking about this: How worried are you, if at all, about the possibility of robots and computers being able to do most of the jobs currently done by humans in the future, for society as a whole?"
+      ],
+      "options": [
+        "Very worried",
+        "Somewhat worried",
+        "Not too worried",
+        "Not at all worried",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all worried": 0.04256348246674728,
+        "Not too worried": 0.2626360338573156,
+        "Refused": 0.004111245465538089,
+        "Somewhat worried": 0.48464328899637243,
+        "Very worried": 0.2060459492140266
+      }
+    },
+    {
+      "key": "ROBJOB4A_W27",
+      "original_text": "Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs currently done by humans in the future? Inequality between rich and poor would be much worse than it is today",
+      "paraphrases": [
+        "Do you believe the following are likely to happen as a result of robots and computers being able to do most of the jobs currently done by humans in the future? Inequality between rich and poor would be much worse than it is today",
+        "Would you say you think the following are likely to happen as a result of robots and computers being able to do most of the jobs currently done by humans in the future? Inequality between rich and poor would be much worse than it is today",
+        "Thinking about this: Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs currently done by humans in the future? Inequality between rich and poor would be much worse than it is today"
+      ],
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.21910519951632407,
+        "Refused": 0.007980652962515114,
+        "Yes, likely": 0.7729141475211608
+      }
+    },
+    {
+      "key": "ROBJOB4B_W27",
+      "original_text": "Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs currently done by humans in the future? People would have a hard time finding things to do with their lives",
+      "paraphrases": [
+        "Do you believe the following are likely to happen as a result of robots and computers being able to do most of the jobs currently done by humans in the future? People would have a hard time finding things to do with their lives",
+        "Would you say you think the following are likely to happen as a result of robots and computers being able to do most of the jobs currently done by humans in the future? People would have a hard time finding things to do with their lives",
+        "Thinking about this: Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs currently done by humans in the future? People would have a hard time finding things to do with their lives"
+      ],
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.3934703748488513,
+        "Refused": 0.004594921402660218,
+        "Yes, likely": 0.6019347037484886
+      }
+    }
+  ]
+}

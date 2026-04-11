@@ -58,6 +58,15 @@ def to_json(result: BenchmarkResult) -> dict:
             "per_metric_ci": per_metric_ci,
             "question_set_hash": result.q_set_hash,
             "n_parse_failures": result.total_parse_failures,
+            **(
+                {
+                    "contamination_sensitivity": round(
+                        result.config["contamination_sensitivity"], 3
+                    )
+                }
+                if "contamination_sensitivity" in result.config
+                else {}
+            ),
         },
         "demographic_breakdown": {
             attr: [

@@ -1033,6 +1033,143 @@ def contamination_convergence(
 
 @main.command()
 @click.option(
+    "--provider",
+    "-p",
+    required=True,
+    help="Provider name (raw-anthropic, openrouter, etc.).",
+)
+@click.option(
+    "--model",
+    "-m",
+    default="haiku",
+    help="Model name or alias.",
+)
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    default="results",
+    help="Output directory for results.",
+)
+@click.option(
+    "--samples",
+    "-s",
+    type=int,
+    default=30,
+    help="Samples per question for distribution estimation.",
+)
+@click.option(
+    "--concurrency",
+    "-c",
+    type=int,
+    default=10,
+    help="Max concurrent API requests.",
+)
+@click.option("--url", default=None, help="Endpoint URL for http provider.")
+@click.option(
+    "--json-only", is_flag=True, help="Output JSON to stdout instead of files."
+)
+def contamination(provider, model, output, samples, concurrency, url, json_only):
+    """Run paraphrase sensitivity test to detect training corpus contamination.
+
+    Evaluates 50 original questions + 150 paraphrased variants and reports
+    the sensitivity delta. High sensitivity suggests memorization.
+
+    Example:
+        synthbench contamination --provider openrouter --model anthropic/claude-haiku-4-5
+    """
+    asyncio.run(
+        _contamination_async(
+            provider, model, output, samples, concurrency, url, json_only
+        )
+    )
+
+
+async def _contamination_async(
+    provider_name, model, output, samples, concurrency, url, json_only
+):
+    from synthbench.contamination import (
+        run_contamination_test,
+        result_to_json,
+    )
+    from synthbench.providers import load_provider
+
+    resolved_model = MODEL_ALIASES.get(model, model)
+
+    provider_kwargs = {"model": resolved_model}
+    if url:
+        provider_kwargs["url"] = url
+    try:
+        prov = load_provider(provider_name, **provider_kwargs)
+    except (KeyError, ImportError) as e:
+        click.echo(str(e), err=True)
+        sys.exit(1)
+
+    # Suite path
+    suite_path = Path(__file__).parent / "suites" / "paraphrase_test.json"
+
+    click.echo(f"SynthBench Contamination Test v{__version__}")
+    click.echo(f"  Provider: {prov.name}")
+    click.echo(f"  Samples/q: {samples}")
+    click.echo("  Questions: 50 original + 150 paraphrased")
+    click.echo()
+
+    try:
+        result = await run_contamination_test(
+            provider=prov,
+            samples_per_question=samples,
+            concurrency=concurrency,
+            suite_path=suite_path,
+        )
+    finally:
+        await prov.close()
+
+    # Display results
+    click.echo(
+        f"  Parity {result.original_sps:.3f} "
+        f"(adjusted: {result.adjusted_sps:.3f}, "
+        f"sensitivity: {result.sensitivity_pct:.1f}%)"
+    )
+    click.echo(f"  Elapsed: {result.elapsed_seconds:.1f}s")
+    click.echo()
+
+    result_data = result_to_json(result)
+
+    if json_only:
+        click.echo(json.dumps(result_data, indent=2))
+    else:
+        # Per-question breakdown (top 10 most sensitive)
+        sorted_qs = sorted(
+            result.per_question, key=lambda q: q.sensitivity_pct, reverse=True
+        )
+        click.echo("## Most Sensitive Questions (top 10)")
+        click.echo()
+        click.echo("| Question | Original | Adjusted | Delta | Sensitivity |")
+        click.echo("|----------|----------|----------|-------|-------------|")
+        for q in sorted_qs[:10]:
+            click.echo(
+                f"| {q.original_text[:50]}... "
+                f"| {q.original_parity:.4f} "
+                f"| {q.mean_paraphrase_parity:.4f} "
+                f"| {q.delta:+.4f} "
+                f"| {q.sensitivity_pct:.1f}% |"
+            )
+        click.echo()
+
+        # Save
+        out_dir = Path(output)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        from datetime import datetime
+
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        provider_slug = prov.name.replace("/", "_")
+        json_path = out_dir / f"contamination_{provider_slug}_{ts}.json"
+        json_path.write_text(json.dumps(result_data, indent=2))
+        click.echo(f"Results saved: {json_path}")
+
+
+@main.command()
+@click.option(
     "--results-dir",
     "-d",
     type=click.Path(exists=True),
