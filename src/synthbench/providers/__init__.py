@@ -10,6 +10,7 @@ PROVIDERS: dict[str, str] = {
     "http": "synthbench.providers.http:HttpProvider",
     "random": "synthbench.providers.random_baseline:RandomBaselineProvider",
     "majority": "synthbench.providers.majority_baseline:MajorityBaselineProvider",
+    "population-average": "synthbench.providers.population_baseline:PopulationAverageBaselineProvider",
 }
 
 
