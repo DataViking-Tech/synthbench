@@ -1,0 +1,1418 @@
+{
+  "benchmark": "synthbench",
+  "version": "0.1.0",
+  "timestamp": "2026-04-11T01:23:56.214309+00:00",
+  "config": {
+    "dataset": "opinionsqa",
+    "provider": "majority-baseline",
+    "samples_per_question": 10,
+    "n_requested": 100,
+    "n_evaluated": 45,
+    "topic": "neutral"
+  },
+  "scores": {
+    "sps": 0.667136,
+    "p_dist": 0.44397,
+    "p_rank": 0.562959,
+    "p_refuse": 0.99448
+  },
+  "aggregate": {
+    "mean_jsd": 0.55603,
+    "median_jsd": 0.526503,
+    "mean_kendall_tau": 0.125917,
+    "composite_parity": 0.503464,
+    "n_questions": 45,
+    "elapsed_seconds": 0.0,
+    "per_metric_ci": {
+      "p_dist": [
+        0.389132,
+        0.496196
+      ],
+      "p_rank": [
+        0.517238,
+        0.611292
+      ],
+      "p_refuse": [
+        0.993192,
+        0.995438
+      ],
+      "sps": [
+        0.459528,
+        0.54902
+      ]
+    },
+    "question_set_hash": "89ec7d67651a00d904e565f2ac9ac0436fc336ce8462536efd2fb73fdc874059",
+    "n_parse_failures": 0
+  },
+  "demographic_breakdown": {},
+  "per_question": [
+    {
+      "key": "CAREREL_W27",
+      "text": "How likely is it that, at some point in your life, you will be responsible for caring for an aging parent or family memb",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not too likely",
+        "Not at all likely",
+        "I am already doing this",
+        "Refused"
+      ],
+      "human_distribution": {
+        "I am already doing this": 0.1004,
+        "Not at all likely": 0.1236,
+        "Not too likely": 0.1313,
+        "Refused": 0.0027,
+        "Somewhat likely": 0.2648,
+        "Very likely": 0.3773
+      },
+      "model_distribution": {
+        "Very likely": 1.0,
+        "Somewhat likely": 0.0,
+        "Not too likely": 0.0,
+        "Not at all likely": 0.0,
+        "I am already doing this": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.4167,
+      "kendall_tau": 0.57735,
+      "parity": 0.685988,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00266
+    },
+    {
+      "key": "CARS1_W27",
+      "text": "How much have you seen or heard about the effort to develop driverless vehicles - that is, cars and trucks that can oper",
+      "options": [
+        "A lot",
+        "A little",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A little": 0.5548,
+        "A lot": 0.407,
+        "Nothing at all": 0.036,
+        "Refused": 0.0022
+      },
+      "model_distribution": {
+        "A lot": 1.0,
+        "A little": 0.0,
+        "Nothing at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.389509,
+      "kendall_tau": 0.235702,
+      "parity": 0.614171,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002177
+    },
+    {
+      "key": "CARS3A_W27",
+      "text": "How enthusiastic are you, if at all, about the development of driverless vehicles?",
+      "options": [
+        "Very enthusiastic",
+        "Somewhat enthusiastic",
+        "Not too enthusiastic",
+        "Not at all enthusiastic",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all enthusiastic": 0.1961,
+        "Not too enthusiastic": 0.3855,
+        "Refused": 0.0022,
+        "Somewhat enthusiastic": 0.2946,
+        "Very enthusiastic": 0.1216
+      },
+      "model_distribution": {
+        "Very enthusiastic": 1.0,
+        "Somewhat enthusiastic": 0.0,
+        "Not too enthusiastic": 0.0,
+        "Not at all enthusiastic": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.722265,
+      "kendall_tau": -0.316228,
+      "parity": 0.309811,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002177
+    },
+    {
+      "key": "CARS3B_W27",
+      "text": "How worried are you, if at all, about the development of driverless vehicles?",
+      "options": [
+        "Very worried",
+        "Somewhat worried",
+        "Not too worried",
+        "Not at all worried",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all worried": 0.1127,
+        "Not too worried": 0.3717,
+        "Refused": 0.001,
+        "Somewhat worried": 0.3932,
+        "Very worried": 0.1214
+      },
+      "model_distribution": {
+        "Very worried": 1.0,
+        "Somewhat worried": 0.0,
+        "Not too worried": 0.0,
+        "Not at all worried": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.722652,
+      "kendall_tau": 0.0,
+      "parity": 0.388674,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.000967
+    },
+    {
+      "key": "CARS4_W27",
+      "text": "How long, if ever, do you think it will take for most of the vehicles on the road to be driverless, rather than driven b",
+      "options": [
+        "Less than 10 years",
+        "10 to less than 50 years",
+        "50 to less than 100 years",
+        "100 or more years",
+        "It will never happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "10 to less than 50 years": 0.5976,
+        "100 or more years": 0.0397,
+        "50 to less than 100 years": 0.2167,
+        "It will never happen": 0.0709,
+        "Less than 10 years": 0.0735,
+        "Refused": 0.0017
+      },
+      "model_distribution": {
+        "Less than 10 years": 1.0,
+        "10 to less than 50 years": 0.0,
+        "50 to less than 100 years": 0.0,
+        "100 or more years": 0.0,
+        "It will never happen": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.806638,
+      "kendall_tau": 0.11547,
+      "parity": 0.375549,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.001693
+    },
+    {
+      "key": "CARS5_W27",
+      "text": "Would you, personally, want to ride in a driverless vehicle if you had the opportunity?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.5299,
+        "Refused": 0.0015,
+        "Yes": 0.4687
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.336582,
+      "kendall_tau": 0.0,
+      "parity": 0.581709,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.001451
+    },
+    {
+      "key": "CARS7A_W27",
+      "text": "How safe would you feel sharing the road with a driverless passenger vehicle?",
+      "options": [
+        "Very safe",
+        "Somewhat safe",
+        "Not too safe",
+        "Not safe at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not safe at all": 0.141,
+        "Not too safe": 0.334,
+        "Refused": 0.0017,
+        "Somewhat safe": 0.3964,
+        "Very safe": 0.127
+      },
+      "model_distribution": {
+        "Very safe": 1.0,
+        "Somewhat safe": 0.0,
+        "Not too safe": 0.0,
+        "Not safe at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.713813,
+      "kendall_tau": -0.316228,
+      "parity": 0.314037,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.001693
+    },
+    {
+      "key": "CARS7B_W27",
+      "text": "How safe would you feel sharing the road with a driverless freight truck?",
+      "options": [
+        "Very safe",
+        "Somewhat safe",
+        "Not too safe",
+        "Not safe at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not safe at all": 0.2948,
+        "Not too safe": 0.3306,
+        "Refused": 0.0022,
+        "Somewhat safe": 0.2861,
+        "Very safe": 0.0863
+      },
+      "model_distribution": {
+        "Very safe": 1.0,
+        "Somewhat safe": 0.0,
+        "Not too safe": 0.0,
+        "Not safe at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.782556,
+      "kendall_tau": -0.316228,
+      "parity": 0.279665,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002177
+    },
+    {
+      "key": "CARS8_W27",
+      "text": "If driverless vehicles become widespread, do you think that the number of people killed or injured in traffic accidents ",
+      "options": [
+        "Increase",
+        "Decrease",
+        "Stay about the same",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Decrease": 0.4215,
+        "Increase": 0.2527,
+        "Refused": 0.0068,
+        "Stay about the same": 0.319
+      },
+      "model_distribution": {
+        "Increase": 1.0,
+        "Decrease": 0.0,
+        "Stay about the same": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.545645,
+      "kendall_tau": -0.235702,
+      "parity": 0.418252,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006771
+    },
+    {
+      "key": "CARS9A_W27",
+      "text": "Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles?",
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.3819,
+        "Oppose": 0.1342,
+        "Refused": 0.0051,
+        "Strongly favor": 0.4443,
+        "Strongly oppose": 0.0346
+      },
+      "model_distribution": {
+        "Strongly favor": 1.0,
+        "Favor": 0.0,
+        "Oppose": 0.0,
+        "Strongly oppose": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.357027,
+      "kendall_tau": 0.632456,
+      "parity": 0.7296,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005079
+    },
+    {
+      "key": "CARS9B_W27",
+      "text": "Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles?",
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.3497,
+        "Oppose": 0.2817,
+        "Refused": 0.0085,
+        "Strongly favor": 0.31,
+        "Strongly oppose": 0.0501
+      },
+      "model_distribution": {
+        "Strongly favor": 1.0,
+        "Favor": 0.0,
+        "Oppose": 0.0,
+        "Strongly oppose": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.482899,
+      "kendall_tau": 0.316228,
+      "parity": 0.587608,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.008464
+    },
+    {
+      "key": "CARS9C_W27",
+      "text": "Would you strongly favor, favor, oppose, or strongly oppose the following rules and regulations for driverless vehicles?",
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.3582,
+        "Oppose": 0.1059,
+        "Refused": 0.0046,
+        "Strongly favor": 0.5112,
+        "Strongly oppose": 0.0201
+      },
+      "model_distribution": {
+        "Strongly favor": 1.0,
+        "Favor": 0.0,
+        "Oppose": 0.0,
+        "Strongly oppose": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.302427,
+      "kendall_tau": 0.632456,
+      "parity": 0.756901,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004595
+    },
+    {
+      "key": "DEFENDGUN_W26",
+      "text": "Not including in military combat or as part of your job, have you ever used a gun to defend yourself, your family or pos",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.9283,
+        "Refused": 0.005,
+        "Yes": 0.0667
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.820048,
+      "kendall_tau": 0.0,
+      "parity": 0.339976,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005038
+    },
+    {
+      "key": "DIFF1A_W29",
+      "text": "Do you think men and women are basically similar or basically different when it comes to their hobbies and personal inte",
+      "options": [
+        "Men and women are basically similar",
+        "Men and women are basically different",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Men and women are basically different": 0.6764,
+        "Men and women are basically similar": 0.317,
+        "Refused": 0.0066
+      },
+      "model_distribution": {
+        "Men and women are basically similar": 1.0,
+        "Men and women are basically different": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.475668,
+      "kendall_tau": 0.0,
+      "parity": 0.512166,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006575
+    },
+    {
+      "key": "DIFF1B_W29",
+      "text": "Do you think men and women are basically similar or basically different when it comes to their physical abilities?",
+      "options": [
+        "Men and women are basically similar",
+        "Men and women are basically different",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Men and women are basically different": 0.761,
+        "Men and women are basically similar": 0.2318,
+        "Refused": 0.0072
+      },
+      "model_distribution": {
+        "Men and women are basically similar": 1.0,
+        "Men and women are basically different": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.570361,
+      "kendall_tau": 0.0,
+      "parity": 0.46482,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007191
+    },
+    {
+      "key": "DIFF1D_W29",
+      "text": "Do you think men and women are basically similar or basically different when it comes to how they express their feelings",
+      "options": [
+        "Men and women are basically similar",
+        "Men and women are basically different",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Men and women are basically different": 0.8884,
+        "Men and women are basically similar": 0.1054,
+        "Refused": 0.0062
+      },
+      "model_distribution": {
+        "Men and women are basically similar": 1.0,
+        "Men and women are basically different": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.749024,
+      "kendall_tau": 0.0,
+      "parity": 0.375488,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006164
+    },
+    {
+      "key": "FAVORS_CPS_W29",
+      "text": "In the last 12 months, how often did you and your neighbors do favors for each other?",
+      "options": [
+        "Basically every day",
+        "A few times a week",
+        "A few times a month",
+        "Once a month",
+        "Less than once a month",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A few times a month": 0.2398,
+        "A few times a week": 0.1085,
+        "Basically every day": 0.0224,
+        "Less than once a month": 0.2874,
+        "Not at all": 0.2217,
+        "Once a month": 0.1173,
+        "Refused": 0.0029
+      },
+      "model_distribution": {
+        "Basically every day": 1.0,
+        "A few times a week": 0.0,
+        "A few times a month": 0.0,
+        "Once a month": 0.0,
+        "Less than once a month": 0.0,
+        "Not at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.922294,
+      "kendall_tau": -0.356348,
+      "parity": 0.199766,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002877
+    },
+    {
+      "key": "GUNACTIVITYD_W26",
+      "text": "How often, if ever, do you participate in online discussion forums about guns",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.1219,
+        "Never": 0.8325,
+        "Often": 0.0065,
+        "Refused": 0.005,
+        "Sometimes": 0.0341
+      },
+      "model_distribution": {
+        "Often": 1.0,
+        "Sometimes": 0.0,
+        "Hardly ever": 0.0,
+        "Never": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.971764,
+      "kendall_tau": -0.316228,
+      "parity": 0.185061,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005038
+    },
+    {
+      "key": "HOOD_NHISA_W29",
+      "text": "How much do you agree or disagree with the following statements about your neighborhood? There are people I can count on",
+      "options": [
+        "Definitely agree",
+        "Somewhat agree",
+        "Somewhat disagree",
+        "Definitely disagree",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Definitely agree": 0.4393,
+        "Definitely disagree": 0.0674,
+        "Refused": 0.0051,
+        "Somewhat agree": 0.3818,
+        "Somewhat disagree": 0.1064
+      },
+      "model_distribution": {
+        "Definitely agree": 1.0,
+        "Somewhat agree": 0.0,
+        "Somewhat disagree": 0.0,
+        "Definitely disagree": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.361269,
+      "kendall_tau": 0.632456,
+      "parity": 0.727479,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005137
+    },
+    {
+      "key": "HOOD_NHISB_W29",
+      "text": "How much do you agree or disagree with the following statements about your neighborhood? People in this neighborhood can",
+      "options": [
+        "Definitely agree",
+        "Somewhat agree",
+        "Somewhat disagree",
+        "Definitely disagree",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Definitely agree": 0.3801,
+        "Definitely disagree": 0.0425,
+        "Refused": 0.0064,
+        "Somewhat agree": 0.4757,
+        "Somewhat disagree": 0.0953
+      },
+      "model_distribution": {
+        "Definitely agree": 1.0,
+        "Somewhat agree": 0.0,
+        "Somewhat disagree": 0.0,
+        "Definitely disagree": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.414049,
+      "kendall_tau": 0.316228,
+      "parity": 0.622032,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006369
+    },
+    {
+      "key": "HOOD_NHISC_W29",
+      "text": "How much do you agree or disagree with the following statements about your neighborhood? This is a close-knit neighborho",
+      "options": [
+        "Definitely agree",
+        "Somewhat agree",
+        "Somewhat disagree",
+        "Definitely disagree",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Definitely agree": 0.1518,
+        "Definitely disagree": 0.1286,
+        "Refused": 0.0058,
+        "Somewhat agree": 0.4331,
+        "Somewhat disagree": 0.2807
+      },
+      "model_distribution": {
+        "Definitely agree": 1.0,
+        "Somewhat agree": 0.0,
+        "Somewhat disagree": 0.0,
+        "Definitely disagree": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.676093,
+      "kendall_tau": 0.0,
+      "parity": 0.411953,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005753
+    },
+    {
+      "key": "PARTICIPATEA_W29",
+      "text": "Have you participated in any of these groups during the last 12 months, that is since September 2016? A school group, ne",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.752,
+        "Refused": 0.0049,
+        "Yes": 0.2431
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.556902,
+      "kendall_tau": 0.0,
+      "parity": 0.471549,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004931
+    },
+    {
+      "key": "PARTICIPATEB_W29",
+      "text": "Have you participated in any of these groups during the last 12 months, that is since September 2016? A service or civic",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.8367,
+        "Refused": 0.0078,
+        "Yes": 0.1555
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.670715,
+      "kendall_tau": 0.0,
+      "parity": 0.414642,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007808
+    },
+    {
+      "key": "PARTICIPATEC_W29",
+      "text": "Have you participated in any of these groups during the last 12 months, that is since September 2016? A sports or recrea",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.8118,
+        "Refused": 0.0064,
+        "Yes": 0.1818
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.633976,
+      "kendall_tau": 0.0,
+      "parity": 0.433012,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006369
+    },
+    {
+      "key": "PERSDISCR_W29",
+      "text": "Have you ever personally experienced discrimination or been treated unfairly because of your gender, or not?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.6511,
+        "Refused": 0.0023,
+        "Yes": 0.3466
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.446002,
+      "kendall_tau": 0.0,
+      "parity": 0.526999,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00226
+    },
+    {
+      "key": "ROBJOB5D_W27",
+      "text": "Would you favor or oppose the following? If the federal government created a national service program that paid people t",
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.341,
+        "Oppose": 0.3449,
+        "Refused": 0.0152,
+        "Strongly favor": 0.147,
+        "Strongly oppose": 0.1519
+      },
+      "model_distribution": {
+        "Strongly favor": 1.0,
+        "Favor": 0.0,
+        "Oppose": 0.0,
+        "Strongly oppose": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.683159,
+      "kendall_tau": -0.316228,
+      "parity": 0.329363,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.015236
+    },
+    {
+      "key": "ROBJOB6_W27",
+      "text": "Which of the following statements best describes how you feel, even if neither is exactly right?",
+      "options": [
+        "The government would have an obligation to take care of people whose jobs are displaced by robots and computers",
+        "Individuals would have an obligation to take care of their own financial well-being, even if robots and computers",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Individuals would have an obligation to take care of their own financial well-being, even if robots and computers": 0.5378,
+        "Refused": 0.0131,
+        "The government would have an obligation to take care of people whose jobs are displaced by robots and computers": 0.4491
+      },
+      "model_distribution": {
+        "The government would have an obligation to take care of people whose jobs are displaced by robots and computers": 1.0,
+        "Individuals would have an obligation to take care of their own financial well-being, even if robots and computers": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.352927,
+      "kendall_tau": 0.0,
+      "parity": 0.573537,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.013059
+    },
+    {
+      "key": "ROBJOB7_W27",
+      "text": "Which of the following statements best describes how you feel, even if neither is exactly right?",
+      "options": [
+        "If businesses can receive better work at lower cost by replacing humans with robots and computers, they are justified",
+        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those",
+        "Refused"
+      ],
+      "human_distribution": {
+        "If businesses can receive better work at lower cost by replacing humans with robots and computers, they are justified": 0.5105,
+        "Refused": 0.0104,
+        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 0.4791
+      },
+      "model_distribution": {
+        "If businesses can receive better work at lower cost by replacing humans with robots and computers, they are justified": 1.0,
+        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.302994,
+      "kendall_tau": 0.816497,
+      "parity": 0.802627,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.010399
+    },
+    {
+      "key": "S13_W29",
+      "text": "This next question is about friends and family you do not live with. During the last twelve months, how often did you se",
+      "options": [
+        "Basically every day",
+        "A few times a week",
+        "A few times a month",
+        "Once a month",
+        "Less than once a month",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A few times a month": 0.1956,
+        "A few times a week": 0.3826,
+        "Basically every day": 0.3183,
+        "Less than once a month": 0.0487,
+        "Not at all": 0.0115,
+        "Once a month": 0.0399,
+        "Refused": 0.0035
+      },
+      "model_distribution": {
+        "Basically every day": 1.0,
+        "A few times a week": 0.0,
+        "A few times a month": 0.0,
+        "Once a month": 0.0,
+        "Less than once a month": 0.0,
+        "Not at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.474403,
+      "kendall_tau": 0.356348,
+      "parity": 0.601885,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003493
+    },
+    {
+      "key": "S7_W29",
+      "text": "In the last 12 months, that is since September 2016, have you served on a committee or as an officer of any group or org",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.7121,
+        "Refused": 0.0029,
+        "Yes": 0.285
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.509522,
+      "kendall_tau": 0.0,
+      "parity": 0.495239,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002877
+    },
+    {
+      "key": "SAFECRIME_W26",
+      "text": "How safe, if at all, would you say your local community is from crime? Would you say it is",
+      "options": [
+        "Very safe",
+        "Somewhat safe",
+        "Not too safe",
+        "Not at all safe",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all safe": 0.0262,
+        "Not too safe": 0.1185,
+        "Refused": 0.0024,
+        "Somewhat safe": 0.5725,
+        "Very safe": 0.2805
+      },
+      "model_distribution": {
+        "Very safe": 1.0,
+        "Somewhat safe": 0.0,
+        "Not too safe": 0.0,
+        "Not at all safe": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.514442,
+      "kendall_tau": 0.316228,
+      "parity": 0.571836,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002399
+    },
+    {
+      "key": "SATLIFEA_W32",
+      "text": "Please tell us whether you are satisfied or dissatisfied with your family life.",
+      "options": [
+        "Very satisfied",
+        "Somewhat satisfied",
+        "Somewhat dissatisfied",
+        "Very dissatisfied",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0037,
+        "Somewhat dissatisfied": 0.1007,
+        "Somewhat satisfied": 0.3605,
+        "Very dissatisfied": 0.0365,
+        "Very satisfied": 0.4986
+      },
+      "model_distribution": {
+        "Very satisfied": 1.0,
+        "Somewhat satisfied": 0.0,
+        "Somewhat dissatisfied": 0.0,
+        "Very dissatisfied": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.312357,
+      "kendall_tau": 0.632456,
+      "parity": 0.751935,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003681
+    },
+    {
+      "key": "TALK_CPS_W29",
+      "text": "In the last 12 months, how often did you talk with any of your neighbors?",
+      "options": [
+        "Basically every day",
+        "A few times a week",
+        "A few times a month",
+        "Once a month",
+        "Less than once a month",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A few times a month": 0.2823,
+        "A few times a week": 0.3552,
+        "Basically every day": 0.1241,
+        "Less than once a month": 0.1144,
+        "Not at all": 0.0444,
+        "Once a month": 0.0762,
+        "Refused": 0.0033
+      },
+      "model_distribution": {
+        "Basically every day": 1.0,
+        "A few times a week": 0.0,
+        "A few times a month": 0.0,
+        "Once a month": 0.0,
+        "Less than once a month": 0.0,
+        "Not at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.718344,
+      "kendall_tau": 0.178174,
+      "parity": 0.435372,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003287
+    },
+    {
+      "key": "TRAITSA_W29",
+      "text": "How well, if at all, do the following words or phrases describe you? Intelligent",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all well": 0.0031,
+        "Not too well": 0.0201,
+        "Refused": 0.0058,
+        "Somewhat well": 0.4734,
+        "Very well": 0.4976
+      },
+      "model_distribution": {
+        "Very well": 1.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.313153,
+      "kendall_tau": 0.632456,
+      "parity": 0.751537,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005753
+    },
+    {
+      "key": "TRAITSB_W29",
+      "text": "How well, if at all, do the following words or phrases describe you? Physically attractive",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all well": 0.0263,
+        "Not too well": 0.2085,
+        "Refused": 0.0064,
+        "Somewhat well": 0.6378,
+        "Very well": 0.121
+      },
+      "model_distribution": {
+        "Very well": 1.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.723268,
+      "kendall_tau": 0.0,
+      "parity": 0.388366,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006369
+    },
+    {
+      "key": "TRAITSC_W29",
+      "text": "How well, if at all, do the following words or phrases describe you? Nurturing",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all well": 0.0168,
+        "Not too well": 0.1432,
+        "Refused": 0.0062,
+        "Somewhat well": 0.4602,
+        "Very well": 0.3735
+      },
+      "model_distribution": {
+        "Very well": 1.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.420195,
+      "kendall_tau": 0.316228,
+      "parity": 0.61896,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006164
+    },
+    {
+      "key": "TRAITSD_W29",
+      "text": "How well, if at all, do the following words or phrases describe you? Assertive",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all well": 0.0234,
+        "Not too well": 0.1866,
+        "Refused": 0.0058,
+        "Somewhat well": 0.5147,
+        "Very well": 0.2696
+      },
+      "model_distribution": {
+        "Very well": 1.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.526503,
+      "kendall_tau": 0.316228,
+      "parity": 0.565805,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005753
+    },
+    {
+      "key": "TRAITSE_W29",
+      "text": "How well, if at all, do the following words or phrases describe you? Physically strong",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all well": 0.0438,
+        "Not too well": 0.2609,
+        "Refused": 0.0053,
+        "Somewhat well": 0.5457,
+        "Very well": 0.1442
+      },
+      "model_distribution": {
+        "Very well": 1.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.687327,
+      "kendall_tau": 0.0,
+      "parity": 0.406337,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005342
+    },
+    {
+      "key": "TRAITSF_W29",
+      "text": "How well, if at all, do the following words or phrases describe you? Sensitive",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all well": 0.0144,
+        "Not too well": 0.1307,
+        "Refused": 0.0068,
+        "Somewhat well": 0.4824,
+        "Very well": 0.3657
+      },
+      "model_distribution": {
+        "Very well": 1.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.427572,
+      "kendall_tau": 0.316228,
+      "parity": 0.615271,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00678
+    },
+    {
+      "key": "TRANSGEND1_W29",
+      "text": "Which statement comes closer to your views, even if neither is exactly right?",
+      "options": [
+        "Whether someone is a man or a woman is determined by the sex they were assigned at birth",
+        "Someone can be a man or a woman even if that is different from the sex they were assigned at birth",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0148,
+        "Someone can be a man or a woman even if that is different from the sex they were assigned at birth": 0.4746,
+        "Whether someone is a man or a woman is determined by the sex they were assigned at birth": 0.5106
+      },
+      "model_distribution": {
+        "Whether someone is a man or a woman is determined by the sex they were assigned at birth": 1.0,
+        "Someone can be a man or a woman even if that is different from the sex they were assigned at birth": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.302946,
+      "kendall_tau": 0.816497,
+      "parity": 0.802651,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.014794
+    },
+    {
+      "key": "TRANSGEND2_W29",
+      "text": "Thinking about the people you know, including yourself, do you personally know anyone who is transgender, or not?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.6076,
+        "Refused": 0.0035,
+        "Yes": 0.3889
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.405885,
+      "kendall_tau": 0.0,
+      "parity": 0.547058,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003493
+    },
+    {
+      "key": "TRANSGEND3_W29",
+      "text": "Which of the following statements comes closer to your feelings?",
+      "options": [
+        "Our society has gone too far in accepting people who are transgender",
+        "Our society has not gone far enough in accepting people who are transgender",
+        "Our society has been about right when it comes to accepting people who are transgender",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Our society has been about right when it comes to accepting people who are transgender": 0.2531,
+        "Our society has gone too far in accepting people who are transgender": 0.3133,
+        "Our society has not gone far enough in accepting people who are transgender": 0.4159,
+        "Refused": 0.0177
+      },
+      "model_distribution": {
+        "Our society has gone too far in accepting people who are transgender": 1.0,
+        "Our society has not gone far enough in accepting people who are transgender": 0.0,
+        "Our society has been about right when it comes to accepting people who are transgender": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.479479,
+      "kendall_tau": 0.235702,
+      "parity": 0.569186,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.01767
+    },
+    {
+      "key": "WORLDDANGER_W26",
+      "text": "Compared to 50 years ago, do you think",
+      "options": [
+        "We live in a safer world",
+        "We live in a more dangerous world",
+        "The world we live in is neither safer nor more dangerous",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0026,
+        "The world we live in is neither safer nor more dangerous": 0.1982,
+        "We live in a more dangerous world": 0.7025,
+        "We live in a safer world": 0.0967
+      },
+      "model_distribution": {
+        "We live in a safer world": 1.0,
+        "We live in a more dangerous world": 0.0,
+        "The world we live in is neither safer nor more dangerous": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.76404,
+      "kendall_tau": -0.235702,
+      "parity": 0.309054,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002639
+    },
+    {
+      "key": "WORRYBILL_W29",
+      "text": "How worried are you right now about not having enough to pay your normal monthly bills?",
+      "options": [
+        "Very worried",
+        "Moderately worried",
+        "Not too worried",
+        "Not worried at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Moderately worried": 0.2371,
+        "Not too worried": 0.3228,
+        "Not worried at all": 0.2885,
+        "Refused": 0.0047,
+        "Very worried": 0.1469
+      },
+      "model_distribution": {
+        "Very worried": 1.0,
+        "Moderately worried": 0.0,
+        "Not too worried": 0.0,
+        "Not worried at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.683352,
+      "kendall_tau": -0.316228,
+      "parity": 0.329267,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004726
+    },
+    {
+      "key": "WORRYRET_W29",
+      "text": "How worried are you right now about not having enough money for retirement?",
+      "options": [
+        "Very worried",
+        "Moderately worried",
+        "Not too worried",
+        "Not worried at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Moderately worried": 0.3419,
+        "Not too worried": 0.2918,
+        "Not worried at all": 0.1333,
+        "Refused": 0.0031,
+        "Very worried": 0.2299
+      },
+      "model_distribution": {
+        "Very worried": 1.0,
+        "Moderately worried": 0.0,
+        "Not too worried": 0.0,
+        "Not worried at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.572593,
+      "kendall_tau": 0.0,
+      "parity": 0.463703,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003082
+    }
+  ]
+}

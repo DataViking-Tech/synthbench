@@ -1,0 +1,351 @@
+{
+  "benchmark": "synthbench",
+  "version": "0.1.0",
+  "timestamp": "2026-04-11T01:28:17.546341+00:00",
+  "config": {
+    "dataset": "globalopinionqa",
+    "provider": "random-baseline",
+    "samples_per_question": 5,
+    "n_requested": 10,
+    "n_evaluated": 10
+  },
+  "scores": {
+    "sps": 0.709683,
+    "p_dist": 0.746806,
+    "p_rank": 0.399065,
+    "p_refuse": 0.983178
+  },
+  "aggregate": {
+    "mean_jsd": 0.253194,
+    "median_jsd": 0.175984,
+    "mean_kendall_tau": -0.20187,
+    "composite_parity": 0.572935,
+    "n_questions": 10,
+    "elapsed_seconds": 0.1,
+    "per_metric_ci": {
+      "p_dist": [
+        0.642621,
+        0.822518
+      ],
+      "p_rank": [
+        0.240267,
+        0.540677
+      ],
+      "p_refuse": [
+        0.963876,
+        0.994774
+      ],
+      "sps": [
+        0.480669,
+        0.679823
+      ]
+    },
+    "question_set_hash": "e13afb1c2e779c25f71fa479f943e3591658feebc552fcfd0d27c8b1c5f6507e",
+    "n_parse_failures": 0
+  },
+  "demographic_breakdown": {},
+  "per_question": [
+    {
+      "key": "GOQA_0_adeba4f8",
+      "text": "When it comes to Germany\u2019s decision-making in the European Union, do you think Germany has too much influence, has too l",
+      "options": [
+        "Has too much influence",
+        "Has too little influence",
+        "Has about the right amount of influence",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Has too much influence": 0.3806,
+        "Has too little influence": 0.0803,
+        "Has about the right amount of influence": 0.5215,
+        "DK/Refused": 0.0175
+      },
+      "model_distribution": {
+        "Has too much influence": 0.4,
+        "Has too little influence": 0.4,
+        "Has about the right amount of influence": 0.2,
+        "DK/Refused": 0.0
+      },
+      "jsd": 0.146192,
+      "kendall_tau": 0.182574,
+      "parity": 0.722548,
+      "n_samples": 5,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.017538
+    },
+    {
+      "key": "GOQA_1_3c42d99b",
+      "text": "Please tell me if you have a very favorable, somewhat favorable, somewhat unfavorable or very unfavorable opinion of ___",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.06,
+        "Somewhat favorable": 0.4,
+        "Somewhat unfavorable": 0.38,
+        "Very unfavorable": 0.13,
+        "DK/Refused": 0.03
+      },
+      "model_distribution": {
+        "Very favorable": 0.4,
+        "Somewhat favorable": 0.2,
+        "Somewhat unfavorable": 0.0,
+        "Very unfavorable": 0.0,
+        "DK/Refused": 0.4
+      },
+      "jsd": 0.51754,
+      "kendall_tau": -0.447214,
+      "parity": 0.379427,
+      "n_samples": 5,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.03
+    },
+    {
+      "key": "GOQA_2_8cc6fc68",
+      "text": "Which statement comes closer to your own views, even if neither is exactly right? Using overwhelming military force is t",
+      "options": [
+        "Using overwhelming military force is the best way to defeat terrorism around the world",
+        "If (survey country) had cooperated more with other countries, the number of coronavirus cases would have been lower in this country",
+        "Many of the problems facing our country can be solved by working with other countries",
+        "Relying too much on military force to defeat terrorism creates hatred that leads to more terrorism",
+        "No amount of cooperation between (survey country) and other countries would have reduced the number of coronavirus cases in this country",
+        "Few of the problems facing our country can be solved by working with other countries",
+        "DK/Refused",
+        "When dealing with major international issues, our country should take into account the interests of other countries, even if it means making compromises with them",
+        "When dealing with major international issues, our country should follow its own interests, even when other countries strongly disagree"
+      ],
+      "human_distribution": {
+        "Using overwhelming military force is the best way to defeat terrorism around the world": 0.1247,
+        "If (survey country) had cooperated more with other countries, the number of coronavirus cases would have been lower in this country": 0.182,
+        "Many of the problems facing our country can be solved by working with other countries": 0.0284,
+        "Relying too much on military force to defeat terrorism creates hatred that leads to more terrorism": 0.1023,
+        "No amount of cooperation between (survey country) and other countries would have reduced the number of coronavirus cases in this country": 0.1523,
+        "Few of the problems facing our country can be solved by working with other countries": 0.0237,
+        "DK/Refused": 0.0467,
+        "When dealing with major international issues, our country should take into account the interests of other countries, even if it means making compromises with them": 0.196,
+        "When dealing with major international issues, our country should follow its own interests, even when other countries strongly disagree": 0.1439
+      },
+      "model_distribution": {
+        "Using overwhelming military force is the best way to defeat terrorism around the world": 0.4,
+        "If (survey country) had cooperated more with other countries, the number of coronavirus cases would have been lower in this country": 0.2,
+        "Many of the problems facing our country can be solved by working with other countries": 0.0,
+        "Relying too much on military force to defeat terrorism creates hatred that leads to more terrorism": 0.2,
+        "No amount of cooperation between (survey country) and other countries would have reduced the number of coronavirus cases in this country": 0.0,
+        "Few of the problems facing our country can be solved by working with other countries": 0.0,
+        "DK/Refused": 0.2,
+        "When dealing with major international issues, our country should take into account the interests of other countries, even if it means making compromises with them": 0.0,
+        "When dealing with major international issues, our country should follow its own interests, even when other countries strongly disagree": 0.0
+      },
+      "jsd": 0.375929,
+      "kendall_tau": 0.034752,
+      "parity": 0.570724,
+      "n_samples": 5,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.046658
+    },
+    {
+      "key": "GOQA_3_2f86b3b4",
+      "text": "Do you think China will replace the U.S. as the world's leading superpower in the next 10 years, the next 20 years, the ",
+      "options": [
+        "Next 10 years",
+        "Next 20 years",
+        "Next 50 years",
+        "China will not replace U.S."
+      ],
+      "human_distribution": {
+        "Next 10 years": 0.1456,
+        "Next 20 years": 0.2159,
+        "Next 50 years": 0.1567,
+        "China will not replace U.S.": 0.4818
+      },
+      "model_distribution": {
+        "Next 10 years": 0.2,
+        "Next 20 years": 0.6,
+        "Next 50 years": 0.0,
+        "China will not replace U.S.": 0.2
+      },
+      "jsd": 0.192631,
+      "kendall_tau": 0.182574,
+      "parity": 0.699328,
+      "n_samples": 5,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0
+    },
+    {
+      "key": "GOQA_4_91ab651e",
+      "text": "In your opinion, how strong a sense of Islamic identity do Muslims in our country have--very strong, fairly strong, not ",
+      "options": [
+        "Very strong",
+        "Fairly strong",
+        "Not too strong",
+        "Not strong at all"
+      ],
+      "human_distribution": {
+        "Very strong": 0.2841,
+        "Fairly strong": 0.4747,
+        "Not too strong": 0.1917,
+        "Not strong at all": 0.0494
+      },
+      "model_distribution": {
+        "Very strong": 0.2,
+        "Fairly strong": 0.2,
+        "Not too strong": 0.2,
+        "Not strong at all": 0.4
+      },
+      "jsd": 0.159337,
+      "kendall_tau": -0.707107,
+      "parity": 0.493555,
+      "n_samples": 5,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0
+    },
+    {
+      "key": "GOQA_5_60e0a1e8",
+      "text": "Please tell me if you approve or disapprove of the way Prime Minister Viktor Orb\u00e1n is handling each of the following are",
+      "options": [
+        "Approve",
+        "Disapprove",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Approve": 0.703,
+        "Disapprove": 0.2277,
+        "DK/Refused": 0.0693
+      },
+      "model_distribution": {
+        "Approve": 0.4,
+        "Disapprove": 0.6,
+        "DK/Refused": 0.0
+      },
+      "jsd": 0.12767,
+      "kendall_tau": 0.333333,
+      "parity": 0.769499,
+      "n_samples": 5,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.069307
+    },
+    {
+      "key": "GOQA_6_e5125a6a",
+      "text": "And thinking about some political leaders and organizations in our country, please tell me if you have a very favorable,",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.0968,
+        "Somewhat favorable": 0.2581,
+        "Somewhat unfavorable": 0.1613,
+        "Very unfavorable": 0.4839
+      },
+      "model_distribution": {
+        "Very favorable": 0.6,
+        "Somewhat favorable": 0.0,
+        "Somewhat unfavorable": 0.2,
+        "Very unfavorable": 0.2
+      },
+      "jsd": 0.320206,
+      "kendall_tau": -0.547723,
+      "parity": 0.452966,
+      "n_samples": 5,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0
+    },
+    {
+      "key": "GOQA_7_f06b55c4",
+      "text": "Please tell me which of the following is closest to your own opinion. Less inefficient large enterprises is helpful for ",
+      "options": [
+        "Less inefficient large enterprises is helpful for economic improvement",
+        "Less inefficient large enterprises is not helpful for economic development"
+      ],
+      "human_distribution": {
+        "Less inefficient large enterprises is helpful for economic improvement": 0.8072,
+        "Less inefficient large enterprises is not helpful for economic development": 0.1928
+      },
+      "model_distribution": {
+        "Less inefficient large enterprises is helpful for economic improvement": 0.4,
+        "Less inefficient large enterprises is not helpful for economic development": 0.6
+      },
+      "jsd": 0.129705,
+      "kendall_tau": -1.0,
+      "parity": 0.435147,
+      "n_samples": 5,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0
+    },
+    {
+      "key": "GOQA_8_3a7caba0",
+      "text": "Now I am going to read you a list of things that may be problems in our country.  As I read each one, please tell me if ",
+      "options": [
+        "Very big problem",
+        "Moderately big problem",
+        "Small problem",
+        "Not a problem at all",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very big problem": 0.5345,
+        "Moderately big problem": 0.3007,
+        "Small problem": 0.127,
+        "Not a problem at all": 0.0331,
+        "DK/Refused": 0.0047
+      },
+      "model_distribution": {
+        "Very big problem": 0.2,
+        "Moderately big problem": 0.0,
+        "Small problem": 0.2,
+        "Not a problem at all": 0.2,
+        "DK/Refused": 0.4
+      },
+      "jsd": 0.445005,
+      "kendall_tau": -0.597614,
+      "parity": 0.378094,
+      "n_samples": 5,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004722
+    },
+    {
+      "key": "GOQA_9_72cc9ee4",
+      "text": "Please tell me how worried you are about each of the following issues related to Muslims living in your country...extrem",
+      "options": [
+        "Very worried",
+        "Somewhat worried",
+        "Not too worried",
+        "Not at all worried"
+      ],
+      "human_distribution": {
+        "Very worried": 0.3074,
+        "Somewhat worried": 0.2968,
+        "Not too worried": 0.1809,
+        "Not at all worried": 0.2149
+      },
+      "model_distribution": {
+        "Very worried": 0.4,
+        "Somewhat worried": 0.4,
+        "Not too worried": 0.2,
+        "Not at all worried": 0.0
+      },
+      "jsd": 0.11773,
+      "kendall_tau": 0.547723,
+      "parity": 0.828066,
+      "n_samples": 5,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0
+    }
+  ]
+}

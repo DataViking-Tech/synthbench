@@ -1,0 +1,1123 @@
+{
+  "benchmark": "synthbench",
+  "version": "0.1.0",
+  "timestamp": "2026-04-11T01:23:52.351738+00:00",
+  "config": {
+    "dataset": "opinionsqa",
+    "provider": "majority-baseline",
+    "samples_per_question": 10,
+    "n_requested": 100,
+    "n_evaluated": 37,
+    "topic": "consumer"
+  },
+  "scores": {
+    "sps": 0.673479,
+    "p_dist": 0.460748,
+    "p_rank": 0.565114,
+    "p_refuse": 0.994574
+  },
+  "aggregate": {
+    "mean_jsd": 0.539252,
+    "median_jsd": 0.576171,
+    "mean_kendall_tau": 0.130228,
+    "composite_parity": 0.512931,
+    "n_questions": 37,
+    "elapsed_seconds": 0.0,
+    "per_metric_ci": {
+      "p_dist": [
+        0.385765,
+        0.537327
+      ],
+      "p_rank": [
+        0.511424,
+        0.627041
+      ],
+      "p_refuse": [
+        0.993656,
+        0.995268
+      ],
+      "sps": [
+        0.450391,
+        0.580229
+      ]
+    },
+    "question_set_hash": "1e27489903e0aeae4179230c2180d716374395e67c2d456eb686cf6921799070",
+    "n_parse_failures": 0
+  },
+  "demographic_breakdown": {},
+  "per_question": [
+    {
+      "key": "BLOODPR_W29",
+      "text": "Have you ever been told by a doctor or other health professional that you had hypertension, also called high blood press",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.6205,
+        "Refused": 0.0018,
+        "Yes": 0.3776
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.416347,
+      "kendall_tau": 0.0,
+      "parity": 0.541827,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.001849
+    },
+    {
+      "key": "CARS10A_W27",
+      "text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Elderly ",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.2143,
+        "Refused": 0.0036,
+        "Yes, likely": 0.7821
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.118581,
+      "kendall_tau": 0.816497,
+      "parity": 0.894834,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003628
+    },
+    {
+      "key": "CARS10B_W27",
+      "text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Many peo",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.1877,
+        "Refused": 0.0044,
+        "Yes, likely": 0.808
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.103379,
+      "kendall_tau": 0.816497,
+      "parity": 0.902435,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004353
+    },
+    {
+      "key": "CARS10C_W27",
+      "text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Owning a",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.557,
+        "Refused": 0.0068,
+        "Yes, likely": 0.4363
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.36385,
+      "kendall_tau": 0.0,
+      "parity": 0.568075,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006771
+    },
+    {
+      "key": "CARS10D_W27",
+      "text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? Most peo",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.3301,
+        "Refused": 0.0039,
+        "Yes, likely": 0.666
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.191301,
+      "kendall_tau": 0.816497,
+      "parity": 0.858474,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003869
+    },
+    {
+      "key": "CARS10E_W27",
+      "text": "If driverless vehicles become widespread, which of the following do you think are likely to happen as a result? There wo",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.7449,
+        "Refused": 0.0046,
+        "Yes, likely": 0.2505
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.548164,
+      "kendall_tau": 0.0,
+      "parity": 0.475918,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004595
+    },
+    {
+      "key": "DIFF1C_W29",
+      "text": "Do you think men and women are basically similar or basically different when it comes to their approach to parenting?",
+      "options": [
+        "Men and women are basically similar",
+        "Men and women are basically different",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Men and women are basically different": 0.6462,
+        "Men and women are basically similar": 0.346,
+        "Refused": 0.0078
+      },
+      "model_distribution": {
+        "Men and women are basically similar": 1.0,
+        "Men and women are basically different": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.446606,
+      "kendall_tau": 0.0,
+      "parity": 0.526697,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007808
+    },
+    {
+      "key": "DIFF1E_W29",
+      "text": "Do you think men and women are basically similar or basically different when it comes to the things they are good at in ",
+      "options": [
+        "Men and women are basically similar",
+        "Men and women are basically different",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Men and women are basically different": 0.3292,
+        "Men and women are basically similar": 0.6626,
+        "Refused": 0.0082
+      },
+      "model_distribution": {
+        "Men and women are basically similar": 1.0,
+        "Men and women are basically different": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.193551,
+      "kendall_tau": 0.816497,
+      "parity": 0.857349,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.008219
+    },
+    {
+      "key": "GOODJOBS_W29",
+      "text": "In general, thinking about job opportunities where you live, would you say that",
+      "options": [
+        "There are plenty of good jobs available",
+        "Good jobs are difficult to find",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Good jobs are difficult to find": 0.5683,
+        "Refused": 0.0131,
+        "There are plenty of good jobs available": 0.4185
+      },
+      "model_distribution": {
+        "There are plenty of good jobs available": 1.0,
+        "Good jobs are difficult to find": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.379285,
+      "kendall_tau": 0.0,
+      "parity": 0.560358,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.01315
+    },
+    {
+      "key": "PREDICTA_W27",
+      "text": "Do you think the following will or will not happen in the next 20 years? Doctors will rely on computer programs to diagn",
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0044,
+        "Will definitely happen": 0.2027,
+        "Will definitely not happen": 0.0119,
+        "Will probably happen": 0.5983,
+        "Will probably not happen": 0.1828
+      },
+      "model_distribution": {
+        "Will definitely happen": 1.0,
+        "Will probably happen": 0.0,
+        "Will probably not happen": 0.0,
+        "Will definitely not happen": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.606559,
+      "kendall_tau": 0.316228,
+      "parity": 0.525778,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004353
+    },
+    {
+      "key": "PREDICTB_W27",
+      "text": "Do you think the following will or will not happen in the next 20 years? Most stores and retail businesses will be fully",
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0031,
+        "Will definitely happen": 0.1139,
+        "Will definitely not happen": 0.0167,
+        "Will probably happen": 0.5207,
+        "Will probably not happen": 0.3456
+      },
+      "model_distribution": {
+        "Will definitely happen": 1.0,
+        "Will probably happen": 0.0,
+        "Will probably not happen": 0.0,
+        "Will definitely not happen": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.734828,
+      "kendall_tau": 0.0,
+      "parity": 0.382586,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003144
+    },
+    {
+      "key": "PREDICTC_W27",
+      "text": "Do you think the following will or will not happen in the next 20 years? Most deliveries in cities will be made by robot",
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0024,
+        "Will definitely happen": 0.1098,
+        "Will definitely not happen": 0.0222,
+        "Will probably happen": 0.5277,
+        "Will probably not happen": 0.3378
+      },
+      "model_distribution": {
+        "Will definitely happen": 1.0,
+        "Will probably happen": 0.0,
+        "Will probably not happen": 0.0,
+        "Will definitely not happen": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.741639,
+      "kendall_tau": 0.0,
+      "parity": 0.379181,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002418
+    },
+    {
+      "key": "PREDICTD_W27",
+      "text": "Do you think the following will or will not happen in the next 20 years? When people want to buy most common products, t",
+      "options": [
+        "Will definitely happen",
+        "Will probably happen",
+        "Will probably not happen",
+        "Will definitely not happen",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0075,
+        "Will definitely happen": 0.0459,
+        "Will definitely not happen": 0.0607,
+        "Will probably happen": 0.3168,
+        "Will probably not happen": 0.569
+      },
+      "model_distribution": {
+        "Will definitely happen": 1.0,
+        "Will probably happen": 0.0,
+        "Will probably not happen": 0.0,
+        "Will definitely not happen": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.86401,
+      "kendall_tau": -0.316228,
+      "parity": 0.238938,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007497
+    },
+    {
+      "key": "ROBJOB1_W27",
+      "text": "Please consider the following scenario - in the future, robots and computers with advanced capabilities may be able to d",
+      "options": [
+        "A lot",
+        "A little",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A little": 0.6281,
+        "A lot": 0.2699,
+        "Nothing at all": 0.0984,
+        "Refused": 0.0036
+      },
+      "model_distribution": {
+        "A lot": 1.0,
+        "A little": 0.0,
+        "Nothing at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.526145,
+      "kendall_tau": 0.235702,
+      "parity": 0.545853,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003628
+    },
+    {
+      "key": "ROBJOB2_W27",
+      "text": "Based on what you know, does the idea of robots and computers being able to do most of the jobs currently done by humans",
+      "options": [
+        "Extremely realistic",
+        "Somewhat realistic",
+        "Not very realistic",
+        "Not at all realistic",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Extremely realistic": 0.2053,
+        "Not at all realistic": 0.0268,
+        "Not very realistic": 0.1773,
+        "Refused": 0.0036,
+        "Somewhat realistic": 0.5869
+      },
+      "model_distribution": {
+        "Extremely realistic": 1.0,
+        "Somewhat realistic": 0.0,
+        "Not very realistic": 0.0,
+        "Not at all realistic": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.603152,
+      "kendall_tau": 0.316228,
+      "parity": 0.527481,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003628
+    },
+    {
+      "key": "ROBJOB3A_W27",
+      "text": "How enthusiastic are you, if at all, about the possibility of robots and computers being able to do most of the jobs cur",
+      "options": [
+        "Very enthusiastic",
+        "Somewhat enthusiastic",
+        "Not too enthusiastic",
+        "Not at all enthusiastic",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all enthusiastic": 0.1763,
+        "Not too enthusiastic": 0.4837,
+        "Refused": 0.0053,
+        "Somewhat enthusiastic": 0.2805,
+        "Very enthusiastic": 0.0542
+      },
+      "model_distribution": {
+        "Very enthusiastic": 1.0,
+        "Somewhat enthusiastic": 0.0,
+        "Not too enthusiastic": 0.0,
+        "Not at all enthusiastic": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.845952,
+      "kendall_tau": -0.316228,
+      "parity": 0.247967,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00532
+    },
+    {
+      "key": "ROBJOB3B_W27",
+      "text": "How worried are you, if at all, about the possibility of robots and computers being able to do most of the jobs currentl",
+      "options": [
+        "Very worried",
+        "Somewhat worried",
+        "Not too worried",
+        "Not at all worried",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all worried": 0.0426,
+        "Not too worried": 0.2626,
+        "Refused": 0.0041,
+        "Somewhat worried": 0.4846,
+        "Very worried": 0.206
+      },
+      "model_distribution": {
+        "Very worried": 1.0,
+        "Somewhat worried": 0.0,
+        "Not too worried": 0.0,
+        "Not at all worried": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.602227,
+      "kendall_tau": 0.0,
+      "parity": 0.448887,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004111
+    },
+    {
+      "key": "ROBJOB4A_W27",
+      "text": "Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs cu",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.2191,
+        "Refused": 0.008,
+        "Yes, likely": 0.7729
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.124063,
+      "kendall_tau": 0.816497,
+      "parity": 0.892093,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007981
+    },
+    {
+      "key": "ROBJOB4B_W27",
+      "text": "Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs cu",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.3935,
+        "Refused": 0.0046,
+        "Yes, likely": 0.6019
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.235085,
+      "kendall_tau": 0.816497,
+      "parity": 0.836581,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004595
+    },
+    {
+      "key": "ROBJOB4C_W27",
+      "text": "Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs cu",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.5898,
+        "Refused": 0.0085,
+        "Yes, likely": 0.4017
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.394288,
+      "kendall_tau": 0.0,
+      "parity": 0.552856,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.008464
+    },
+    {
+      "key": "ROBJOB4D_W27",
+      "text": "Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs cu",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.5342,
+        "Refused": 0.0097,
+        "Yes, likely": 0.4561
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.347027,
+      "kendall_tau": 0.0,
+      "parity": 0.576486,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.009674
+    },
+    {
+      "key": "ROBJOB4E_W27",
+      "text": "Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs cu",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.7279,
+        "Refused": 0.0094,
+        "Yes, likely": 0.2626
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.534306,
+      "kendall_tau": 0.0,
+      "parity": 0.482847,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.009432
+    },
+    {
+      "key": "ROBJOB4F_W27",
+      "text": "Do you think the following are likely to happen as a result of robots and computers being able to do most of the jobs cu",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not likely": 0.5807,
+        "Refused": 0.0068,
+        "Yes, likely": 0.4126
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "No, not likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.384552,
+      "kendall_tau": 0.0,
+      "parity": 0.557724,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006771
+    },
+    {
+      "key": "ROBJOB5B_W27",
+      "text": "Would you favor or oppose the following? If robots and computers were mostly limited to doing jobs that are dangerous or",
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.4065,
+        "Oppose": 0.1076,
+        "Refused": 0.0073,
+        "Strongly favor": 0.4481,
+        "Strongly oppose": 0.0305
+      },
+      "model_distribution": {
+        "Strongly favor": 1.0,
+        "Favor": 0.0,
+        "Oppose": 0.0,
+        "Strongly oppose": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.353745,
+      "kendall_tau": 0.632456,
+      "parity": 0.731241,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007255
+    },
+    {
+      "key": "ROBJOB5C_W27",
+      "text": "Would you favor or oppose the following? If people had the option of paying extra to interact with a human, rather than ",
+      "options": [
+        "Strongly favor",
+        "Favor",
+        "Oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.4416,
+        "Oppose": 0.2358,
+        "Refused": 0.0087,
+        "Strongly favor": 0.1923,
+        "Strongly oppose": 0.1216
+      },
+      "model_distribution": {
+        "Strongly favor": 1.0,
+        "Favor": 0.0,
+        "Oppose": 0.0,
+        "Strongly oppose": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.62008,
+      "kendall_tau": 0.0,
+      "parity": 0.43996,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.008706
+    },
+    {
+      "key": "ROBJOB8A_W27",
+      "text": "Do you think it is very likely, somewhat likely, not very likely, or not at all likely that the job of a software engine",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not very likely",
+        "Not at all likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all likely": 0.1289,
+        "Not very likely": 0.3881,
+        "Refused": 0.0075,
+        "Somewhat likely": 0.3649,
+        "Very likely": 0.1105
+      },
+      "model_distribution": {
+        "Very likely": 1.0,
+        "Somewhat likely": 0.0,
+        "Not very likely": 0.0,
+        "Not at all likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.74043,
+      "kendall_tau": -0.316228,
+      "parity": 0.300728,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007497
+    },
+    {
+      "key": "ROBJOB8B_W27",
+      "text": "Do you think it is very likely, somewhat likely, not very likely, or not at all likely that the job of a legal clerk wil",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not very likely",
+        "Not at all likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all likely": 0.0948,
+        "Not very likely": 0.386,
+        "Refused": 0.0053,
+        "Somewhat likely": 0.3942,
+        "Very likely": 0.1197
+      },
+      "model_distribution": {
+        "Very likely": 1.0,
+        "Somewhat likely": 0.0,
+        "Not very likely": 0.0,
+        "Not at all likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.725375,
+      "kendall_tau": 0.0,
+      "parity": 0.387313,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00532
+    },
+    {
+      "key": "ROBJOB8C_W27",
+      "text": "Do you think it is very likely, somewhat likely, not very likely, or not at all likely that the job of a nurse will be m",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not very likely",
+        "Not at all likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all likely": 0.3325,
+        "Not very likely": 0.5013,
+        "Refused": 0.0031,
+        "Somewhat likely": 0.1374,
+        "Very likely": 0.0256
+      },
+      "model_distribution": {
+        "Very likely": 1.0,
+        "Somewhat likely": 0.0,
+        "Not very likely": 0.0,
+        "Not at all likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.913524,
+      "kendall_tau": -0.316228,
+      "parity": 0.214181,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003144
+    },
+    {
+      "key": "ROBJOB8D_W27",
+      "text": "Do you think it is very likely, somewhat likely, not very likely, or not at all likely that the job of a construction wo",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not very likely",
+        "Not at all likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all likely": 0.1833,
+        "Not very likely": 0.4293,
+        "Refused": 0.0034,
+        "Somewhat likely": 0.3086,
+        "Very likely": 0.0755
+      },
+      "model_distribution": {
+        "Very likely": 1.0,
+        "Somewhat likely": 0.0,
+        "Not very likely": 0.0,
+        "Not at all likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.802913,
+      "kendall_tau": -0.316228,
+      "parity": 0.269487,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003386
+    },
+    {
+      "key": "ROBJOB8E_W27",
+      "text": "Do you think it is very likely, somewhat likely, not very likely, or not at all likely that the job of a fast food worke",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not very likely",
+        "Not at all likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all likely": 0.0346,
+        "Not very likely": 0.1405,
+        "Refused": 0.0048,
+        "Somewhat likely": 0.4222,
+        "Very likely": 0.3978
+      },
+      "model_distribution": {
+        "Very likely": 1.0,
+        "Somewhat likely": 0.0,
+        "Not very likely": 0.0,
+        "Not at all likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.397786,
+      "kendall_tau": 0.316228,
+      "parity": 0.630164,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004837
+    },
+    {
+      "key": "ROBJOB8F_W27",
+      "text": "Do you think it is very likely, somewhat likely, not very likely, or not at all likely that the job of a teacher will be",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not very likely",
+        "Not at all likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all likely": 0.2595,
+        "Not very likely": 0.4213,
+        "Refused": 0.0044,
+        "Somewhat likely": 0.2457,
+        "Very likely": 0.0692
+      },
+      "model_distribution": {
+        "Very likely": 1.0,
+        "Somewhat likely": 0.0,
+        "Not very likely": 0.0,
+        "Not at all likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.815145,
+      "kendall_tau": -0.316228,
+      "parity": 0.26337,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004353
+    },
+    {
+      "key": "ROBJOB8G_W27",
+      "text": "Do you think it is very likely, somewhat likely, not very likely, or not at all likely that the job of a insurance claim",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not very likely",
+        "Not at all likely",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all likely": 0.0619,
+        "Not very likely": 0.2701,
+        "Refused": 0.0039,
+        "Somewhat likely": 0.458,
+        "Very likely": 0.206
+      },
+      "model_distribution": {
+        "Very likely": 1.0,
+        "Somewhat likely": 0.0,
+        "Not very likely": 0.0,
+        "Not at all likely": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.602227,
+      "kendall_tau": 0.0,
+      "parity": 0.448887,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003869
+    },
+    {
+      "key": "WORK2_W27",
+      "text": "On a different subject, would you say that society generally places too much importance on working and having a job, not",
+      "options": [
+        "Too much importance",
+        "Not enough importance",
+        "Just about right",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Just about right": 0.3204,
+        "Not enough importance": 0.5209,
+        "Refused": 0.0036,
+        "Too much importance": 0.155
+      },
+      "model_distribution": {
+        "Too much importance": 1.0,
+        "Not enough importance": 0.0,
+        "Just about right": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.671467,
+      "kendall_tau": -0.235702,
+      "parity": 0.355341,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003628
+    },
+    {
+      "key": "WORK5A_W27",
+      "text": "Have you yourself ever lost a job because your employer replaced your position with a machine, robot or computer program",
+      "options": [
+        "Yes",
+        "No",
+        "I'm not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "I'm not sure": 0.021,
+        "No": 0.9567,
+        "Refused": 0.0022,
+        "Yes": 0.0201
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "I'm not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.928785,
+      "kendall_tau": -0.235702,
+      "parity": 0.226682,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002177
+    },
+    {
+      "key": "WORK6_W27",
+      "text": "Have you ever had your pay or hours reduced because your employer replaced some aspect of your job with a machine, robot",
+      "options": [
+        "Yes",
+        "No",
+        "I'm not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "I'm not sure": 0.023,
+        "No": 0.9349,
+        "Refused": 0.0053,
+        "Yes": 0.0368
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "I'm not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.885409,
+      "kendall_tau": 0.235702,
+      "parity": 0.366221,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00532
+    },
+    {
+      "key": "WORK7_W27",
+      "text": "Do you personally know anyone who has lost a job, or had their pay or hours reduced, because their employer replaced the",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.8,
+        "Refused": 0.0034,
+        "Yes": 0.1966
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.61438,
+      "kendall_tau": 0.0,
+      "parity": 0.44281,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003386
+    },
+    {
+      "key": "WORRYG_W26",
+      "text": "How much, if at all, do you worry about the following happening to you? Having a personal health crisis",
+      "options": [
+        "Worry a lot",
+        "Worry a little",
+        "Do not worry at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Do not worry at all": 0.178,
+        "Refused": 0.0026,
+        "Worry a little": 0.5924,
+        "Worry a lot": 0.227
+      },
+      "model_distribution": {
+        "Worry a lot": 1.0,
+        "Worry a little": 0.0,
+        "Do not worry at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.576171,
+      "kendall_tau": 0.235702,
+      "parity": 0.52084,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002639
+    }
+  ]
+}

@@ -1,0 +1,575 @@
+{
+  "benchmark": "synthbench",
+  "version": "0.1.0",
+  "timestamp": "2026-04-11T01:23:53.186458+00:00",
+  "config": {
+    "dataset": "opinionsqa",
+    "provider": "random-baseline",
+    "samples_per_question": 10,
+    "n_requested": 100,
+    "n_evaluated": 18,
+    "topic": "political"
+  },
+  "scores": {
+    "sps": 0.7411,
+    "p_dist": 0.740441,
+    "p_rank": 0.489728,
+    "p_refuse": 0.99313
+  },
+  "aggregate": {
+    "mean_jsd": 0.259559,
+    "median_jsd": 0.242285,
+    "mean_kendall_tau": -0.020544,
+    "composite_parity": 0.615085,
+    "n_questions": 18,
+    "elapsed_seconds": 0.0,
+    "per_metric_ci": {
+      "p_dist": [
+        0.692448,
+        0.794176
+      ],
+      "p_rank": [
+        0.366377,
+        0.605941
+      ],
+      "p_refuse": [
+        0.990043,
+        0.995103
+      ],
+      "sps": [
+        0.533611,
+        0.693556
+      ]
+    },
+    "question_set_hash": "65fd54d007274e39f70a32001e04c08c9c14729d4861f14c42469e02a7a0d35b",
+    "n_parse_failures": 0
+  },
+  "demographic_breakdown": {},
+  "per_question": [
+    {
+      "key": "CRIMEVICTIM_W26",
+      "text": "Have you ever been a victim of a violent crime, whether a gun was used or not?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.8155,
+        "Refused": 0.0041,
+        "Yes": 0.1804
+      },
+      "model_distribution": {
+        "Yes": 0.6,
+        "No": 0.1,
+        "Refused": 0.3
+      },
+      "jsd": 0.452229,
+      "kendall_tau": -0.333333,
+      "parity": 0.440552,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004079
+    },
+    {
+      "key": "EVERSHOT_W26",
+      "text": "Regardless of whether or not you own a gun, have you ever fired a gun?",
+      "options": [
+        "Yes, I have fired a gun",
+        "No, I have never fired a gun",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, I have never fired a gun": 0.2303,
+        "Refused": 0.0029,
+        "Yes, I have fired a gun": 0.7668
+      },
+      "model_distribution": {
+        "Yes, I have fired a gun": 0.5,
+        "No, I have never fired a gun": 0.1,
+        "Refused": 0.4
+      },
+      "jsd": 0.228586,
+      "kendall_tau": 0.333333,
+      "parity": 0.71904,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002879
+    },
+    {
+      "key": "GROWUPGUN1_W26",
+      "text": "Thinking about when you were growing up, as far as you know, were there ever any guns in your household or not?",
+      "options": [
+        "Yes, there were guns in my household",
+        "No, there were no guns in my household",
+        "I am not sure if there were guns in my household",
+        "Refused"
+      ],
+      "human_distribution": {
+        "I am not sure if there were guns in my household": 0.0648,
+        "No, there were no guns in my household": 0.4155,
+        "Refused": 0.0041,
+        "Yes, there were guns in my household": 0.5156
+      },
+      "model_distribution": {
+        "Yes, there were guns in my household": 0.2,
+        "No, there were no guns in my household": 0.4,
+        "I am not sure if there were guns in my household": 0.1,
+        "Refused": 0.3
+      },
+      "jsd": 0.191245,
+      "kendall_tau": 0.0,
+      "parity": 0.654378,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004079
+    },
+    {
+      "key": "GROWUPGUN7_W26",
+      "text": "How often, if ever, did you use air guns, such as paintball, BB or pellet guns when you were growing up?",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.2207,
+        "Never": 0.3978,
+        "Often": 0.1583,
+        "Refused": 0.0034,
+        "Sometimes": 0.2198
+      },
+      "model_distribution": {
+        "Often": 0.3,
+        "Sometimes": 0.2,
+        "Hardly ever": 0.4,
+        "Never": 0.1,
+        "Refused": 0.0
+      },
+      "jsd": 0.105779,
+      "kendall_tau": 0.2,
+      "parity": 0.747111,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003359
+    },
+    {
+      "key": "GROWUPVIOL_W26",
+      "text": "How much of a problem was gun violence in the community where you spent the majority of time when you were growing up?",
+      "options": [
+        "A very big problem",
+        "A moderately big problem",
+        "A small problem",
+        "Not a problem at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A moderately big problem": 0.066,
+        "A small problem": 0.2445,
+        "A very big problem": 0.0269,
+        "Not a problem at all": 0.6593,
+        "Refused": 0.0034
+      },
+      "model_distribution": {
+        "A very big problem": 0.3,
+        "A moderately big problem": 0.0,
+        "A small problem": 0.2,
+        "Not a problem at all": 0.2,
+        "Refused": 0.3
+      },
+      "jsd": 0.362733,
+      "kendall_tau": -0.447214,
+      "parity": 0.45683,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003359
+    },
+    {
+      "key": "GUN1_W26",
+      "text": "Does anyone else in your household own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+      "options": [
+        "Yes, someone else in my household owns a gun",
+        "No, no one else in my household owns a gun",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, no one else in my household owns a gun": 0.709,
+        "Refused": 0.0149,
+        "Yes, someone else in my household owns a gun": 0.2762
+      },
+      "model_distribution": {
+        "Yes, someone else in my household owns a gun": 0.3,
+        "No, no one else in my household owns a gun": 0.2,
+        "Refused": 0.5
+      },
+      "jsd": 0.318167,
+      "kendall_tau": -1.0,
+      "parity": 0.340917,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.014875
+    },
+    {
+      "key": "GUNACTIVITYA_W26",
+      "text": "How often, if ever, do you visit websites about guns, hunting or other shooting sports",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.1696,
+        "Never": 0.6939,
+        "Often": 0.0211,
+        "Refused": 0.0041,
+        "Sometimes": 0.1113
+      },
+      "model_distribution": {
+        "Often": 0.2,
+        "Sometimes": 0.3,
+        "Hardly ever": 0.3,
+        "Never": 0.2,
+        "Refused": 0.0
+      },
+      "jsd": 0.212141,
+      "kendall_tau": 0.447214,
+      "parity": 0.755733,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004079
+    },
+    {
+      "key": "GUNACTIVITYB_W26",
+      "text": "How often, if ever, do you watch TV programs about guns or watch gun-oriented videos",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.2598,
+        "Never": 0.5067,
+        "Often": 0.0437,
+        "Refused": 0.0043,
+        "Sometimes": 0.1855
+      },
+      "model_distribution": {
+        "Often": 0.1,
+        "Sometimes": 0.4,
+        "Hardly ever": 0.3,
+        "Never": 0.0,
+        "Refused": 0.2
+      },
+      "jsd": 0.378673,
+      "kendall_tau": -0.2,
+      "parity": 0.510663,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004319
+    },
+    {
+      "key": "GUNACTIVITYC_W26",
+      "text": "How often, if ever, do you listen to gun-oriented podcasts or radio shows",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.1178,
+        "Never": 0.8198,
+        "Often": 0.0072,
+        "Refused": 0.006,
+        "Sometimes": 0.0492
+      },
+      "model_distribution": {
+        "Often": 0.2,
+        "Sometimes": 0.2,
+        "Hardly ever": 0.3,
+        "Never": 0.2,
+        "Refused": 0.1
+      },
+      "jsd": 0.328158,
+      "kendall_tau": 0.597614,
+      "parity": 0.735324,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005998
+    },
+    {
+      "key": "GUNACTIVITYE_W26",
+      "text": "How often, if ever, do you attend gun shows",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.144,
+        "Never": 0.7651,
+        "Often": 0.0091,
+        "Refused": 0.0053,
+        "Sometimes": 0.0765
+      },
+      "model_distribution": {
+        "Often": 0.1,
+        "Sometimes": 0.2,
+        "Hardly ever": 0.2,
+        "Never": 0.4,
+        "Refused": 0.1
+      },
+      "jsd": 0.135353,
+      "kendall_tau": 0.894427,
+      "parity": 0.90593,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005278
+    },
+    {
+      "key": "GUNCOMMUNITY_W26",
+      "text": "Do you feel that people in your local community tend to look at most gun owners in a positive way or a negative way?",
+      "options": [
+        "Positive way",
+        "Negative way",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Negative way": 0.3539,
+        "Positive way": 0.6257,
+        "Refused": 0.0204
+      },
+      "model_distribution": {
+        "Positive way": 0.3,
+        "Negative way": 0.2,
+        "Refused": 0.5
+      },
+      "jsd": 0.255983,
+      "kendall_tau": -0.333333,
+      "parity": 0.538675,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.020393
+    },
+    {
+      "key": "GUNCONTRIBA_W26",
+      "text": "How much, if at all, do you think the ease with which people can legally obtain guns contributes to gun violence in the ",
+      "options": [
+        "A great deal",
+        "A fair amount",
+        "Not too much",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A fair amount": 0.28,
+        "A great deal": 0.3143,
+        "Not at all": 0.1387,
+        "Not too much": 0.2625,
+        "Refused": 0.0046
+      },
+      "model_distribution": {
+        "A great deal": 0.2,
+        "A fair amount": 0.2,
+        "Not too much": 0.1,
+        "Not at all": 0.3,
+        "Refused": 0.2
+      },
+      "jsd": 0.149724,
+      "kendall_tau": -0.119523,
+      "parity": 0.645257,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004559
+    },
+    {
+      "key": "GUNCONTRIBB_W26",
+      "text": "How much, if at all, do you think the ease with which people can illegally obtain guns contributes to gun violence in th",
+      "options": [
+        "A great deal",
+        "A fair amount",
+        "Not too much",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A fair amount": 0.3016,
+        "A great deal": 0.5809,
+        "Not at all": 0.0333,
+        "Not too much": 0.0811,
+        "Refused": 0.0031
+      },
+      "model_distribution": {
+        "A great deal": 0.2,
+        "A fair amount": 0.2,
+        "Not too much": 0.0,
+        "Not at all": 0.4,
+        "Refused": 0.2
+      },
+      "jsd": 0.33977,
+      "kendall_tau": -0.119523,
+      "parity": 0.550234,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003119
+    },
+    {
+      "key": "GUNCOURSES_W26",
+      "text": "Have you ever taken any gun safety courses such as weapons training, hunter safety or firearm safety?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.6144,
+        "Refused": 0.0053,
+        "Yes": 0.3803
+      },
+      "model_distribution": {
+        "Yes": 0.2,
+        "No": 0.2,
+        "Refused": 0.6
+      },
+      "jsd": 0.381076,
+      "kendall_tau": -0.816497,
+      "parity": 0.355338,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005278
+    },
+    {
+      "key": "GUNSOCIETY_W26",
+      "text": "Do you feel that society in general tends to look at most gun owners in a positive way or a negative way?",
+      "options": [
+        "Positive way",
+        "Negative way",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Negative way": 0.5633,
+        "Positive way": 0.4194,
+        "Refused": 0.0173
+      },
+      "model_distribution": {
+        "Positive way": 0.3,
+        "Negative way": 0.4,
+        "Refused": 0.3
+      },
+      "jsd": 0.12747,
+      "kendall_tau": 0.816497,
+      "parity": 0.890389,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.017274
+    },
+    {
+      "key": "GUNTHREAT_W26",
+      "text": "Has anyone ever used a gun to threaten or intimidate you or someone in your family?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.7786,
+        "Refused": 0.0036,
+        "Yes": 0.2179
+      },
+      "model_distribution": {
+        "Yes": 0.2,
+        "No": 0.2,
+        "Refused": 0.6
+      },
+      "jsd": 0.417995,
+      "kendall_tau": -0.816497,
+      "parity": 0.336878,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003599
+    },
+    {
+      "key": "GUN_W26",
+      "text": "Do you personally own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+      "options": [
+        "Yes, I own a gun",
+        "No, I don't own any guns",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, I don't own any guns": 0.6677,
+        "Refused": 0.0134,
+        "Yes, I own a gun": 0.3189
+      },
+      "model_distribution": {
+        "Yes, I own a gun": 0.4,
+        "No, I don't own any guns": 0.3,
+        "Refused": 0.3
+      },
+      "jsd": 0.171703,
+      "kendall_tau": 0.0,
+      "parity": 0.664148,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.013436
+    },
+    {
+      "key": "LOCALELECT_W29",
+      "text": "The next question is about local elections, such as for mayor or a school board. Do you",
+      "options": [
+        "Always vote in local elections",
+        "Sometimes vote in local elections",
+        "Rarely vote in local elections",
+        "Never vote in local elections",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Always vote in local elections": 0.483,
+        "Never vote in local elections": 0.1177,
+        "Rarely vote in local elections": 0.1075,
+        "Refused": 0.0037,
+        "Sometimes vote in local elections": 0.2881
+      },
+      "model_distribution": {
+        "Always vote in local elections": 0.5,
+        "Sometimes vote in local elections": 0.2,
+        "Rarely vote in local elections": 0.2,
+        "Never vote in local elections": 0.0,
+        "Refused": 0.1
+      },
+      "jsd": 0.115273,
+      "kendall_tau": 0.527046,
+      "parity": 0.824125,
+      "n_samples": 10,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003698
+    }
+  ]
+}
