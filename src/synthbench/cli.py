@@ -913,6 +913,124 @@ def suite(
     click.echo(format_summary(summaries, resolved_provider))
 
 
+@main.group()
+def contamination():
+    """Contamination detection tools for benchmark results."""
+    pass
+
+
+@contamination.command("convergence")
+@click.option(
+    "--results-dir",
+    "-d",
+    type=click.Path(exists=True),
+    default="leaderboard-results",
+    help="Directory containing result JSON files.",
+)
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    default=None,
+    help="Save report to file (markdown + JSON sidecar).",
+)
+@click.option("--json", "json_only", is_flag=True, help="Output JSON only.")
+@click.option(
+    "--min-models",
+    type=int,
+    default=2,
+    help="Minimum models a question must appear in (default: 2).",
+)
+@click.option(
+    "--model",
+    "model_filter",
+    default=None,
+    help="Filter to results matching a specific model/provider substring.",
+)
+@click.option(
+    "--dataset",
+    "dataset_filter",
+    default=None,
+    help="Filter to results for a specific dataset.",
+)
+def contamination_convergence(
+    results_dir, output, json_only, min_models, model_filter, dataset_filter
+):
+    """Detect per-question contamination via cross-model convergence.
+
+    For each question across all result files, computes the standard deviation
+    of model response distributions. Low variance = likely contaminated (all
+    models recall the same memorized data). High variance = genuine reasoning.
+
+    Example:
+        synthbench contamination convergence
+        synthbench contamination convergence --results-dir ./results
+        synthbench contamination convergence --dataset opinionsqa --min-models 3
+        synthbench contamination convergence --json
+    """
+    from synthbench.contamination import (
+        convergence_analysis,
+        convergence_to_json,
+        format_convergence_report,
+    )
+
+    results_path = Path(results_dir)
+    json_files = sorted(results_path.glob("*.json"))
+
+    if not json_files:
+        click.echo(f"No JSON files found in {results_dir}", err=True)
+        sys.exit(1)
+
+    # Filter files
+    if model_filter or dataset_filter:
+        filtered = []
+        for jf in json_files:
+            try:
+                with open(jf) as f:
+                    data = json.load(f)
+                if data.get("benchmark") != "synthbench":
+                    continue
+                cfg = data.get("config", {})
+                if model_filter and model_filter not in cfg.get("provider", ""):
+                    continue
+                if dataset_filter and cfg.get("dataset") != dataset_filter:
+                    continue
+                filtered.append(jf)
+            except (json.JSONDecodeError, KeyError):
+                continue
+        json_files = filtered
+
+    if len(json_files) < 2:
+        click.echo(
+            f"Need at least 2 result files for convergence analysis, found {len(json_files)}",
+            err=True,
+        )
+        sys.exit(1)
+
+    click.echo(f"Analyzing {len(json_files)} result files...", err=True)
+
+    try:
+        analysis = convergence_analysis(json_files, min_models=min_models)
+    except ValueError as e:
+        click.echo(f"Error: {e}", err=True)
+        sys.exit(1)
+
+    if json_only:
+        click.echo(json.dumps(convergence_to_json(analysis), indent=2))
+    else:
+        click.echo(format_convergence_report(analysis))
+
+    if output:
+        out = Path(output)
+        if json_only:
+            out.write_text(json.dumps(convergence_to_json(analysis), indent=2))
+        else:
+            out.write_text(format_convergence_report(analysis))
+            json_out = out.with_suffix(".json")
+            json_out.write_text(json.dumps(convergence_to_json(analysis), indent=2))
+            click.echo(f"\nSaved: {out} + {json_out}", err=True)
+
+
 @main.command()
 @click.option(
     "--results-dir",
