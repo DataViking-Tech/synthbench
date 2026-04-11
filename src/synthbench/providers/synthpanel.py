@@ -1,11 +1,9 @@
 """SynthPanel full-pipeline provider.
 
-Unlike the raw-* providers, this benchmarks the complete SynthPanel
-pipeline: persona conditioning, survey instruments, response extraction,
-and any other processing SynthPanel applies.
-
-Tries to use the synthpanel Python API first; falls back to shelling
-out to the ``synthpanel`` CLI tool.
+Benchmarks the complete SynthPanel pipeline by shelling out to the
+``synthpanel`` CLI.  For each respond() call, builds temporary persona
+and instrument YAML files, runs ``synthpanel panel run``, and parses
+the JSON output.
 """
 
 from __future__ import annotations
@@ -14,6 +12,8 @@ import asyncio
 import json
 import re
 import shutil
+import tempfile
+from pathlib import Path
 
 from synthbench.providers.base import PersonaSpec, Provider, Response
 
@@ -38,148 +38,168 @@ def _parse_letter(text: str, options: list[str]) -> str | None:
     return None
 
 
-class SynthPanelProvider(Provider):
-    """Benchmark the full SynthPanel pipeline.
+def _build_instrument_yaml(question: str, options: list[str]) -> str:
+    """Build a single-question instrument YAML string."""
+    # Build options list as a YAML flow sequence
+    opts_str = ", ".join(f'"{o}"' for o in options)
+    return (
+        "version: 3\n"
+        "rounds:\n"
+        '  - name: "q"\n'
+        "    questions:\n"
+        f'    - text: "{question}"\n'
+        f"      options: [{opts_str}]\n"
+        "      type: multiple_choice\n"
+    )
 
-    Resolution order:
-      1. ``import synthpanel`` and use its Python API.
-      2. Shell out to the ``synthpanel`` CLI.
-      3. Raise ImportError with guidance.
+
+def _build_persona_yaml(persona: PersonaSpec | None) -> str:
+    """Build a persona YAML string from a PersonaSpec or a generic default."""
+    if persona is None:
+        return (
+            "personas:\n"
+            '  - name: "Survey Respondent"\n'
+            "    demographics:\n"
+            '      role: "general respondent"\n'
+        )
+    demo_lines = "\n".join(f'      {k}: "{v}"' for k, v in persona.demographics.items())
+    name = persona.group or "Survey Respondent"
+    parts = [
+        "personas:\n",
+        f'  - name: "{name}"\n',
+        "    demographics:\n",
+        f"{demo_lines}\n",
+    ]
+    if persona.biography:
+        parts.append(f'    biography: "{persona.biography}"\n')
+    return "".join(parts)
+
+
+class SynthPanelProvider(Provider):
+    """Benchmark the full SynthPanel pipeline via the CLI.
+
+    Shells out to ``synthpanel panel run`` for each respond() call,
+    using temporary instrument and persona YAML files.
     """
 
-    def __init__(self, model: str = "haiku", **kwargs):
+    def __init__(
+        self, model: str = "haiku", synthpanel_path: str | None = None, **kwargs
+    ):
+        if synthpanel_path:
+            self._synthpanel_bin = synthpanel_path
+        else:
+            found = shutil.which("synthpanel")
+            if found is None:
+                raise ImportError(
+                    "synthpanel is not installed or not on PATH. "
+                    "Install synthpanel or pass synthpanel_path= explicitly."
+                )
+            self._synthpanel_bin = found
         self._model = model
-        self._use_library = False
-        self._synthpanel = None
-
-        # Attempt 1: try the Python library
-        try:
-            import synthpanel  # type: ignore[import-untyped]
-
-            self._synthpanel = synthpanel
-            self._use_library = True
-            return
-        except ImportError:
-            pass
-
-        # Attempt 2: check for the CLI
-        if shutil.which("synthpanel") is not None:
-            self._use_library = False
-            return
-
-        raise ImportError(
-            "synthpanel is not available. Install the synthpanel package "
-            "or ensure the 'synthpanel' CLI is on your PATH."
-        )
 
     @property
     def name(self) -> str:
         return f"synthpanel/{self._model}"
 
-    # ------------------------------------------------------------------
-    # Library path
-    # ------------------------------------------------------------------
-    async def _respond_library(
+    async def respond(
         self, question: str, options: list[str], *, persona: PersonaSpec | None = None
     ) -> Response:
-        """Use the synthpanel Python API."""
-        sp = self._synthpanel
+        instrument_yaml = _build_instrument_yaml(question, options)
+        persona_yaml = _build_persona_yaml(persona)
 
-        # synthpanel may expose ask(), respond(), or a Panel class.
-        # Try the most common patterns.
-        if hasattr(sp, "ask"):
-            result = sp.ask(
-                question=question,
-                options=options,
-                model=self._model,
-            )
-            # If the library returns a coroutine, await it
-            if asyncio.iscoroutine(result):
-                result = await result
+        with (
+            tempfile.NamedTemporaryFile(
+                mode="w", suffix=".yaml", prefix="sb_inst_", delete=False
+            ) as inst_f,
+            tempfile.NamedTemporaryFile(
+                mode="w", suffix=".yaml", prefix="sb_pers_", delete=False
+            ) as pers_f,
+        ):
+            inst_f.write(instrument_yaml)
+            inst_path = inst_f.name
+            pers_f.write(persona_yaml)
+            pers_path = pers_f.name
 
-        elif hasattr(sp, "Panel"):
-            panel = sp.Panel(model=self._model)
-            result = panel.ask(question=question, options=options)
-            if asyncio.iscoroutine(result):
-                result = await result
-        else:
-            raise RuntimeError(
-                "synthpanel module found but has no usable API "
-                "(expected ask() function or Panel class)"
-            )
+        try:
+            return await self._run_cli(inst_path, pers_path, options)
+        finally:
+            Path(inst_path).unlink(missing_ok=True)
+            Path(pers_path).unlink(missing_ok=True)
 
-        # Normalise result to a Response
-        if isinstance(result, dict):
-            selected = result.get("selected_option", result.get("answer", ""))
-            raw_text = result.get("raw_text", str(result))
-            metadata = result.get("metadata")
-        elif isinstance(result, str):
-            selected = result
-            raw_text = result
-            metadata = None
-        else:
-            # Assume it's a dataclass / object with attributes
-            selected = getattr(
-                result, "selected_option", getattr(result, "answer", str(result))
-            )
-            raw_text = getattr(result, "raw_text", str(result))
-            metadata = getattr(result, "metadata", None)
-
-        if selected not in options:
-            parsed = _parse_letter(str(selected), options)
-            selected = parsed if parsed is not None else options[0]
-
-        return Response(
-            selected_option=selected,
-            raw_text=str(raw_text),
-            metadata=metadata,
-        )
-
-    # ------------------------------------------------------------------
-    # CLI path
-    # ------------------------------------------------------------------
-    async def _respond_cli(
-        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    async def _run_cli(
+        self, inst_path: str, pers_path: str, options: list[str]
     ) -> Response:
-        """Shell out to the synthpanel CLI."""
-        options_str = ",".join(options)
-
+        """Execute synthpanel CLI and parse the JSON output."""
         proc = await asyncio.create_subprocess_exec(
-            "synthpanel",
-            "ask",
-            "--question",
-            question,
-            "--options",
-            options_str,
+            self._synthpanel_bin,
             "--model",
             self._model,
-            "--format",
+            "--output-format",
             "json",
+            "panel",
+            "run",
+            "--personas",
+            pers_path,
+            "--instrument",
+            inst_path,
+            "--no-synthesis",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
         stdout, stderr = await proc.communicate()
 
+        raw_stdout = stdout.decode().strip()
+        raw_stderr = stderr.decode().strip()
+
         if proc.returncode != 0:
-            raise RuntimeError(
-                f"synthpanel CLI exited with code {proc.returncode}: "
-                f"{stderr.decode().strip()}"
+            return Response(
+                selected_option=options[0],
+                raw_text="",
+                metadata={
+                    "error": f"synthpanel exited {proc.returncode}: {raw_stderr}",
+                    "model": self._model,
+                },
             )
 
-        raw_text = stdout.decode().strip()
-
         try:
-            data = json.loads(raw_text)
-            selected = data.get("selected_option", data.get("answer", ""))
-            metadata = data.get("metadata")
+            data = json.loads(raw_stdout)
         except json.JSONDecodeError:
-            # CLI returned non-JSON — try to parse a letter
-            selected = ""
-            metadata = None
+            return Response(
+                selected_option=options[0],
+                raw_text=raw_stdout,
+                metadata={
+                    "error": "failed to parse synthpanel JSON output",
+                    "model": self._model,
+                },
+            )
 
-        if selected not in options:
-            parsed = _parse_letter(raw_text, options)
-            selected = parsed if parsed is not None else options[0]
+        # Extract the panelist response text
+        raw_text = ""
+        try:
+            raw_text = data["rounds"][0]["results"][0]["responses"][0]["response"]
+        except (KeyError, IndexError):
+            pass
+
+        selected = _parse_letter(raw_text, options)
+        if selected is None:
+            selected = options[0]
+
+        # Gather metadata from synthpanel output
+        panelist_result = {}
+        try:
+            panelist_result = data["rounds"][0]["results"][0]
+        except (KeyError, IndexError):
+            pass
+
+        metadata: dict = {
+            "model": data.get("model", self._model),
+            "total_cost": data.get("total_cost"),
+            "panelist_cost": data.get("panelist_cost"),
+            "total_usage": data.get("total_usage"),
+            "panelist_usage": panelist_result.get("usage"),
+        }
+        if panelist_result.get("error"):
+            metadata["panelist_error"] = panelist_result["error"]
 
         return Response(
             selected_option=selected,
@@ -187,21 +207,5 @@ class SynthPanelProvider(Provider):
             metadata=metadata,
         )
 
-    # ------------------------------------------------------------------
-    # Public interface
-    # ------------------------------------------------------------------
-    async def respond(
-        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
-    ) -> Response:
-        if self._use_library:
-            return await self._respond_library(question, options, persona=persona)
-        return await self._respond_cli(question, options, persona=persona)
-
     async def close(self) -> None:
-        # Clean up library resources if applicable
-        if self._use_library and self._synthpanel is not None:
-            close_fn = getattr(self._synthpanel, "close", None)
-            if close_fn is not None:
-                result = close_fn()
-                if asyncio.iscoroutine(result):
-                    await result
+        pass
