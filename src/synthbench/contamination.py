@@ -118,9 +118,7 @@ def convergence_analysis(
         all_texts.update(texts)
 
     if len(model_names) < 2:
-        raise ValueError(
-            f"Need at least 2 model result files, got {len(model_names)}"
-        )
+        raise ValueError(f"Need at least 2 model result files, got {len(model_names)}")
 
     # Collect all question keys that appear in >= min_models files
     key_counts: dict[str, int] = {}
@@ -131,9 +129,7 @@ def convergence_analysis(
     eligible_keys = sorted(k for k, c in key_counts.items() if c >= min_models)
 
     if not eligible_keys:
-        raise ValueError(
-            f"No questions found in >= {min_models} result files"
-        )
+        raise ValueError(f"No questions found in >= {min_models} result files")
 
     # For each eligible question, compute cross-model distribution std
     questions: list[QuestionContamination] = []
@@ -173,7 +169,9 @@ def convergence_analysis(
         # For a uniform [0,1] distribution, max population std is 0.5.
         # We normalize mean_std by 0.5 to get a 0..1 scale.
         max_possible_std = 0.5
-        normalized = min(mean_std / max_possible_std, 1.0) if max_possible_std > 0 else 0.0
+        normalized = (
+            min(mean_std / max_possible_std, 1.0) if max_possible_std > 0 else 0.0
+        )
         contamination_risk = round(1.0 - normalized, 6)
 
         questions.append(
@@ -192,9 +190,7 @@ def convergence_analysis(
     # Aggregate stats
     mean_risk = sum(q.contamination_risk for q in questions) / len(questions)
     high_risk = sum(1 for q in questions if q.contamination_risk >= 0.8)
-    medium_risk = sum(
-        1 for q in questions if 0.5 <= q.contamination_risk < 0.8
-    )
+    medium_risk = sum(1 for q in questions if 0.5 <= q.contamination_risk < 0.8)
     low_risk = sum(1 for q in questions if q.contamination_risk < 0.5)
 
     return ConvergenceAnalysis(
@@ -234,14 +230,18 @@ def format_convergence_report(analysis: ConvergenceAnalysis) -> str:
     lines.append("")
 
     # Top contamination risks
-    sorted_q = sorted(analysis.questions, key=lambda q: q.contamination_risk, reverse=True)
+    sorted_q = sorted(
+        analysis.questions, key=lambda q: q.contamination_risk, reverse=True
+    )
 
-    lines.extend([
-        "## Highest Contamination Risk (top 20)",
-        "",
-        "| Rank | Key | Risk | Mean Std | Models | Text |",
-        "|------|-----|------|----------|--------|------|",
-    ])
+    lines.extend(
+        [
+            "## Highest Contamination Risk (top 20)",
+            "",
+            "| Rank | Key | Risk | Mean Std | Models | Text |",
+            "|------|-----|------|----------|--------|------|",
+        ]
+    )
 
     for i, q in enumerate(sorted_q[:20], 1):
         text_trunc = q.text[:60] + "..." if len(q.text) > 60 else q.text
@@ -253,12 +253,14 @@ def format_convergence_report(analysis: ConvergenceAnalysis) -> str:
     lines.append("")
 
     # Lowest risk (genuine reasoning)
-    lines.extend([
-        "## Lowest Contamination Risk (most divergent, top 20)",
-        "",
-        "| Rank | Key | Risk | Mean Std | Models | Text |",
-        "|------|-----|------|----------|--------|------|",
-    ])
+    lines.extend(
+        [
+            "## Lowest Contamination Risk (most divergent, top 20)",
+            "",
+            "| Rank | Key | Risk | Mean Std | Models | Text |",
+            "|------|-----|------|----------|--------|------|",
+        ]
+    )
 
     for i, q in enumerate(reversed(sorted_q[-20:]), 1):
         text_trunc = q.text[:60] + "..." if len(q.text) > 60 else q.text
