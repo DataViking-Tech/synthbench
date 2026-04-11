@@ -41,7 +41,7 @@ def compare_results(results: list[dict]) -> str:
     sep = "|--------|" + "|".join("-" * (len(label) + 2) for label in labels) + "|"
 
     rows = [
-        _metric_row("Composite Parity", aggregates, "composite_parity", bold=True),
+        _metric_row("SPS", aggregates, "composite_parity", bold=True),
         _metric_row("Mean JSD", aggregates, "mean_jsd"),
         _metric_row("Median JSD", aggregates, "median_jsd"),
         _metric_row("Mean Kendall's tau", aggregates, "mean_kendall_tau"),
@@ -191,14 +191,14 @@ def _format_leaderboard_md(
         lines = [
             title,
             "",
-            f"| Rank | Provider | Dataset | N |{extra_cols} Parity |{baseline_cols} {topic_headers} | JSD | tau | Date |",
+            f"| Rank | Provider | Dataset | N |{extra_cols} SPS |{baseline_cols} {topic_headers} | JSD | tau | Date |",
             f"|------|----------|---------|---|{extra_seps}--------|{baseline_seps}{topic_seps}|-----|-----|------|",
         ]
     else:
         lines = [
             title,
             "",
-            f"| Rank | Provider | Dataset | N |{extra_cols} Parity |{baseline_cols} JSD | tau | Date |",
+            f"| Rank | Provider | Dataset | N |{extra_cols} SPS |{baseline_cols} JSD | tau | Date |",
             f"|------|----------|---------|---|{extra_seps}--------|{baseline_seps}-----|-----|------|",
         ]
 

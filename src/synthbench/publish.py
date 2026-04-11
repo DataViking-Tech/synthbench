@@ -8,6 +8,8 @@ from pathlib import Path
 from html import escape
 
 BASELINE_PROVIDERS = {"random-baseline", "majority-baseline"}
+SYNTHPANEL_PREFIX = "synthpanel/"
+N_THRESHOLD = 50
 
 
 def _extract_metrics(result: dict) -> dict[str, float]:
@@ -58,120 +60,159 @@ def _split_baselines(
     return models, baselines
 
 
-def _svg_sps_bars(ranked: list[dict]) -> str:
-    """Generate an inline SVG horizontal bar chart of Composite Parity scores."""
+def _is_synthpanel(provider: str) -> bool:
+    """Check if a provider is a synthpanel adapter."""
+    return provider.startswith(SYNTHPANEL_PREFIX)
+
+
+def _display_provider_name(provider: str) -> str:
+    """Annotate synthpanel providers with adapter test context."""
+    if _is_synthpanel(provider):
+        return provider + " (adapter test, n=20)"
+    return provider
+
+
+def _ci_whisker_svg(ci_low: float, ci_high: float, point: float) -> str:
+    """Render a tiny inline SVG showing CI range with a dot at the point estimate.
+
+    The SVG is 60px wide and shows the CI range as a horizontal line
+    with a dot at the point estimate, scaled to [0, 1].
+    """
+    w = 60
+    h = 16
+    # Scale to SVG coordinates (0-1 range mapped to 2..w-2)
+    usable = w - 4
+    x_low = 2 + ci_low * usable
+    x_high = 2 + ci_high * usable
+    x_point = 2 + point * usable
+    y_mid = h / 2
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" '
+        f'style="vertical-align:middle;margin-left:4px">'
+        f'<line x1="{x_low:.1f}" y1="{y_mid}" x2="{x_high:.1f}" y2="{y_mid}" '
+        f'stroke="#8b949e" stroke-width="1.5"/>'
+        f'<line x1="{x_low:.1f}" y1="{y_mid - 3}" x2="{x_low:.1f}" y2="{y_mid + 3}" '
+        f'stroke="#8b949e" stroke-width="1"/>'
+        f'<line x1="{x_high:.1f}" y1="{y_mid - 3}" x2="{x_high:.1f}" y2="{y_mid + 3}" '
+        f'stroke="#8b949e" stroke-width="1"/>'
+        f'<circle cx="{x_point:.1f}" cy="{y_mid}" r="3" fill="#58a6ff"/>'
+        f"</svg>"
+    )
+
+
+def _topic_bars_svg(
+    scores: dict[str, float], topics: list[str], colors: list[str]
+) -> str:
+    """Render tiny inline SVG grouped bars for topic scores.
+
+    Shows one bar per topic, colored distinctly, all within a 48x16 SVG.
+    """
+    n = len(topics)
+    if n == 0:
+        return "&mdash;"
+    w = 48
+    h = 16
+    bar_w = max(2, (w - (n + 1) * 2) // n)
+    parts = []
+    for i, t in enumerate(topics):
+        val = scores.get(t)
+        if val is None:
+            continue
+        x = 2 + i * (bar_w + 2)
+        bar_h = max(1, val * (h - 2))
+        y = h - 1 - bar_h
+        color = colors[i % len(colors)]
+        parts.append(
+            f'<rect x="{x}" y="{y:.1f}" width="{bar_w}" height="{bar_h:.1f}" '
+            f'rx="1" fill="{color}" opacity="0.85"/>'
+        )
+    if not parts:
+        return "&mdash;"
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" '
+        f'style="vertical-align:middle">' + "".join(parts) + "</svg>"
+    )
+
+
+def _dot_plot_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
+    """Generate a horizontal dot-plot with CI whiskers and baseline reference lines."""
     n = len(ranked)
     if n == 0:
         return ""
 
-    bar_h = 28
-    gap = 6
+    row_h = 32
+    gap = 4
     label_w = 220
     chart_w = 400
-    w = label_w + chart_w + 60
-    h = n * (bar_h + gap) + 40
+    w = label_w + chart_w + 40
+    h = n * (row_h + gap) + 50
 
-    bars = []
+    # Baseline reference lines
+    ref_lines = []
+    for name, r in baselines.items():
+        cp = r.get("aggregate", {}).get("composite_parity", 0)
+        x = label_w + cp * chart_w
+        color = "#f85149" if "random" in name else "#f0c040"
+        label = "Random" if "random" in name else "Majority"
+        ref_lines.append(
+            f'<line x1="{x:.1f}" y1="30" x2="{x:.1f}" y2="{h - 15}" '
+            f'stroke="{color}" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>'
+            f'<text x="{x:.1f}" y="24" text-anchor="middle" font-size="9" '
+            f'fill="{color}" opacity="0.8">{label}</text>'
+        )
+
+    dots = []
     for i, r in enumerate(ranked):
         cfg = r.get("config", {})
         provider = cfg.get("provider", "unknown")
         cp = r.get("aggregate", {}).get("composite_parity", 0)
         is_baseline = provider in BASELINE_PROVIDERS
 
-        y = i * (bar_h + gap) + 30
-        bar_width = cp * chart_w
+        y = i * (row_h + gap) + 40
+        x_dot = label_w + cp * chart_w
         color = "#8b949e" if is_baseline else "#58a6ff"
+        text_color = "#8b949e" if is_baseline else "#e6edf3"
 
-        bars.append(
-            f'<text x="{label_w - 8}" y="{y + bar_h * 0.7}" '
-            f'text-anchor="end" font-size="12" fill="#e6edf3">'
-            f"{escape(provider)}</text>"
+        display_name = _display_provider_name(provider)
+        dots.append(
+            f'<text x="{label_w - 8}" y="{y + row_h * 0.6}" '
+            f'text-anchor="end" font-size="11" fill="{text_color}">'
+            f"{escape(display_name)}</text>"
         )
-        bars.append(
-            f'<rect x="{label_w}" y="{y}" width="{bar_width:.1f}" '
-            f'height="{bar_h}" rx="3" fill="{color}" opacity="0.85" />'
+
+        # CI whisker
+        ci = r.get("aggregate", {}).get("per_metric_ci", {}).get("sps")
+        if ci and len(ci) == 2:
+            x_lo = label_w + ci[0] * chart_w
+            x_hi = label_w + ci[1] * chart_w
+            dots.append(
+                f'<line x1="{x_lo:.1f}" y1="{y + row_h * 0.5}" '
+                f'x2="{x_hi:.1f}" y2="{y + row_h * 0.5}" '
+                f'stroke="{color}" stroke-width="2" opacity="0.5"/>'
+                f'<line x1="{x_lo:.1f}" y1="{y + row_h * 0.3}" '
+                f'x2="{x_lo:.1f}" y2="{y + row_h * 0.7}" '
+                f'stroke="{color}" stroke-width="1" opacity="0.5"/>'
+                f'<line x1="{x_hi:.1f}" y1="{y + row_h * 0.3}" '
+                f'x2="{x_hi:.1f}" y2="{y + row_h * 0.7}" '
+                f'stroke="{color}" stroke-width="1" opacity="0.5"/>'
+            )
+
+        dots.append(
+            f'<circle cx="{x_dot:.1f}" cy="{y + row_h * 0.5}" r="4" fill="{color}"/>'
         )
-        bars.append(
-            f'<text x="{label_w + bar_width + 6}" y="{y + bar_h * 0.7}" '
-            f'font-size="11" fill="#e6edf3">{cp:.4f}</text>'
+        dots.append(
+            f'<text x="{x_dot + 8:.1f}" y="{y + row_h * 0.6}" '
+            f'font-size="10" fill="{text_color}">{cp:.4f}</text>'
         )
 
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
         f'width="100%" style="font-family:sans-serif;max-width:{w}px">\n'
         f'<text x="{w / 2}" y="18" text-anchor="middle" font-size="14" '
-        f'fill="#e6edf3" font-weight="600">Composite Parity by Model</text>\n'
-        + "\n".join(bars)
-        + "\n</svg>"
-    )
-
-
-def _svg_metric_bars(ranked: list[dict]) -> str:
-    """Generate inline SVG grouped bars for P_dist, P_rank per model."""
-    models = [
-        r
-        for r in ranked
-        if r.get("config", {}).get("provider", "") not in BASELINE_PROVIDERS
-    ]
-    if not models:
-        return ""
-
-    n = len(models)
-    group_h = 50
-    gap = 12
-    label_w = 220
-    chart_w = 400
-    w = label_w + chart_w + 60
-    h = n * (group_h + gap) + 60
-
-    colors = {"P_dist": "#3fb950", "P_rank": "#58a6ff"}
-    bar_h = 20
-
-    bars = []
-    for i, r in enumerate(models):
-        cfg = r.get("config", {})
-        provider = cfg.get("provider", "unknown")
-        m = _extract_metrics(r)
-        y_base = i * (group_h + gap) + 40
-
-        bars.append(
-            f'<text x="{label_w - 8}" y="{y_base + group_h * 0.5}" '
-            f'text-anchor="end" font-size="12" fill="#e6edf3">'
-            f"{escape(provider)}</text>"
-        )
-
-        for j, (key, label) in enumerate([("p_dist", "P_dist"), ("p_rank", "P_rank")]):
-            val = m[key]
-            y = y_base + j * (bar_h + 4)
-            bw = val * chart_w
-            bars.append(
-                f'<rect x="{label_w}" y="{y}" width="{bw:.1f}" '
-                f'height="{bar_h}" rx="2" fill="{colors[label]}" opacity="0.8" />'
-            )
-            bars.append(
-                f'<text x="{label_w + bw + 5}" y="{y + bar_h * 0.72}" '
-                f'font-size="10" fill="#e6edf3">{label} {val:.4f}</text>'
-            )
-
-    # Legend
-    legend_y = h - 12
-    bars.append(
-        f'<rect x="{label_w}" y="{legend_y}" width="12" height="12" fill="#3fb950" />'
-        f'<text x="{label_w + 16}" y="{legend_y + 10}" font-size="10" fill="#8b949e">'
-        f"P_dist (1 - JSD)</text>"
-    )
-    bars.append(
-        f'<rect x="{label_w + 140}" y="{legend_y}" width="12" height="12" fill="#58a6ff" />'
-        f'<text x="{label_w + 156}" y="{legend_y + 10}" font-size="10" fill="#8b949e">'
-        f"P_rank ((1+tau)/2)</text>"
-    )
-
-    return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
-        f'width="100%" style="font-family:sans-serif;max-width:{w}px">\n'
-        f'<text x="{w / 2}" y="22" text-anchor="middle" font-size="14" '
-        f'fill="#e6edf3" font-weight="600">Per-Metric Breakdown</text>\n'
-        + "\n".join(bars)
+        f'fill="#e6edf3" font-weight="600">SPS by Model</text>\n'
+        + "\n".join(ref_lines)
+        + "\n"
+        + "\n".join(dots)
         + "\n</svg>"
     )
 
@@ -208,7 +249,8 @@ def _baseline_delta_html(ranked: list[dict], baselines: dict[str, dict]) -> str:
         provider = cfg.get("provider", "unknown")
         cp = r.get("aggregate", {}).get("composite_parity", 0)
 
-        cells = f'<td class="provider-name">{escape(provider)}</td>'
+        display_name = _display_provider_name(provider)
+        cells = f'<td class="provider-name">{escape(display_name)}</td>'
         cells += f'<td class="num composite">{cp:.4f}</td>'
 
         for name in baseline_names:
@@ -231,7 +273,7 @@ def _baseline_delta_html(ranked: list[dict], baselines: dict[str, dict]) -> str:
     <thead>
       <tr>
         <th>Provider</th>
-        <th class="num">Composite</th>
+        <th class="num">SPS</th>
         {header_cells}
       </tr>
       <tr>
@@ -243,6 +285,16 @@ def _baseline_delta_html(ranked: list[dict], baselines: dict[str, dict]) -> str:
 {rows_html}
     </tbody>
   </table>"""
+
+
+def _metric_legend_html() -> str:
+    """Return a compact metric callout card to appear ABOVE the main table."""
+    return """
+  <div class="about metric-legend">
+    <p><strong>SPS</strong> (SynthBench Parity Score) measures how well AI reproduces human survey responses.
+       Higher is better (0&nbsp;=&nbsp;random, 1&nbsp;=&nbsp;human-identical).
+       Scores below show SPS and component metrics P_dist, P_rank, P_refuse.</p>
+  </div>"""
 
 
 def _metric_explanations_html() -> str:
@@ -370,6 +422,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     topic_results = [r for r in results if r.get("config", {}).get("topic")]
 
     topic_scores, topics_present = _collect_topic_scores(topic_results)
+    topic_colors = ["#3fb950", "#58a6ff", "#f0c040", "#f85149", "#bc8cff"]
 
     deduped = _dedup_results(overall_results if overall_results else results)
     ranked = sorted(
@@ -388,10 +441,19 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 
     has_baselines = bool(baseline_data)
 
-    # Build table rows
+    # Separate summary_entries into providers and baselines
+    provider_entries = []
+    baseline_entries = []
+    for e in summary_entries:
+        if e["provider"] in BASELINE_PROVIDERS:
+            baseline_entries.append(e)
+        else:
+            provider_entries.append(e)
+
+    # Build provider table rows
     rows_html = []
     medals = {1: "&#x1f947;", 2: "&#x1f948;", 3: "&#x1f949;"}
-    for rank, e in enumerate(summary_entries, 1):
+    for rank, e in enumerate(provider_entries, 1):
         provider_raw = e["provider"]
         if "/" in provider_raw:
             provider_name, model_name = provider_raw.split("/", 1)
@@ -399,27 +461,47 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             provider_name = provider_raw
             model_name = None
 
+        # #1 synthpanel label
+        if _is_synthpanel(provider_raw):
+            provider_name = provider_name + " (adapter test)"
+            if model_name:
+                model_name = model_name + " n=20"
+
         medal = medals.get(rank, "")
         medal_html = f'<span class="medal">{medal}</span>' if medal else ""
         model_display = escape(model_name) if model_name else "&mdash;"
 
-        n_runs = e.get("n_runs", 1)
-        toggle = (
-            f'<span class="toggle" data-provider="{escape(provider_raw)}_{escape(e["dataset"])}">'
-            f"[{n_runs} runs]</span>"
-            if n_runs > 1
-            else ""
+        n_eval = e.get("n", 0)
+
+        # #6 N-threshold: muted styling for n < 50
+        low_n = n_eval < N_THRESHOLD
+        low_n_class = " low-n" if low_n else ""
+        n_display = (
+            f'{n_eval}<span class="low-n-marker">*</span>' if low_n else str(n_eval)
         )
+
+        # Composite score + CI whisker (#3)
+        cp = e["composite_parity"]
+        ci_svg = ""
+        # Find the result dict for this entry to get CI data
+        for r in ranked:
+            r_cfg = r.get("config", {})
+            if (
+                r_cfg.get("provider") == provider_raw
+                and r_cfg.get("dataset") == e["dataset"]
+            ):
+                ci = r.get("aggregate", {}).get("per_metric_ci", {}).get("sps")
+                if ci and len(ci) == 2:
+                    ci_svg = _ci_whisker_svg(ci[0], ci[1], cp)
+                break
 
         topic_cells = ""
         if topics_present:
             provider_topics = e.get("topic_scores", {})
-            for t in topics_present:
-                score = provider_topics.get(t)
-                if score is not None:
-                    topic_cells += f'        <td class="num">{score:.4f}</td>\n'
-                else:
-                    topic_cells += '        <td class="num">&mdash;</td>\n'
+            topic_cell_svg = _topic_bars_svg(
+                provider_topics, topics_present, topic_colors
+            )
+            topic_cells = f'        <td class="num">{topic_cell_svg}</td>\n'
 
         baseline_cells = ""
         if has_baselines:
@@ -442,14 +524,26 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             else:
                 baseline_cells += '        <td class="num">&mdash;</td>\n'
 
+        # #10 expandable detail toggle
+        toggle_html = ""
+        detail_key = (provider_raw, e["dataset"])
+        sub_runs = detail_by_key.get(detail_key, [])
+        has_details = len(sub_runs) > 1
+        if has_details:
+            toggle_html = (
+                f'<span class="chevron" data-provider="{escape(provider_raw)}_{escape(e["dataset"])}" '
+                f'title="Show details">&#x25B6;</span>'
+            )
+
         rows_html.append(
-            f"      <tr>\n"
-            f'        <td class="rank num">{medal_html}{rank}</td>\n'
-            f'        <td><span class="provider-name">{escape(provider_name)}</span>'
-            f'<br><span class="model-name">{model_display}</span> {toggle}</td>\n'
+            f'      <tr class="{low_n_class}" data-sps="{cp:.4f}" data-n="{n_eval}" '
+            f'data-jsd="{e["mean_jsd"]:.4f}" data-tau="{e["mean_kendall_tau"]:.4f}">\n'
+            f'        <td class="rank num">{toggle_html}{medal_html}{rank}</td>\n'
+            f'        <td class="provider-name">{escape(provider_name)}</td>\n'
+            f'        <td><span class="model-name">{model_display}</span></td>\n'
             f"        <td>{escape(e['dataset'])}</td>\n"
-            f'        <td class="num">{e["n"]}</td>\n'
-            f'        <td class="num composite">{e["composite_parity"]:.4f}</td>\n'
+            f'        <td class="num">{n_display}</td>\n'
+            f'        <td class="num composite">{cp:.4f}{ci_svg}</td>\n'
             f"{baseline_cells}"
             f"{topic_cells}"
             f'        <td class="num">{e["mean_jsd"]:.4f}</td>\n'
@@ -458,51 +552,115 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             f"      </tr>"
         )
 
-        # Add hidden detail sub-rows
-        detail_key = (provider_raw, e["dataset"])
-        sub_runs = detail_by_key.get(detail_key, [])
-        if len(sub_runs) > 1:
+        # #10 Hidden expandable detail sub-rows
+        if has_details:
+            # Find convergence data for sparkline
+            conv = convergence_data.get(provider_raw, [])
+            conv_html = ""
+            if conv:
+                spark_vals = [s["runs"][0] for s in conv if s.get("runs")]
+                if spark_vals:
+                    spark_max = max(spark_vals) if spark_vals else 1
+                    spark_min = min(spark_vals) if spark_vals else 0
+                    spark_range = spark_max - spark_min if spark_max > spark_min else 1
+                    spark_w = 80
+                    spark_h = 20
+                    points = []
+                    for si, sv in enumerate(spark_vals):
+                        sx = 2 + si * ((spark_w - 4) / max(1, len(spark_vals) - 1))
+                        sy = (
+                            spark_h
+                            - 2
+                            - ((sv - spark_min) / spark_range) * (spark_h - 4)
+                        )
+                        points.append(f"{sx:.1f},{sy:.1f}")
+                    polyline = " ".join(points)
+                    conv_html = (
+                        f'<svg xmlns="http://www.w3.org/2000/svg" width="{spark_w}" height="{spark_h}" '
+                        f'style="vertical-align:middle">'
+                        f'<polyline points="{polyline}" fill="none" stroke="#58a6ff" stroke-width="1.5"/>'
+                        f"</svg>"
+                    )
+
+            n_cols = 9  # rank + provider + model + dataset + N + SPS + JSD + tau + date
+            if has_baselines:
+                n_cols += 2
+            if topics_present:
+                n_cols += 1
+
+            detail_content = ""
             for sub in sub_runs:
-                baseline_sub = ""
-                if has_baselines:
-                    baseline_sub = '        <td class="num"></td>\n' * 2
-                topic_sub = ""
-                if topics_present:
-                    topic_sub = '        <td class="num"></td>\n' * len(topics_present)
-                rows_html.append(
-                    f'      <tr class="detail-row" data-provider="{escape(provider_raw)}_{escape(e["dataset"])}" style="display:none">\n'
-                    f'        <td class="num"></td>\n'
-                    f'        <td class="model-name" style="padding-left:2rem">n={sub["n"]} s={sub["samples_per_question"]}</td>\n'
-                    f"        <td></td>\n"
-                    f'        <td class="num">{sub["n"]}</td>\n'
-                    f'        <td class="num">{sub["composite_parity"]:.4f}</td>\n'
-                    f"{baseline_sub}"
-                    f"{topic_sub}"
-                    f'        <td class="num">{sub["mean_jsd"]:.4f}</td>\n'
-                    f'        <td class="num">{sub["mean_kendall_tau"]:.4f}</td>\n'
-                    f"        <td>{sub['date']}</td>\n"
-                    f"      </tr>"
+                detail_content += (
+                    f'<div class="detail-item">'
+                    f"n={sub['n']} samples={sub['samples_per_question']} "
+                    f"SPS={sub['composite_parity']:.4f} "
+                    f"JSD={sub['mean_jsd']:.4f} tau={sub['mean_kendall_tau']:.4f}"
+                    f"</div>"
                 )
+
+            rows_html.append(
+                f'      <tr class="detail-row" data-provider="{escape(provider_raw)}_{escape(e["dataset"])}" style="display:none">\n'
+                f'        <td colspan="{n_cols}" class="detail-cell">\n'
+                f'          <div class="detail-content">\n'
+                f'            <div class="detail-section"><strong>Runs:</strong> {detail_content}</div>\n'
+                f'            <div class="detail-section"><strong>Convergence:</strong> {conv_html if conv_html else "N/A"}</div>\n'
+                f"          </div>\n"
+                f"        </td>\n"
+                f"      </tr>"
+            )
+
+    # #4 Baseline divider + baseline rows
+    if baseline_entries:
+        n_cols = 9
+        if has_baselines:
+            n_cols += 2
+        if topics_present:
+            n_cols += 1
+        rows_html.append(
+            f'      <tr class="baseline-divider"><td colspan="{n_cols}"></td></tr>'
+        )
+        for e in baseline_entries:
+            provider_raw = e["provider"]
+            cp = e["composite_parity"]
+            rows_html.append(
+                f'      <tr class="baseline-row" data-sps="{cp:.4f}" data-n="{e.get("n", 0)}" '
+                f'data-jsd="{e["mean_jsd"]:.4f}" data-tau="{e["mean_kendall_tau"]:.4f}">\n'
+                f'        <td class="rank num"></td>\n'
+                f'        <td class="provider-name baseline-name">{escape(provider_raw)}</td>\n'
+                f"        <td></td>\n"
+                f"        <td>{escape(e['dataset'])}</td>\n"
+                f'        <td class="num">{e.get("n", 0)}</td>\n'
+                f'        <td class="num composite">{cp:.4f}</td>\n'
+                + (
+                    '        <td class="num"></td>\n        <td class="num"></td>\n'
+                    if has_baselines
+                    else ""
+                )
+                + ('        <td class="num"></td>\n' if topics_present else "")
+                + f'        <td class="num">{e["mean_jsd"]:.4f}</td>\n'
+                f'        <td class="num">{e["mean_kendall_tau"]:.4f}</td>\n'
+                f"        <td>{e['date']}</td>\n"
+                f"      </tr>"
+            )
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     tbody = "\n".join(rows_html)
 
-    # Build topic column headers
+    # #7 Single "Topics" column header (replaces per-topic columns)
     topic_th = ""
     if topics_present:
-        for t in topics_present:
-            topic_th += f'        <th class="num">{escape(t.capitalize())}</th>\n'
+        topic_th = '        <th class="num">Topics</th>\n'
 
     # Baseline column headers
     baseline_th = ""
     if has_baselines:
-        baseline_th = '        <th class="num">vs Random</th>\n        <th class="num">vs Majority</th>\n'
+        baseline_th = '        <th class="num sortable" data-sort="vs-random">vs Random</th>\n        <th class="num sortable" data-sort="vs-majority">vs Majority</th>\n'
 
-    # Generate chart sections
-    sps_chart = _svg_sps_bars(ranked)
-    metric_chart = _svg_metric_bars(ranked)
+    # Generate chart section: dot-plot instead of bar charts (#9)
+    dot_plot = _dot_plot_svg(ranked, baselines)
     baseline_table = _baseline_delta_html(ranked, baselines)
     explanations = _metric_explanations_html()
+    metric_legend = _metric_legend_html()
 
     # Convergence section
     convergence_html = ""
@@ -513,9 +671,10 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                 samples = sweep["samples"]
                 runs = sweep["runs"]
                 mean_cp = sum(runs) / len(runs)
+                display_name = _display_provider_name(provider)
                 conv_rows.append(
                     f"      <tr>\n"
-                    f'        <td class="provider-name">{escape(provider)}</td>\n'
+                    f'        <td class="provider-name">{escape(display_name)}</td>\n'
                     f'        <td class="num">{samples}</td>\n'
                     f'        <td class="num">{len(runs)}</td>\n'
                     f'        <td class="num composite">{mean_cp:.4f}</td>\n'
@@ -535,7 +694,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
         <th>Provider</th>
         <th class="num">Samples/q</th>
         <th class="num">Runs</th>
-        <th class="num">Mean Parity</th>
+        <th class="num">Mean SPS</th>
         <th class="num">Min</th>
         <th class="num">Max</th>
       </tr>
@@ -544,6 +703,26 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 {conv_tbody}
     </tbody>
   </table>"""
+
+    # #1 synthpanel footnote
+    has_synthpanel = any(_is_synthpanel(e["provider"]) for e in summary_entries)
+    synthpanel_footnote = ""
+    if has_synthpanel:
+        synthpanel_footnote = (
+            '<p class="footnote"><strong>Adapter test:</strong> '
+            "SynthPanel entries use an early, untuned adapter integration and are "
+            "not representative of production SynthPanel quality. Included for "
+            "transparency and baseline comparison.</p>"
+        )
+
+    # #6 low-N footnote
+    has_low_n = any(e.get("n", 0) < N_THRESHOLD for e in provider_entries)
+    low_n_footnote = ""
+    if has_low_n:
+        low_n_footnote = (
+            '<p class="footnote">* Scores from small samples (N&nbsp;&lt;&nbsp;50) '
+            "have higher variance and should be interpreted with caution.</p>"
+        )
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -559,11 +738,19 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
   --gold:#f0c040;--silver:#c0c0c0;--bronze:#cd7f32;
   --green:#3fb950;--red:#f85149;
 }}
+@media(prefers-color-scheme:light){{
+  :root{{
+    --bg:#ffffff;--surface:#f6f8fa;--border:#d0d7de;
+    --text:#1f2328;--text-muted:#656d76;--accent:#0969da;
+    --gold:#bf8700;--silver:#8b949e;--bronze:#9a6700;
+    --green:#1a7f37;--red:#cf222e;
+  }}
+}}
 body{{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6;padding:0}}
 a{{color:var(--accent);text-decoration:none}}
 a:hover{{text-decoration:underline}}
 
-.container{{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}}
+.container{{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}}
 
 header{{text-align:center;padding:3rem 1rem 2rem}}
 header h1{{font-size:2.2rem;font-weight:700;letter-spacing:-0.5px}}
@@ -575,18 +762,23 @@ header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
 .about strong{{color:var(--text)}}
 .about code{{background:var(--bg);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.88rem}}
 
+.metric-legend{{border-left:3px solid var(--accent);margin-bottom:1.5rem}}
+
 .section-title{{font-size:1.3rem;font-weight:600;margin:2.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)}}
 
 .chart-section{{margin:2rem 0;padding:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:8px}}
 
 .leaderboard-table{{width:100%;border-collapse:collapse;font-size:0.9rem}}
-.leaderboard-table thead{{position:sticky;top:0}}
+.leaderboard-table thead{{position:sticky;top:0;z-index:10}}
 .leaderboard-table th{{
   background:var(--surface);color:var(--text-muted);font-weight:600;
   text-transform:uppercase;font-size:0.75rem;letter-spacing:0.05em;
   padding:0.75rem 1rem;text-align:left;border-bottom:2px solid var(--border);
 }}
 .leaderboard-table th.num{{text-align:right}}
+.leaderboard-table th.sortable{{cursor:pointer;user-select:none}}
+.leaderboard-table th.sortable:hover{{color:var(--accent)}}
+.leaderboard-table th .sort-arrow{{font-size:0.65rem;margin-left:0.25rem;opacity:0.5}}
 .leaderboard-table td{{padding:0.65rem 1rem;border-bottom:1px solid var(--border)}}
 .leaderboard-table td.num{{text-align:right;font-variant-numeric:tabular-nums}}
 .leaderboard-table tbody tr:hover{{background:rgba(88,166,255,0.06)}}
@@ -596,9 +788,29 @@ header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
 .provider-name{{font-weight:600;color:var(--text)}}
 .model-name{{color:var(--text-muted);font-size:0.85rem}}
 .composite{{font-weight:700;color:var(--green);font-size:1rem}}
-.toggle{{color:var(--accent);cursor:pointer;font-size:0.8rem;margin-left:0.5rem}}
-.toggle:hover{{text-decoration:underline}}
+
+.chevron{{cursor:pointer;font-size:0.7rem;margin-right:0.4rem;color:var(--accent);transition:transform 0.2s}}
+.chevron.open{{transform:rotate(90deg)}}
+
 .detail-row{{background:var(--surface)}}
+.detail-cell{{padding:0.75rem 1.5rem !important}}
+.detail-content{{display:flex;gap:2rem;flex-wrap:wrap;font-size:0.85rem;color:var(--text-muted)}}
+.detail-section{{min-width:200px}}
+.detail-item{{margin:0.25rem 0}}
+
+.baseline-divider td{{height:2px;padding:0 !important;background:var(--border)}}
+.baseline-row td{{color:var(--text-muted)}}
+.baseline-row .composite{{color:var(--text-muted);font-weight:400}}
+.baseline-name{{font-weight:400 !important;color:var(--text-muted) !important}}
+
+.low-n td{{opacity:0.7}}
+.low-n-marker{{color:var(--red);font-weight:700;margin-left:1px}}
+
+.footnote{{font-size:0.85rem;color:var(--text-muted);margin-top:0.75rem;padding-left:0.5rem;border-left:2px solid var(--border)}}
+
+.transparency{{margin-top:1rem;font-size:0.85rem;color:var(--text-muted);font-style:italic}}
+
+.bibtex{{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1rem;font-family:monospace;font-size:0.8rem;white-space:pre-wrap;color:var(--text-muted);margin-top:1rem;overflow-x:auto}}
 
 footer{{text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem}}
 footer a{{color:var(--accent)}}
@@ -616,6 +828,7 @@ footer a{{color:var(--accent)}}
   header h1{{font-size:1.6rem}}
   .leaderboard-table{{font-size:0.8rem}}
   .leaderboard-table th,.leaderboard-table td{{padding:0.5rem 0.6rem}}
+  .detail-content{{flex-direction:column;gap:0.5rem}}
 }}
 </style>
 </head>
@@ -636,34 +849,35 @@ footer a{{color:var(--accent)}}
     <p>SynthBench measures how well synthetic respondent systems reproduce real human survey response distributions.
        Scores are computed against ground-truth data from <strong>OpinionsQA</strong> (Santurkar et al., ICML 2023) &mdash;
        1,498 questions from the Pew American Trends Panel.</p>
-    <p><strong>Composite Parity</strong> combines distributional similarity (Jensen-Shannon Divergence) and rank-order
-       agreement (Kendall's tau) into a single 0&ndash;1 score. Higher is better.</p>
+    <p class="transparency">SynthBench is maintained by DataViking-Tech, which also develops SynthPanel.
+       All results use identical evaluation methodology.</p>
   </div>
 
-  <table class="leaderboard-table">
+{metric_legend}
+
+  <table class="leaderboard-table" id="leaderboard">
     <thead>
       <tr>
         <th class="rank">Rank</th>
-        <th>Provider</th>
+        <th class="sortable" data-sort="provider">Provider</th>
+        <th>Model</th>
         <th>Dataset</th>
-        <th class="num">N</th>
-        <th class="num">Composite Parity</th>
-{baseline_th}{topic_th}        <th class="num">JSD</th>
-        <th class="num">Tau</th>
+        <th class="num sortable" data-sort="n">N</th>
+        <th class="num sortable" data-sort="sps">SPS <span class="sort-arrow">&#x25BC;</span></th>
+{baseline_th}{topic_th}        <th class="num sortable" data-sort="jsd">JSD</th>
+        <th class="num sortable" data-sort="tau">Tau</th>
         <th>Date</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="leaderboard-body">
 {tbody}
     </tbody>
   </table>
+  {synthpanel_footnote}
+  {low_n_footnote}
 
   <div class="chart-section">
-{sps_chart}
-  </div>
-
-  <div class="chart-section">
-{metric_chart}
+{dot_plot}
   </div>
 
 {baseline_table}
@@ -682,21 +896,81 @@ footer a{{color:var(--accent)}}
   title={{SynthBench: Open Benchmark for Synthetic Survey Respondent Quality}},
   author={{DataViking-Tech}},
   year={{2026}},
-  url={{https://github.com/DataViking-Tech/synthbench}}
+  url={{https://github.com/DataViking-Tech/synthbench}},
+  note={{SPS (SynthBench Parity Score) evaluation framework}}
 }}</pre>
   </details>
 </footer>
 
 <script>
 document.addEventListener('DOMContentLoaded',function(){{
-  document.querySelectorAll('.toggle').forEach(function(el){{
+  // Expandable detail rows via chevron
+  document.querySelectorAll('.chevron').forEach(function(el){{
     el.addEventListener('click',function(){{
       var key=this.dataset.provider;
       var rows=document.querySelectorAll('.detail-row[data-provider="'+key+'"]');
       var showing=rows[0]&&rows[0].style.display!=='none';
       rows.forEach(function(r){{r.style.display=showing?'none':'table-row'}});
-      this.textContent=showing?this.textContent.replace('-','+').replace('hide','runs'):
-        this.textContent.replace('+','-');
+      this.classList.toggle('open',!showing);
+    }});
+  }});
+
+  // Column sorting
+  var table=document.getElementById('leaderboard');
+  var tbody=document.getElementById('leaderboard-body');
+  var sortDir={{}};
+  document.querySelectorAll('.sortable').forEach(function(th){{
+    th.addEventListener('click',function(){{
+      var col=this.dataset.sort;
+      var dir=sortDir[col]==='asc'?'desc':'asc';
+      sortDir[col]=dir;
+      // Update arrows
+      document.querySelectorAll('.sort-arrow').forEach(function(a){{a.remove()}});
+      var arrow=document.createElement('span');
+      arrow.className='sort-arrow';
+      arrow.innerHTML=dir==='asc'?'&#x25B2;':'&#x25BC;';
+      this.appendChild(arrow);
+      // Collect provider rows (not baseline or detail rows)
+      var rows=Array.from(tbody.querySelectorAll('tr:not(.detail-row):not(.baseline-divider):not(.baseline-row)'));
+      var detailRows=Array.from(tbody.querySelectorAll('.detail-row'));
+      var divider=tbody.querySelector('.baseline-divider');
+      var baselineRows=Array.from(tbody.querySelectorAll('.baseline-row'));
+      rows.sort(function(a,b){{
+        var va,vb;
+        if(col==='provider'){{
+          va=a.querySelector('.provider-name')?.textContent||'';
+          vb=b.querySelector('.provider-name')?.textContent||'';
+          return dir==='asc'?va.localeCompare(vb):vb.localeCompare(va);
+        }}
+        va=parseFloat(a.dataset[col])||0;
+        vb=parseFloat(b.dataset[col])||0;
+        return dir==='asc'?va-vb:vb-va;
+      }});
+      // Re-insert sorted rows, then details, divider, baselines
+      rows.forEach(function(r){{
+        tbody.appendChild(r);
+        var key=r.querySelector('.chevron')?.dataset.provider;
+        if(key){{
+          detailRows.filter(function(d){{return d.dataset.provider===key}}).forEach(function(d){{tbody.appendChild(d)}});
+        }}
+      }});
+      if(divider)tbody.appendChild(divider);
+      baselineRows.forEach(function(r){{tbody.appendChild(r)}});
+      // Re-number ranks
+      var rank=1;
+      tbody.querySelectorAll('tr:not(.detail-row):not(.baseline-divider):not(.baseline-row)').forEach(function(r){{
+        var cell=r.querySelector('.rank');
+        if(cell){{
+          var medal='';
+          if(rank===1)medal='<span class="medal">&#x1f947;</span>';
+          else if(rank===2)medal='<span class="medal">&#x1f948;</span>';
+          else if(rank===3)medal='<span class="medal">&#x1f949;</span>';
+          var chevron=cell.querySelector('.chevron');
+          var chevronHtml=chevron?chevron.outerHTML:'';
+          cell.innerHTML=chevronHtml+medal+rank;
+          rank++;
+        }}
+      }});
     }});
   }});
 }});
