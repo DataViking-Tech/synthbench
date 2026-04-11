@@ -778,6 +778,143 @@ def leaderboard(results_dir, output, json_only, topic, show_all, model_filter):
 
 @main.command()
 @click.option(
+    "--provider",
+    "-p",
+    required=True,
+    help="Provider name (raw-anthropic, openrouter, etc.).",
+)
+@click.option(
+    "--model",
+    "-m",
+    default="haiku",
+    help="Model name or alias.",
+)
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    default="results",
+    help="Output directory for results.",
+)
+@click.option(
+    "--concurrency",
+    "-c",
+    type=int,
+    default=10,
+    help="Max concurrent API requests.",
+)
+@click.option(
+    "--check",
+    is_flag=True,
+    help="Dry-run: show [DONE]/[MISSING]/[PARTIAL] for each suite item.",
+)
+@click.option(
+    "--force", is_flag=True, help="Re-run all benchmarks ignoring existing results."
+)
+@click.option(
+    "--repeats",
+    type=int,
+    default=None,
+    help="Override per-run repeat count (default: from suite YAML, typically 3).",
+)
+@click.option(
+    "--suite-name",
+    default="standard",
+    help="Suite config name (default: standard).",
+)
+@click.option("--url", default=None, help="Endpoint URL for http provider.")
+@click.option(
+    "--data-dir", type=click.Path(), default=None, help="Custom data directory."
+)
+def suite(
+    provider,
+    model,
+    output,
+    concurrency,
+    check,
+    force,
+    repeats,
+    suite_name,
+    url,
+    data_dir,
+):
+    """Run a full structured benchmark matrix for a provider.
+
+    Executes all runs defined in the suite config (default: 7 runs x 3 repeats
+    covering OpinionsQA, GlobalOpinionQA, SubPOP, and a replicate).
+
+    Gap-fill mode (default): only runs missing or partially-completed repeats.
+    New tests added to the suite YAML are automatically picked up.
+    Use --force to re-run everything.
+
+    Variance reporting: after repeats, shows mean, std, CV for each run.
+    Flags runs where CV > 2% as high variance.
+
+    Examples:
+        synthbench suite --provider openrouter --model anthropic/claude-haiku-4-5
+        synthbench suite --check --provider openrouter --model anthropic/claude-haiku-4-5
+        synthbench suite --provider openrouter --model anthropic/claude-haiku-4-5 --force
+        synthbench suite --provider openrouter --model anthropic/claude-haiku-4-5 --repeats 5
+    """
+    from synthbench.suite import (
+        check_suite,
+        format_check,
+        format_summary,
+        run_suite as _run_suite,
+    )
+    from synthbench.providers import load_provider
+
+    output_dir = Path(output)
+    resolved_model = MODEL_ALIASES.get(model, model)
+
+    # Resolve the provider name for matching
+    provider_kwargs = {"model": resolved_model}
+    if url:
+        provider_kwargs["url"] = url
+    try:
+        prov = load_provider(provider, **provider_kwargs)
+        resolved_provider = prov.name
+    except (KeyError, ImportError) as e:
+        click.echo(str(e), err=True)
+        sys.exit(1)
+
+    if check:
+        annotated = check_suite(
+            resolved_provider, output_dir, suite_name, repeats_override=repeats
+        )
+        click.echo(format_check(annotated, resolved_provider))
+        return
+
+    mode = "force (re-run all)" if force else "gap-fill (skip existing)"
+    click.echo(f"SynthBench Suite v{__version__}")
+    click.echo(f"  Provider: {resolved_provider}")
+    click.echo(f"  Suite:    {suite_name}")
+    click.echo(f"  Output:   {output_dir}")
+    click.echo(f"  Mode:     {mode}")
+    if repeats is not None:
+        click.echo(f"  Repeats:  {repeats} (override)")
+    click.echo()
+
+    summaries = asyncio.run(
+        _run_suite(
+            provider_name=provider,
+            model=model,
+            output_dir=output_dir,
+            concurrency=concurrency,
+            suite_name=suite_name,
+            url=url,
+            data_dir=data_dir,
+            force=force,
+            repeats_override=repeats,
+        )
+    )
+
+    click.echo()
+    click.echo(format_summary(summaries, resolved_provider))
+
+
+@main.command()
+@click.option(
     "--results-dir",
     "-d",
     type=click.Path(exists=True),
