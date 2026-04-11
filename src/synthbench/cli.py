@@ -712,11 +712,17 @@ async def _replicate_async(
     default=None,
     help="Filter to results for a specific topic.",
 )
-def leaderboard(results_dir, output, json_only, topic):
+@click.option("--all", "show_all", is_flag=True, help="Show all runs (no dedup).")
+@click.option(
+    "--model", "model_filter", default=None, help="Filter to a specific model."
+)
+def leaderboard(results_dir, output, json_only, topic, show_all, model_filter):
     """Build a ranked leaderboard from all result files in a directory.
 
     Example:
         synthbench leaderboard --results-dir ./results
+        synthbench leaderboard --results-dir ./results --all
+        synthbench leaderboard --results-dir ./results --model haiku
         synthbench leaderboard --results-dir ./results --topic consumer
     """
     from synthbench.leaderboard import load_result, build_leaderboard
@@ -749,7 +755,9 @@ def leaderboard(results_dir, output, json_only, topic):
             click.echo(f"No results found for topic '{topic}'.", err=True)
             sys.exit(1)
 
-    md, lb_json = build_leaderboard(results)
+    md, lb_json = build_leaderboard(
+        results, show_all=show_all, model_filter=model_filter
+    )
 
     if json_only:
         click.echo(json.dumps(lb_json, indent=2))

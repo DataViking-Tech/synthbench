@@ -28,6 +28,12 @@ def to_json(result: BenchmarkResult) -> dict:
     for metric, (lo, hi) in result.per_metric_ci.items():
         per_metric_ci[metric] = [lo, hi]
 
+    # Compute parse failure rate
+    total_samples = sum(q.n_samples + q.n_parse_failures for q in result.questions)
+    parse_failure_rate = (
+        result.total_parse_failures / total_samples if total_samples > 0 else 0.0
+    )
+
     return {
         "benchmark": "synthbench",
         "version": __version__,
@@ -36,6 +42,10 @@ def to_json(result: BenchmarkResult) -> dict:
             "dataset": result.dataset_name,
             "provider": result.provider_name,
             **result.config,
+            "question_set_hash": result.q_set_hash,
+            "temperature": result.config.get("temperature"),
+            "parse_failure_rate": round(parse_failure_rate, 6),
+            "topic_filter": result.config.get("topic"),
         },
         "scores": scores,
         "aggregate": {

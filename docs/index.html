@@ -49,6 +49,9 @@ header .tagline{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}
 .provider-name{font-weight:600;color:var(--text)}
 .model-name{color:var(--text-muted);font-size:0.85rem}
 .composite{font-weight:700;color:var(--green);font-size:1rem}
+.toggle{color:var(--accent);cursor:pointer;font-size:0.8rem;margin-left:0.5rem}
+.toggle:hover{text-decoration:underline}
+.detail-row{background:var(--surface)}
 
 footer{text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem}
 footer a{color:var(--accent)}
@@ -98,6 +101,8 @@ footer a{color:var(--accent)}
         <th>Dataset</th>
         <th class="num">N</th>
         <th class="num">Composite Parity</th>
+        <th class="num">vs Random</th>
+        <th class="num">vs Majority</th>
         <th class="num">Consumer</th>
         <th class="num">Neutral</th>
         <th class="num">Political</th>
@@ -109,10 +114,12 @@ footer a{color:var(--accent)}
     <tbody>
       <tr>
         <td class="rank num"><span class="medal">&#x1f947;</span>1</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">meta-llama/llama-3.3-70b-instruct</span></td>
+        <td><span class="provider-name">openrouter</span><br><span class="model-name">meta-llama/llama-3.3-70b-instruct</span> </td>
         <td>opinionsqa</td>
         <td class="num">50</td>
         <td class="num composite">0.7560</td>
+        <td class="num" style="color:var(--green)">+0.1169</td>
+        <td class="num" style="color:var(--green)">+0.2077</td>
         <td class="num">0.7420</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
@@ -122,10 +129,12 @@ footer a{color:var(--accent)}
       </tr>
       <tr>
         <td class="rank num"><span class="medal">&#x1f948;</span>2</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">google/gemini-2.5-flash</span></td>
+        <td><span class="provider-name">openrouter</span><br><span class="model-name">google/gemini-2.5-flash</span> </td>
         <td>opinionsqa</td>
         <td class="num">50</td>
         <td class="num composite">0.7511</td>
+        <td class="num" style="color:var(--green)">+0.1120</td>
+        <td class="num" style="color:var(--green)">+0.2028</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
@@ -135,10 +144,12 @@ footer a{color:var(--accent)}
       </tr>
       <tr>
         <td class="rank num"><span class="medal">&#x1f949;</span>3</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">anthropic/claude-haiku-4-5</span></td>
+        <td><span class="provider-name">openrouter</span><br><span class="model-name">anthropic/claude-haiku-4-5</span> <span class="toggle" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa">[16 runs]</span></td>
         <td>opinionsqa</td>
         <td class="num">30</td>
         <td class="num composite">0.7467</td>
+        <td class="num" style="color:var(--green)">+0.1076</td>
+        <td class="num" style="color:var(--green)">+0.1984</td>
         <td class="num">0.7657</td>
         <td class="num">&mdash;</td>
         <td class="num">0.7436</td>
@@ -146,12 +157,254 @@ footer a{color:var(--accent)}
         <td class="num">0.5453</td>
         <td>2026-04-11</td>
       </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=100</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7539</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2736</td>
+        <td class="num">0.5628</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=100</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7533</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2769</td>
+        <td class="num">0.5669</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7496</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2848</td>
+        <td class="num">0.5678</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7495</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2777</td>
+        <td class="num">0.5534</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=50</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7480</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2803</td>
+        <td class="num">0.5526</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7472</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2794</td>
+        <td class="num">0.5477</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7467</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2793</td>
+        <td class="num">0.5453</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7452</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2866</td>
+        <td class="num">0.5540</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7432</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2834</td>
+        <td class="num">0.5396</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7421</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2888</td>
+        <td class="num">0.5459</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7417</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2884</td>
+        <td class="num">0.5435</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7414</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2889</td>
+        <td class="num">0.5433</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7389</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2926</td>
+        <td class="num">0.5409</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=50</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7368</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2956</td>
+        <td class="num">0.5385</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7335</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2952</td>
+        <td class="num">0.5244</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7330</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.3019</td>
+        <td class="num">0.5356</td>
+        <td>2026-04-11</td>
+      </tr>
       <tr>
         <td class="rank num">4</td>
-        <td><span class="provider-name">raw-gemini</span><br><span class="model-name">gemini-2.5-flash-lite</span></td>
+        <td><span class="provider-name">raw-gemini</span><br><span class="model-name">gemini-2.5-flash-lite</span> <span class="toggle" data-provider="raw-gemini/gemini-2.5-flash-lite_opinionsqa">[2 runs]</span></td>
         <td>opinionsqa</td>
         <td class="num">100</td>
         <td class="num composite">0.7378</td>
+        <td class="num" style="color:var(--green)">+0.0987</td>
+        <td class="num" style="color:var(--green)">+0.1895</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
@@ -159,12 +412,44 @@ footer a{color:var(--accent)}
         <td class="num">0.4819</td>
         <td>2026-04-10</td>
       </tr>
+      <tr class="detail-row" data-provider="raw-gemini/gemini-2.5-flash-lite_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=50 s=10</td>
+        <td></td>
+        <td class="num">50</td>
+        <td class="num">0.7619</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2531</td>
+        <td class="num">0.5538</td>
+        <td>2026-04-10</td>
+      </tr>
+      <tr class="detail-row" data-provider="raw-gemini/gemini-2.5-flash-lite_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=100 s=30</td>
+        <td></td>
+        <td class="num">100</td>
+        <td class="num">0.7378</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2653</td>
+        <td class="num">0.4819</td>
+        <td>2026-04-10</td>
+      </tr>
       <tr>
         <td class="rank num">5</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">openai/gpt-4o-mini</span></td>
+        <td><span class="provider-name">openrouter</span><br><span class="model-name">openai/gpt-4o-mini</span> <span class="toggle" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa">[11 runs]</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
         <td class="num composite">0.7290</td>
+        <td class="num" style="color:var(--green)">+0.0899</td>
+        <td class="num" style="color:var(--green)">+0.1807</td>
         <td class="num">0.7663</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
@@ -172,12 +457,179 @@ footer a{color:var(--accent)}
         <td class="num">0.5077</td>
         <td>2026-04-10</td>
       </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=100</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7573</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2708</td>
+        <td class="num">0.5708</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=100</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7560</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2764</td>
+        <td class="num">0.5766</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=50</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7500</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2768</td>
+        <td class="num">0.5535</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7483</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2856</td>
+        <td class="num">0.5643</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=50</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7451</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2834</td>
+        <td class="num">0.5471</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7440</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2796</td>
+        <td class="num">0.5353</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7424</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2874</td>
+        <td class="num">0.5444</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7394</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2951</td>
+        <td class="num">0.5479</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7365</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2912</td>
+        <td class="num">0.5284</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=50 s=10</td>
+        <td></td>
+        <td class="num">50</td>
+        <td class="num">0.7290</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2959</td>
+        <td class="num">0.5077</td>
+        <td>2026-04-10</td>
+      </tr>
+      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
+        <td></td>
+        <td class="num">30</td>
+        <td class="num">0.7169</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.3179</td>
+        <td class="num">0.5032</td>
+        <td>2026-04-11</td>
+      </tr>
       <tr>
         <td class="rank num">6</td>
-        <td><span class="provider-name">raw-anthropic</span><br><span class="model-name">claude-haiku-4-5-20251001</span></td>
+        <td><span class="provider-name">raw-anthropic</span><br><span class="model-name">claude-haiku-4-5-20251001</span> <span class="toggle" data-provider="raw-anthropic/claude-haiku-4-5-20251001_opinionsqa">[2 runs]</span></td>
         <td>opinionsqa</td>
         <td class="num">100</td>
         <td class="num composite">0.7238</td>
+        <td class="num" style="color:var(--green)">+0.0847</td>
+        <td class="num" style="color:var(--green)">+0.1755</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
@@ -185,12 +637,44 @@ footer a{color:var(--accent)}
         <td class="num">0.5114</td>
         <td>2026-04-10</td>
       </tr>
+      <tr class="detail-row" data-provider="raw-anthropic/claude-haiku-4-5-20251001_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=100 s=30</td>
+        <td></td>
+        <td class="num">100</td>
+        <td class="num">0.7238</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.3081</td>
+        <td class="num">0.5114</td>
+        <td>2026-04-10</td>
+      </tr>
+      <tr class="detail-row" data-provider="raw-anthropic/claude-haiku-4-5-20251001_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=50 s=10</td>
+        <td></td>
+        <td class="num">50</td>
+        <td class="num">0.7147</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.3197</td>
+        <td class="num">0.4981</td>
+        <td>2026-04-10</td>
+      </tr>
       <tr>
         <td class="rank num">7</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">openai/gpt-4o</span></td>
+        <td><span class="provider-name">openrouter</span><br><span class="model-name">openai/gpt-4o</span> </td>
         <td>opinionsqa</td>
         <td class="num">50</td>
         <td class="num composite">0.7037</td>
+        <td class="num" style="color:var(--green)">+0.0646</td>
+        <td class="num" style="color:var(--green)">+0.1554</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
@@ -200,10 +684,12 @@ footer a{color:var(--accent)}
       </tr>
       <tr>
         <td class="rank num">8</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">anthropic/claude-sonnet-4</span></td>
+        <td><span class="provider-name">openrouter</span><br><span class="model-name">anthropic/claude-sonnet-4</span> </td>
         <td>opinionsqa</td>
         <td class="num">50</td>
         <td class="num composite">0.6384</td>
+        <td class="num" style="color:var(--red)">-0.0007</td>
+        <td class="num" style="color:var(--green)">+0.0901</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
@@ -213,10 +699,12 @@ footer a{color:var(--accent)}
       </tr>
       <tr>
         <td class="rank num">9</td>
-        <td><span class="provider-name">random-baseline</span><br><span class="model-name">&mdash;</span></td>
+        <td><span class="provider-name">random-baseline</span><br><span class="model-name">&mdash;</span> <span class="toggle" data-provider="random-baseline_opinionsqa">[5 runs]</span></td>
         <td>opinionsqa</td>
         <td class="num">200</td>
         <td class="num composite">0.6378</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
         <td class="num">0.6222</td>
         <td class="num">0.6402</td>
         <td class="num">0.6376</td>
@@ -224,12 +712,89 @@ footer a{color:var(--accent)}
         <td class="num">-0.0479</td>
         <td>2026-04-10</td>
       </tr>
+      <tr class="detail-row" data-provider="random-baseline_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=100 s=30</td>
+        <td></td>
+        <td class="num">100</td>
+        <td class="num">0.6391</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2129</td>
+        <td class="num">-0.0177</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="random-baseline_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=200 s=30</td>
+        <td></td>
+        <td class="num">200</td>
+        <td class="num">0.6378</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2004</td>
+        <td class="num">-0.0479</td>
+        <td>2026-04-10</td>
+      </tr>
+      <tr class="detail-row" data-provider="random-baseline_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=50 s=10</td>
+        <td></td>
+        <td class="num">50</td>
+        <td class="num">0.6031</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2765</td>
+        <td class="num">-0.0343</td>
+        <td>2026-04-10</td>
+      </tr>
+      <tr class="detail-row" data-provider="random-baseline_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=100 s=5</td>
+        <td></td>
+        <td class="num">100</td>
+        <td class="num">0.5996</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.3158</td>
+        <td class="num">0.0300</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="random-baseline_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=100 s=10</td>
+        <td></td>
+        <td class="num">100</td>
+        <td class="num">0.5881</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2774</td>
+        <td class="num">-0.0928</td>
+        <td>2026-04-11</td>
+      </tr>
       <tr>
         <td class="rank num">10</td>
-        <td><span class="provider-name">random-baseline</span><br><span class="model-name">&mdash;</span></td>
+        <td><span class="provider-name">random-baseline</span><br><span class="model-name">&mdash;</span> </td>
         <td>globalopinionqa</td>
         <td class="num">10</td>
         <td class="num composite">0.5729</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
         <td class="num">0.6222</td>
         <td class="num">0.6402</td>
         <td class="num">0.6376</td>
@@ -239,10 +804,12 @@ footer a{color:var(--accent)}
       </tr>
       <tr>
         <td class="rank num">11</td>
-        <td><span class="provider-name">synthpanel</span><br><span class="model-name">claude-haiku-4-5-20251001</span></td>
+        <td><span class="provider-name">synthpanel</span><br><span class="model-name">claude-haiku-4-5-20251001</span> </td>
         <td>opinionsqa</td>
         <td class="num">20</td>
         <td class="num composite">0.5497</td>
+        <td class="num" style="color:var(--red)">-0.0894</td>
+        <td class="num" style="color:var(--green)">+0.0014</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
@@ -252,16 +819,93 @@ footer a{color:var(--accent)}
       </tr>
       <tr>
         <td class="rank num">12</td>
-        <td><span class="provider-name">majority-baseline</span><br><span class="model-name">&mdash;</span></td>
+        <td><span class="provider-name">majority-baseline</span><br><span class="model-name">&mdash;</span> <span class="toggle" data-provider="majority-baseline_opinionsqa">[5 runs]</span></td>
         <td>opinionsqa</td>
         <td class="num">200</td>
         <td class="num composite">0.5483</td>
+        <td class="num">&mdash;</td>
+        <td class="num">&mdash;</td>
         <td class="num">0.5368</td>
         <td class="num">0.5696</td>
         <td class="num">0.5763</td>
         <td class="num">0.5054</td>
         <td class="num">0.2039</td>
         <td>2026-04-10</td>
+      </tr>
+      <tr class="detail-row" data-provider="majority-baseline_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=200 s=30</td>
+        <td></td>
+        <td class="num">200</td>
+        <td class="num">0.5483</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.5054</td>
+        <td class="num">0.2039</td>
+        <td>2026-04-10</td>
+      </tr>
+      <tr class="detail-row" data-provider="majority-baseline_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=50 s=10</td>
+        <td></td>
+        <td class="num">50</td>
+        <td class="num">0.5077</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.5558</td>
+        <td class="num">0.1423</td>
+        <td>2026-04-10</td>
+      </tr>
+      <tr class="detail-row" data-provider="majority-baseline_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=100 s=5</td>
+        <td></td>
+        <td class="num">100</td>
+        <td class="num">0.5071</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.5498</td>
+        <td class="num">0.1282</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="majority-baseline_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=100 s=10</td>
+        <td></td>
+        <td class="num">100</td>
+        <td class="num">0.5071</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.5498</td>
+        <td class="num">0.1282</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="detail-row" data-provider="majority-baseline_opinionsqa" style="display:none">
+        <td class="num"></td>
+        <td class="model-name" style="padding-left:2rem">n=100 s=30</td>
+        <td></td>
+        <td class="num">100</td>
+        <td class="num">0.5071</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.5498</td>
+        <td class="num">0.1282</td>
+        <td>2026-04-11</td>
       </tr>
     </tbody>
   </table>
@@ -389,6 +1033,138 @@ footer a{color:var(--accent)}
   </table>
 
 
+  <h2 class="section-title">Convergence Data</h2>
+  <div class="about" style="margin-bottom:1rem">
+    <p>How scores change as sample count increases. Providers with runs at 2+ different sample counts are shown.</p>
+  </div>
+  <table class="leaderboard-table">
+    <thead>
+      <tr>
+        <th>Provider</th>
+        <th class="num">Samples/q</th>
+        <th class="num">Runs</th>
+        <th class="num">Mean Parity</th>
+        <th class="num">Min</th>
+        <th class="num">Max</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="provider-name">openrouter/anthropic/claude-haiku-4-5</td>
+        <td class="num">5</td>
+        <td class="num">4</td>
+        <td class="num composite">0.7443</td>
+        <td class="num">0.7389</td>
+        <td class="num">0.7495</td>
+      </tr>
+      <tr>
+        <td class="provider-name">openrouter/anthropic/claude-haiku-4-5</td>
+        <td class="num">10</td>
+        <td class="num">4</td>
+        <td class="num composite">0.7374</td>
+        <td class="num">0.7330</td>
+        <td class="num">0.7417</td>
+      </tr>
+      <tr>
+        <td class="provider-name">openrouter/anthropic/claude-haiku-4-5</td>
+        <td class="num">30</td>
+        <td class="num">4</td>
+        <td class="num composite">0.7463</td>
+        <td class="num">0.7432</td>
+        <td class="num">0.7496</td>
+      </tr>
+      <tr>
+        <td class="provider-name">openrouter/anthropic/claude-haiku-4-5</td>
+        <td class="num">50</td>
+        <td class="num">2</td>
+        <td class="num composite">0.7424</td>
+        <td class="num">0.7368</td>
+        <td class="num">0.7480</td>
+      </tr>
+      <tr>
+        <td class="provider-name">openrouter/anthropic/claude-haiku-4-5</td>
+        <td class="num">100</td>
+        <td class="num">2</td>
+        <td class="num composite">0.7536</td>
+        <td class="num">0.7533</td>
+        <td class="num">0.7539</td>
+      </tr>
+      <tr>
+        <td class="provider-name">openrouter/openai/gpt-4o-mini</td>
+        <td class="num">5</td>
+        <td class="num">2</td>
+        <td class="num composite">0.7296</td>
+        <td class="num">0.7169</td>
+        <td class="num">0.7424</td>
+      </tr>
+      <tr>
+        <td class="provider-name">openrouter/openai/gpt-4o-mini</td>
+        <td class="num">10</td>
+        <td class="num">3</td>
+        <td class="num composite">0.7365</td>
+        <td class="num">0.7290</td>
+        <td class="num">0.7440</td>
+      </tr>
+      <tr>
+        <td class="provider-name">openrouter/openai/gpt-4o-mini</td>
+        <td class="num">30</td>
+        <td class="num">2</td>
+        <td class="num composite">0.7438</td>
+        <td class="num">0.7394</td>
+        <td class="num">0.7483</td>
+      </tr>
+      <tr>
+        <td class="provider-name">openrouter/openai/gpt-4o-mini</td>
+        <td class="num">50</td>
+        <td class="num">2</td>
+        <td class="num composite">0.7475</td>
+        <td class="num">0.7451</td>
+        <td class="num">0.7500</td>
+      </tr>
+      <tr>
+        <td class="provider-name">openrouter/openai/gpt-4o-mini</td>
+        <td class="num">100</td>
+        <td class="num">2</td>
+        <td class="num composite">0.7567</td>
+        <td class="num">0.7560</td>
+        <td class="num">0.7573</td>
+      </tr>
+      <tr>
+        <td class="provider-name">raw-anthropic/claude-haiku-4-5-20251001</td>
+        <td class="num">10</td>
+        <td class="num">1</td>
+        <td class="num composite">0.7147</td>
+        <td class="num">0.7147</td>
+        <td class="num">0.7147</td>
+      </tr>
+      <tr>
+        <td class="provider-name">raw-anthropic/claude-haiku-4-5-20251001</td>
+        <td class="num">30</td>
+        <td class="num">1</td>
+        <td class="num composite">0.7238</td>
+        <td class="num">0.7238</td>
+        <td class="num">0.7238</td>
+      </tr>
+      <tr>
+        <td class="provider-name">raw-gemini/gemini-2.5-flash-lite</td>
+        <td class="num">10</td>
+        <td class="num">1</td>
+        <td class="num composite">0.7619</td>
+        <td class="num">0.7619</td>
+        <td class="num">0.7619</td>
+      </tr>
+      <tr>
+        <td class="provider-name">raw-gemini/gemini-2.5-flash-lite</td>
+        <td class="num">30</td>
+        <td class="num">1</td>
+        <td class="num composite">0.7378</td>
+        <td class="num">0.7378</td>
+        <td class="num">0.7378</td>
+      </tr>
+    </tbody>
+  </table>
+
+
   <h2 class="section-title">Understanding the Scores</h2>
   <div class="about">
     <p><strong>SPS &mdash; SynthBench Parity Score</strong><br>
@@ -472,6 +1248,21 @@ footer a{color:var(--accent)}
   <p>Generated by <a href="https://github.com/DataViking-Tech/synthbench">SynthBench</a> v0.1.0</p>
   <p>Last updated: 2026-04-11</p>
 </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.toggle').forEach(function(el){
+    el.addEventListener('click',function(){
+      var key=this.dataset.provider;
+      var rows=document.querySelectorAll('.detail-row[data-provider="'+key+'"]');
+      var showing=rows[0]&&rows[0].style.display!=='none';
+      rows.forEach(function(r){r.style.display=showing?'none':'table-row'});
+      this.textContent=showing?this.textContent.replace('-','+').replace('hide','runs'):
+        this.textContent.replace('+','-');
+    });
+  });
+});
+</script>
 
 </body>
 </html>
