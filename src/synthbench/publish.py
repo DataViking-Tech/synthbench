@@ -1227,7 +1227,8 @@ def _build_heatmap_data(
 def _heatmap_html(heatmap_rows: list[dict], datasets: list[str]) -> str:
     """Generate heatmap matrix table HTML for the overview tab."""
     ds_headers = "".join(
-        f'<th class="num">{escape(DATASET_LABELS.get(ds, ds))}</th>' for ds in datasets
+        f'<th class="num mob-hide">{escape(DATASET_LABELS.get(ds, ds))}</th>'
+        for ds in datasets
     )
 
     medals = {0: "&#x1f947;", 1: "&#x1f948;", 2: "&#x1f949;"}
@@ -1242,10 +1243,10 @@ def _heatmap_html(heatmap_rows: list[dict], datasets: list[str]) -> str:
             sps = row["datasets"].get(ds)
             if sps is not None:
                 style = _sps_bg_style(sps)
-                cells += f'<td class="num heatmap-cell" style="{style}">{sps:.4f}</td>'
+                cells += f'<td class="num heatmap-cell mob-hide" style="{style}">{sps:.4f}</td>'
             else:
                 cells += (
-                    '<td class="num heatmap-cell" '
+                    '<td class="num heatmap-cell mob-hide" '
                     'style="background:var(--surface);color:var(--text-muted)">'
                     "&mdash;</td>"
                 )
@@ -1259,9 +1260,9 @@ def _heatmap_html(heatmap_rows: list[dict], datasets: list[str]) -> str:
         )
 
         if row["fitness"]:
-            cells += f'<td class="fitness-note">{escape(row["fitness"])}</td>'
+            cells += f'<td class="fitness-note mob-hide">{escape(row["fitness"])}</td>'
         else:
-            cells += '<td class="fitness-note">&mdash;</td>'
+            cells += '<td class="fitness-note mob-hide">&mdash;</td>'
 
         trs.append(f"      <tr>{cells}</tr>")
 
@@ -1271,7 +1272,7 @@ def _heatmap_html(heatmap_rows: list[dict], datasets: list[str]) -> str:
         '    <th class="rank">Rank</th><th>Model</th>\n'
         f"    {ds_headers}\n"
         '    <th class="num">Aggregate SPS</th><th>Coverage</th>'
-        "<th>Strengths</th>\n"
+        '<th class="mob-hide">Strengths</th>\n'
         "  </tr></thead>\n"
         "  <tbody>\n" + "\n".join(trs) + "\n  </tbody>\n"
         "</table>"
@@ -1335,9 +1336,9 @@ def _dataset_table_html(
                 if vs:
                     dv = float(vs)
                     c = "var(--green)" if dv > 0 else "var(--red)"
-                    bl_cells += f'<td class="num" style="color:{c}">{vs}</td>'
+                    bl_cells += f'<td class="num mob-hide" style="color:{c}">{vs}</td>'
                 else:
-                    bl_cells += '<td class="num">&mdash;</td>'
+                    bl_cells += '<td class="num mob-hide">&mdash;</td>'
 
         trs.append(
             f'<tr class="{css_class}">'
@@ -1348,7 +1349,7 @@ def _dataset_table_html(
             f"{bl_cells}"
             f'<td class="num">{e["mean_jsd"]:.4f}</td>'
             f'<td class="num">{e["mean_kendall_tau"]:.4f}</td>'
-            f"<td>{e['date']}</td>"
+            f'<td class="mob-hide">{e["date"]}</td>'
             f"</tr>"
         )
 
@@ -1369,7 +1370,7 @@ def _dataset_table_html(
 
     bl_th = ""
     if has_bl:
-        bl_th = '<th class="num">vs Random</th><th class="num">vs Majority</th>'
+        bl_th = '<th class="num mob-hide">vs Random</th><th class="num mob-hide">vs Majority</th>'
 
     return (
         '<table class="leaderboard-table">\n'
@@ -1378,7 +1379,7 @@ def _dataset_table_html(
         f'<th class="num">N</th><th class="num">SPS</th>'
         f"{bl_th}"
         '<th class="num">JSD</th><th class="num">Tau</th>'
-        "<th>Date</th>\n"
+        '<th class="mob-hide">Date</th>\n'
         "  </tr></thead>\n"
         "  <tbody>\n" + "\n".join(trs) + "\n  </tbody>\n"
         "</table>"
@@ -1528,13 +1529,15 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             topic_cell_svg = _topic_bars_svg(
                 provider_topics, topics_present, topic_colors
             )
-            topic_cells = f'        <td class="num">{topic_cell_svg}</td>\n'
+            topic_cells = f'        <td class="num mob-hide">{topic_cell_svg}</td>\n'
 
         p_refuse_cell = ""
         if p_refuse_val is not None:
-            p_refuse_cell = f'        <td class="num">{p_refuse_val:.4f}</td>\n'
+            p_refuse_cell = (
+                f'        <td class="num mob-hide">{p_refuse_val:.4f}</td>\n'
+            )
         else:
-            p_refuse_cell = '        <td class="num">&mdash;</td>\n'
+            p_refuse_cell = '        <td class="num mob-hide">&mdash;</td>\n'
 
         baseline_cells = ""
         if has_baselines:
@@ -1543,19 +1546,15 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             if vs_r:
                 delta_val = float(vs_r)
                 color = "var(--green)" if delta_val > 0 else "var(--red)"
-                baseline_cells += (
-                    f'        <td class="num" style="color:{color}">{vs_r}</td>\n'
-                )
+                baseline_cells += f'        <td class="num mob-hide" style="color:{color}">{vs_r}</td>\n'
             else:
-                baseline_cells += '        <td class="num">&mdash;</td>\n'
+                baseline_cells += '        <td class="num mob-hide">&mdash;</td>\n'
             if vs_m:
                 delta_val = float(vs_m)
                 color = "var(--green)" if delta_val > 0 else "var(--red)"
-                baseline_cells += (
-                    f'        <td class="num" style="color:{color}">{vs_m}</td>\n'
-                )
+                baseline_cells += f'        <td class="num mob-hide" style="color:{color}">{vs_m}</td>\n'
             else:
-                baseline_cells += '        <td class="num">&mdash;</td>\n'
+                baseline_cells += '        <td class="num mob-hide">&mdash;</td>\n'
 
         # #10 expandable detail toggle
         toggle_html = ""
@@ -1573,8 +1572,8 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             f'data-jsd="{e["mean_jsd"]:.4f}" data-tau="{e["mean_kendall_tau"]:.4f}">\n'
             f'        <td class="rank num">{toggle_html}{medal_html}{rank}</td>\n'
             f'        <td class="provider-name">{escape(display_name)}</td>\n'
-            f'        <td><span class="model-name">{model_display}</span></td>\n'
-            f"        <td>{escape(e['dataset'])}</td>\n"
+            f'        <td class="mob-hide"><span class="model-name">{model_display}</span></td>\n'
+            f'        <td class="mob-hide">{escape(e["dataset"])}</td>\n'
             f'        <td class="num">{n_display}</td>\n'
             f'        <td class="num composite">{cp:.4f}{ci_svg}</td>\n'
             f"{baseline_cells}"
@@ -1582,7 +1581,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             f"{p_refuse_cell}"
             f'        <td class="num">{e["mean_jsd"]:.4f}</td>\n'
             f'        <td class="num">{e["mean_kendall_tau"]:.4f}</td>\n'
-            f"        <td>{e['date']}</td>\n"
+            f'        <td class="mob-hide">{e["date"]}</td>\n'
             f"      </tr>"
         )
 
@@ -1664,19 +1663,15 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                 if vs_r:
                     delta_val = float(vs_r)
                     color = "var(--green)" if delta_val > 0 else "var(--red)"
-                    baseline_cells += (
-                        f'        <td class="num" style="color:{color}">{vs_r}</td>\n'
-                    )
+                    baseline_cells += f'        <td class="num mob-hide" style="color:{color}">{vs_r}</td>\n'
                 else:
-                    baseline_cells += '        <td class="num">&mdash;</td>\n'
+                    baseline_cells += '        <td class="num mob-hide">&mdash;</td>\n'
                 if vs_m:
                     delta_val = float(vs_m)
                     color = "var(--green)" if delta_val > 0 else "var(--red)"
-                    baseline_cells += (
-                        f'        <td class="num" style="color:{color}">{vs_m}</td>\n'
-                    )
+                    baseline_cells += f'        <td class="num mob-hide" style="color:{color}">{vs_m}</td>\n'
                 else:
-                    baseline_cells += '        <td class="num">&mdash;</td>\n'
+                    baseline_cells += '        <td class="num mob-hide">&mdash;</td>\n'
 
             topic_cells = ""
             if topics_present:
@@ -1684,23 +1679,25 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                 topic_cell_svg = _topic_bars_svg(
                     provider_topics, topics_present, topic_colors
                 )
-                topic_cells = f'        <td class="num">{topic_cell_svg}</td>\n'
+                topic_cells = (
+                    f'        <td class="num mob-hide">{topic_cell_svg}</td>\n'
+                )
 
             rows_html.append(
                 f'      <tr class="product-row" data-sps="{cp:.4f}" data-n="{e.get("n", 0)}" '
                 f'data-jsd="{e["mean_jsd"]:.4f}" data-tau="{e["mean_kendall_tau"]:.4f}">\n'
                 f'        <td class="rank num"></td>\n'
                 f'        <td class="provider-name">{escape(display_name)}</td>\n'
-                f"        <td></td>\n"
-                f"        <td>{escape(e['dataset'])}</td>\n"
+                f'        <td class="mob-hide"></td>\n'
+                f'        <td class="mob-hide">{escape(e["dataset"])}</td>\n'
                 f'        <td class="num">{e.get("n", 0)}</td>\n'
                 f'        <td class="num composite">{cp:.4f}</td>\n'
                 f"{baseline_cells}"
                 f"{topic_cells}"
-                f'        <td class="num">&mdash;</td>\n'
+                f'        <td class="num mob-hide">&mdash;</td>\n'
                 f'        <td class="num">{e["mean_jsd"]:.4f}</td>\n'
                 f'        <td class="num">{e["mean_kendall_tau"]:.4f}</td>\n'
-                f"        <td>{e['date']}</td>\n"
+                f'        <td class="mob-hide">{e["date"]}</td>\n'
                 f"      </tr>"
             )
 
@@ -1716,20 +1713,20 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                 f'data-jsd="{e["mean_jsd"]:.4f}" data-tau="{e["mean_kendall_tau"]:.4f}">\n'
                 f'        <td class="rank num"></td>\n'
                 f'        <td class="provider-name baseline-name">{escape(display_name)}</td>\n'
-                f"        <td></td>\n"
-                f"        <td>{escape(e['dataset'])}</td>\n"
+                f'        <td class="mob-hide"></td>\n'
+                f'        <td class="mob-hide">{escape(e["dataset"])}</td>\n'
                 f'        <td class="num">{e.get("n", 0)}</td>\n'
                 f'        <td class="num composite">{cp:.4f}</td>\n'
                 + (
-                    '        <td class="num"></td>\n        <td class="num"></td>\n'
+                    '        <td class="num mob-hide"></td>\n        <td class="num mob-hide"></td>\n'
                     if has_baselines
                     else ""
                 )
-                + ('        <td class="num"></td>\n' if topics_present else "")
-                + '        <td class="num"></td>\n'  # P_refuse (empty for baselines)
+                + ('        <td class="num mob-hide"></td>\n' if topics_present else "")
+                + '        <td class="num mob-hide"></td>\n'  # P_refuse (empty for baselines)
                 + f'        <td class="num">{e["mean_jsd"]:.4f}</td>\n'
                 f'        <td class="num">{e["mean_kendall_tau"]:.4f}</td>\n'
-                f"        <td>{e['date']}</td>\n"
+                f'        <td class="mob-hide">{e["date"]}</td>\n'
                 f"      </tr>"
             )
 
@@ -1740,7 +1737,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     topic_th = ""
     topic_legend_inline = ""
     if topics_present:
-        topic_th = '        <th class="num">Topics</th>\n'
+        topic_th = '        <th class="num mob-hide">Topics</th>\n'
         legend_items = []
         for i, t in enumerate(topics_present):
             color = topic_colors[i % len(topic_colors)]
@@ -1755,12 +1752,12 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
         )
 
     # P_refuse column header
-    p_refuse_th = '        <th class="num" title="Refusal calibration: 1 − mean |Δrefusal|">P_refuse</th>\n'
+    p_refuse_th = '        <th class="num mob-hide" title="Refusal calibration: 1 − mean |Δrefusal|">P_refuse</th>\n'
 
     # Baseline column headers
     baseline_th = ""
     if has_baselines:
-        baseline_th = '        <th class="num sortable" data-sort="vs-random" title="SPS improvement over uniform random baseline">vs Random</th>\n        <th class="num sortable" data-sort="vs-majority" title="SPS improvement over always-pick-the-mode baseline">vs Majority</th>\n'
+        baseline_th = '        <th class="num sortable mob-hide" data-sort="vs-random" title="SPS improvement over uniform random baseline">vs Random</th>\n        <th class="num sortable mob-hide" data-sort="vs-majority" title="SPS improvement over always-pick-the-mode baseline">vs Majority</th>\n'
 
     # Generate chart sections
     chart_datasets = sorted(
@@ -2068,9 +2065,18 @@ footer a{{color:var(--accent)}}
   .container{{padding:1rem 0.75rem}}
   header h1{{font-size:1.6rem}}
   .hero-headline{{font-size:1.5rem}}
+  .mob-hide{{display:none}}
   .leaderboard-table{{font-size:0.8rem}}
   .leaderboard-table th,.leaderboard-table td{{padding:0.5rem 0.6rem}}
+  .tab-panel,.collapsible-body{{overflow-x:auto;-webkit-overflow-scrolling:touch}}
+  .hero-chart{{overflow-x:auto;-webkit-overflow-scrolling:touch}}
+  .hero-chart svg{{min-width:600px}}
+  .chart-section{{overflow-x:auto;-webkit-overflow-scrolling:touch}}
+  .chart-section svg{{min-width:480px;height:auto}}
+  .chevron{{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;font-size:1rem}}
+  .tab{{padding:0.75rem 1rem;min-height:44px}}
   .detail-content{{flex-direction:column;gap:0.5rem}}
+  details.collapsible>summary{{padding:0.75rem 1rem;font-size:1rem}}
 }}
 </style>
 </head>
@@ -2117,13 +2123,13 @@ footer a{{color:var(--accent)}}
       <tr>
         <th class="rank">Rank</th>
         <th class="sortable" data-sort="provider">Provider</th>
-        <th>Model</th>
-        <th>Dataset</th>
+        <th class="mob-hide">Model</th>
+        <th class="mob-hide">Dataset</th>
         <th class="num sortable" data-sort="n">N</th>
         <th class="num sortable" data-sort="sps" title="SynthBench Parity Score: overall fidelity (0=random, 1=human-identical)">SPS <span class="sort-arrow">&#x25BC;</span></th>
 {baseline_th}{topic_th}{p_refuse_th}        <th class="num sortable" data-sort="jsd" title="Mean Jensen-Shannon divergence (lower = closer to human distributions)">JSD</th>
         <th class="num sortable" data-sort="tau" title="Mean Kendall&rsquo;s tau-b rank correlation (higher = better rank agreement)">Tau</th>
-        <th>Date</th>
+        <th class="mob-hide">Date</th>
       </tr>
     </thead>
     <tbody id="leaderboard-body">
