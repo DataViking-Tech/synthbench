@@ -227,15 +227,27 @@ def to_markdown(
 
     lines.extend(
         [
-            "## Interpretation",
+            "## Understanding the Scores",
             "",
-            "- **SPS** (SynthBench Parity Score): Equal-weighted mean of component metrics. "
-            "0 = no parity, 1 = perfect parity.",
-            "- **P_dist**: 1 - mean(JSD). How closely distributions match.",
-            "- **P_rank**: (1 + mean(tau)) / 2. Whether option rankings agree.",
-            "- **P_refuse**: 1 - mean(|refusal_diff|). Whether refusal rates match human patterns.",
-            "- **P_cond**: Improvement from persona conditioning (when available).",
-            "- **P_sub**: Consistency across demographic subgroups (when available).",
+            "All scores range from 0 (no resemblance to humans) to 1 (indistinguishable).",
+            "",
+            "- **SPS** (SynthBench Parity Score): The overall score — equal-weighted average "
+            "of all metrics below. 0 = random noise, 1 = indistinguishable from real humans.",
+            "- **P_dist** (Distributional Parity): How closely does the AI's answer "
+            "distribution match real humans? If 60% of humans say 'yes' and the AI says "
+            "'yes' 60% of the time, that's a perfect match.",
+            "- **P_rank** (Rank-Order Parity): Does the AI get the preference ordering "
+            "right? If humans prefer A > B > C, does the AI agree — even if the exact "
+            "percentages differ?",
+            "- **P_refuse** (Refusal Calibration): Does the AI refuse to answer at "
+            "appropriate rates? Humans sometimes decline sensitive questions. An AI "
+            "that never refuses, or refuses too often, is miscalibrated.",
+            "- **P_cond** (Conditioning Fidelity): When told 'respond as a 65-year-old "
+            "conservative,' does the AI's answer shift to match? Higher = better "
+            "demographic role-playing. Only reported with demographic evaluation.",
+            "- **P_sub** (Subgroup Consistency): Is the AI equally accurate across all "
+            "demographics, or does it nail some groups and miss others? Only reported "
+            "with demographic evaluation.",
             "",
         ]
     )

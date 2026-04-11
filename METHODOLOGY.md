@@ -4,6 +4,29 @@
 
 ---
 
+## Quick Guide — What SynthBench Measures
+
+SynthBench measures how well AI "synthetic respondents" reproduce real human
+survey responses. Every score runs from **0** (no resemblance to humans) to
+**1** (indistinguishable from real humans).
+
+| Score | Plain English | 0 means… | 1 means… |
+|-------|--------------|----------|----------|
+| **P_dist** | How closely does the AI's answer distribution match real humans? If 60% of humans say "yes" and the AI says "yes" 60% of the time, that's a perfect match. | Completely different distribution | Identical distribution |
+| **P_rank** | Does the AI get the preference ordering right? If humans prefer A > B > C, does the AI agree — even if the exact percentages differ? | Reversed ordering | Perfect rank agreement |
+| **P_refuse** | Does the AI refuse to answer at appropriate rates? Humans sometimes decline sensitive questions. An AI that never refuses, or refuses too often, is miscalibrated. | Refusal rate completely wrong | Refusals match human patterns |
+| **P_cond** | When we tell the AI "respond as a 65-year-old conservative," does its answer shift to match? Higher = better demographic role-playing. | Conditioning has no effect | Perfect demographic matching |
+| **P_sub** | Is the AI equally accurate across all demographics, or does it nail some groups and miss others? | Wildly uneven accuracy | Equally accurate everywhere |
+| **SPS** | The overall score — equal-weighted average of all available metrics. | Random noise | Indistinguishable from humans |
+
+**Ground truth**: All scores are computed against real human data from
+[OpinionsQA](https://arxiv.org/abs/2305.14739) — 1,498 questions from the Pew
+American Trends Panel covering politics, technology, religion, and more.
+
+For the full technical details, read on.
+
+---
+
 ## 1. Metric Framework: Recommended Hybrid Approach
 
 ### 1.1 Analysis of the Two Frameworks

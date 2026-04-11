@@ -246,27 +246,87 @@ def _baseline_delta_html(ranked: list[dict], baselines: dict[str, dict]) -> str:
 
 
 def _metric_explanations_html() -> str:
-    """Return HTML section explaining each metric."""
+    """Return HTML section explaining each metric in plain English."""
     return """
-  <h2 class="section-title">Metric Explanations</h2>
+  <h2 class="section-title">Understanding the Scores</h2>
   <div class="about">
-    <p><strong>Composite Parity</strong> combines distributional similarity and rank-order
-       agreement into a single 0&ndash;1 score. <code>(1 - JSD + (1 + tau)/2) / 2</code>. Higher is better.</p>
-    <p><strong>P_dist (Distributional Parity)</strong> = <code>1 - mean(JSD)</code>.
-       Measures how closely a provider's response distribution matches the human distribution.
-       Jensen-Shannon divergence is bounded [0, 1], symmetric, and handles zero entries.
-       A perfect match yields P_dist = 1.</p>
-    <p><strong>P_rank (Rank-Order Parity)</strong> = <code>(1 + mean(tau)) / 2</code>.
-       Kendall's tau-b on probability rankings, normalized to [0, 1].
-       Captures whether the provider gets the <em>ordering</em> of options right,
-       even when exact proportions differ.</p>
-    <p><strong>P_refuse (Refusal Calibration)</strong> = <code>1 - mean(|R_provider - R_human|)</code>.
-       Whether the provider's refusal rate matches human refusal patterns.
-       Human refusal patterns carry signal: questions about religion see higher refusals
-       from non-religious respondents; income questions see higher refusals from high earners.</p>
-    <p><strong>Mean JSD</strong>: Average Jensen-Shannon divergence across all questions. Lower is better (0 = identical distributions).</p>
-    <p><strong>Kendall's tau</strong>: Rank correlation between human and model response option rankings.
-       Range [-1, 1]. 1 = perfect agreement, 0 = no correlation.</p>
+    <p>Every SynthBench score runs from <strong>0</strong> (no resemblance to real humans)
+       to <strong>1</strong> (indistinguishable from real humans). Here&rsquo;s what each one means.</p>
+  </div>
+
+  <div class="about" style="margin-top:1rem">
+    <p><strong>P_dist &mdash; Distributional Parity</strong></p>
+    <p>How closely does the AI&rsquo;s answer distribution match real humans?
+       If 60% of humans say &ldquo;yes&rdquo; and the AI says &ldquo;yes&rdquo; 60% of the time,
+       that&rsquo;s a perfect match.</p>
+    <p><em>0 = completely different distribution. 1 = identical distribution.</em></p>
+    <p>Example: On &ldquo;Do you support policy X?&rdquo; humans split 40/35/25 across
+       Favor&sol;Oppose&sol;Unsure. An AI that produces 41/34/25 scores near 1.
+       An AI that produces 90/5/5 scores near 0.</p>
+    <p>Formula: <code>P_dist = 1 - mean(JSD)</code></p>
+  </div>
+
+  <div class="about" style="margin-top:1rem">
+    <p><strong>P_rank &mdash; Rank-Order Parity</strong></p>
+    <p>Does the AI get the preference ordering right?
+       If humans prefer A&nbsp;&gt;&nbsp;B&nbsp;&gt;&nbsp;C, does the AI agree &mdash;
+       even if the exact percentages differ?</p>
+    <p><em>0 = reversed ordering. 1 = perfect rank agreement.</em></p>
+    <p>Example: Humans rank options Agree&nbsp;&gt;&nbsp;Disagree&nbsp;&gt;&nbsp;Unsure.
+       An AI that produces the same ranking (even at different percentages) scores high.
+       An AI that flips Agree and Disagree scores low.</p>
+    <p>Formula: <code>P_rank = (1 + mean(tau)) / 2</code></p>
+  </div>
+
+  <div class="about" style="margin-top:1rem">
+    <p><strong>P_refuse &mdash; Refusal Calibration</strong></p>
+    <p>Does the AI refuse to answer at appropriate rates?
+       Humans sometimes decline sensitive questions. An AI that never refuses,
+       or refuses too often, is miscalibrated.</p>
+    <p><em>0 = refusal rate completely mismatched. 1 = refusals match human patterns exactly.</em></p>
+    <p>Example: 15% of humans refuse to answer an income question.
+       An AI with a 14% refusal rate scores near 1.
+       An AI that always answers (0% refusals) scores lower.</p>
+    <p>Formula: <code>P_refuse = 1 - mean(|R_provider - R_human|)</code></p>
+  </div>
+
+  <div class="about" style="margin-top:1rem">
+    <p><strong>P_cond &mdash; Conditioning Fidelity</strong></p>
+    <p>When we tell the AI &ldquo;respond as a 65-year-old conservative,&rdquo;
+       does its answer shift to match? Higher means the AI is better at
+       role-playing specific demographic groups.</p>
+    <p><em>0 = persona conditioning has no effect. 1 = conditioning perfectly matches target demographic.</em></p>
+    <p>Example: Without a persona, the AI matches 65+ conservatives at 55%.
+       With the persona &ldquo;65-year-old conservative,&rdquo; it matches at 80%.
+       That improvement is what P_cond captures.</p>
+    <p><em>Only reported when demographic evaluation is enabled.</em></p>
+  </div>
+
+  <div class="about" style="margin-top:1rem">
+    <p><strong>P_sub &mdash; Subgroup Consistency</strong></p>
+    <p>Is the AI equally accurate across all demographics, or does it nail
+       some groups and miss others? An AI that nails young liberals but
+       misrepresents older conservatives gets penalized.</p>
+    <p><em>0 = wildly uneven accuracy across groups. 1 = equally accurate for every demographic.</em></p>
+    <p>Example: An AI scores P_dist&nbsp;=&nbsp;0.90 for &ldquo;Liberal&rdquo; respondents but
+       only 0.55 for &ldquo;Very Conservative.&rdquo; The large gap lowers P_sub.</p>
+    <p><em>Only reported when demographic evaluation is enabled.</em></p>
+  </div>
+
+  <div class="about" style="margin-top:1rem">
+    <p><strong>SPS &mdash; SynthBench Parity Score</strong></p>
+    <p>The overall score &mdash; equal-weighted average of all available metrics.
+       0&nbsp;=&nbsp;random noise, 1&nbsp;=&nbsp;indistinguishable from real humans.</p>
+    <p><em>This is the single number on the leaderboard. Component scores tell you <strong>why</strong>.</em></p>
+  </div>
+
+  <h2 class="section-title">Raw Metrics &amp; Baselines</h2>
+  <div class="about">
+    <p><strong>Mean JSD</strong>: Average Jensen-Shannon divergence across all questions.
+       Lower is better (0&nbsp;=&nbsp;identical distributions).
+       P_dist is simply <code>1 - Mean JSD</code>.</p>
+    <p><strong>Kendall&rsquo;s tau</strong>: Rank correlation between human and model option rankings.
+       Range [&minus;1,&nbsp;1]. 1&nbsp;=&nbsp;perfect agreement, 0&nbsp;=&nbsp;no correlation.</p>
   </div>
   <div class="about" style="margin-top:1rem">
     <p><strong>Baselines</strong> give meaning to scores:</p>
