@@ -1223,7 +1223,22 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 
         medal = medals.get(rank, "")
         medal_html = f'<span class="medal">{medal}</span>' if medal else ""
-        model_display = "&mdash;"
+        # Model info is now part of display_name via MODEL_MAP
+        # Extract framework badge from MODEL_MAP
+        from synthbench.leaderboard import MODEL_MAP
+
+        _entry = MODEL_MAP.get(provider_raw)
+        framework = _entry[1] if _entry else "raw"
+        framework_badge = {
+            "raw": "raw",
+            "product": "product",
+            "baseline": "baseline",
+        }.get(framework, "")
+        model_display = (
+            f'<span class="framework-badge">{framework_badge}</span>'
+            if framework_badge
+            else "&mdash;"
+        )
 
         n_eval = e.get("n", 0)
 
