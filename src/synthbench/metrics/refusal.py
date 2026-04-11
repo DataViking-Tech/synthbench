@@ -78,8 +78,11 @@ def extract_human_refusal_rate(human_distribution: dict[str, float]) -> float:
     refusal_keys = [
         k
         for k in human_distribution
-        if re.search(r"\brefused?\b", k, re.IGNORECASE)
-        or re.search(r"\bdon'?t know\b", k, re.IGNORECASE)
+        if isinstance(k, str)
+        and (
+            re.search(r"\brefused?\b", k, re.IGNORECASE)
+            or re.search(r"\bdon'?t know\b", k, re.IGNORECASE)
+        )
     ]
     return sum(human_distribution.get(k, 0.0) for k in refusal_keys)
 
