@@ -1433,6 +1433,29 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     explanations = _metric_explanations_html()
     metric_legend = _metric_legend_html(topic_legend_inline)
 
+    # Compute hero headline: best model SPS vs random baseline SPS
+    random_sps = 0.65
+    best_n_rand = -1
+    for r in ranked:
+        cfg = r.get("config", {})
+        if cfg.get("provider") == "random-baseline":
+            n_eval = cfg.get("n_evaluated", 0)
+            if n_eval > best_n_rand:
+                best_n_rand = n_eval
+                random_sps = r.get("aggregate", {}).get("composite_parity", 0)
+    best_sps = 0.0
+    for r in ranked:
+        provider = r.get("config", {}).get("provider", "")
+        if provider not in BASELINE_PROVIDERS:
+            cp = r.get("aggregate", {}).get("composite_parity", 0)
+            if cp > best_sps:
+                best_sps = cp
+    delta_points = round((best_sps - random_sps) * 100)
+    hero_headline = (
+        f'<h2 class="hero-headline">The best AI is only '
+        f"{delta_points}&nbsp;points above random chance.</h2>"
+    )
+
     # Convergence section — line chart for convergence, table for replicates
     convergence_line = _convergence_line_svg(convergence_data)
     convergence_html = ""
@@ -1527,7 +1550,9 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 <meta property="og:description" content="Open benchmark measuring how well AI reproduces human survey responses. Ranked by SPS (SynthBench Parity Score).">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://dataviking-tech.github.io/synthbench/">
+<meta property="og:image" content="https://dataviking-tech.github.io/synthbench/og-hero.png">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://dataviking-tech.github.io/synthbench/og-hero.png">
 <meta name="twitter:title" content="SynthBench Leaderboard">
 <meta name="twitter:description" content="Open benchmark measuring how well AI reproduces human survey responses.">
 <title>SynthBench Leaderboard</title>
@@ -1560,6 +1585,7 @@ header h1{{font-size:2.2rem;font-weight:700;letter-spacing:-0.5px}}
 header h1 span{{color:var(--accent)}}
 header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
 
+.hero-headline{{font-size:2.5rem;font-weight:800;text-align:center;margin-bottom:1.5rem;color:var(--text);line-height:1.2}}
 .hero-chart{{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-bottom:2rem}}
 .hero-chart svg{{display:block;margin:0 auto}}
 
@@ -1649,6 +1675,7 @@ footer a{{color:var(--accent)}}
 @media(max-width:700px){{
   .container{{padding:1rem 0.75rem}}
   header h1{{font-size:1.6rem}}
+  .hero-headline{{font-size:1.5rem}}
   .leaderboard-table{{font-size:0.8rem}}
   .leaderboard-table th,.leaderboard-table td{{padding:0.5rem 0.6rem}}
   .detail-content{{flex-direction:column;gap:0.5rem}}
@@ -1668,6 +1695,7 @@ footer a{{color:var(--accent)}}
 </header>
 
 <div class="container">
+{hero_headline}
   <div class="hero-chart">
 {hero_chart}
   </div>
