@@ -231,24 +231,24 @@ def _hero_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
     parts.append("<defs>")
     parts.append('<linearGradient id="zone-grad" x1="0%" y1="0%" x2="100%" y2="0%">')
     parts.append(
-        '<stop offset="0%" style="stop-color:var(--red)" stop-opacity="0.07"/>'
+        '<stop offset="0%" style="stop-color:var(--red)" stop-opacity="0.15"/>'
     )
     if p_lo > tw:
         parts.append(
-            f'<stop offset="{p_lo - tw:.1f}%" style="stop-color:var(--red)" stop-opacity="0.07"/>'
+            f'<stop offset="{p_lo - tw:.1f}%" style="stop-color:var(--red)" stop-opacity="0.15"/>'
         )
     parts.append(
-        f'<stop offset="{min(p_lo + tw, 100):.1f}%" style="stop-color:var(--gold)" stop-opacity="0.12"/>'
+        f'<stop offset="{min(p_lo + tw, 100):.1f}%" style="stop-color:var(--gold)" stop-opacity="0.25"/>'
     )
     if p_hi > p_lo + 2 * tw:
         parts.append(
-            f'<stop offset="{max(p_hi - tw, 0):.1f}%" style="stop-color:var(--gold)" stop-opacity="0.12"/>'
+            f'<stop offset="{max(p_hi - tw, 0):.1f}%" style="stop-color:var(--gold)" stop-opacity="0.25"/>'
         )
     parts.append(
-        f'<stop offset="{min(p_hi + tw, 100):.1f}%" style="stop-color:var(--green)" stop-opacity="0.07"/>'
+        f'<stop offset="{min(p_hi + tw, 100):.1f}%" style="stop-color:var(--green)" stop-opacity="0.15"/>'
     )
     parts.append(
-        '<stop offset="100%" style="stop-color:var(--green)" stop-opacity="0.07"/>'
+        '<stop offset="100%" style="stop-color:var(--green)" stop-opacity="0.15"/>'
     )
     parts.append("</linearGradient>")
     parts.append("</defs>")
@@ -1598,7 +1598,7 @@ header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
 
 .section-title{{font-size:1.3rem;font-weight:600;margin:2.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)}}
 
-.chart-section{{margin:2rem 0;padding:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:8px}}
+.chart-section{{margin:2rem 0;padding:1.5rem;background-color:var(--bg);border:1px solid var(--border);border-radius:8px}}
 
 .leaderboard-table{{width:100%;border-collapse:collapse;font-size:0.9rem}}
 .leaderboard-table thead{{position:sticky;top:0;z-index:10}}
