@@ -1,0 +1,519 @@
+meta:
+  description: "Temporal holdout validation: post-cutoff product concept evaluation"
+  version: "2026-Q1"
+  n_prompts: 30
+  refresh_cadence: quarterly
+  methodology: >
+    Each prompt describes a real product launched in 2026 without naming it.
+    Models evaluate the concept on market viability. Scores compare model
+    assessment against actual market reception. Because these products
+    post-date training cutoffs, model evaluation is contamination-free.
+
+prompts:
+  - id: holdout_001
+    sector: consumer_electronics
+    launch_quarter: "2026-Q1"
+    concept: >
+      A leading smartphone maker releases a foldable device with a
+      tri-fold design that unfolds into a tablet-sized screen. The device
+      features a seamless hinge mechanism with no visible crease and runs
+      a custom on-device AI assistant optimized for multi-window
+      productivity workflows across the three panels.
+    ground_truth: success
+    reception_summary: >
+      Strong pre-orders exceeded forecasts by 40%. Critics praised the
+      hinge engineering and multi-panel multitasking. Sold 8M units in
+      first quarter despite premium pricing.
+
+  - id: holdout_002
+    sector: ai_software
+    launch_quarter: "2026-Q1"
+    concept: >
+      An AI company launches a coding assistant that operates as an
+      autonomous agent within the terminal, capable of reading entire
+      codebases, running tests, and submitting pull requests with minimal
+      human oversight. It integrates with version control and CI/CD
+      pipelines natively rather than through IDE plugins.
+    ground_truth: success
+    reception_summary: >
+      Rapid adoption among professional developers. Within two months,
+      used by 500K+ developers daily. Praised for reducing boilerplate
+      and catching bugs before CI. Enterprise tier saw strong uptake.
+
+  - id: holdout_003
+    sector: automotive
+    launch_quarter: "2026-Q1"
+    concept: >
+      A major automaker unveils a mid-priced electric sedan with a
+      solid-state battery promising 600 miles of range and 10-minute
+      fast charging. The vehicle is positioned as a mass-market
+      alternative to existing EVs, priced under $35,000 before
+      incentives.
+    ground_truth: mixed
+    reception_summary: >
+      Enormous initial buzz and 200K reservations. However, production
+      ramp was slower than announced due to solid-state battery yield
+      issues. First deliveries limited to select markets. Reviews of
+      delivered units were positive but supply remained constrained.
+
+  - id: holdout_004
+    sector: social_media
+    launch_quarter: "2026-Q1"
+    concept: >
+      A new social platform launches that uses AI to match users into
+      small ephemeral discussion groups of 5-8 people based on shared
+      interests and complementary viewpoints. Conversations are
+      text-only, disappear after 24 hours, and there are no follower
+      counts or public profiles.
+    ground_truth: failure
+    reception_summary: >
+      Initial curiosity drove 2M sign-ups but daily active users
+      dropped 80% within six weeks. Users found the lack of persistent
+      identity and connections unsatisfying. Struggled to build the
+      network effects needed for retention.
+
+  - id: holdout_005
+    sector: health_fitness
+    launch_quarter: "2026-Q1"
+    concept: >
+      A health tech company releases a non-invasive continuous glucose
+      monitor worn as a wristband. It uses optical sensing rather than
+      microneedles, requires no calibration, and integrates with major
+      fitness platforms. Marketed to general wellness consumers, not
+      just diabetics.
+    ground_truth: success
+    reception_summary: >
+      FDA clearance and insurance-free direct-to-consumer model drove
+      rapid adoption. 3M units sold in first quarter. Users praised
+      the comfort and metabolic health insights. Spawned a new category
+      of glucose-aware diet apps.
+
+  - id: holdout_006
+    sector: food_beverage
+    launch_quarter: "2026-Q1"
+    concept: >
+      A beverage startup launches a line of functional drinks infused
+      with lab-grown caffeine and adaptogens, positioned as a
+      sustainable coffee replacement. The drinks are shelf-stable,
+      come in compostable packaging, and are priced at parity with
+      premium cold brew.
+    ground_truth: mixed
+    reception_summary: >
+      Strong initial traction in health-conscious urban markets.
+      Secured placement in major grocery chains. However, taste
+      reviews were polarizing and repeat purchase rates lagged behind
+      projections. Brand awareness remained low outside core demographic.
+
+  - id: holdout_007
+    sector: fintech
+    launch_quarter: "2026-Q1"
+    concept: >
+      A fintech company launches an AI financial advisor that
+      continuously monitors a user's bank accounts, investments, and
+      spending patterns, then autonomously executes micro-optimizations
+      like rebalancing portfolios, refinancing debt triggers, and
+      tax-loss harvesting. Users set guardrails but the agent acts
+      without per-transaction approval.
+    ground_truth: mixed
+    reception_summary: >
+      Early adopters praised the hands-off approach and reported
+      measurable savings. However, regulatory scrutiny intensified
+      around autonomous financial actions. Some users were uncomfortable
+      with the level of delegation. Growth slowed pending clearer
+      regulatory guidance.
+
+  - id: holdout_008
+    sector: entertainment
+    launch_quarter: "2026-Q1"
+    concept: >
+      A major streaming service introduces an interactive format where
+      viewers collectively influence the plot of serialized shows in
+      real-time through voting. Each episode branches based on audience
+      decisions, with AI generating transitional scenes to maintain
+      narrative coherence between the pre-filmed branches.
+    ground_truth: failure
+    reception_summary: >
+      The flagship show attracted curiosity but viewers found the
+      AI-generated transitions jarring. The branching narratives felt
+      less satisfying than authored stories. Viewership dropped sharply
+      after episode three. The format was shelved after one season.
+
+  - id: holdout_009
+    sector: education
+    launch_quarter: "2026-Q1"
+    concept: >
+      An edtech startup launches an AI tutor that adapts in real-time
+      to a student's learning style, generating custom practice
+      problems, explanations, and visual aids. It covers K-12 math
+      and science, offers a free tier for public school students, and
+      provides teachers with dashboards showing individual student
+      progress and misconception patterns.
+    ground_truth: success
+    reception_summary: >
+      Adopted by 12,000 schools within three months. Student engagement
+      metrics exceeded traditional homework platforms. Teachers reported
+      significant time savings on assessment. The free tier for public
+      schools generated positive press and policy endorsements.
+
+  - id: holdout_010
+    sector: smart_home
+    launch_quarter: "2026-Q1"
+    concept: >
+      A home robotics company releases a general-purpose household
+      robot that can fold laundry, load dishwashers, and tidy rooms.
+      It uses a combination of computer vision and dexterous
+      manipulation arms. Priced at $2,500, it is positioned as an
+      appliance rather than a luxury gadget.
+    ground_truth: mixed
+    reception_summary: >
+      Generated massive media attention and waitlists. Early units
+      performed well on folding standard clothing but struggled with
+      unusual items and cluttered environments. Customer satisfaction
+      varied widely based on home layout. Second-generation software
+      updates improved reliability significantly.
+
+  - id: holdout_011
+    sector: developer_tools
+    launch_quarter: "2026-Q1"
+    concept: >
+      A cloud provider launches a serverless database that
+      automatically scales from zero to millions of queries with no
+      cold starts, supports both SQL and document queries on the same
+      data, and charges purely by compute consumed with no minimum
+      commitment. It offers built-in vector search for AI workloads.
+    ground_truth: success
+    reception_summary: >
+      Developer community praised the zero-cold-start and hybrid
+      query model. Became the default database for new AI-native
+      startups. Strong migration from existing serverless offerings.
+      Revenue grew 300% quarter-over-quarter.
+
+  - id: holdout_012
+    sector: fashion
+    launch_quarter: "2026-Q1"
+    concept: >
+      A fashion retailer launches an AI styling service that uses a
+      phone camera scan to build a 3D body model, then recommends
+      outfits from its catalog with guaranteed fit. Returns dropped
+      because every recommendation comes with a fit confidence score.
+      The service is free but exclusive to the retailer's inventory.
+    ground_truth: success
+    reception_summary: >
+      Returns decreased by 35% for participating customers. The fit
+      guarantee increased average order value by 20%. Competitors
+      scrambled to develop similar capabilities. The feature became
+      the retailer's primary differentiator.
+
+  - id: holdout_013
+    sector: transportation
+    launch_quarter: "2026-Q1"
+    concept: >
+      A ride-sharing company launches an autonomous ride service using
+      purpose-built electric vehicles with no steering wheels in a
+      major US city. Rides cost 40% less than human-driven equivalents.
+      The service operates 24/7 in a defined geofenced zone covering
+      the urban core and airport corridor.
+    ground_truth: mixed
+    reception_summary: >
+      High utilization within the geofence with strong rider
+      satisfaction scores. However, two minor incidents involving
+      construction zones generated negative press disproportionate to
+      their severity. Expansion to new cities was delayed by
+      regulatory review in several states.
+
+  - id: holdout_014
+    sector: consumer_electronics
+    launch_quarter: "2026-Q1"
+    concept: >
+      A major tech company releases lightweight augmented reality
+      glasses that look like regular prescription frames. They overlay
+      navigation, notifications, and real-time translation onto the
+      wearer's view. Battery lasts a full workday. Compatible with
+      prescription lenses. Priced at $499.
+    ground_truth: success
+    reception_summary: >
+      The natural form factor was the breakthrough. Unlike bulky
+      predecessors, these were worn all day. Navigation and
+      translation use cases drove word-of-mouth. Sold 5M units in
+      the first quarter, far exceeding internal projections.
+
+  - id: holdout_015
+    sector: healthcare
+    launch_quarter: "2026-Q1"
+    concept: >
+      A biotech company launches an at-home diagnostic kit that uses
+      a saliva sample and AI analysis to screen for early markers of
+      12 common cancers. Results are delivered through a physician
+      portal within 48 hours. The test costs $299 without insurance
+      and is positioned as an annual wellness screening.
+    ground_truth: mixed
+    reception_summary: >
+      Strong consumer interest but medical professionals raised
+      concerns about false positive rates leading to unnecessary
+      follow-up procedures. The company published validation data
+      showing 92% sensitivity but only 85% specificity. Regulatory
+      bodies began review of direct-to-consumer cancer screening claims.
+
+  - id: holdout_016
+    sector: gaming
+    launch_quarter: "2026-Q1"
+    concept: >
+      A game studio releases a multiplayer survival game where the
+      entire world is procedurally generated by AI, including terrain,
+      creatures, lore, and quest lines. No two servers share the same
+      world. An AI narrator provides dynamic storytelling that reacts
+      to player choices and inter-faction politics.
+    ground_truth: success
+    reception_summary: >
+      Became the top-selling game on its launch platform within a
+      week. Players praised the infinite variety and emergent
+      storytelling. Twitch viewership spiked as streamers explored
+      unique worlds. Active player base exceeded 20M within the first
+      month.
+
+  - id: holdout_017
+    sector: agriculture
+    launch_quarter: "2026-Q1"
+    concept: >
+      An agtech company launches a drone-based crop monitoring service
+      that uses multispectral imaging and AI to detect disease, pest
+      damage, and nutrient deficiencies at the individual plant level.
+      The service provides actionable treatment recommendations and
+      integrates with precision spraying equipment for targeted
+      application.
+    ground_truth: success
+    reception_summary: >
+      Adopted by large commercial farms in the US Midwest and
+      Brazil. Customers reported 25% reduction in pesticide use and
+      15% yield improvements. The per-acre pricing model made it
+      accessible to mid-size operations. Secured Series C funding
+      based on strong unit economics.
+
+  - id: holdout_018
+    sector: media
+    launch_quarter: "2026-Q1"
+    concept: >
+      A news organization launches a fully AI-generated newscast with
+      synthetic anchors delivering real-time coverage. The anchors
+      are photorealistic, available in multiple languages, and can be
+      personalized to cover topics each viewer cares about. Human
+      journalists still report and verify stories but do not appear
+      on screen.
+    ground_truth: failure
+    reception_summary: >
+      Backlash from journalism professionals and media watchdogs was
+      swift. Viewers reported finding the synthetic anchors uncanny
+      and untrustworthy. Subscription numbers declined after launch.
+      The organization reverted to human anchors within two months,
+      retaining AI only for translation and summarization features.
+
+  - id: holdout_019
+    sector: real_estate
+    launch_quarter: "2026-Q1"
+    concept: >
+      A proptech startup offers AI-powered property valuation and
+      instant cash offers for homes, completing purchases in under
+      48 hours. The AI inspects properties using smartphone video
+      walkthroughs and satellite imagery, eliminating the need for
+      in-person appraisals. The platform charges a 3% fee, lower
+      than traditional agent commissions.
+    ground_truth: mixed
+    reception_summary: >
+      Attractive to sellers needing fast liquidity. Completed 5,000
+      transactions in the first quarter. However, the AI valuations
+      proved conservative, with offers averaging 8% below market.
+      Some sellers felt shortchanged after comparing to traditional
+      sales. Customer satisfaction was bimodal.
+
+  - id: holdout_020
+    sector: enterprise_software
+    launch_quarter: "2026-Q1"
+    concept: >
+      An enterprise software company releases an AI meeting assistant
+      that attends video calls, takes notes, identifies action items,
+      and automatically creates tickets in project management tools.
+      It also detects when decisions are made without proper
+      stakeholder input and flags them for review.
+    ground_truth: success
+    reception_summary: >
+      Rapid enterprise adoption with 10,000 companies onboarded in
+      90 days. The stakeholder-gap detection feature became the
+      unexpected killer feature, with managers citing fewer missed
+      handoffs. Annual contract values were high due to per-seat
+      enterprise pricing.
+
+  - id: holdout_021
+    sector: pet_care
+    launch_quarter: "2026-Q1"
+    concept: >
+      A pet tech company launches a smart collar that continuously
+      monitors a dog's vital signs, activity levels, and location.
+      An AI veterinary assistant analyzes the data and alerts owners
+      to early signs of illness, suggesting vet visits before
+      symptoms become visible. Includes a subscription for 24/7
+      AI vet consultations.
+    ground_truth: mixed
+    reception_summary: >
+      Pet owners loved the peace of mind and the health alerts
+      proved accurate in early studies. However, the subscription
+      model faced pushback, with many users canceling after the
+      first year. Hardware quality issues with the charging dock
+      generated negative reviews. Retention was the primary challenge.
+
+  - id: holdout_022
+    sector: logistics
+    launch_quarter: "2026-Q1"
+    concept: >
+      A logistics company deploys a fleet of autonomous delivery
+      robots for last-mile package delivery in suburban neighborhoods.
+      The robots navigate sidewalks, cross streets at crosswalks, and
+      deliver to doorsteps. Each robot handles up to 50 pounds and
+      operates in a 3-mile radius from distribution hubs.
+    ground_truth: mixed
+    reception_summary: >
+      Worked well in planned suburban communities with wide sidewalks.
+      Delivery success rate was 94%. However, older neighborhoods with
+      uneven sidewalks and stairs posed challenges. Some municipalities
+      enacted restrictions on sidewalk robots, limiting expansion.
+
+  - id: holdout_023
+    sector: music
+    launch_quarter: "2026-Q1"
+    concept: >
+      A music streaming service introduces a feature that generates
+      personalized instrumental music in real-time based on the
+      listener's current activity, heart rate from wearables, and
+      time of day. The AI composes unique tracks that are never
+      repeated, blending genres based on listening history.
+    ground_truth: mixed
+    reception_summary: >
+      Power users loved the focus and workout modes. The technology
+      impressed critics. However, most listeners preferred familiar
+      songs and curated playlists. The feature saw strong engagement
+      from 8% of users but was ignored by the majority. Positioned
+      as a niche premium feature rather than a platform differentiator.
+
+  - id: holdout_024
+    sector: construction
+    launch_quarter: "2026-Q1"
+    concept: >
+      A construction tech company introduces an AI system that
+      generates building permit applications automatically from
+      architectural drawings. It checks designs against local
+      building codes, identifies violations, suggests fixes, and
+      produces submission-ready documentation. Integrates with
+      municipal e-permitting portals.
+    ground_truth: success
+    reception_summary: >
+      Architects and contractors adopted quickly, reporting 70%
+      reduction in permit turnaround time. Municipal governments
+      in pilot cities saw faster processing. The tool's code
+      compliance checking reduced rejection rates from 40% to under
+      10%. Expanded to 200 US jurisdictions in the first quarter.
+
+  - id: holdout_025
+    sector: travel
+    launch_quarter: "2026-Q1"
+    concept: >
+      An airline launches a subscription service offering unlimited
+      standby flights on domestic routes for a flat monthly fee. An
+      AI system predicts seat availability and suggests optimal travel
+      windows. Members check in via app and board only if seats are
+      available, confirmed 2 hours before departure.
+    ground_truth: failure
+    reception_summary: >
+      Appealing concept but execution frustrated subscribers. Popular
+      routes were consistently full, and members often couldn't fly
+      when needed. The uncertainty made it impractical for business
+      travel. Cancellation rates hit 60% after three months. The
+      airline restructured the program with guaranteed seats at
+      higher pricing.
+
+  - id: holdout_026
+    sector: cybersecurity
+    launch_quarter: "2026-Q1"
+    concept: >
+      A cybersecurity firm launches an autonomous security operations
+      agent that monitors network traffic, triages alerts, investigates
+      incidents, and executes containment actions without human
+      intervention. It explains its reasoning in natural language and
+      maintains an audit trail. Designed to replace Tier 1 SOC analysts.
+    ground_truth: success
+    reception_summary: >
+      Fortune 500 companies adopted for overnight and weekend coverage
+      first. Mean time to containment dropped 85%. False positive
+      handling improved dramatically. SOC teams were restructured
+      rather than eliminated, with analysts focusing on complex
+      threat hunting. Strong enterprise pipeline.
+
+  - id: holdout_027
+    sector: retail
+    launch_quarter: "2026-Q1"
+    concept: >
+      A grocery chain launches cashierless stores using ceiling-mounted
+      cameras and shelf sensors. Shoppers enter by scanning a QR code,
+      pick items, and walk out. Charges appear on their account
+      automatically. Unlike earlier attempts, the system handles
+      produce weighing, coupons, and age-restricted items through
+      brief app interactions.
+    ground_truth: mixed
+    reception_summary: >
+      Convenience scored highly with urban shoppers. Accuracy reached
+      99.2% on standard items. However, produce and bulk items still
+      caused errors. Privacy concerns limited adoption among older
+      demographics. Profitable in high-traffic urban locations but
+      economics didn't work in suburban stores.
+
+  - id: holdout_028
+    sector: legal
+    launch_quarter: "2026-Q1"
+    concept: >
+      A legal tech startup launches an AI paralegal service for small
+      businesses that drafts contracts, reviews vendor agreements,
+      identifies unfavorable clauses, and suggests modifications. It
+      covers standard commercial contracts and integrates with
+      e-signature platforms. Priced as a monthly subscription at a
+      fraction of attorney review costs.
+    ground_truth: success
+    reception_summary: >
+      Small business owners embraced the cost savings, with 50K
+      subscribers in the first quarter. The clause identification
+      accuracy matched junior associates in benchmarks. Bar
+      associations raised concerns about unauthorized practice of law
+      but the company positioned it as document preparation, not
+      legal advice.
+
+  - id: holdout_029
+    sector: fitness
+    launch_quarter: "2026-Q1"
+    concept: >
+      A fitness company launches AI-powered workout mirrors that use
+      computer vision to analyze form in real-time, providing verbal
+      corrections during exercises. The mirror generates personalized
+      workout programs that adapt based on detected strength gains,
+      flexibility changes, and recovery patterns.
+    ground_truth: failure
+    reception_summary: >
+      The form analysis was technically impressive but the market
+      was saturated with connected fitness products. Consumers had
+      pandemic-era equipment fatigue. The $1,500 price point and
+      required subscription couldn't compete with free AI coaching
+      apps on smartphones. Sales fell 70% short of projections.
+
+  - id: holdout_030
+    sector: energy
+    launch_quarter: "2026-Q1"
+    concept: >
+      An energy startup offers a home battery system paired with AI
+      software that learns a household's consumption patterns and
+      local utility rate structures. It autonomously buys electricity
+      when rates are low, stores it, and either uses it during peak
+      pricing or sells it back to the grid for profit. The system
+      pays for itself within three years based on energy arbitrage.
+    ground_truth: success
+    reception_summary: >
+      Strong adoption in markets with time-of-use pricing. Customers
+      reported 40-60% reduction in electricity costs. The arbitrage
+      model attracted financially motivated buyers who wouldn't
+      otherwise consider batteries. Utility partnerships accelerated
+      distribution. Backlog grew to 6 months.
