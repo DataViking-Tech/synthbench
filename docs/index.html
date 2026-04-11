@@ -87,6 +87,18 @@ header .tagline{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}
 
 .footnote{font-size:0.85rem;color:var(--text-muted);margin-top:0.75rem;padding-left:0.5rem;border-left:2px solid var(--border)}
 
+.secondary-panel{margin-top:2.5rem}
+details.collapsible{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-top:1.5rem;overflow:hidden}
+details.collapsible>summary{padding:1rem 1.5rem;cursor:pointer;font-size:1.1rem;font-weight:600;color:var(--text);list-style:none;display:flex;align-items:center;gap:0.5rem;user-select:none}
+details.collapsible>summary::-webkit-details-marker{display:none}
+details.collapsible>summary::before{content:'\25B8';font-size:0.75rem;color:var(--accent);transition:transform 0.2s}
+details.collapsible[open]>summary::before{transform:rotate(90deg)}
+details.collapsible .collapsible-body{padding:0 1.5rem 1.5rem}
+details.collapsible .chart-section{margin:0;border:none;border-radius:0;background:transparent;padding:0}
+details.collapsible .leaderboard-table{font-size:0.85rem}
+details.collapsible .about{margin-bottom:0.75rem}
+.explanation-section{border-top:2px solid var(--accent);margin-top:3rem;padding-top:0.5rem}
+
 .transparency{margin-top:1rem;font-size:0.85rem;color:var(--text-muted);font-style:italic}
 
 .bibtex{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1rem;font-family:monospace;font-size:0.8rem;white-space:pre-wrap;color:var(--text-muted);margin-top:1rem;overflow-x:auto}
@@ -414,7 +426,11 @@ footer a{color:var(--accent)}
   <p class="footnote"><strong>Adapter test:</strong> SynthPanel entries use an early, untuned adapter integration and are not representative of production SynthPanel quality. Included for transparency and baseline comparison.</p>
   <p class="footnote">* Scores from small samples (N&nbsp;&lt;&nbsp;50) have higher variance and should be interpreted with caution.</p>
 
-  <div class="chart-section">
+  <div class="secondary-panel">
+    <details class="collapsible">
+      <summary>SPS by Model</summary>
+      <div class="collapsible-body">
+        <div class="chart-section">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 482" width="100%" style="font-family:sans-serif;max-width:660px">
 <text x="330.0" y="18" text-anchor="middle" font-size="14" class="chart-text" font-weight="600">SPS by Model</text>
 <line x1="449.2" y1="30" x2="449.2" y2="467" stroke="#f85149" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/><text x="449.2" y="24" text-anchor="middle" font-size="9" fill="#f85149" opacity="0.8">Random</text>
@@ -466,14 +482,18 @@ footer a{color:var(--accent)}
 <circle cx="439.9" cy="452.0" r="4" class="chart-accent"/>
 <text x="447.9" y="455.2" font-size="10" class="chart-text">0.5497</text>
 </svg>
-  </div>
+        </div>
+      </div>
+    </details>
 
 
-  <h2 class="section-title">Convergence</h2>
-  <div class="about" style="margin-bottom:1rem">
-    <p>How scores change as sample count increases. Providers with 3+ different sample counts are shown.</p>
-  </div>
-  <table class="leaderboard-table">
+    <details class="collapsible">
+      <summary>Convergence</summary>
+      <div class="collapsible-body">
+        <div class="about">
+          <p>How scores change as sample count increases. Providers with 3+ different sample counts are shown.</p>
+        </div>
+        <table class="leaderboard-table">
     <thead>
       <tr>
         <th>Provider</th>
@@ -484,7 +504,7 @@ footer a{color:var(--accent)}
         <th class="num">Max</th>
       </tr>
     </thead>
-    <tbody>
+          <tbody>
       <tr>
         <td class="provider-name">openrouter/anthropic/claude-haiku-4-5</td>
         <td class="num">5</td>
@@ -565,13 +585,17 @@ footer a{color:var(--accent)}
         <td class="num">0.7560</td>
         <td class="num">0.7573</td>
       </tr>
-    </tbody>
-  </table>
-  <h2 class="section-title">Replicate Runs</h2>
-  <div class="about" style="margin-bottom:1rem">
-    <p>Repeated runs at the same sample size. Useful for measuring score variance, not convergence trends.</p>
-  </div>
-  <table class="leaderboard-table">
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <details class="collapsible">
+      <summary>Replicate Runs</summary>
+      <div class="collapsible-body">
+        <div class="about">
+          <p>Repeated runs at the same sample size. Useful for measuring score variance, not convergence trends.</p>
+        </div>
+        <table class="leaderboard-table">
     <thead>
       <tr>
         <th>Provider</th>
@@ -582,7 +606,7 @@ footer a{color:var(--accent)}
         <th class="num">Max</th>
       </tr>
     </thead>
-    <tbody>
+          <tbody>
       <tr>
         <td class="provider-name">openrouter/anthropic/claude-sonnet-4</td>
         <td class="num">10</td>
@@ -679,9 +703,13 @@ footer a{color:var(--accent)}
         <td class="num">0.7378</td>
         <td class="num">0.7378</td>
       </tr>
-    </tbody>
-  </table>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
 
+  <div class="explanation-section">
 
   <h2 class="section-title">Understanding the Scores</h2>
   <div class="about">
@@ -759,6 +787,7 @@ footer a{color:var(--accent)}
        distributional modeling.</p>
     <p>See <a href="https://github.com/DataViking-Tech/synthbench/blob/main/METHODOLOGY.md">METHODOLOGY.md</a>
        for the full metric framework and design rationale.</p>
+  </div>
   </div>
 </div>
 

@@ -745,30 +745,38 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
         if convergence_rows:
             conv_tbody = "\n".join(convergence_rows)
             convergence_html += f"""
-  <h2 class="section-title">Convergence</h2>
-  <div class="about" style="margin-bottom:1rem">
-    <p>How scores change as sample count increases. Providers with 3+ different sample counts are shown.</p>
-  </div>
-  <table class="leaderboard-table">
+    <details class="collapsible">
+      <summary>Convergence</summary>
+      <div class="collapsible-body">
+        <div class="about">
+          <p>How scores change as sample count increases. Providers with 3+ different sample counts are shown.</p>
+        </div>
+        <table class="leaderboard-table">
 {table_header}
-    <tbody>
+          <tbody>
 {conv_tbody}
-    </tbody>
-  </table>"""
+          </tbody>
+        </table>
+      </div>
+    </details>"""
 
         if replicate_rows:
             rep_tbody = "\n".join(replicate_rows)
             convergence_html += f"""
-  <h2 class="section-title">Replicate Runs</h2>
-  <div class="about" style="margin-bottom:1rem">
-    <p>Repeated runs at the same sample size. Useful for measuring score variance, not convergence trends.</p>
-  </div>
-  <table class="leaderboard-table">
+    <details class="collapsible">
+      <summary>Replicate Runs</summary>
+      <div class="collapsible-body">
+        <div class="about">
+          <p>Repeated runs at the same sample size. Useful for measuring score variance, not convergence trends.</p>
+        </div>
+        <table class="leaderboard-table">
 {table_header}
-    <tbody>
+          <tbody>
 {rep_tbody}
-    </tbody>
-  </table>"""
+          </tbody>
+        </table>
+      </div>
+    </details>"""
 
     # #1 synthpanel footnote
     has_synthpanel = any(_is_synthpanel(e["provider"]) for e in summary_entries)
@@ -879,6 +887,18 @@ header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
 
 .footnote{{font-size:0.85rem;color:var(--text-muted);margin-top:0.75rem;padding-left:0.5rem;border-left:2px solid var(--border)}}
 
+.secondary-panel{{margin-top:2.5rem}}
+details.collapsible{{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-top:1.5rem;overflow:hidden}}
+details.collapsible>summary{{padding:1rem 1.5rem;cursor:pointer;font-size:1.1rem;font-weight:600;color:var(--text);list-style:none;display:flex;align-items:center;gap:0.5rem;user-select:none}}
+details.collapsible>summary::-webkit-details-marker{{display:none}}
+details.collapsible>summary::before{{content:'\\25B8';font-size:0.75rem;color:var(--accent);transition:transform 0.2s}}
+details.collapsible[open]>summary::before{{transform:rotate(90deg)}}
+details.collapsible .collapsible-body{{padding:0 1.5rem 1.5rem}}
+details.collapsible .chart-section{{margin:0;border:none;border-radius:0;background:transparent;padding:0}}
+details.collapsible .leaderboard-table{{font-size:0.85rem}}
+details.collapsible .about{{margin-bottom:0.75rem}}
+.explanation-section{{border-top:2px solid var(--accent);margin-top:3rem;padding-top:0.5rem}}
+
 .transparency{{margin-top:1rem;font-size:0.85rem;color:var(--text-muted);font-style:italic}}
 
 .bibtex{{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1rem;font-family:monospace;font-size:0.8rem;white-space:pre-wrap;color:var(--text-muted);margin-top:1rem;overflow-x:auto}}
@@ -947,13 +967,22 @@ footer a{{color:var(--accent)}}
   {synthpanel_footnote}
   {low_n_footnote}
 
-  <div class="chart-section">
+  <div class="secondary-panel">
+    <details class="collapsible">
+      <summary>SPS by Model</summary>
+      <div class="collapsible-body">
+        <div class="chart-section">
 {dot_plot}
-  </div>
+        </div>
+      </div>
+    </details>
 
 {convergence_html}
+  </div>
 
+  <div class="explanation-section">
 {explanations}
+  </div>
 </div>
 
 <footer>
