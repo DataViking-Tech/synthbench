@@ -19,7 +19,7 @@ from synthbench.metrics import (
     extract_human_refusal_rate,
     conditioning_fidelity,
 )
-from synthbench.providers.base import PersonaSpec, Provider
+from synthbench.providers.base import Distribution, PersonaSpec, Provider
 from synthbench.stats import bootstrap_ci, question_set_hash
 
 
@@ -242,6 +242,9 @@ class BenchmarkResult:
 class BenchmarkRunner:
     """Run a benchmark: load data, query provider, compute metrics."""
 
+    BATCH_SIZE = 10
+    """Questions per batch when using batch_get_distribution."""
+
     def __init__(
         self,
         dataset: Dataset,
@@ -252,6 +255,7 @@ class BenchmarkRunner:
         self.dataset = dataset
         self.provider = provider
         self.samples_per_question = samples_per_question
+        self._concurrency = concurrency
         self._semaphore = asyncio.Semaphore(concurrency)
 
     async def run(
@@ -269,12 +273,20 @@ class BenchmarkRunner:
 
             questions = filter_questions_by_suite(questions, question_keys)
 
-        results = []
-        for i, question in enumerate(questions):
-            qr = await self._evaluate_question(question)
-            results.append(qr)
-            if progress_callback:
-                progress_callback(i + 1, len(questions), qr)
+        # Use batched evaluation when provider supports it
+        use_batch = self.provider.supports_distribution and hasattr(
+            self.provider, "batch_get_distribution"
+        )
+
+        if use_batch:
+            results = await self._run_batched(questions, progress_callback)
+        else:
+            results = []
+            for i, question in enumerate(questions):
+                qr = await self._evaluate_question(question)
+                results.append(qr)
+                if progress_callback:
+                    progress_callback(i + 1, len(questions), qr)
 
         elapsed = time.monotonic() - t0
 
@@ -336,6 +348,76 @@ class BenchmarkRunner:
             parity=par,
             n_samples=n_samples,
             n_parse_failures=n_parse_failures,
+            model_refusal_rate=model_refusal_rate,
+            human_refusal_rate=human_refusal_rate,
+            temporal_year=wave_year(question.survey),
+        )
+
+    async def _run_batched(
+        self,
+        questions: list[Question],
+        progress_callback=None,
+    ) -> list[QuestionResult]:
+        """Evaluate questions in batches using provider batch_get_distribution.
+
+        Groups questions into batches of BATCH_SIZE, runs batches concurrently
+        (limited by the concurrency semaphore), and collects results.
+        """
+        batch_size = self.BATCH_SIZE
+        batches = [
+            questions[i : i + batch_size] for i in range(0, len(questions), batch_size)
+        ]
+
+        total = len(questions)
+        all_results: list[QuestionResult | None] = [None] * total
+        done_count = 0
+
+        async def process_batch(batch_idx: int, batch: list[Question]):
+            nonlocal done_count
+            async with self._semaphore:
+                texts = [q.text for q in batch]
+                opts_list = [q.options for q in batch]
+                dists = await self.provider.batch_get_distribution(
+                    texts, opts_list, n_samples=self.samples_per_question
+                )
+
+                start_idx = batch_idx * batch_size
+                for j, (q, dist) in enumerate(zip(batch, dists)):
+                    qr = self._build_question_result(q, dist)
+                    all_results[start_idx + j] = qr
+                    done_count += 1
+                    if progress_callback:
+                        progress_callback(done_count, total, qr)
+
+        tasks = [process_batch(i, batch) for i, batch in enumerate(batches)]
+        await asyncio.gather(*tasks)
+
+        return [r for r in all_results if r is not None]
+
+    def _build_question_result(
+        self, question: Question, dist: Distribution
+    ) -> QuestionResult:
+        """Build a QuestionResult from a question and its model distribution."""
+        model_dist = dict(zip(question.options, dist.probabilities))
+        model_refusal_rate = dist.refusal_probability
+        n_samples = dist.n_samples or self.samples_per_question
+
+        human_refusal_rate = extract_human_refusal_rate(question.human_distribution)
+        jsd = jensen_shannon_divergence(question.human_distribution, model_dist)
+        tau = kendall_tau_b(question.human_distribution, model_dist)
+        par = parity_score(jsd, tau)
+
+        return QuestionResult(
+            key=question.key,
+            text=question.text,
+            options=question.options,
+            human_distribution=question.human_distribution,
+            model_distribution=model_dist,
+            jsd=jsd,
+            kendall_tau=tau,
+            parity=par,
+            n_samples=n_samples,
+            n_parse_failures=0,
             model_refusal_rate=model_refusal_rate,
             human_refusal_rate=human_refusal_rate,
             temporal_year=wave_year(question.survey),

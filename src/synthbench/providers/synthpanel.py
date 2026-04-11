@@ -76,6 +76,30 @@ def _build_instrument_yaml(question: str, options: list[str]) -> str:
     )
 
 
+def _build_multi_question_instrument_yaml(
+    questions: list[str], options_list: list[list[str]]
+) -> str:
+    """Build a multi-question instrument YAML for batch evaluation.
+
+    Packs N questions into a single instrument so synthpanel processes
+    them all in one invocation.
+    """
+    lines = [
+        "version: 3\n",
+        "rounds:\n",
+        '  - name: "q"\n',
+        "    questions:\n",
+    ]
+    for q_text, opts in zip(questions, options_list):
+        opts_lines = "\\n".join(f"({_LETTERS[i]}) {opt}" for i, opt in enumerate(opts))
+        full_text = _yaml_escape(q_text) + "\\n\\n" + opts_lines
+        opts_str = ", ".join(f'"{_yaml_escape(o)}"' for o in opts)
+        lines.append(f'    - text: "{full_text}"\n')
+        lines.append(f"      options: [{opts_str}]\n")
+        lines.append("      type: multiple_choice\n")
+    return "".join(lines)
+
+
 def _build_persona_yaml(persona: PersonaSpec | None, count: int = 1) -> str:
     """Build persona YAML with full conditioning context.
 
@@ -213,6 +237,10 @@ class SynthPanelProvider(Provider):
 
     @property
     def supports_distribution(self) -> bool:
+        return True
+
+    @property
+    def supports_batch(self) -> bool:
         return True
 
     # ==================================================================
@@ -401,6 +429,143 @@ class SynthPanelProvider(Provider):
             Path(pers_path).unlink(missing_ok=True)
 
     # ==================================================================
+    # batch_respond() — multi-question, single invocation
+    # ==================================================================
+
+    async def batch_respond(
+        self,
+        questions: list[str],
+        options_list: list[list[str]],
+        *,
+        persona: PersonaSpec | None = None,
+    ) -> list[Response]:
+        """Answer multiple questions in a single synthpanel invocation.
+
+        Packs all questions into one multi-question instrument, runs
+        synthpanel once, and returns per-question Response objects.
+        """
+        if self._use_api:
+            return await self._batch_respond_api(questions, options_list, persona)
+        return await self._batch_respond_cli(questions, options_list, persona)
+
+    async def _batch_respond_api(
+        self,
+        questions: list[str],
+        options_list: list[list[str]],
+        persona: PersonaSpec | None,
+    ) -> list[Response]:
+        """API path: gather individual respond calls concurrently."""
+        tasks = [
+            self._respond_api(q, opts, persona)
+            for q, opts in zip(questions, options_list)
+        ]
+        return list(await asyncio.gather(*tasks))
+
+    async def _batch_respond_cli(
+        self,
+        questions: list[str],
+        options_list: list[list[str]],
+        persona: PersonaSpec | None,
+    ) -> list[Response]:
+        """CLI path: multi-question instrument in one subprocess call."""
+        instrument_yaml = _build_multi_question_instrument_yaml(questions, options_list)
+        persona_yaml = _build_persona_yaml(persona)
+
+        with (
+            tempfile.NamedTemporaryFile(
+                mode="w", suffix=".yaml", prefix="sb_inst_", delete=False
+            ) as inst_f,
+            tempfile.NamedTemporaryFile(
+                mode="w", suffix=".yaml", prefix="sb_pers_", delete=False
+            ) as pers_f,
+        ):
+            inst_f.write(instrument_yaml)
+            inst_path = inst_f.name
+            pers_f.write(persona_yaml)
+            pers_path = pers_f.name
+
+        try:
+            return await self._run_multi_cli(inst_path, pers_path, options_list)
+        finally:
+            Path(inst_path).unlink(missing_ok=True)
+            Path(pers_path).unlink(missing_ok=True)
+
+    # ==================================================================
+    # batch_get_distribution() — multi-question distributions
+    # ==================================================================
+
+    async def batch_get_distribution(
+        self,
+        questions: list[str],
+        options_list: list[list[str]],
+        *,
+        persona: PersonaSpec | None = None,
+        n_samples: int | None = None,
+    ) -> list[Distribution]:
+        """Get distributions for multiple questions in a single invocation.
+
+        CLI path: packs questions into one multi-question instrument with
+        N personas, runs synthpanel once, and extracts per-question
+        distributions from the results.
+
+        API path: gathers individual get_distribution calls concurrently.
+        """
+        if self._use_api:
+            return await self._batch_get_distribution_api(
+                questions, options_list, persona, n_samples
+            )
+        return await self._batch_get_distribution_cli(
+            questions, options_list, persona, n_samples
+        )
+
+    async def _batch_get_distribution_api(
+        self,
+        questions: list[str],
+        options_list: list[list[str]],
+        persona: PersonaSpec | None,
+        n_samples: int | None,
+    ) -> list[Distribution]:
+        """API path: gather individual distribution calls concurrently."""
+        tasks = [
+            self._get_distribution_api(q, opts, persona, n_samples)
+            for q, opts in zip(questions, options_list)
+        ]
+        return list(await asyncio.gather(*tasks))
+
+    async def _batch_get_distribution_cli(
+        self,
+        questions: list[str],
+        options_list: list[list[str]],
+        persona: PersonaSpec | None,
+        n_samples: int | None,
+    ) -> list[Distribution]:
+        """CLI path: multi-question instrument + N personas in one call."""
+        effective_samples = n_samples if n_samples is not None else 30
+        instrument_yaml = _build_multi_question_instrument_yaml(questions, options_list)
+        persona_yaml = _build_persona_yaml(persona, count=effective_samples)
+
+        with (
+            tempfile.NamedTemporaryFile(
+                mode="w", suffix=".yaml", prefix="sb_inst_", delete=False
+            ) as inst_f,
+            tempfile.NamedTemporaryFile(
+                mode="w", suffix=".yaml", prefix="sb_pers_", delete=False
+            ) as pers_f,
+        ):
+            inst_f.write(instrument_yaml)
+            inst_path = inst_f.name
+            pers_f.write(persona_yaml)
+            pers_path = pers_f.name
+
+        try:
+            return await self._run_multi_batch(
+                inst_path, pers_path, options_list, effective_samples
+            )
+        finally:
+            Path(inst_path).unlink(missing_ok=True)
+            Path(pers_path).unlink(missing_ok=True)
+
+    # ==================================================================
     # CLI subprocess helpers
     # ==================================================================
 
@@ -565,6 +730,170 @@ class SynthPanelProvider(Provider):
             method="sampling",
             n_samples=total,
         )
+
+    async def _run_multi_cli(
+        self, inst_path: str, pers_path: str, options_list: list[list[str]]
+    ) -> list[Response]:
+        """Execute synthpanel with a multi-question instrument (single persona)."""
+        cmd = self._build_cmd(inst_path, pers_path)
+
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await proc.communicate()
+        raw_stdout = stdout.decode().strip()
+        raw_stderr = stderr.decode().strip()
+
+        n_questions = len(options_list)
+
+        if proc.returncode != 0:
+            return [
+                Response(
+                    selected_option=opts[0],
+                    raw_text="",
+                    metadata={
+                        "error": f"synthpanel exited {proc.returncode}: {raw_stderr}",
+                        "model": self._model,
+                    },
+                )
+                for opts in options_list
+            ]
+
+        try:
+            data = json.loads(raw_stdout)
+        except json.JSONDecodeError:
+            return [
+                Response(
+                    selected_option=opts[0],
+                    raw_text=raw_stdout,
+                    metadata={
+                        "error": "failed to parse synthpanel JSON output",
+                        "model": self._model,
+                    },
+                )
+                for opts in options_list
+            ]
+
+        # Extract per-question responses from the single persona result
+        responses: list[Response] = []
+        try:
+            persona_responses = data["rounds"][0]["results"][0].get("responses", [])
+        except (KeyError, IndexError):
+            persona_responses = []
+
+        for q_idx in range(n_questions):
+            opts = options_list[q_idx]
+            if q_idx < len(persona_responses):
+                raw_text = persona_responses[q_idx].get("response", "")
+                selected = _parse_letter(raw_text, opts)
+                if selected is None:
+                    selected = opts[0]
+                responses.append(
+                    Response(
+                        selected_option=selected,
+                        raw_text=raw_text,
+                        metadata={"model": data.get("model", self._model)},
+                    )
+                )
+            else:
+                responses.append(
+                    Response(
+                        selected_option=opts[0],
+                        raw_text="",
+                        metadata={
+                            "error": "no response for question",
+                            "model": self._model,
+                        },
+                    )
+                )
+
+        return responses
+
+    async def _run_multi_batch(
+        self,
+        inst_path: str,
+        pers_path: str,
+        options_list: list[list[str]],
+        n_samples: int,
+    ) -> list[Distribution]:
+        """Run multi-question instrument with N personas, return per-Q distributions."""
+        cmd = self._build_cmd(inst_path, pers_path)
+
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await proc.communicate()
+        raw_stdout = stdout.decode().strip()
+
+        n_questions = len(options_list)
+
+        if proc.returncode != 0:
+            return [
+                Distribution(
+                    probabilities=[1.0 / len(opts)] * len(opts),
+                    method="sampling",
+                    n_samples=0,
+                )
+                for opts in options_list
+            ]
+
+        try:
+            data = json.loads(raw_stdout)
+        except json.JSONDecodeError:
+            return [
+                Distribution(
+                    probabilities=[1.0 / len(opts)] * len(opts),
+                    method="sampling",
+                    n_samples=0,
+                )
+                for opts in options_list
+            ]
+
+        # Collect per-question responses across all personas
+        per_q_selected: list[list[str]] = [[] for _ in range(n_questions)]
+        per_q_refusals: list[int] = [0] * n_questions
+
+        try:
+            results = data["rounds"][0]["results"]
+            for persona_result in results:
+                persona_responses = persona_result.get("responses", [])
+                for q_idx in range(n_questions):
+                    if q_idx < len(persona_responses):
+                        raw_text = persona_responses[q_idx].get("response", "")
+                        selected = _parse_letter(raw_text, options_list[q_idx])
+                        if selected is None:
+                            per_q_refusals[q_idx] += 1
+                        else:
+                            per_q_selected[q_idx].append(selected)
+                    else:
+                        per_q_refusals[q_idx] += 1
+        except (KeyError, IndexError):
+            pass
+
+        # Build Distribution for each question
+        distributions: list[Distribution] = []
+        for q_idx in range(n_questions):
+            selected = per_q_selected[q_idx]
+            refusals = per_q_refusals[q_idx]
+            total = len(selected) + refusals
+            counts = Counter(selected)
+            opts = options_list[q_idx]
+            probs = [counts.get(opt, 0) / max(total, 1) for opt in opts]
+            refusal_prob = refusals / max(total, 1)
+            distributions.append(
+                Distribution(
+                    probabilities=probs,
+                    refusal_probability=refusal_prob,
+                    method="sampling",
+                    n_samples=total,
+                )
+            )
+
+        return distributions
 
     async def close(self) -> None:
         if self._executor is not None:
