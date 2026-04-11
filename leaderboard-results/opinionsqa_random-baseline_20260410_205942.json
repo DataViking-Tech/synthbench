@@ -1,0 +1,2466 @@
+{
+  "benchmark": "synthbench",
+  "version": "0.1.0",
+  "timestamp": "2026-04-11T01:59:42.442832+00:00",
+  "config": {
+    "dataset": "opinionsqa",
+    "provider": "random-baseline",
+    "samples_per_question": 30,
+    "n_requested": null,
+    "n_evaluated": 80,
+    "topic": "political"
+  },
+  "scores": {
+    "sps": 0.755359,
+    "p_dist": 0.790593,
+    "p_rank": 0.48462,
+    "p_refuse": 0.990864
+  },
+  "aggregate": {
+    "mean_jsd": 0.209407,
+    "median_jsd": 0.191558,
+    "mean_kendall_tau": -0.030761,
+    "composite_parity": 0.637606,
+    "n_questions": 80,
+    "elapsed_seconds": 0.0,
+    "per_metric_ci": {
+      "p_dist": [
+        0.768388,
+        0.811814
+      ],
+      "p_rank": [
+        0.434576,
+        0.537439
+      ],
+      "p_refuse": [
+        0.988899,
+        0.992184
+      ],
+      "sps": [
+        0.604511,
+        0.67006
+      ]
+    },
+    "question_set_hash": "30c30873ae6837aa7f607de4f8ee5e228d0da5a5ba3b9d22c9c7bbfe9affc228",
+    "n_parse_failures": 0
+  },
+  "demographic_breakdown": {},
+  "per_question": [
+    {
+      "key": "ABORTION_W32",
+      "text": "Do you think abortion should be",
+      "options": [
+        "legal in all or most cases",
+        "illegal in all or most cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0238,
+        "illegal in all or most cases": 0.4276,
+        "legal in all or most cases": 0.5486
+      },
+      "model_distribution": {
+        "legal in all or most cases": 0.4667,
+        "illegal in all or most cases": 0.0667,
+        "Refused": 0.4667
+      },
+      "jsd": 0.284953,
+      "kendall_tau": 0.0,
+      "parity": 0.607524,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.023844
+    },
+    {
+      "key": "BENEFITSb_W54",
+      "text": "Have you or anyone in your household received medicaid benefits government services and benefits in the past 12 months?",
+      "options": [
+        "Yes, have received in the past 12 months",
+        "No, have not received in the past 12 months",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, have not received in the past 12 months": 0.8089,
+        "Refused": 0.01,
+        "Yes, have received in the past 12 months": 0.1811
+      },
+      "model_distribution": {
+        "Yes, have received in the past 12 months": 0.3667,
+        "No, have not received in the past 12 months": 0.4333,
+        "Refused": 0.2
+      },
+      "jsd": 0.140665,
+      "kendall_tau": 1.0,
+      "parity": 0.929668,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.010036
+    },
+    {
+      "key": "BENEFITSc_W54",
+      "text": "Have you or anyone in your household received unemployment benefits government services and benefits in the past 12 mont",
+      "options": [
+        "Yes, have received in the past 12 months",
+        "No, have not received in the past 12 months",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, have not received in the past 12 months": 0.9507,
+        "Refused": 0.0087,
+        "Yes, have received in the past 12 months": 0.0406
+      },
+      "model_distribution": {
+        "Yes, have received in the past 12 months": 0.3333,
+        "No, have not received in the past 12 months": 0.3333,
+        "Refused": 0.3333
+      },
+      "jsd": 0.347665,
+      "kendall_tau": 0.0,
+      "parity": 0.576168,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.008727
+    },
+    {
+      "key": "CANDEXP_W92",
+      "text": "How important is it, if at all, that candidates running for high levels of political office have prior government experi",
+      "options": [
+        "Very important",
+        "Somewhat important",
+        "Not too important",
+        "Not at all important",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all important": 0.1158,
+        "Not too important": 0.2335,
+        "Refused": 0.0058,
+        "Somewhat important": 0.3916,
+        "Very important": 0.2533
+      },
+      "model_distribution": {
+        "Very important": 0.1,
+        "Somewhat important": 0.3333,
+        "Not too important": 0.2,
+        "Not at all important": 0.2,
+        "Refused": 0.1667
+      },
+      "jsd": 0.103523,
+      "kendall_tau": 0.316228,
+      "parity": 0.777295,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005815
+    },
+    {
+      "key": "CANQUALPOL_W92",
+      "text": "In general, would you say the quality of the candidates running for political office in the last several years has been",
+      "options": [
+        "Very good",
+        "Somewhat good",
+        "Somewhat bad",
+        "Very bad",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Refused": 0.0089,
+        "Somewhat bad": 0.4508,
+        "Somewhat good": 0.3051,
+        "Very bad": 0.2136,
+        "Very good": 0.0217
+      },
+      "model_distribution": {
+        "Very good": 0.2,
+        "Somewhat good": 0.1333,
+        "Somewhat bad": 0.1333,
+        "Very bad": 0.2333,
+        "Refused": 0.3
+      },
+      "jsd": 0.276018,
+      "kendall_tau": -0.737865,
+      "parity": 0.427525,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00887
+    },
+    {
+      "key": "COMMIMPD_W32",
+      "text": "How important is it to you, personally, to live in a community where most people share your political views",
+      "options": [
+        "Very important",
+        "Somewhat important",
+        "Not too important",
+        "Not at all important",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all important": 0.1469,
+        "Not too important": 0.3946,
+        "Refused": 0.0035,
+        "Somewhat important": 0.3764,
+        "Very important": 0.0786
+      },
+      "model_distribution": {
+        "Very important": 0.2,
+        "Somewhat important": 0.2,
+        "Not too important": 0.2667,
+        "Not at all important": 0.1,
+        "Refused": 0.2333
+      },
+      "jsd": 0.156967,
+      "kendall_tau": 0.105409,
+      "parity": 0.697869,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003521
+    },
+    {
+      "key": "CRIMEVICTIM_W26",
+      "text": "Have you ever been a victim of a violent crime, whether a gun was used or not?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.8155,
+        "Refused": 0.0041,
+        "Yes": 0.1804
+      },
+      "model_distribution": {
+        "Yes": 0.3333,
+        "No": 0.2333,
+        "Refused": 0.4333
+      },
+      "jsd": 0.34211,
+      "kendall_tau": -1.0,
+      "parity": 0.328945,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004079
+    },
+    {
+      "key": "DIFFPARTY_W92",
+      "text": "Thinking about the Democratic and Republican parties, would you say there is",
+      "options": [
+        "A great deal of difference in what they stand for",
+        "A fair amount of difference in what they stand for",
+        "Hardly any difference at all in what they stand for",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A fair amount of difference in what they stand for": 0.2796,
+        "A great deal of difference in what they stand for": 0.6499,
+        "Hardly any difference at all in what they stand for": 0.0667,
+        "Refused": 0.0037
+      },
+      "model_distribution": {
+        "A great deal of difference in what they stand for": 0.3667,
+        "A fair amount of difference in what they stand for": 0.3333,
+        "Hardly any difference at all in what they stand for": 0.1,
+        "Refused": 0.2
+      },
+      "jsd": 0.121365,
+      "kendall_tau": 0.666667,
+      "parity": 0.855984,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003745
+    },
+    {
+      "key": "ELECT_CONF3_PRVFR_W92",
+      "text": "Still thinking about elections in the country, how confident, if at all, are you that people who are not legally qualifi",
+      "options": [
+        "Very confident",
+        "Somewhat confident",
+        "Not too confident",
+        "Not at all confident",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all confident": 0.1951,
+        "Not too confident": 0.2388,
+        "Refused": 0.0125,
+        "Somewhat confident": 0.2791,
+        "Very confident": 0.2745
+      },
+      "model_distribution": {
+        "Very confident": 0.3,
+        "Somewhat confident": 0.2,
+        "Not too confident": 0.1,
+        "Not at all confident": 0.3,
+        "Refused": 0.1
+      },
+      "jsd": 0.06226,
+      "kendall_tau": 0.223607,
+      "parity": 0.774772,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.012516
+    },
+    {
+      "key": "ELECT_CONF3_PRVSUP_W92",
+      "text": "Still thinking about elections in the country, how confident, if at all, are you that people who are legally qualified a",
+      "options": [
+        "Very confident",
+        "Somewhat confident",
+        "Not too confident",
+        "Not at all confident",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all confident": 0.047,
+        "Not too confident": 0.1668,
+        "Refused": 0.0117,
+        "Somewhat confident": 0.349,
+        "Very confident": 0.4254
+      },
+      "model_distribution": {
+        "Very confident": 0.2,
+        "Somewhat confident": 0.2333,
+        "Not too confident": 0.1333,
+        "Not at all confident": 0.3,
+        "Refused": 0.1333
+      },
+      "jsd": 0.157031,
+      "kendall_tau": 0.105409,
+      "parity": 0.697837,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.011728
+    },
+    {
+      "key": "ELECT_IMPT3_PRVFR_W92",
+      "text": "Thinking about elections in the country, how important, if at all, is people who are not legally qualified to vote are p",
+      "options": [
+        "Very important",
+        "Somewhat important",
+        "Not too important",
+        "Not at all important",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all important": 0.0496,
+        "Not too important": 0.1029,
+        "Refused": 0.0093,
+        "Somewhat important": 0.1977,
+        "Very important": 0.6406
+      },
+      "model_distribution": {
+        "Very important": 0.2333,
+        "Somewhat important": 0.2,
+        "Not too important": 0.1,
+        "Not at all important": 0.1,
+        "Refused": 0.3667
+      },
+      "jsd": 0.234063,
+      "kendall_tau": 0.105409,
+      "parity": 0.659321,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.009264
+    },
+    {
+      "key": "ELECT_IMPT3_PRVSUP_W92",
+      "text": "Thinking about elections in the country, how important, if at all, is people who are legally qualified and want to vote ",
+      "options": [
+        "Very important",
+        "Somewhat important",
+        "Not too important",
+        "Not at all important",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all important": 0.0069,
+        "Not too important": 0.017,
+        "Refused": 0.0068,
+        "Somewhat important": 0.0755,
+        "Very important": 0.8938
+      },
+      "model_distribution": {
+        "Very important": 0.2,
+        "Somewhat important": 0.1667,
+        "Not too important": 0.2667,
+        "Not at all important": 0.1333,
+        "Refused": 0.2333
+      },
+      "jsd": 0.427637,
+      "kendall_tau": 0.0,
+      "parity": 0.536182,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.0068
+    },
+    {
+      "key": "EVERSHOT_W26",
+      "text": "Regardless of whether or not you own a gun, have you ever fired a gun?",
+      "options": [
+        "Yes, I have fired a gun",
+        "No, I have never fired a gun",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, I have never fired a gun": 0.2303,
+        "Refused": 0.0029,
+        "Yes, I have fired a gun": 0.7668
+      },
+      "model_distribution": {
+        "Yes, I have fired a gun": 0.3,
+        "No, I have never fired a gun": 0.3333,
+        "Refused": 0.3667
+      },
+      "jsd": 0.25567,
+      "kendall_tau": -1.0,
+      "parity": 0.372165,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002879
+    },
+    {
+      "key": "FEDSHAREA_W32",
+      "text": "Thinking about how the federal government spends money, do you think urban areas get",
+      "options": [
+        "More than their fair share",
+        "Less than their fair share",
+        "About the right amount",
+        "Refused"
+      ],
+      "human_distribution": {
+        "About the right amount": 0.2791,
+        "Less than their fair share": 0.3444,
+        "More than their fair share": 0.3511,
+        "Refused": 0.0254
+      },
+      "model_distribution": {
+        "More than their fair share": 0.3,
+        "Less than their fair share": 0.3333,
+        "About the right amount": 0.2333,
+        "Refused": 0.1333
+      },
+      "jsd": 0.031972,
+      "kendall_tau": 0.666667,
+      "parity": 0.900681,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.025444
+    },
+    {
+      "key": "FEDSHAREB_W32",
+      "text": "Thinking about how the federal government spends money, do you think suburban areas get",
+      "options": [
+        "More than their fair share",
+        "Less than their fair share",
+        "About the right amount",
+        "Refused"
+      ],
+      "human_distribution": {
+        "About the right amount": 0.4343,
+        "Less than their fair share": 0.2698,
+        "More than their fair share": 0.2674,
+        "Refused": 0.0285
+      },
+      "model_distribution": {
+        "More than their fair share": 0.1667,
+        "Less than their fair share": 0.3,
+        "About the right amount": 0.3,
+        "Refused": 0.2333
+      },
+      "jsd": 0.08394,
+      "kendall_tau": 0.547723,
+      "parity": 0.844961,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.028485
+    },
+    {
+      "key": "FEDSHAREC_W32",
+      "text": "Thinking about how the federal government spends money, do you think rural areas get",
+      "options": [
+        "More than their fair share",
+        "Less than their fair share",
+        "About the right amount",
+        "Refused"
+      ],
+      "human_distribution": {
+        "About the right amount": 0.2434,
+        "Less than their fair share": 0.6343,
+        "More than their fair share": 0.0947,
+        "Refused": 0.0275
+      },
+      "model_distribution": {
+        "More than their fair share": 0.3,
+        "Less than their fair share": 0.1,
+        "About the right amount": 0.3667,
+        "Refused": 0.2333
+      },
+      "jsd": 0.272873,
+      "kendall_tau": 0.0,
+      "parity": 0.613564,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.027524
+    },
+    {
+      "key": "FTRWORRYd_W41",
+      "text": "Still thinking about the future of our country, how worried are you, if at all, about the ability of political leaders t",
+      "options": [
+        "Very worried",
+        "Fairly worried",
+        "Not too worried",
+        "Not at all worried",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Fairly worried": 0.3951,
+        "Not at all worried": 0.0163,
+        "Not too worried": 0.1004,
+        "Refused": 0.0032,
+        "Very worried": 0.4851
+      },
+      "model_distribution": {
+        "Very worried": 0.0667,
+        "Fairly worried": 0.2,
+        "Not too worried": 0.2,
+        "Not at all worried": 0.2667,
+        "Refused": 0.2667
+      },
+      "jsd": 0.383891,
+      "kendall_tau": -0.894427,
+      "parity": 0.334447,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003173
+    },
+    {
+      "key": "FUTR_ABR_W41",
+      "text": "Thinking again about the year 2050, or 30 years from now, do you think abortion will be",
+      "options": [
+        "Legal with no restrictions",
+        "Legal but with some restrictions",
+        "Illegal except in certain cases",
+        "Illegal with no exceptions",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Illegal except in certain cases": 0.1519,
+        "Illegal with no exceptions": 0.0532,
+        "Legal but with some restrictions": 0.5561,
+        "Legal with no restrictions": 0.2249,
+        "Refused": 0.0139
+      },
+      "model_distribution": {
+        "Legal with no restrictions": 0.2,
+        "Legal but with some restrictions": 0.3333,
+        "Illegal except in certain cases": 0.0667,
+        "Illegal with no exceptions": 0.2667,
+        "Refused": 0.1333
+      },
+      "jsd": 0.129762,
+      "kendall_tau": 0.4,
+      "parity": 0.785119,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.013883
+    },
+    {
+      "key": "GAP21Q13_c_W82",
+      "text": "Thinking about the US, how much would you say the political system needs to be changed, if at all?",
+      "options": [
+        "It needs to be completely reformed",
+        "It needs major changes",
+        "It needs minor changes",
+        "It doesn't need to be changed",
+        "Refused"
+      ],
+      "human_distribution": {
+        "It doesn't need to be changed": 0.0193,
+        "It needs major changes": 0.4505,
+        "It needs minor changes": 0.128,
+        "It needs to be completely reformed": 0.3995,
+        "Refused": 0.0027
+      },
+      "model_distribution": {
+        "It needs to be completely reformed": 0.1,
+        "It needs major changes": 0.1667,
+        "It needs minor changes": 0.1667,
+        "It doesn't need to be changed": 0.3,
+        "Refused": 0.2667
+      },
+      "jsd": 0.35087,
+      "kendall_tau": -0.527046,
+      "parity": 0.442804,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002707
+    },
+    {
+      "key": "GAP21Q19_a_W82",
+      "text": "How much confidence do you have in us President Joe Biden to do the right thing regarding world affairs?",
+      "options": [
+        "A lot of confidence",
+        "Some confidence",
+        "Not too much confidence",
+        "No confidence at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lot of confidence": 0.3299,
+        "No confidence at all": 0.2231,
+        "Not too much confidence": 0.1469,
+        "Refused": 0.0073,
+        "Some confidence": 0.2927
+      },
+      "model_distribution": {
+        "A lot of confidence": 0.1667,
+        "Some confidence": 0.2333,
+        "Not too much confidence": 0.1667,
+        "No confidence at all": 0.3,
+        "Refused": 0.1333
+      },
+      "jsd": 0.076204,
+      "kendall_tau": 0.316228,
+      "parity": 0.790955,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007347
+    },
+    {
+      "key": "GAP21Q21_a_W82",
+      "text": "In the US, how strong, if at all, are conflicts between people who support different political parties?",
+      "options": [
+        "Very strong conflicts",
+        "Strong conflicts",
+        "Not very strong conflicts",
+        "There are not conflicts",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not very strong conflicts": 0.0712,
+        "Strong conflicts": 0.3654,
+        "There are not conflicts": 0.0073,
+        "Very strong conflicts": 0.5518,
+        "Refused": 0.0043
+      },
+      "model_distribution": {
+        "Very strong conflicts": 0.1333,
+        "Strong conflicts": 0.1667,
+        "Not very strong conflicts": 0.1,
+        "There are not conflicts": 0.3667,
+        "Refused": 0.2333
+      },
+      "jsd": 0.392544,
+      "kendall_tau": -0.4,
+      "parity": 0.453728,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004254
+    },
+    {
+      "key": "GAP21Q32_W82",
+      "text": "Now that Joe Biden is president, do you think other countries view the U.S",
+      "options": [
+        "A lot more positively",
+        "A little more positively",
+        "A little more negatively",
+        "A lot more negatively",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A little more negatively": 0.1125,
+        "A little more positively": 0.3608,
+        "A lot more negatively": 0.1531,
+        "A lot more positively": 0.3554,
+        "Refused": 0.0182
+      },
+      "model_distribution": {
+        "A lot more positively": 0.2667,
+        "A little more positively": 0.2667,
+        "A little more negatively": 0.2333,
+        "A lot more negatively": 0.1667,
+        "Refused": 0.0667
+      },
+      "jsd": 0.036068,
+      "kendall_tau": 0.737865,
+      "parity": 0.916432,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.018175
+    },
+    {
+      "key": "GAP21Q34_a_W82",
+      "text": "Thinking about Joe Biden's ability to handle a number of things, how confident are you that Joe Biden can do make good d",
+      "options": [
+        "Very confident",
+        "Somewhat confident",
+        "Not too confident",
+        "Not at all confident",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all confident": 0.2316,
+        "Not too confident": 0.1535,
+        "Refused": 0.0058,
+        "Somewhat confident": 0.3333,
+        "Very confident": 0.2757
+      },
+      "model_distribution": {
+        "Very confident": 0.2667,
+        "Somewhat confident": 0.1667,
+        "Not too confident": 0.1667,
+        "Not at all confident": 0.1333,
+        "Refused": 0.2667
+      },
+      "jsd": 0.14633,
+      "kendall_tau": -0.223607,
+      "parity": 0.620933,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.0058
+    },
+    {
+      "key": "GAP21Q34_b_W82",
+      "text": "Thinking about Joe Biden's ability to handle a number of things, how confident are you that Joe Biden can do deal effect",
+      "options": [
+        "Very confident",
+        "Somewhat confident",
+        "Not too confident",
+        "Not at all confident",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all confident": 0.2146,
+        "Not too confident": 0.1582,
+        "Refused": 0.0089,
+        "Somewhat confident": 0.3488,
+        "Very confident": 0.2695
+      },
+      "model_distribution": {
+        "Very confident": 0.1333,
+        "Somewhat confident": 0.1,
+        "Not too confident": 0.2667,
+        "Not at all confident": 0.3,
+        "Refused": 0.2
+      },
+      "jsd": 0.16277,
+      "kendall_tau": -0.4,
+      "parity": 0.568615,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.008894
+    },
+    {
+      "key": "GAP21Q34_c_W82",
+      "text": "Thinking about Joe Biden's ability to handle a number of things, how confident are you that Joe Biden can do make good d",
+      "options": [
+        "Very confident",
+        "Somewhat confident",
+        "Not too confident",
+        "Not at all confident",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all confident": 0.2239,
+        "Not too confident": 0.1512,
+        "Refused": 0.007,
+        "Somewhat confident": 0.2993,
+        "Very confident": 0.3186
+      },
+      "model_distribution": {
+        "Very confident": 0.1,
+        "Somewhat confident": 0.2,
+        "Not too confident": 0.2333,
+        "Not at all confident": 0.2667,
+        "Refused": 0.2
+      },
+      "jsd": 0.139703,
+      "kendall_tau": -0.316228,
+      "parity": 0.601092,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006961
+    },
+    {
+      "key": "GAP21Q34_d_W82",
+      "text": "Thinking about Joe Biden's ability to handle a number of things, how confident are you that Joe Biden can do deal effect",
+      "options": [
+        "Very confident",
+        "Somewhat confident",
+        "Not too confident",
+        "Not at all confident",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all confident": 0.1995,
+        "Not too confident": 0.1667,
+        "Refused": 0.0097,
+        "Somewhat confident": 0.3511,
+        "Very confident": 0.273
+      },
+      "model_distribution": {
+        "Very confident": 0.1333,
+        "Somewhat confident": 0.1667,
+        "Not too confident": 0.3333,
+        "Not at all confident": 0.2,
+        "Refused": 0.1667
+      },
+      "jsd": 0.123469,
+      "kendall_tau": -0.316228,
+      "parity": 0.609209,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.009667
+    },
+    {
+      "key": "GAP21Q34_e_W82",
+      "text": "Thinking about Joe Biden's ability to handle a number of things, how confident are you that Joe Biden can do improve rel",
+      "options": [
+        "Very confident",
+        "Somewhat confident",
+        "Not too confident",
+        "Not at all confident",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all confident": 0.1725,
+        "Not too confident": 0.1315,
+        "Refused": 0.0058,
+        "Somewhat confident": 0.2742,
+        "Very confident": 0.4161
+      },
+      "model_distribution": {
+        "Very confident": 0.2,
+        "Somewhat confident": 0.2333,
+        "Not too confident": 0.2667,
+        "Not at all confident": 0.1,
+        "Refused": 0.2
+      },
+      "jsd": 0.13688,
+      "kendall_tau": -0.105409,
+      "parity": 0.655207,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.0058
+    },
+    {
+      "key": "GAP21Q34_f_W82",
+      "text": "Thinking about Joe Biden's ability to handle a number of things, how confident are you that Joe Biden can do deal effect",
+      "options": [
+        "Very confident",
+        "Somewhat confident",
+        "Not too confident",
+        "Not at all confident",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all confident": 0.2653,
+        "Not too confident": 0.1802,
+        "Refused": 0.0081,
+        "Somewhat confident": 0.3534,
+        "Very confident": 0.193
+      },
+      "model_distribution": {
+        "Very confident": 0.2333,
+        "Somewhat confident": 0.1667,
+        "Not too confident": 0.1,
+        "Not at all confident": 0.2667,
+        "Refused": 0.2333
+      },
+      "jsd": 0.129616,
+      "kendall_tau": 0.105409,
+      "parity": 0.711544,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.008121
+    },
+    {
+      "key": "GAP21Q5_a_W82",
+      "text": "Do you think the government of China respects the personal freedoms of its people?",
+      "options": [
+        "Yes, respects personal freedoms",
+        "No, does not respect personal freedoms",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, does not respect personal freedoms": 0.9308,
+        "Refused": 0.0124,
+        "Yes, respects personal freedoms": 0.0568
+      },
+      "model_distribution": {
+        "Yes, respects personal freedoms": 0.3667,
+        "No, does not respect personal freedoms": 0.3,
+        "Refused": 0.3333
+      },
+      "jsd": 0.347981,
+      "kendall_tau": -0.333333,
+      "parity": 0.492676,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.012374
+    },
+    {
+      "key": "GAP21Q5_b_W82",
+      "text": "Do you think the government of the US respects the personal freedoms of its people?",
+      "options": [
+        "Yes, respects personal freedoms",
+        "No, does not respect personal freedoms",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, does not respect personal freedoms": 0.309,
+        "Refused": 0.0104,
+        "Yes, respects personal freedoms": 0.6806
+      },
+      "model_distribution": {
+        "Yes, respects personal freedoms": 0.4,
+        "No, does not respect personal freedoms": 0.2333,
+        "Refused": 0.3667
+      },
+      "jsd": 0.184513,
+      "kendall_tau": 0.333333,
+      "parity": 0.741077,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.010441
+    },
+    {
+      "key": "GOVPRIORITYb_W54",
+      "text": "How much of a priority should the following be for the federal government to address: Reducing illegal immigration",
+      "options": [
+        "A top priority",
+        "Important, but lower priority",
+        "Not too important",
+        "Should not be done",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A top priority": 0.3657,
+        "Important, but lower priority": 0.3484,
+        "Not too important": 0.2441,
+        "Refused": 0.0033,
+        "Should not be done": 0.0385
+      },
+      "model_distribution": {
+        "A top priority": 0.2333,
+        "Important, but lower priority": 0.0667,
+        "Not too important": 0.2,
+        "Should not be done": 0.2333,
+        "Refused": 0.2667
+      },
+      "jsd": 0.265687,
+      "kendall_tau": -0.527046,
+      "parity": 0.485395,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003345
+    },
+    {
+      "key": "GOVPRIORITYc_W54",
+      "text": "How much of a priority should the following be for the federal government to address: Reducing economic inequality",
+      "options": [
+        "A top priority",
+        "Important, but lower priority",
+        "Not too important",
+        "Should not be done",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A top priority": 0.431,
+        "Important, but lower priority": 0.3612,
+        "Not too important": 0.1372,
+        "Refused": 0.0064,
+        "Should not be done": 0.0643
+      },
+      "model_distribution": {
+        "A top priority": 0.2,
+        "Important, but lower priority": 0.0667,
+        "Not too important": 0.3,
+        "Should not be done": 0.3333,
+        "Refused": 0.1
+      },
+      "jsd": 0.241665,
+      "kendall_tau": -0.2,
+      "parity": 0.579167,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.0064
+    },
+    {
+      "key": "GOVPRIORITYd_W54",
+      "text": "How much of a priority should the following be for the federal government to address: Addressing climate change",
+      "options": [
+        "A top priority",
+        "Important, but lower priority",
+        "Not too important",
+        "Should not be done",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A top priority": 0.513,
+        "Important, but lower priority": 0.2585,
+        "Not too important": 0.1489,
+        "Refused": 0.0032,
+        "Should not be done": 0.0764
+      },
+      "model_distribution": {
+        "A top priority": 0.2,
+        "Important, but lower priority": 0.2,
+        "Not too important": 0.1333,
+        "Should not be done": 0.2333,
+        "Refused": 0.2333
+      },
+      "jsd": 0.190413,
+      "kendall_tau": -0.447214,
+      "parity": 0.54299,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.0032
+    },
+    {
+      "key": "GOVPRIORITYe_W54",
+      "text": "How much of a priority should the following be for the federal government to address: Dealing with terrorism",
+      "options": [
+        "A top priority",
+        "Important, but lower priority",
+        "Not too important",
+        "Should not be done",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A top priority": 0.6385,
+        "Important, but lower priority": 0.2909,
+        "Not too important": 0.0625,
+        "Should not be done": 0.0048,
+        "Refused": 0.0032
+      },
+      "model_distribution": {
+        "A top priority": 0.1333,
+        "Important, but lower priority": 0.1667,
+        "Not too important": 0.2333,
+        "Should not be done": 0.2667,
+        "Refused": 0.2
+      },
+      "jsd": 0.387935,
+      "kendall_tau": -0.6,
+      "parity": 0.406033,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.0032
+    },
+    {
+      "key": "GOVPRIORITYf_W54",
+      "text": "How much of a priority should the following be for the federal government to address: Reducing gun violence",
+      "options": [
+        "A top priority",
+        "Important, but lower priority",
+        "Not too important",
+        "Should not be done",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A top priority": 0.6035,
+        "Important, but lower priority": 0.2765,
+        "Not too important": 0.086,
+        "Refused": 0.0041,
+        "Should not be done": 0.03
+      },
+      "model_distribution": {
+        "A top priority": 0.0667,
+        "Important, but lower priority": 0.2,
+        "Not too important": 0.1333,
+        "Should not be done": 0.3667,
+        "Refused": 0.2333
+      },
+      "jsd": 0.412208,
+      "kendall_tau": -0.6,
+      "parity": 0.393896,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004073
+    },
+    {
+      "key": "GOVPRIOa_W41",
+      "text": "If you were deciding what the federal government should do to improve the quality of life for future generations, what p",
+      "options": [
+        "A top priority",
+        "An important, but not a top priority",
+        "A lower priority",
+        "Should not be done",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lower priority": 0.0837,
+        "A top priority": 0.4823,
+        "An important, but not a top priority": 0.4201,
+        "Refused": 0.0056,
+        "Should not be done": 0.0083
+      },
+      "model_distribution": {
+        "A top priority": 0.2667,
+        "An important, but not a top priority": 0.1333,
+        "A lower priority": 0.2,
+        "Should not be done": 0.2333,
+        "Refused": 0.1667
+      },
+      "jsd": 0.259822,
+      "kendall_tau": 0.2,
+      "parity": 0.670089,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005553
+    },
+    {
+      "key": "GOVPRIOb_W41",
+      "text": "If you were deciding what the federal government should do to improve the quality of life for future generations, what p",
+      "options": [
+        "A top priority",
+        "An important, but not a top priority",
+        "A lower priority",
+        "Should not be done",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lower priority": 0.0817,
+        "A top priority": 0.5359,
+        "An important, but not a top priority": 0.3395,
+        "Should not be done": 0.0393,
+        "Refused": 0.0036
+      },
+      "model_distribution": {
+        "A top priority": 0.2,
+        "An important, but not a top priority": 0.2667,
+        "A lower priority": 0.1667,
+        "Should not be done": 0.2,
+        "Refused": 0.1667
+      },
+      "jsd": 0.186459,
+      "kendall_tau": 0.447214,
+      "parity": 0.768574,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00357
+    },
+    {
+      "key": "GOVPRIOd_W41",
+      "text": "If you were deciding what the federal government should do to improve the quality of life for future generations, what p",
+      "options": [
+        "A top priority",
+        "An important, but not a top priority",
+        "A lower priority",
+        "Should not be done",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lower priority": 0.1567,
+        "A top priority": 0.3284,
+        "An important, but not a top priority": 0.4883,
+        "Refused": 0.004,
+        "Should not be done": 0.0226
+      },
+      "model_distribution": {
+        "A top priority": 0.1,
+        "An important, but not a top priority": 0.1333,
+        "A lower priority": 0.3333,
+        "Should not be done": 0.3,
+        "Refused": 0.1333
+      },
+      "jsd": 0.305416,
+      "kendall_tau": -0.105409,
+      "parity": 0.57094,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003967
+    },
+    {
+      "key": "GOVPRIOe_W41",
+      "text": "If you were deciding what the federal government should do to improve the quality of life for future generations, what p",
+      "options": [
+        "A top priority",
+        "An important, but not a top priority",
+        "A lower priority",
+        "Should not be done",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lower priority": 0.1484,
+        "A top priority": 0.4312,
+        "An important, but not a top priority": 0.3622,
+        "Should not be done": 0.0524,
+        "Refused": 0.006
+      },
+      "model_distribution": {
+        "A top priority": 0.2333,
+        "An important, but not a top priority": 0.2,
+        "A lower priority": 0.2667,
+        "Should not be done": 0.1333,
+        "Refused": 0.1667
+      },
+      "jsd": 0.131829,
+      "kendall_tau": 0.4,
+      "parity": 0.784086,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00595
+    },
+    {
+      "key": "GOVRESP_a_W54",
+      "text": "Do you think an adequate standard of living is something the federal government has a responsibility to provide for all ",
+      "options": [
+        "Yes, a responsibility of the federal government to provide for all Americans",
+        "No, not the responsibility of the federal government to provide",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not the responsibility of the federal government to provide": 0.4515,
+        "Refused": 0.0074,
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.5411
+      },
+      "model_distribution": {
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.3333,
+        "No, not the responsibility of the federal government to provide": 0.3667,
+        "Refused": 0.3
+      },
+      "jsd": 0.149647,
+      "kendall_tau": 0.333333,
+      "parity": 0.75851,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007418
+    },
+    {
+      "key": "GOVRESP_b_W54",
+      "text": "Do you think adequate housing is something the federal government has a responsibility to provide for all Americans?",
+      "options": [
+        "Yes, a responsibility of the federal government to provide for all Americans",
+        "No, not the responsibility of the federal government to provide",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not the responsibility of the federal government to provide": 0.5139,
+        "Refused": 0.008,
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.4781
+      },
+      "model_distribution": {
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.2333,
+        "No, not the responsibility of the federal government to provide": 0.3333,
+        "Refused": 0.4333
+      },
+      "jsd": 0.236796,
+      "kendall_tau": -0.333333,
+      "parity": 0.548269,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.008
+    },
+    {
+      "key": "GOVRESP_c_W54",
+      "text": "Do you think high quality K-12 education is something the federal government has a responsibility to provide for all Ame",
+      "options": [
+        "Yes, a responsibility of the federal government to provide for all Americans",
+        "No, not the responsibility of the federal government to provide",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not the responsibility of the federal government to provide": 0.1959,
+        "Refused": 0.0047,
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.7994
+      },
+      "model_distribution": {
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.3,
+        "No, not the responsibility of the federal government to provide": 0.3333,
+        "Refused": 0.3667
+      },
+      "jsd": 0.265535,
+      "kendall_tau": -1.0,
+      "parity": 0.367232,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004655
+    },
+    {
+      "key": "GOVRESP_d_W54",
+      "text": "Do you think a college education is something the federal government has a responsibility to provide for all Americans?",
+      "options": [
+        "Yes, a responsibility of the federal government to provide for all Americans",
+        "No, not the responsibility of the federal government to provide",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not the responsibility of the federal government to provide": 0.671,
+        "Refused": 0.0067,
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.3223
+      },
+      "model_distribution": {
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.4,
+        "No, not the responsibility of the federal government to provide": 0.3333,
+        "Refused": 0.2667
+      },
+      "jsd": 0.158775,
+      "kendall_tau": 0.333333,
+      "parity": 0.753946,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006691
+    },
+    {
+      "key": "GOVRESP_e_W54",
+      "text": "Do you think adequate income in retirement is something the federal government has a responsibility to provide for all A",
+      "options": [
+        "Yes, a responsibility of the federal government to provide for all Americans",
+        "No, not the responsibility of the federal government to provide",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, not the responsibility of the federal government to provide": 0.4377,
+        "Refused": 0.007,
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.5553
+      },
+      "model_distribution": {
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.6,
+        "No, not the responsibility of the federal government to provide": 0.2,
+        "Refused": 0.2
+      },
+      "jsd": 0.114828,
+      "kendall_tau": 0.816497,
+      "parity": 0.89671,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006982
+    },
+    {
+      "key": "GROWUPGUN1_W26",
+      "text": "Thinking about when you were growing up, as far as you know, were there ever any guns in your household or not?",
+      "options": [
+        "Yes, there were guns in my household",
+        "No, there were no guns in my household",
+        "I am not sure if there were guns in my household",
+        "Refused"
+      ],
+      "human_distribution": {
+        "I am not sure if there were guns in my household": 0.0648,
+        "No, there were no guns in my household": 0.4155,
+        "Refused": 0.0041,
+        "Yes, there were guns in my household": 0.5156
+      },
+      "model_distribution": {
+        "Yes, there were guns in my household": 0.3333,
+        "No, there were no guns in my household": 0.1333,
+        "I am not sure if there were guns in my household": 0.1667,
+        "Refused": 0.3667
+      },
+      "jsd": 0.255074,
+      "kendall_tau": -0.333333,
+      "parity": 0.53913,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004079
+    },
+    {
+      "key": "GROWUPGUN7_W26",
+      "text": "How often, if ever, did you use air guns, such as paintball, BB or pellet guns when you were growing up?",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.2207,
+        "Never": 0.3978,
+        "Often": 0.1583,
+        "Refused": 0.0034,
+        "Sometimes": 0.2198
+      },
+      "model_distribution": {
+        "Often": 0.2,
+        "Sometimes": 0.1,
+        "Hardly ever": 0.2,
+        "Never": 0.3333,
+        "Refused": 0.1667
+      },
+      "jsd": 0.093857,
+      "kendall_tau": 0.527046,
+      "parity": 0.834833,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003359
+    },
+    {
+      "key": "GROWUPVIOL_W26",
+      "text": "How much of a problem was gun violence in the community where you spent the majority of time when you were growing up?",
+      "options": [
+        "A very big problem",
+        "A moderately big problem",
+        "A small problem",
+        "Not a problem at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A moderately big problem": 0.066,
+        "A small problem": 0.2445,
+        "A very big problem": 0.0269,
+        "Not a problem at all": 0.6593,
+        "Refused": 0.0034
+      },
+      "model_distribution": {
+        "A very big problem": 0.2333,
+        "A moderately big problem": 0.1333,
+        "A small problem": 0.2333,
+        "Not a problem at all": 0.1333,
+        "Refused": 0.2667
+      },
+      "jsd": 0.335475,
+      "kendall_tau": -0.67082,
+      "parity": 0.414557,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003359
+    },
+    {
+      "key": "GUN1_W26",
+      "text": "Does anyone else in your household own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+      "options": [
+        "Yes, someone else in my household owns a gun",
+        "No, no one else in my household owns a gun",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, no one else in my household owns a gun": 0.709,
+        "Refused": 0.0149,
+        "Yes, someone else in my household owns a gun": 0.2762
+      },
+      "model_distribution": {
+        "Yes, someone else in my household owns a gun": 0.2667,
+        "No, no one else in my household owns a gun": 0.3,
+        "Refused": 0.4333
+      },
+      "jsd": 0.238616,
+      "kendall_tau": -0.333333,
+      "parity": 0.547359,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.014875
+    },
+    {
+      "key": "GUNACTIVITYA_W26",
+      "text": "How often, if ever, do you visit websites about guns, hunting or other shooting sports",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.1696,
+        "Never": 0.6939,
+        "Often": 0.0211,
+        "Refused": 0.0041,
+        "Sometimes": 0.1113
+      },
+      "model_distribution": {
+        "Often": 0.2333,
+        "Sometimes": 0.1667,
+        "Hardly ever": 0.1667,
+        "Never": 0.2667,
+        "Refused": 0.1667
+      },
+      "jsd": 0.221206,
+      "kendall_tau": 0.358569,
+      "parity": 0.729039,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004079
+    },
+    {
+      "key": "GUNACTIVITYB_W26",
+      "text": "How often, if ever, do you watch TV programs about guns or watch gun-oriented videos",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.2598,
+        "Never": 0.5067,
+        "Often": 0.0437,
+        "Refused": 0.0043,
+        "Sometimes": 0.1855
+      },
+      "model_distribution": {
+        "Often": 0.2333,
+        "Sometimes": 0.2,
+        "Hardly ever": 0.2667,
+        "Never": 0.1667,
+        "Refused": 0.1333
+      },
+      "jsd": 0.17152,
+      "kendall_tau": 0.2,
+      "parity": 0.71424,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004319
+    },
+    {
+      "key": "GUNACTIVITYC_W26",
+      "text": "How often, if ever, do you listen to gun-oriented podcasts or radio shows",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.1178,
+        "Never": 0.8198,
+        "Often": 0.0072,
+        "Refused": 0.006,
+        "Sometimes": 0.0492
+      },
+      "model_distribution": {
+        "Often": 0.2333,
+        "Sometimes": 0.1,
+        "Hardly ever": 0.1667,
+        "Never": 0.3,
+        "Refused": 0.2
+      },
+      "jsd": 0.280241,
+      "kendall_tau": 0.2,
+      "parity": 0.65988,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005998
+    },
+    {
+      "key": "GUNACTIVITYE_W26",
+      "text": "How often, if ever, do you attend gun shows",
+      "options": [
+        "Often",
+        "Sometimes",
+        "Hardly ever",
+        "Never",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Hardly ever": 0.144,
+        "Never": 0.7651,
+        "Often": 0.0091,
+        "Refused": 0.0053,
+        "Sometimes": 0.0765
+      },
+      "model_distribution": {
+        "Often": 0.1667,
+        "Sometimes": 0.3,
+        "Hardly ever": 0.2,
+        "Never": 0.1333,
+        "Refused": 0.2
+      },
+      "jsd": 0.378482,
+      "kendall_tau": -0.316228,
+      "parity": 0.481702,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005278
+    },
+    {
+      "key": "GUNCOMMUNITY_W26",
+      "text": "Do you feel that people in your local community tend to look at most gun owners in a positive way or a negative way?",
+      "options": [
+        "Positive way",
+        "Negative way",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Negative way": 0.3539,
+        "Positive way": 0.6257,
+        "Refused": 0.0204
+      },
+      "model_distribution": {
+        "Positive way": 0.2,
+        "Negative way": 0.3667,
+        "Refused": 0.4333
+      },
+      "jsd": 0.250041,
+      "kendall_tau": -1.0,
+      "parity": 0.374979,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.020393
+    },
+    {
+      "key": "GUNCONTRIBA_W26",
+      "text": "How much, if at all, do you think the ease with which people can legally obtain guns contributes to gun violence in the ",
+      "options": [
+        "A great deal",
+        "A fair amount",
+        "Not too much",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A fair amount": 0.28,
+        "A great deal": 0.3143,
+        "Not at all": 0.1387,
+        "Not too much": 0.2625,
+        "Refused": 0.0046
+      },
+      "model_distribution": {
+        "A great deal": 0.2667,
+        "A fair amount": 0.0667,
+        "Not too much": 0.1667,
+        "Not at all": 0.2333,
+        "Refused": 0.2667
+      },
+      "jsd": 0.187799,
+      "kendall_tau": -0.316228,
+      "parity": 0.577043,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004559
+    },
+    {
+      "key": "GUNCONTRIBB_W26",
+      "text": "How much, if at all, do you think the ease with which people can illegally obtain guns contributes to gun violence in th",
+      "options": [
+        "A great deal",
+        "A fair amount",
+        "Not too much",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A fair amount": 0.3016,
+        "A great deal": 0.5809,
+        "Not at all": 0.0333,
+        "Not too much": 0.0811,
+        "Refused": 0.0031
+      },
+      "model_distribution": {
+        "A great deal": 0.1667,
+        "A fair amount": 0.1333,
+        "Not too much": 0.3,
+        "Not at all": 0.1667,
+        "Refused": 0.2333
+      },
+      "jsd": 0.301221,
+      "kendall_tau": -0.316228,
+      "parity": 0.520333,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003119
+    },
+    {
+      "key": "GUNCOURSES_W26",
+      "text": "Have you ever taken any gun safety courses such as weapons training, hunter safety or firearm safety?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.6144,
+        "Refused": 0.0053,
+        "Yes": 0.3803
+      },
+      "model_distribution": {
+        "Yes": 0.2,
+        "No": 0.2333,
+        "Refused": 0.5667
+      },
+      "jsd": 0.348944,
+      "kendall_tau": -0.333333,
+      "parity": 0.492195,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.005278
+    },
+    {
+      "key": "GUNSOCIETY_W26",
+      "text": "Do you feel that society in general tends to look at most gun owners in a positive way or a negative way?",
+      "options": [
+        "Positive way",
+        "Negative way",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Negative way": 0.5633,
+        "Positive way": 0.4194,
+        "Refused": 0.0173
+      },
+      "model_distribution": {
+        "Positive way": 0.4667,
+        "Negative way": 0.2667,
+        "Refused": 0.2667
+      },
+      "jsd": 0.135028,
+      "kendall_tau": 0.0,
+      "parity": 0.682486,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.017274
+    },
+    {
+      "key": "GUNTHREAT_W26",
+      "text": "Has anyone ever used a gun to threaten or intimidate you or someone in your family?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No": 0.7786,
+        "Refused": 0.0036,
+        "Yes": 0.2179
+      },
+      "model_distribution": {
+        "Yes": 0.2,
+        "No": 0.4333,
+        "Refused": 0.3667
+      },
+      "jsd": 0.20676,
+      "kendall_tau": 0.333333,
+      "parity": 0.729953,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003599
+    },
+    {
+      "key": "GUN_W26",
+      "text": "Do you personally own any guns (not including air guns, such as paintball, BB or pellet guns)?",
+      "options": [
+        "Yes, I own a gun",
+        "No, I don't own any guns",
+        "Refused"
+      ],
+      "human_distribution": {
+        "No, I don't own any guns": 0.6677,
+        "Refused": 0.0134,
+        "Yes, I own a gun": 0.3189
+      },
+      "model_distribution": {
+        "Yes, I own a gun": 0.4333,
+        "No, I don't own any guns": 0.3667,
+        "Refused": 0.2
+      },
+      "jsd": 0.108906,
+      "kendall_tau": 0.333333,
+      "parity": 0.778881,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.013436
+    },
+    {
+      "key": "IL_IMM_PRI_W92",
+      "text": "What should be the priority for dealing with illegal immigration in the U.S.?",
+      "options": [
+        "Better border security and stronger enforcement of our immigration laws",
+        "Creating a way for immigrants already here illegally to become citizens if they meet certain requirements",
+        "Both should be given equal priority",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Better border security and stronger enforcement of our immigration laws": 0.3012,
+        "Both should be given equal priority": 0.431,
+        "Creating a way for immigrants already here illegally to become citizens if they meet certain requirements": 0.2646,
+        "Refused": 0.0033
+      },
+      "model_distribution": {
+        "Better border security and stronger enforcement of our immigration laws": 0.2667,
+        "Creating a way for immigrants already here illegally to become citizens if they meet certain requirements": 0.2667,
+        "Both should be given equal priority": 0.2667,
+        "Refused": 0.2
+      },
+      "jsd": 0.104446,
+      "kendall_tau": 0.707107,
+      "parity": 0.874554,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003252
+    },
+    {
+      "key": "IMPROVE1_W36",
+      "text": "How much, if anything, do you think having more women in top leadership positions in business and government would do to",
+      "options": [
+        "A lot",
+        "Some",
+        "Not much",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lot": 0.3883,
+        "Not much": 0.1471,
+        "Nothing at all": 0.0594,
+        "Refused": 0.0083,
+        "Some": 0.397
+      },
+      "model_distribution": {
+        "A lot": 0.2667,
+        "Some": 0.1667,
+        "Not much": 0.1,
+        "Nothing at all": 0.1667,
+        "Refused": 0.3
+      },
+      "jsd": 0.192155,
+      "kendall_tau": -0.316228,
+      "parity": 0.574865,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.008293
+    },
+    {
+      "key": "IMPROVE2_W36",
+      "text": "How much, if anything, do you think having more women in top leadership positions in business and government would do to",
+      "options": [
+        "A lot",
+        "Some",
+        "Not much",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lot": 0.1988,
+        "Not much": 0.2866,
+        "Nothing at all": 0.115,
+        "Refused": 0.0072,
+        "Some": 0.3924
+      },
+      "model_distribution": {
+        "A lot": 0.2333,
+        "Some": 0.1667,
+        "Not much": 0.2333,
+        "Nothing at all": 0.1667,
+        "Refused": 0.2
+      },
+      "jsd": 0.121276,
+      "kendall_tau": 0.0,
+      "parity": 0.689362,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007202
+    },
+    {
+      "key": "IMPROVE3_W36",
+      "text": "How much, if anything, do you think having more women in top leadership positions in business and government would do to",
+      "options": [
+        "A lot",
+        "Some",
+        "Not much",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lot": 0.3274,
+        "Not much": 0.1966,
+        "Nothing at all": 0.0821,
+        "Refused": 0.007,
+        "Some": 0.3869
+      },
+      "model_distribution": {
+        "A lot": 0.2,
+        "Some": 0.1333,
+        "Not much": 0.3333,
+        "Nothing at all": 0.2667,
+        "Refused": 0.0667
+      },
+      "jsd": 0.127892,
+      "kendall_tau": 0.0,
+      "parity": 0.686054,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006984
+    },
+    {
+      "key": "INEQ9_W54",
+      "text": "In order to address economic inequality in this country, do you think it would be better for the government to",
+      "options": [
+        "Give direct assistance to people who are poor in the form of cash payments or tax credits",
+        "Invest in education and job training programs for people who are poor",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Give direct assistance to people who are poor in the form of cash payments or tax credits": 0.1303,
+        "Invest in education and job training programs for people who are poor": 0.8484,
+        "Refused": 0.0212
+      },
+      "model_distribution": {
+        "Give direct assistance to people who are poor in the form of cash payments or tax credits": 0.2,
+        "Invest in education and job training programs for people who are poor": 0.5,
+        "Refused": 0.3
+      },
+      "jsd": 0.14239,
+      "kendall_tau": 0.333333,
+      "parity": 0.762139,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.021236
+    },
+    {
+      "key": "INFOCHALa_W45",
+      "text": "How much of a challenge do you think political divides are in addressing made-up news and information?",
+      "options": [
+        "A very big challenge",
+        "A moderately big challenge",
+        "A small challenge",
+        "Not a challenge at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A moderately big challenge": 0.2408,
+        "A small challenge": 0.0565,
+        "A very big challenge": 0.6731,
+        "Not a challenge at all": 0.0168,
+        "Refused": 0.0127
+      },
+      "model_distribution": {
+        "A very big challenge": 0.2333,
+        "A moderately big challenge": 0.1667,
+        "A small challenge": 0.2333,
+        "Not a challenge at all": 0.2,
+        "Refused": 0.1667
+      },
+      "jsd": 0.24922,
+      "kendall_tau": 0.447214,
+      "parity": 0.737193,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.012743
+    },
+    {
+      "key": "LOCALELECT_W29",
+      "text": "The next question is about local elections, such as for mayor or a school board. Do you",
+      "options": [
+        "Always vote in local elections",
+        "Sometimes vote in local elections",
+        "Rarely vote in local elections",
+        "Never vote in local elections",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Always vote in local elections": 0.483,
+        "Never vote in local elections": 0.1177,
+        "Rarely vote in local elections": 0.1075,
+        "Refused": 0.0037,
+        "Sometimes vote in local elections": 0.2881
+      },
+      "model_distribution": {
+        "Always vote in local elections": 0.2,
+        "Sometimes vote in local elections": 0.2333,
+        "Rarely vote in local elections": 0.2,
+        "Never vote in local elections": 0.2,
+        "Refused": 0.1667
+      },
+      "jsd": 0.135983,
+      "kendall_tau": 0.597614,
+      "parity": 0.831412,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.003698
+    },
+    {
+      "key": "MADEUPIMPa_W45",
+      "text": "Overall, how much of an impact do you think made-up news and information has on americans' confidence in government inst",
+      "options": [
+        "Big impact",
+        "Moderate impact",
+        "Small impact",
+        "No impact at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Big impact": 0.7081,
+        "Moderate impact": 0.2307,
+        "No impact at all": 0.0132,
+        "Refused": 0.0046,
+        "Small impact": 0.0435
+      },
+      "model_distribution": {
+        "Big impact": 0.2,
+        "Moderate impact": 0.2333,
+        "Small impact": 0.2333,
+        "No impact at all": 0.1,
+        "Refused": 0.2333
+      },
+      "jsd": 0.290104,
+      "kendall_tau": -0.119523,
+      "parity": 0.575067,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004574
+    },
+    {
+      "key": "NEIGHSAMEC_W32",
+      "text": "As far as you know, how many of your neighbors have the same political views as you",
+      "options": [
+        "All of them",
+        "Most of them",
+        "About half",
+        "Only some of them",
+        "None of them",
+        "Refused"
+      ],
+      "human_distribution": {
+        "About half": 0.3125,
+        "All of them": 0.0149,
+        "Most of them": 0.2404,
+        "None of them": 0.0754,
+        "Only some of them": 0.3143,
+        "Refused": 0.0426
+      },
+      "model_distribution": {
+        "All of them": 0.1333,
+        "Most of them": 0.1333,
+        "About half": 0.1,
+        "Only some of them": 0.2333,
+        "None of them": 0.2333,
+        "Refused": 0.1667
+      },
+      "jsd": 0.155211,
+      "kendall_tau": 0.071611,
+      "parity": 0.690297,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.042567
+    },
+    {
+      "key": "POLINTOL2_a_W92",
+      "text": "In general, how comfortable do you think Republicans in this country are to freely and openly express their political vi",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "Not too comfortable",
+        "Not at all comfortable",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all comfortable": 0.1257,
+        "Not too comfortable": 0.228,
+        "Refused": 0.0073,
+        "Somewhat comfortable": 0.2755,
+        "Very comfortable": 0.3636
+      },
+      "model_distribution": {
+        "Very comfortable": 0.1,
+        "Somewhat comfortable": 0.3,
+        "Not too comfortable": 0.2667,
+        "Not at all comfortable": 0.0,
+        "Refused": 0.3333
+      },
+      "jsd": 0.266596,
+      "kendall_tau": -0.2,
+      "parity": 0.566702,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007293
+    },
+    {
+      "key": "POLINTOL2_b_W92",
+      "text": "In general, how comfortable do you think Democrats in this country are to freely and openly express their political view",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "Not too comfortable",
+        "Not at all comfortable",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all comfortable": 0.0289,
+        "Not too comfortable": 0.0924,
+        "Refused": 0.0082,
+        "Somewhat comfortable": 0.3376,
+        "Very comfortable": 0.5329
+      },
+      "model_distribution": {
+        "Very comfortable": 0.2,
+        "Somewhat comfortable": 0.1667,
+        "Not too comfortable": 0.1667,
+        "Not at all comfortable": 0.3,
+        "Refused": 0.1667
+      },
+      "jsd": 0.243156,
+      "kendall_tau": 0.119523,
+      "parity": 0.658303,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00818
+    },
+    {
+      "key": "POORASSIST_W92",
+      "text": "Thinking about assistance the government provides to people in need, do you think the government",
+      "options": [
+        "Should provide more assistance",
+        "Should provide less assistance",
+        "Is providing about the right amount of assistance",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Is providing about the right amount of assistance": 0.2865,
+        "Refused": 0.0073,
+        "Should provide less assistance": 0.3553,
+        "Should provide more assistance": 0.3509
+      },
+      "model_distribution": {
+        "Should provide more assistance": 0.1333,
+        "Should provide less assistance": 0.2667,
+        "Is providing about the right amount of assistance": 0.3333,
+        "Refused": 0.2667
+      },
+      "jsd": 0.155123,
+      "kendall_tau": -0.182574,
+      "parity": 0.626795,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007293
+    },
+    {
+      "key": "PP5e_W49",
+      "text": "How confident are you, if at all, that companies will be held accountable by the government if they misuse or compromise",
+      "options": [
+        "Very confident",
+        "Somewhat confident",
+        "Not too confident",
+        "Not confident at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not confident at all": 0.3171,
+        "Not too confident": 0.444,
+        "Refused": 0.0049,
+        "Somewhat confident": 0.1995,
+        "Very confident": 0.0344
+      },
+      "model_distribution": {
+        "Very confident": 0.2667,
+        "Somewhat confident": 0.1,
+        "Not too confident": 0.2,
+        "Not confident at all": 0.2667,
+        "Refused": 0.1667
+      },
+      "jsd": 0.19096,
+      "kendall_tau": 0.105409,
+      "parity": 0.680872,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004918
+    },
+    {
+      "key": "RACESURV14_W43",
+      "text": "Would you say President Trump has",
+      "options": [
+        "Made progress toward improving race relations",
+        "Tried but failed to make progress toward improving race relations",
+        "Not addressed race relations",
+        "Made race relations worse",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Made progress toward improving race relations": 0.1287,
+        "Made race relations worse": 0.6268,
+        "Not addressed race relations": 0.1134,
+        "Refused": 0.0155,
+        "Tried but failed to make progress toward improving race relations": 0.1156
+      },
+      "model_distribution": {
+        "Made progress toward improving race relations": 0.2,
+        "Tried but failed to make progress toward improving race relations": 0.1333,
+        "Not addressed race relations": 0.2,
+        "Made race relations worse": 0.1333,
+        "Refused": 0.3333
+      },
+      "jsd": 0.268894,
+      "kendall_tau": -0.67082,
+      "parity": 0.447848,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.015526
+    },
+    {
+      "key": "RACESURV28f_W43",
+      "text": "Would you say that black people are treated less fairly than white people, white people are treated less fairly than bla",
+      "options": [
+        "Black people are treated less fairly than white people",
+        "White people are treated less fairly than black people",
+        "Both are treated about equally",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Black people are treated less fairly than white people": 0.4292,
+        "Both are treated about equally": 0.5294,
+        "Refused": 0.0143,
+        "White people are treated less fairly than black people": 0.0271
+      },
+      "model_distribution": {
+        "Black people are treated less fairly than white people": 0.1333,
+        "White people are treated less fairly than black people": 0.2333,
+        "Both are treated about equally": 0.3333,
+        "Refused": 0.3
+      },
+      "jsd": 0.257861,
+      "kendall_tau": 0.0,
+      "parity": 0.621069,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.01432
+    },
+    {
+      "key": "REPRSNTDEM_W92",
+      "text": "How well does the Democratic party represent the interests of people like you?",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all well": 0.315,
+        "Not too well": 0.2061,
+        "Refused": 0.0142,
+        "Somewhat well": 0.3631,
+        "Very well": 0.1017
+      },
+      "model_distribution": {
+        "Very well": 0.1333,
+        "Somewhat well": 0.2333,
+        "Not too well": 0.1333,
+        "Not at all well": 0.2667,
+        "Refused": 0.2333
+      },
+      "jsd": 0.103473,
+      "kendall_tau": 0.223607,
+      "parity": 0.754165,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.014191
+    },
+    {
+      "key": "REPRSNTREP_W92",
+      "text": "How well does the Republican party represent the interests of people like you?",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not at all well": 0.3076,
+        "Not too well": 0.2374,
+        "Refused": 0.0158,
+        "Somewhat well": 0.3424,
+        "Very well": 0.0969
+      },
+      "model_distribution": {
+        "Very well": 0.0667,
+        "Somewhat well": 0.1667,
+        "Not too well": 0.4,
+        "Not at all well": 0.1667,
+        "Refused": 0.2
+      },
+      "jsd": 0.121989,
+      "kendall_tau": -0.105409,
+      "parity": 0.662653,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.015768
+    },
+    {
+      "key": "SCI3A_W34",
+      "text": "In your opinion, do you think government investments in basic scientific research usually pay off in the long run, or ar",
+      "options": [
+        "Government investments usually pay off in the long run",
+        "Government investments aren't worth it",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Government investments aren't worth it": 0.1917,
+        "Government investments usually pay off in the long run": 0.7988,
+        "Refused": 0.0095
+      },
+      "model_distribution": {
+        "Government investments usually pay off in the long run": 0.3667,
+        "Government investments aren't worth it": 0.2333,
+        "Refused": 0.4
+      },
+      "jsd": 0.232926,
+      "kendall_tau": -0.333333,
+      "parity": 0.550204,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.009467
+    },
+    {
+      "key": "SOCIETY_GUNS_W92",
+      "text": "Do you think an increase in the number of guns in the U.S. is generally good or bad for our society?",
+      "options": [
+        "Very good for society",
+        "Somewhat good for society",
+        "Neither good nor bad for society",
+        "Somewhat bad for society",
+        "Very bad for society",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Neither good nor bad for society": 0.2445,
+        "Refused": 0.0042,
+        "Somewhat bad for society": 0.1834,
+        "Somewhat good for society": 0.1138,
+        "Very bad for society": 0.3596,
+        "Very good for society": 0.0944
+      },
+      "model_distribution": {
+        "Very good for society": 0.2,
+        "Somewhat good for society": 0.1333,
+        "Neither good nor bad for society": 0.1333,
+        "Somewhat bad for society": 0.1667,
+        "Very bad for society": 0.1,
+        "Refused": 0.2667
+      },
+      "jsd": 0.202634,
+      "kendall_tau": -0.828079,
+      "parity": 0.441663,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004238
+    },
+    {
+      "key": "SOURCESKEPc_W45",
+      "text": "How much do you trust the accuracy of the news and information that you get from political leaders and public officials",
+      "options": [
+        "A great deal",
+        "Some",
+        "Not much",
+        "Not at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A great deal": 0.0392,
+        "Not at all": 0.0851,
+        "Not much": 0.3744,
+        "Refused": 0.0016,
+        "Some": 0.4996
+      },
+      "model_distribution": {
+        "A great deal": 0.1667,
+        "Some": 0.2,
+        "Not much": 0.2333,
+        "Not at all": 0.2333,
+        "Refused": 0.1667
+      },
+      "jsd": 0.193744,
+      "kendall_tau": 0.447214,
+      "parity": 0.764931,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.001634
+    },
+    {
+      "key": "WATCHDOG_3_W45",
+      "text": "In presenting the news dealing with political and social issues, do you think that news organizations",
+      "options": [
+        "Deal fairly with all sides",
+        "Tend to favor one side",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Deal fairly with all sides": 0.2655,
+        "Refused": 0.0206,
+        "Tend to favor one side": 0.7139
+      },
+      "model_distribution": {
+        "Deal fairly with all sides": 0.3667,
+        "Tend to favor one side": 0.3667,
+        "Refused": 0.2667
+      },
+      "jsd": 0.137025,
+      "kendall_tau": 0.816497,
+      "parity": 0.885612,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.020585
+    }
+  ]
+}
