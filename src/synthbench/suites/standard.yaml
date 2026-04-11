@@ -1,0 +1,43 @@
+runs:
+  - dataset: opinionsqa
+    n: null
+    samples: 50
+    topic: null
+    repeats: 3
+    label: "OpinionsQA Full"
+  - dataset: opinionsqa
+    n: null
+    samples: 50
+    topic: consumer
+    repeats: 3
+    label: "OpinionsQA Consumer"
+  - dataset: opinionsqa
+    n: null
+    samples: 50
+    topic: political
+    repeats: 3
+    label: "OpinionsQA Political"
+  - dataset: opinionsqa
+    n: null
+    samples: 50
+    topic: neutral
+    repeats: 3
+    label: "OpinionsQA Neutral"
+  - dataset: globalopinionqa
+    n: 100
+    samples: 30
+    topic: null
+    repeats: 3
+    label: "GlobalOpinionQA"
+  - dataset: subpop
+    n: 200
+    samples: 30
+    topic: null
+    repeats: 3
+    label: "SubPOP"
+  - dataset: opinionsqa
+    n: 200
+    samples: 50
+    topic: null
+    repeats: 3
+    label: "OpinionsQA Replicate"
