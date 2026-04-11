@@ -12,11 +12,19 @@
   --gold:#f0c040;--silver:#c0c0c0;--bronze:#cd7f32;
   --green:#3fb950;--red:#f85149;
 }
+@media(prefers-color-scheme:light){
+  :root{
+    --bg:#ffffff;--surface:#f6f8fa;--border:#d0d7de;
+    --text:#1f2328;--text-muted:#656d76;--accent:#0969da;
+    --gold:#bf8700;--silver:#8b949e;--bronze:#9a6700;
+    --green:#1a7f37;--red:#cf222e;
+  }
+}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6;padding:0}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
 
-.container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+.container{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
 
 header{text-align:center;padding:3rem 1rem 2rem}
 header h1{font-size:2.2rem;font-weight:700;letter-spacing:-0.5px}
@@ -28,18 +36,23 @@ header .tagline{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}
 .about strong{color:var(--text)}
 .about code{background:var(--bg);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.88rem}
 
+.metric-legend{border-left:3px solid var(--accent);margin-bottom:1.5rem}
+
 .section-title{font-size:1.3rem;font-weight:600;margin:2.5rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)}
 
 .chart-section{margin:2rem 0;padding:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:8px}
 
 .leaderboard-table{width:100%;border-collapse:collapse;font-size:0.9rem}
-.leaderboard-table thead{position:sticky;top:0}
+.leaderboard-table thead{position:sticky;top:0;z-index:10}
 .leaderboard-table th{
   background:var(--surface);color:var(--text-muted);font-weight:600;
   text-transform:uppercase;font-size:0.75rem;letter-spacing:0.05em;
   padding:0.75rem 1rem;text-align:left;border-bottom:2px solid var(--border);
 }
 .leaderboard-table th.num{text-align:right}
+.leaderboard-table th.sortable{cursor:pointer;user-select:none}
+.leaderboard-table th.sortable:hover{color:var(--accent)}
+.leaderboard-table th .sort-arrow{font-size:0.65rem;margin-left:0.25rem;opacity:0.5}
 .leaderboard-table td{padding:0.65rem 1rem;border-bottom:1px solid var(--border)}
 .leaderboard-table td.num{text-align:right;font-variant-numeric:tabular-nums}
 .leaderboard-table tbody tr:hover{background:rgba(88,166,255,0.06)}
@@ -49,9 +62,29 @@ header .tagline{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}
 .provider-name{font-weight:600;color:var(--text)}
 .model-name{color:var(--text-muted);font-size:0.85rem}
 .composite{font-weight:700;color:var(--green);font-size:1rem}
-.toggle{color:var(--accent);cursor:pointer;font-size:0.8rem;margin-left:0.5rem}
-.toggle:hover{text-decoration:underline}
+
+.chevron{cursor:pointer;font-size:0.7rem;margin-right:0.4rem;color:var(--accent);transition:transform 0.2s}
+.chevron.open{transform:rotate(90deg)}
+
 .detail-row{background:var(--surface)}
+.detail-cell{padding:0.75rem 1.5rem !important}
+.detail-content{display:flex;gap:2rem;flex-wrap:wrap;font-size:0.85rem;color:var(--text-muted)}
+.detail-section{min-width:200px}
+.detail-item{margin:0.25rem 0}
+
+.baseline-divider td{height:2px;padding:0 !important;background:var(--border)}
+.baseline-row td{color:var(--text-muted)}
+.baseline-row .composite{color:var(--text-muted);font-weight:400}
+.baseline-name{font-weight:400 !important;color:var(--text-muted) !important}
+
+.low-n td{opacity:0.7}
+.low-n-marker{color:var(--red);font-weight:700;margin-left:1px}
+
+.footnote{font-size:0.85rem;color:var(--text-muted);margin-top:0.75rem;padding-left:0.5rem;border-left:2px solid var(--border)}
+
+.transparency{margin-top:1rem;font-size:0.85rem;color:var(--text-muted);font-style:italic}
+
+.bibtex{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1rem;font-family:monospace;font-size:0.8rem;white-space:pre-wrap;color:var(--text-muted);margin-top:1rem;overflow-x:auto}
 
 footer{text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem}
 footer a{color:var(--accent)}
@@ -69,6 +102,7 @@ footer a{color:var(--accent)}
   header h1{font-size:1.6rem}
   .leaderboard-table{font-size:0.8rem}
   .leaderboard-table th,.leaderboard-table td{padding:0.5rem 0.6rem}
+  .detail-content{flex-direction:column;gap:0.5rem}
 }
 </style>
 </head>
@@ -89,919 +123,285 @@ footer a{color:var(--accent)}
     <p>SynthBench measures how well synthetic respondent systems reproduce real human survey response distributions.
        Scores are computed against ground-truth data from <strong>OpinionsQA</strong> (Santurkar et al., ICML 2023) &mdash;
        1,498 questions from the Pew American Trends Panel.</p>
-    <p><strong>Composite Parity</strong> combines distributional similarity (Jensen-Shannon Divergence) and rank-order
-       agreement (Kendall's tau) into a single 0&ndash;1 score. Higher is better.</p>
+    <p class="transparency">SynthBench is maintained by DataViking-Tech, which also develops SynthPanel.
+       All results use identical evaluation methodology.</p>
   </div>
 
-  <table class="leaderboard-table">
+
+  <div class="about metric-legend">
+    <p><strong>SPS</strong> (SynthBench Parity Score) measures how well AI reproduces human survey responses.
+       Higher is better (0&nbsp;=&nbsp;random, 1&nbsp;=&nbsp;human-identical).
+       Scores below show SPS and component metrics P_dist, P_rank, P_refuse.</p>
+  </div>
+
+  <table class="leaderboard-table" id="leaderboard">
     <thead>
       <tr>
         <th class="rank">Rank</th>
-        <th>Provider</th>
+        <th class="sortable" data-sort="provider">Provider</th>
+        <th>Model</th>
         <th>Dataset</th>
-        <th class="num">N</th>
-        <th class="num">Composite Parity</th>
-        <th class="num">vs Random</th>
-        <th class="num">vs Majority</th>
-        <th class="num">Consumer</th>
-        <th class="num">Neutral</th>
-        <th class="num">Political</th>
-        <th class="num">JSD</th>
-        <th class="num">Tau</th>
+        <th class="num sortable" data-sort="n">N</th>
+        <th class="num sortable" data-sort="sps">SPS <span class="sort-arrow">&#x25BC;</span></th>
+        <th class="num sortable" data-sort="vs-random">vs Random</th>
+        <th class="num sortable" data-sort="vs-majority">vs Majority</th>
+        <th class="num">Topics</th>
+        <th class="num sortable" data-sort="jsd">JSD</th>
+        <th class="num sortable" data-sort="tau">Tau</th>
         <th>Date</th>
       </tr>
     </thead>
-    <tbody>
-      <tr>
+    <tbody id="leaderboard-body">
+      <tr class="" data-sps="0.7560" data-n="50" data-jsd="0.2754" data-tau="0.5751">
         <td class="rank num"><span class="medal">&#x1f947;</span>1</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">meta-llama/llama-3.3-70b-instruct</span> </td>
+        <td class="provider-name">openrouter</td>
+        <td><span class="model-name">meta-llama/llama-3.3-70b-instruct</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
         <td class="num composite">0.7560</td>
         <td class="num" style="color:var(--green)">+0.1169</td>
         <td class="num" style="color:var(--green)">+0.2077</td>
-        <td class="num">0.7420</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
+        <td class="num"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="16" style="vertical-align:middle"><rect x="2" y="4.6" width="13" height="10.4" rx="1" fill="#3fb950" opacity="0.85"/></svg></td>
         <td class="num">0.2754</td>
         <td class="num">0.5751</td>
         <td>2026-04-10</td>
       </tr>
-      <tr>
+      <tr class="" data-sps="0.7511" data-n="50" data-jsd="0.2590" data-tau="0.5225">
         <td class="rank num"><span class="medal">&#x1f948;</span>2</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">google/gemini-2.5-flash</span> </td>
+        <td class="provider-name">openrouter</td>
+        <td><span class="model-name">google/gemini-2.5-flash</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
         <td class="num composite">0.7511</td>
         <td class="num" style="color:var(--green)">+0.1120</td>
         <td class="num" style="color:var(--green)">+0.2028</td>
         <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
         <td class="num">0.2590</td>
         <td class="num">0.5225</td>
         <td>2026-04-10</td>
       </tr>
-      <tr>
-        <td class="rank num"><span class="medal">&#x1f949;</span>3</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">anthropic/claude-haiku-4-5</span> <span class="toggle" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa">[16 runs]</span></td>
+      <tr class=" low-n" data-sps="0.7467" data-n="30" data-jsd="0.2793" data-tau="0.5453">
+        <td class="rank num"><span class="chevron" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" title="Show details">&#x25B6;</span><span class="medal">&#x1f949;</span>3</td>
+        <td class="provider-name">openrouter</td>
+        <td><span class="model-name">anthropic/claude-haiku-4-5</span></td>
         <td>opinionsqa</td>
-        <td class="num">30</td>
-        <td class="num composite">0.7467</td>
+        <td class="num">30<span class="low-n-marker">*</span></td>
+        <td class="num composite">0.7467<svg xmlns="http://www.w3.org/2000/svg" width="60" height="16" style="vertical-align:middle;margin-left:4px"><line x1="40.3" y1="8.0" x2="46.3" y2="8.0" stroke="#8b949e" stroke-width="1.5"/><line x1="40.3" y1="5.0" x2="40.3" y2="11.0" stroke="#8b949e" stroke-width="1"/><line x1="46.3" y1="5.0" x2="46.3" y2="11.0" stroke="#8b949e" stroke-width="1"/><circle cx="43.8" cy="8.0" r="3" fill="#58a6ff"/></svg></td>
         <td class="num" style="color:var(--green)">+0.1076</td>
         <td class="num" style="color:var(--green)">+0.1984</td>
-        <td class="num">0.7657</td>
-        <td class="num">&mdash;</td>
-        <td class="num">0.7436</td>
+        <td class="num"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="16" style="vertical-align:middle"><rect x="2" y="4.3" width="13" height="10.7" rx="1" fill="#3fb950" opacity="0.85"/><rect x="32" y="4.6" width="13" height="10.4" rx="1" fill="#f0c040" opacity="0.85"/></svg></td>
         <td class="num">0.2793</td>
         <td class="num">0.5453</td>
         <td>2026-04-11</td>
       </tr>
       <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=100</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7539</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2736</td>
-        <td class="num">0.5628</td>
-        <td>2026-04-11</td>
+        <td colspan="12" class="detail-cell">
+          <div class="detail-content">
+            <div class="detail-section"><strong>Runs:</strong> <div class="detail-item">n=30 samples=100 SPS=0.7539 JSD=0.2736 tau=0.5628</div><div class="detail-item">n=30 samples=100 SPS=0.7533 JSD=0.2769 tau=0.5669</div><div class="detail-item">n=30 samples=30 SPS=0.7496 JSD=0.2848 tau=0.5678</div><div class="detail-item">n=30 samples=5 SPS=0.7495 JSD=0.2777 tau=0.5534</div><div class="detail-item">n=30 samples=50 SPS=0.7480 JSD=0.2803 tau=0.5526</div><div class="detail-item">n=30 samples=30 SPS=0.7472 JSD=0.2794 tau=0.5477</div><div class="detail-item">n=30 samples=5 SPS=0.7467 JSD=0.2793 tau=0.5453</div><div class="detail-item">n=30 samples=30 SPS=0.7452 JSD=0.2866 tau=0.5540</div><div class="detail-item">n=30 samples=30 SPS=0.7432 JSD=0.2834 tau=0.5396</div><div class="detail-item">n=30 samples=5 SPS=0.7421 JSD=0.2888 tau=0.5459</div><div class="detail-item">n=30 samples=10 SPS=0.7417 JSD=0.2884 tau=0.5435</div><div class="detail-item">n=30 samples=10 SPS=0.7414 JSD=0.2889 tau=0.5433</div><div class="detail-item">n=30 samples=5 SPS=0.7389 JSD=0.2926 tau=0.5409</div><div class="detail-item">n=30 samples=50 SPS=0.7368 JSD=0.2956 tau=0.5385</div><div class="detail-item">n=30 samples=10 SPS=0.7335 JSD=0.2952 tau=0.5244</div><div class="detail-item">n=30 samples=10 SPS=0.7330 JSD=0.3019 tau=0.5356</div></div>
+            <div class="detail-section"><strong>Convergence:</strong> <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" style="vertical-align:middle"><polyline points="2.0,11.2 21.0,18.0 40.0,15.7 59.0,9.6 78.0,2.0" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg></div>
+          </div>
+        </td>
       </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=100</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7533</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2769</td>
-        <td class="num">0.5669</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7496</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2848</td>
-        <td class="num">0.5678</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7495</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2777</td>
-        <td class="num">0.5534</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=50</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7480</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2803</td>
-        <td class="num">0.5526</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7472</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2794</td>
-        <td class="num">0.5477</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7467</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2793</td>
-        <td class="num">0.5453</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7452</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2866</td>
-        <td class="num">0.5540</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7432</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2834</td>
-        <td class="num">0.5396</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7421</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2888</td>
-        <td class="num">0.5459</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7417</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2884</td>
-        <td class="num">0.5435</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7414</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2889</td>
-        <td class="num">0.5433</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7389</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2926</td>
-        <td class="num">0.5409</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=50</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7368</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2956</td>
-        <td class="num">0.5385</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7335</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2952</td>
-        <td class="num">0.5244</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/anthropic/claude-haiku-4-5_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7330</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.3019</td>
-        <td class="num">0.5356</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr>
-        <td class="rank num">4</td>
-        <td><span class="provider-name">raw-gemini</span><br><span class="model-name">gemini-2.5-flash-lite</span> <span class="toggle" data-provider="raw-gemini/gemini-2.5-flash-lite_opinionsqa">[2 runs]</span></td>
+      <tr class="" data-sps="0.7378" data-n="100" data-jsd="0.2653" data-tau="0.4819">
+        <td class="rank num"><span class="chevron" data-provider="raw-gemini/gemini-2.5-flash-lite_opinionsqa" title="Show details">&#x25B6;</span>4</td>
+        <td class="provider-name">raw-gemini</td>
+        <td><span class="model-name">gemini-2.5-flash-lite</span></td>
         <td>opinionsqa</td>
         <td class="num">100</td>
         <td class="num composite">0.7378</td>
         <td class="num" style="color:var(--green)">+0.0987</td>
         <td class="num" style="color:var(--green)">+0.1895</td>
         <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
         <td class="num">0.2653</td>
         <td class="num">0.4819</td>
         <td>2026-04-10</td>
       </tr>
       <tr class="detail-row" data-provider="raw-gemini/gemini-2.5-flash-lite_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=50 s=10</td>
-        <td></td>
-        <td class="num">50</td>
-        <td class="num">0.7619</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2531</td>
-        <td class="num">0.5538</td>
-        <td>2026-04-10</td>
+        <td colspan="12" class="detail-cell">
+          <div class="detail-content">
+            <div class="detail-section"><strong>Runs:</strong> <div class="detail-item">n=50 samples=10 SPS=0.7619 JSD=0.2531 tau=0.5538</div><div class="detail-item">n=100 samples=30 SPS=0.7378 JSD=0.2653 tau=0.4819</div></div>
+            <div class="detail-section"><strong>Convergence:</strong> <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" style="vertical-align:middle"><polyline points="2.0,2.0 78.0,18.0" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg></div>
+          </div>
+        </td>
       </tr>
-      <tr class="detail-row" data-provider="raw-gemini/gemini-2.5-flash-lite_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=100 s=30</td>
-        <td></td>
-        <td class="num">100</td>
-        <td class="num">0.7378</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2653</td>
-        <td class="num">0.4819</td>
-        <td>2026-04-10</td>
-      </tr>
-      <tr>
-        <td class="rank num">5</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">openai/gpt-4o-mini</span> <span class="toggle" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa">[11 runs]</span></td>
+      <tr class="" data-sps="0.7290" data-n="50" data-jsd="0.2959" data-tau="0.5077">
+        <td class="rank num"><span class="chevron" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" title="Show details">&#x25B6;</span>5</td>
+        <td class="provider-name">openrouter</td>
+        <td><span class="model-name">openai/gpt-4o-mini</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
         <td class="num composite">0.7290</td>
         <td class="num" style="color:var(--green)">+0.0899</td>
         <td class="num" style="color:var(--green)">+0.1807</td>
-        <td class="num">0.7663</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
+        <td class="num"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="16" style="vertical-align:middle"><rect x="2" y="4.3" width="13" height="10.7" rx="1" fill="#3fb950" opacity="0.85"/></svg></td>
         <td class="num">0.2959</td>
         <td class="num">0.5077</td>
         <td>2026-04-10</td>
       </tr>
       <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=100</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7573</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2708</td>
-        <td class="num">0.5708</td>
-        <td>2026-04-11</td>
+        <td colspan="12" class="detail-cell">
+          <div class="detail-content">
+            <div class="detail-section"><strong>Runs:</strong> <div class="detail-item">n=30 samples=100 SPS=0.7573 JSD=0.2708 tau=0.5708</div><div class="detail-item">n=30 samples=100 SPS=0.7560 JSD=0.2764 tau=0.5766</div><div class="detail-item">n=30 samples=50 SPS=0.7500 JSD=0.2768 tau=0.5535</div><div class="detail-item">n=30 samples=30 SPS=0.7483 JSD=0.2856 tau=0.5643</div><div class="detail-item">n=30 samples=50 SPS=0.7451 JSD=0.2834 tau=0.5471</div><div class="detail-item">n=30 samples=10 SPS=0.7440 JSD=0.2796 tau=0.5353</div><div class="detail-item">n=30 samples=5 SPS=0.7424 JSD=0.2874 tau=0.5444</div><div class="detail-item">n=30 samples=30 SPS=0.7394 JSD=0.2951 tau=0.5479</div><div class="detail-item">n=30 samples=10 SPS=0.7365 JSD=0.2912 tau=0.5284</div><div class="detail-item">n=50 samples=10 SPS=0.7290 JSD=0.2959 tau=0.5077</div><div class="detail-item">n=30 samples=5 SPS=0.7169 JSD=0.3179 tau=0.5032</div></div>
+            <div class="detail-section"><strong>Convergence:</strong> <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" style="vertical-align:middle"><polyline points="2.0,10.4 21.0,18.0 40.0,12.1 59.0,6.1 78.0,2.0" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg></div>
+          </div>
+        </td>
       </tr>
-      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=100</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7560</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2764</td>
-        <td class="num">0.5766</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=50</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7500</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2768</td>
-        <td class="num">0.5535</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7483</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2856</td>
-        <td class="num">0.5643</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=50</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7451</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2834</td>
-        <td class="num">0.5471</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7440</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2796</td>
-        <td class="num">0.5353</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7424</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2874</td>
-        <td class="num">0.5444</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=30</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7394</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2951</td>
-        <td class="num">0.5479</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=10</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7365</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2912</td>
-        <td class="num">0.5284</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=50 s=10</td>
-        <td></td>
-        <td class="num">50</td>
-        <td class="num">0.7290</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2959</td>
-        <td class="num">0.5077</td>
-        <td>2026-04-10</td>
-      </tr>
-      <tr class="detail-row" data-provider="openrouter/openai/gpt-4o-mini_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=30 s=5</td>
-        <td></td>
-        <td class="num">30</td>
-        <td class="num">0.7169</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.3179</td>
-        <td class="num">0.5032</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr>
-        <td class="rank num">6</td>
-        <td><span class="provider-name">raw-anthropic</span><br><span class="model-name">claude-haiku-4-5-20251001</span> <span class="toggle" data-provider="raw-anthropic/claude-haiku-4-5-20251001_opinionsqa">[2 runs]</span></td>
+      <tr class="" data-sps="0.7238" data-n="100" data-jsd="0.3081" data-tau="0.5114">
+        <td class="rank num"><span class="chevron" data-provider="raw-anthropic/claude-haiku-4-5-20251001_opinionsqa" title="Show details">&#x25B6;</span>6</td>
+        <td class="provider-name">raw-anthropic</td>
+        <td><span class="model-name">claude-haiku-4-5-20251001</span></td>
         <td>opinionsqa</td>
         <td class="num">100</td>
         <td class="num composite">0.7238</td>
         <td class="num" style="color:var(--green)">+0.0847</td>
         <td class="num" style="color:var(--green)">+0.1755</td>
         <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
         <td class="num">0.3081</td>
         <td class="num">0.5114</td>
         <td>2026-04-10</td>
       </tr>
       <tr class="detail-row" data-provider="raw-anthropic/claude-haiku-4-5-20251001_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=100 s=30</td>
-        <td></td>
-        <td class="num">100</td>
-        <td class="num">0.7238</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.3081</td>
-        <td class="num">0.5114</td>
-        <td>2026-04-10</td>
+        <td colspan="12" class="detail-cell">
+          <div class="detail-content">
+            <div class="detail-section"><strong>Runs:</strong> <div class="detail-item">n=100 samples=30 SPS=0.7238 JSD=0.3081 tau=0.5114</div><div class="detail-item">n=50 samples=10 SPS=0.7147 JSD=0.3197 tau=0.4981</div></div>
+            <div class="detail-section"><strong>Convergence:</strong> <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" style="vertical-align:middle"><polyline points="2.0,18.0 78.0,2.0" fill="none" stroke="#58a6ff" stroke-width="1.5"/></svg></div>
+          </div>
+        </td>
       </tr>
-      <tr class="detail-row" data-provider="raw-anthropic/claude-haiku-4-5-20251001_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=50 s=10</td>
-        <td></td>
-        <td class="num">50</td>
-        <td class="num">0.7147</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.3197</td>
-        <td class="num">0.4981</td>
-        <td>2026-04-10</td>
-      </tr>
-      <tr>
+      <tr class="" data-sps="0.7037" data-n="50" data-jsd="0.3006" data-tau="0.4159">
         <td class="rank num">7</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">openai/gpt-4o</span> </td>
+        <td class="provider-name">openrouter</td>
+        <td><span class="model-name">openai/gpt-4o</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
         <td class="num composite">0.7037</td>
         <td class="num" style="color:var(--green)">+0.0646</td>
         <td class="num" style="color:var(--green)">+0.1554</td>
         <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
         <td class="num">0.3006</td>
         <td class="num">0.4159</td>
         <td>2026-04-10</td>
       </tr>
-      <tr>
+      <tr class="" data-sps="0.6384" data-n="50" data-jsd="0.3867" data-tau="0.3269">
         <td class="rank num">8</td>
-        <td><span class="provider-name">openrouter</span><br><span class="model-name">anthropic/claude-sonnet-4</span> </td>
+        <td class="provider-name">openrouter</td>
+        <td><span class="model-name">anthropic/claude-sonnet-4</span></td>
         <td>opinionsqa</td>
         <td class="num">50</td>
         <td class="num composite">0.6384</td>
         <td class="num" style="color:var(--red)">-0.0007</td>
         <td class="num" style="color:var(--green)">+0.0901</td>
         <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
         <td class="num">0.3867</td>
         <td class="num">0.3269</td>
         <td>2026-04-10</td>
       </tr>
-      <tr>
+      <tr class=" low-n" data-sps="0.5497" data-n="20" data-jsd="0.5128" data-tau="0.2245">
         <td class="rank num">9</td>
-        <td><span class="provider-name">random-baseline</span><br><span class="model-name">&mdash;</span> <span class="toggle" data-provider="random-baseline_opinionsqa">[5 runs]</span></td>
+        <td class="provider-name">synthpanel (adapter test)</td>
+        <td><span class="model-name">claude-haiku-4-5-20251001 n=20</span></td>
         <td>opinionsqa</td>
-        <td class="num">200</td>
-        <td class="num composite">0.6378</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
-        <td class="num">0.6222</td>
-        <td class="num">0.6402</td>
-        <td class="num">0.6376</td>
-        <td class="num">0.2004</td>
-        <td class="num">-0.0479</td>
-        <td>2026-04-10</td>
-      </tr>
-      <tr class="detail-row" data-provider="random-baseline_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=100 s=30</td>
-        <td></td>
-        <td class="num">100</td>
-        <td class="num">0.6391</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2129</td>
-        <td class="num">-0.0177</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="random-baseline_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=200 s=30</td>
-        <td></td>
-        <td class="num">200</td>
-        <td class="num">0.6378</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2004</td>
-        <td class="num">-0.0479</td>
-        <td>2026-04-10</td>
-      </tr>
-      <tr class="detail-row" data-provider="random-baseline_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=50 s=10</td>
-        <td></td>
-        <td class="num">50</td>
-        <td class="num">0.6031</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2765</td>
-        <td class="num">-0.0343</td>
-        <td>2026-04-10</td>
-      </tr>
-      <tr class="detail-row" data-provider="random-baseline_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=100 s=5</td>
-        <td></td>
-        <td class="num">100</td>
-        <td class="num">0.5996</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.3158</td>
-        <td class="num">0.0300</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="random-baseline_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=100 s=10</td>
-        <td></td>
-        <td class="num">100</td>
-        <td class="num">0.5881</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.2774</td>
-        <td class="num">-0.0928</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr>
-        <td class="rank num">10</td>
-        <td><span class="provider-name">random-baseline</span><br><span class="model-name">&mdash;</span> </td>
-        <td>globalopinionqa</td>
-        <td class="num">10</td>
-        <td class="num composite">0.5729</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
-        <td class="num">0.6222</td>
-        <td class="num">0.6402</td>
-        <td class="num">0.6376</td>
-        <td class="num">0.2532</td>
-        <td class="num">-0.2019</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr>
-        <td class="rank num">11</td>
-        <td><span class="provider-name">synthpanel</span><br><span class="model-name">claude-haiku-4-5-20251001</span> </td>
-        <td>opinionsqa</td>
-        <td class="num">20</td>
-        <td class="num composite">0.5497</td>
+        <td class="num">20<span class="low-n-marker">*</span></td>
+        <td class="num composite">0.5497<svg xmlns="http://www.w3.org/2000/svg" width="60" height="16" style="vertical-align:middle;margin-left:4px"><line x1="26.6" y1="8.0" x2="39.2" y2="8.0" stroke="#8b949e" stroke-width="1.5"/><line x1="26.6" y1="5.0" x2="26.6" y2="11.0" stroke="#8b949e" stroke-width="1"/><line x1="39.2" y1="5.0" x2="39.2" y2="11.0" stroke="#8b949e" stroke-width="1"/><circle cx="32.8" cy="8.0" r="3" fill="#58a6ff"/></svg></td>
         <td class="num" style="color:var(--red)">-0.0894</td>
         <td class="num" style="color:var(--green)">+0.0014</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
         <td class="num">&mdash;</td>
         <td class="num">0.5128</td>
         <td class="num">0.2245</td>
         <td>2026-04-11</td>
       </tr>
-      <tr>
-        <td class="rank num">12</td>
-        <td><span class="provider-name">majority-baseline</span><br><span class="model-name">&mdash;</span> <span class="toggle" data-provider="majority-baseline_opinionsqa">[5 runs]</span></td>
+      <tr class="baseline-divider"><td colspan="12"></td></tr>
+      <tr class="baseline-row" data-sps="0.6378" data-n="200" data-jsd="0.2004" data-tau="-0.0479">
+        <td class="rank num"></td>
+        <td class="provider-name baseline-name">random-baseline</td>
+        <td></td>
+        <td>opinionsqa</td>
+        <td class="num">200</td>
+        <td class="num composite">0.6378</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2004</td>
+        <td class="num">-0.0479</td>
+        <td>2026-04-10</td>
+      </tr>
+      <tr class="baseline-row" data-sps="0.5729" data-n="10" data-jsd="0.2532" data-tau="-0.2019">
+        <td class="rank num"></td>
+        <td class="provider-name baseline-name">random-baseline</td>
+        <td></td>
+        <td>globalopinionqa</td>
+        <td class="num">10</td>
+        <td class="num composite">0.5729</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">0.2532</td>
+        <td class="num">-0.2019</td>
+        <td>2026-04-11</td>
+      </tr>
+      <tr class="baseline-row" data-sps="0.5483" data-n="200" data-jsd="0.5054" data-tau="0.2039">
+        <td class="rank num"></td>
+        <td class="provider-name baseline-name">majority-baseline</td>
+        <td></td>
         <td>opinionsqa</td>
         <td class="num">200</td>
         <td class="num composite">0.5483</td>
-        <td class="num">&mdash;</td>
-        <td class="num">&mdash;</td>
-        <td class="num">0.5368</td>
-        <td class="num">0.5696</td>
-        <td class="num">0.5763</td>
-        <td class="num">0.5054</td>
-        <td class="num">0.2039</td>
-        <td>2026-04-10</td>
-      </tr>
-      <tr class="detail-row" data-provider="majority-baseline_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=200 s=30</td>
-        <td></td>
-        <td class="num">200</td>
-        <td class="num">0.5483</td>
-        <td class="num"></td>
-        <td class="num"></td>
         <td class="num"></td>
         <td class="num"></td>
         <td class="num"></td>
         <td class="num">0.5054</td>
         <td class="num">0.2039</td>
         <td>2026-04-10</td>
-      </tr>
-      <tr class="detail-row" data-provider="majority-baseline_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=50 s=10</td>
-        <td></td>
-        <td class="num">50</td>
-        <td class="num">0.5077</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.5558</td>
-        <td class="num">0.1423</td>
-        <td>2026-04-10</td>
-      </tr>
-      <tr class="detail-row" data-provider="majority-baseline_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=100 s=5</td>
-        <td></td>
-        <td class="num">100</td>
-        <td class="num">0.5071</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.5498</td>
-        <td class="num">0.1282</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="majority-baseline_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=100 s=10</td>
-        <td></td>
-        <td class="num">100</td>
-        <td class="num">0.5071</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.5498</td>
-        <td class="num">0.1282</td>
-        <td>2026-04-11</td>
-      </tr>
-      <tr class="detail-row" data-provider="majority-baseline_opinionsqa" style="display:none">
-        <td class="num"></td>
-        <td class="model-name" style="padding-left:2rem">n=100 s=30</td>
-        <td></td>
-        <td class="num">100</td>
-        <td class="num">0.5071</td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num"></td>
-        <td class="num">0.5498</td>
-        <td class="num">0.1282</td>
-        <td>2026-04-11</td>
       </tr>
     </tbody>
   </table>
+  <p class="footnote"><strong>Adapter test:</strong> SynthPanel entries use an early, untuned adapter integration and are not representative of production SynthPanel quality. Included for transparency and baseline comparison.</p>
+  <p class="footnote">* Scores from small samples (N&nbsp;&lt;&nbsp;50) have higher variance and should be interpreted with caution.</p>
 
   <div class="chart-section">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 448" width="100%" style="font-family:sans-serif;max-width:680px">
-<text x="340.0" y="18" text-anchor="middle" font-size="14" fill="#e6edf3" font-weight="600">Composite Parity by Model</text>
-<text x="212" y="49.599999999999994" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/meta-llama/llama-3.3-70b-instruct</text>
-<rect x="220" y="30" width="302.4" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
-<text x="528.4192" y="49.599999999999994" font-size="11" fill="#e6edf3">0.7560</text>
-<text x="212" y="83.6" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/google/gemini-2.5-flash</text>
-<rect x="220" y="64" width="300.4" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
-<text x="526.4431999999999" y="83.6" font-size="11" fill="#e6edf3">0.7511</text>
-<text x="212" y="117.6" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/anthropic/claude-haiku-4-5</text>
-<rect x="220" y="98" width="298.7" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
-<text x="524.6816" y="117.6" font-size="11" fill="#e6edf3">0.7467</text>
-<text x="212" y="151.6" text-anchor="end" font-size="12" fill="#e6edf3">raw-gemini/gemini-2.5-flash-lite</text>
-<rect x="220" y="132" width="295.1" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
-<text x="521.1351999999999" y="151.6" font-size="11" fill="#e6edf3">0.7378</text>
-<text x="212" y="185.6" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/openai/gpt-4o-mini</text>
-<rect x="220" y="166" width="291.6" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
-<text x="517.5952" y="185.6" font-size="11" fill="#e6edf3">0.7290</text>
-<text x="212" y="219.6" text-anchor="end" font-size="12" fill="#e6edf3">raw-anthropic/claude-haiku-4-5-20251001</text>
-<rect x="220" y="200" width="289.5" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
-<text x="515.5268000000001" y="219.6" font-size="11" fill="#e6edf3">0.7238</text>
-<text x="212" y="253.6" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/openai/gpt-4o</text>
-<rect x="220" y="234" width="281.5" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
-<text x="507.4608" y="253.6" font-size="11" fill="#e6edf3">0.7037</text>
-<text x="212" y="287.6" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/anthropic/claude-sonnet-4</text>
-<rect x="220" y="268" width="255.4" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
-<text x="481.3592" y="287.6" font-size="11" fill="#e6edf3">0.6384</text>
-<text x="212" y="321.6" text-anchor="end" font-size="12" fill="#e6edf3">random-baseline</text>
-<rect x="220" y="302" width="255.1" height="28" rx="3" fill="#8b949e" opacity="0.85" />
-<text x="481.1268" y="321.6" font-size="11" fill="#e6edf3">0.6378</text>
-<text x="212" y="355.6" text-anchor="end" font-size="12" fill="#e6edf3">random-baseline</text>
-<rect x="220" y="336" width="229.2" height="28" rx="3" fill="#8b949e" opacity="0.85" />
-<text x="455.174" y="355.6" font-size="11" fill="#e6edf3">0.5729</text>
-<text x="212" y="389.6" text-anchor="end" font-size="12" fill="#e6edf3">synthpanel/claude-haiku-4-5-20251001</text>
-<rect x="220" y="370" width="219.9" height="28" rx="3" fill="#58a6ff" opacity="0.85" />
-<text x="445.8856" y="389.6" font-size="11" fill="#e6edf3">0.5497</text>
-<text x="212" y="423.6" text-anchor="end" font-size="12" fill="#e6edf3">majority-baseline</text>
-<rect x="220" y="404" width="219.3" height="28" rx="3" fill="#8b949e" opacity="0.85" />
-<text x="445.3044" y="423.6" font-size="11" fill="#e6edf3">0.5483</text>
-</svg>
-  </div>
-
-  <div class="chart-section">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 618" width="100%" style="font-family:sans-serif;max-width:680px">
-<text x="340.0" y="22" text-anchor="middle" font-size="14" fill="#e6edf3" font-weight="600">Per-Metric Breakdown</text>
-<text x="212" y="65.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/meta-llama/llama-3.3-70b-instruct</text>
-<rect x="220" y="40" width="289.8" height="20" rx="2" fill="#3fb950" opacity="0.8" />
-<text x="514.8244" y="54.4" font-size="10" fill="#e6edf3">P_dist 0.7246</text>
-<rect x="220" y="64" width="315.0" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
-<text x="540.0142" y="78.4" font-size="10" fill="#e6edf3">P_rank 0.7875</text>
-<text x="212" y="127.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/google/gemini-2.5-flash</text>
-<rect x="220" y="102" width="296.4" height="20" rx="2" fill="#3fb950" opacity="0.8" />
-<text x="521.3835999999999" y="116.4" font-size="10" fill="#e6edf3">P_dist 0.7410</text>
-<rect x="220" y="126" width="304.5" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
-<text x="529.5026" y="140.4" font-size="10" fill="#e6edf3">P_rank 0.7613</text>
-<text x="212" y="189.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/anthropic/claude-haiku-4-5</text>
-<rect x="220" y="164" width="288.3" height="20" rx="2" fill="#3fb950" opacity="0.8" />
-<text x="513.298" y="178.4" font-size="10" fill="#e6edf3">P_dist 0.7207</text>
-<rect x="220" y="188" width="309.1" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
-<text x="534.0652" y="202.4" font-size="10" fill="#e6edf3">P_rank 0.7727</text>
-<text x="212" y="251.0" text-anchor="end" font-size="12" fill="#e6edf3">raw-gemini/gemini-2.5-flash-lite</text>
-<rect x="220" y="226" width="293.9" height="20" rx="2" fill="#3fb950" opacity="0.8" />
-<text x="518.8915999999999" y="240.4" font-size="10" fill="#e6edf3">P_dist 0.7347</text>
-<rect x="220" y="250" width="296.4" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
-<text x="521.3788" y="264.4" font-size="10" fill="#e6edf3">P_rank 0.7409</text>
-<text x="212" y="313.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/openai/gpt-4o-mini</text>
-<rect x="220" y="288" width="281.6" height="20" rx="2" fill="#3fb950" opacity="0.8" />
-<text x="506.64439999999996" y="302.4" font-size="10" fill="#e6edf3">P_dist 0.7041</text>
-<rect x="220" y="312" width="301.5" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
-<text x="526.546" y="326.4" font-size="10" fill="#e6edf3">P_rank 0.7539</text>
-<text x="212" y="375.0" text-anchor="end" font-size="12" fill="#e6edf3">raw-anthropic/claude-haiku-4-5-20251001</text>
-<rect x="220" y="350" width="276.8" height="20" rx="2" fill="#3fb950" opacity="0.8" />
-<text x="501.77" y="364.4" font-size="10" fill="#e6edf3">P_dist 0.6919</text>
-<rect x="220" y="374" width="302.3" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
-<text x="527.2836" y="388.4" font-size="10" fill="#e6edf3">P_rank 0.7557</text>
-<text x="212" y="437.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/openai/gpt-4o</text>
-<rect x="220" y="412" width="279.7" height="20" rx="2" fill="#3fb950" opacity="0.8" />
-<text x="504.7412" y="426.4" font-size="10" fill="#e6edf3">P_dist 0.6994</text>
-<rect x="220" y="436" width="283.2" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
-<text x="508.1806" y="450.4" font-size="10" fill="#e6edf3">P_rank 0.7080</text>
-<text x="212" y="499.0" text-anchor="end" font-size="12" fill="#e6edf3">openrouter/anthropic/claude-sonnet-4</text>
-<rect x="220" y="474" width="245.3" height="20" rx="2" fill="#3fb950" opacity="0.8" />
-<text x="470.3376" y="488.4" font-size="10" fill="#e6edf3">P_dist 0.6133</text>
-<rect x="220" y="498" width="265.4" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
-<text x="490.3812" y="512.4" font-size="10" fill="#e6edf3">P_rank 0.6635</text>
-<text x="212" y="561.0" text-anchor="end" font-size="12" fill="#e6edf3">synthpanel/claude-haiku-4-5-20251001</text>
-<rect x="220" y="536" width="194.9" height="20" rx="2" fill="#3fb950" opacity="0.8" />
-<text x="419.87199999999996" y="550.4" font-size="10" fill="#e6edf3">P_dist 0.4872</text>
-<rect x="220" y="560" width="244.9" height="20" rx="2" fill="#58a6ff" opacity="0.8" />
-<text x="469.8992" y="574.4" font-size="10" fill="#e6edf3">P_rank 0.6122</text>
-<rect x="220" y="606" width="12" height="12" fill="#3fb950" /><text x="236" y="616" font-size="10" fill="#8b949e">P_dist (1 - JSD)</text>
-<rect x="360" y="606" width="12" height="12" fill="#58a6ff" /><text x="376" y="616" font-size="10" fill="#8b949e">P_rank ((1+tau)/2)</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 482" width="100%" style="font-family:sans-serif;max-width:660px">
+<text x="330.0" y="18" text-anchor="middle" font-size="14" fill="#e6edf3" font-weight="600">SPS by Model</text>
+<line x1="449.2" y1="30" x2="449.2" y2="467" stroke="#f85149" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/><text x="449.2" y="24" text-anchor="middle" font-size="9" fill="#f85149" opacity="0.8">Random</text>
+<line x1="439.3" y1="30" x2="439.3" y2="467" stroke="#f0c040" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/><text x="439.3" y="24" text-anchor="middle" font-size="9" fill="#f0c040" opacity="0.8">Majority</text>
+<text x="212" y="59.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/meta-llama/llama-3.3-70b-instruct</text>
+<circle cx="522.4" cy="56.0" r="4" fill="#58a6ff"/>
+<text x="530.4" y="59.2" font-size="10" fill="#e6edf3">0.7560</text>
+<text x="212" y="95.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/google/gemini-2.5-flash</text>
+<circle cx="520.4" cy="92.0" r="4" fill="#58a6ff"/>
+<text x="528.4" y="95.2" font-size="10" fill="#e6edf3">0.7511</text>
+<text x="212" y="131.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/anthropic/claude-haiku-4-5</text>
+<line x1="493.2" y1="128.0" x2="536.7" y2="128.0" stroke="#58a6ff" stroke-width="2" opacity="0.5"/><line x1="493.2" y1="121.6" x2="493.2" y2="134.4" stroke="#58a6ff" stroke-width="1" opacity="0.5"/><line x1="536.7" y1="121.6" x2="536.7" y2="134.4" stroke="#58a6ff" stroke-width="1" opacity="0.5"/>
+<circle cx="518.7" cy="128.0" r="4" fill="#58a6ff"/>
+<text x="526.7" y="131.2" font-size="10" fill="#e6edf3">0.7467</text>
+<text x="212" y="167.2" text-anchor="end" font-size="11" fill="#e6edf3">raw-gemini/gemini-2.5-flash-lite</text>
+<circle cx="515.1" cy="164.0" r="4" fill="#58a6ff"/>
+<text x="523.1" y="167.2" font-size="10" fill="#e6edf3">0.7378</text>
+<text x="212" y="203.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/openai/gpt-4o-mini</text>
+<circle cx="511.6" cy="200.0" r="4" fill="#58a6ff"/>
+<text x="519.6" y="203.2" font-size="10" fill="#e6edf3">0.7290</text>
+<text x="212" y="239.2" text-anchor="end" font-size="11" fill="#e6edf3">raw-anthropic/claude-haiku-4-5-20251001</text>
+<circle cx="509.5" cy="236.0" r="4" fill="#58a6ff"/>
+<text x="517.5" y="239.2" font-size="10" fill="#e6edf3">0.7238</text>
+<text x="212" y="275.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/openai/gpt-4o</text>
+<circle cx="501.5" cy="272.0" r="4" fill="#58a6ff"/>
+<text x="509.5" y="275.2" font-size="10" fill="#e6edf3">0.7037</text>
+<text x="212" y="311.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/anthropic/claude-sonnet-4</text>
+<circle cx="475.4" cy="308.0" r="4" fill="#58a6ff"/>
+<text x="483.4" y="311.2" font-size="10" fill="#e6edf3">0.6384</text>
+<text x="212" y="347.2" text-anchor="end" font-size="11" fill="#8b949e">random-baseline</text>
+<circle cx="475.1" cy="344.0" r="4" fill="#8b949e"/>
+<text x="483.1" y="347.2" font-size="10" fill="#8b949e">0.6378</text>
+<text x="212" y="383.2" text-anchor="end" font-size="11" fill="#8b949e">random-baseline</text>
+<line x1="412.3" y1="380.0" x2="491.9" y2="380.0" stroke="#8b949e" stroke-width="2" opacity="0.5"/><line x1="412.3" y1="373.6" x2="412.3" y2="386.4" stroke="#8b949e" stroke-width="1" opacity="0.5"/><line x1="491.9" y1="373.6" x2="491.9" y2="386.4" stroke="#8b949e" stroke-width="1" opacity="0.5"/>
+<circle cx="449.2" cy="380.0" r="4" fill="#8b949e"/>
+<text x="457.2" y="383.2" font-size="10" fill="#8b949e">0.5729</text>
+<text x="212" y="419.2" text-anchor="end" font-size="11" fill="#e6edf3">synthpanel/claude-haiku-4-5-20251001 (adapter test, n=20)</text>
+<line x1="395.6" y1="416.0" x2="485.6" y2="416.0" stroke="#58a6ff" stroke-width="2" opacity="0.5"/><line x1="395.6" y1="409.6" x2="395.6" y2="422.4" stroke="#58a6ff" stroke-width="1" opacity="0.5"/><line x1="485.6" y1="409.6" x2="485.6" y2="422.4" stroke="#58a6ff" stroke-width="1" opacity="0.5"/>
+<circle cx="439.9" cy="416.0" r="4" fill="#58a6ff"/>
+<text x="447.9" y="419.2" font-size="10" fill="#e6edf3">0.5497</text>
+<text x="212" y="455.2" text-anchor="end" font-size="11" fill="#8b949e">majority-baseline</text>
+<circle cx="439.3" cy="452.0" r="4" fill="#8b949e"/>
+<text x="447.3" y="455.2" font-size="10" fill="#8b949e">0.5483</text>
 </svg>
   </div>
 
@@ -1011,7 +411,7 @@ footer a{color:var(--accent)}
     <thead>
       <tr>
         <th>Provider</th>
-        <th class="num">Composite</th>
+        <th class="num">SPS</th>
         <th class="num" colspan="2">majority-baseline</th><th class="num" colspan="2">random-baseline</th>
       </tr>
       <tr>
@@ -1028,7 +428,7 @@ footer a{color:var(--accent)}
       <tr><td class="provider-name">raw-anthropic/claude-haiku-4-5-20251001</td><td class="num composite">0.7238</td><td class="num" style="color:var(--green)">+0.1756</td><td class="num" style="color:var(--green)">+32%</td><td class="num" style="color:var(--green)">+0.1509</td><td class="num" style="color:var(--green)">+26%</td></tr>
       <tr><td class="provider-name">openrouter/openai/gpt-4o</td><td class="num composite">0.7037</td><td class="num" style="color:var(--green)">+0.1554</td><td class="num" style="color:var(--green)">+28%</td><td class="num" style="color:var(--green)">+0.1307</td><td class="num" style="color:var(--green)">+23%</td></tr>
       <tr><td class="provider-name">openrouter/anthropic/claude-sonnet-4</td><td class="num composite">0.6384</td><td class="num" style="color:var(--green)">+0.0901</td><td class="num" style="color:var(--green)">+16%</td><td class="num" style="color:var(--green)">+0.0655</td><td class="num" style="color:var(--green)">+11%</td></tr>
-      <tr><td class="provider-name">synthpanel/claude-haiku-4-5-20251001</td><td class="num composite">0.5497</td><td class="num" style="color:var(--green)">+0.0015</td><td class="num" style="color:var(--green)">+0%</td><td class="num" style="color:var(--red)">-0.0232</td><td class="num" style="color:var(--red)">-4%</td></tr>
+      <tr><td class="provider-name">synthpanel/claude-haiku-4-5-20251001 (adapter test, n=20)</td><td class="num composite">0.5497</td><td class="num" style="color:var(--green)">+0.0015</td><td class="num" style="color:var(--green)">+0%</td><td class="num" style="color:var(--red)">-0.0232</td><td class="num" style="color:var(--red)">-4%</td></tr>
     </tbody>
   </table>
 
@@ -1043,7 +443,7 @@ footer a{color:var(--accent)}
         <th>Provider</th>
         <th class="num">Samples/q</th>
         <th class="num">Runs</th>
-        <th class="num">Mean Parity</th>
+        <th class="num">Mean SPS</th>
         <th class="num">Min</th>
         <th class="num">Max</th>
       </tr>
@@ -1253,21 +653,81 @@ footer a{color:var(--accent)}
   title={SynthBench: Open Benchmark for Synthetic Survey Respondent Quality},
   author={DataViking-Tech},
   year={2026},
-  url={https://github.com/DataViking-Tech/synthbench}
+  url={https://github.com/DataViking-Tech/synthbench},
+  note={SPS (SynthBench Parity Score) evaluation framework}
 }</pre>
   </details>
 </footer>
 
 <script>
 document.addEventListener('DOMContentLoaded',function(){
-  document.querySelectorAll('.toggle').forEach(function(el){
+  // Expandable detail rows via chevron
+  document.querySelectorAll('.chevron').forEach(function(el){
     el.addEventListener('click',function(){
       var key=this.dataset.provider;
       var rows=document.querySelectorAll('.detail-row[data-provider="'+key+'"]');
       var showing=rows[0]&&rows[0].style.display!=='none';
       rows.forEach(function(r){r.style.display=showing?'none':'table-row'});
-      this.textContent=showing?this.textContent.replace('-','+').replace('hide','runs'):
-        this.textContent.replace('+','-');
+      this.classList.toggle('open',!showing);
+    });
+  });
+
+  // Column sorting
+  var table=document.getElementById('leaderboard');
+  var tbody=document.getElementById('leaderboard-body');
+  var sortDir={};
+  document.querySelectorAll('.sortable').forEach(function(th){
+    th.addEventListener('click',function(){
+      var col=this.dataset.sort;
+      var dir=sortDir[col]==='asc'?'desc':'asc';
+      sortDir[col]=dir;
+      // Update arrows
+      document.querySelectorAll('.sort-arrow').forEach(function(a){a.remove()});
+      var arrow=document.createElement('span');
+      arrow.className='sort-arrow';
+      arrow.innerHTML=dir==='asc'?'&#x25B2;':'&#x25BC;';
+      this.appendChild(arrow);
+      // Collect provider rows (not baseline or detail rows)
+      var rows=Array.from(tbody.querySelectorAll('tr:not(.detail-row):not(.baseline-divider):not(.baseline-row)'));
+      var detailRows=Array.from(tbody.querySelectorAll('.detail-row'));
+      var divider=tbody.querySelector('.baseline-divider');
+      var baselineRows=Array.from(tbody.querySelectorAll('.baseline-row'));
+      rows.sort(function(a,b){
+        var va,vb;
+        if(col==='provider'){
+          va=a.querySelector('.provider-name')?.textContent||'';
+          vb=b.querySelector('.provider-name')?.textContent||'';
+          return dir==='asc'?va.localeCompare(vb):vb.localeCompare(va);
+        }
+        va=parseFloat(a.dataset[col])||0;
+        vb=parseFloat(b.dataset[col])||0;
+        return dir==='asc'?va-vb:vb-va;
+      });
+      // Re-insert sorted rows, then details, divider, baselines
+      rows.forEach(function(r){
+        tbody.appendChild(r);
+        var key=r.querySelector('.chevron')?.dataset.provider;
+        if(key){
+          detailRows.filter(function(d){return d.dataset.provider===key}).forEach(function(d){tbody.appendChild(d)});
+        }
+      });
+      if(divider)tbody.appendChild(divider);
+      baselineRows.forEach(function(r){tbody.appendChild(r)});
+      // Re-number ranks
+      var rank=1;
+      tbody.querySelectorAll('tr:not(.detail-row):not(.baseline-divider):not(.baseline-row)').forEach(function(r){
+        var cell=r.querySelector('.rank');
+        if(cell){
+          var medal='';
+          if(rank===1)medal='<span class="medal">&#x1f947;</span>';
+          else if(rank===2)medal='<span class="medal">&#x1f948;</span>';
+          else if(rank===3)medal='<span class="medal">&#x1f949;</span>';
+          var chevron=cell.querySelector('.chevron');
+          var chevronHtml=chevron?chevron.outerHTML:'';
+          cell.innerHTML=chevronHtml+medal+rank;
+          rank++;
+        }
+      });
     });
   });
 });
