@@ -53,6 +53,7 @@ def _parse_letter(text: str, options: list[str]) -> str | None:
 
 def _yaml_escape(text: str) -> str:
     """Escape a string for embedding in double-quoted YAML."""
+    text = str(text)  # Handle non-string options (e.g., floats from some datasets)
     return text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
 
 
