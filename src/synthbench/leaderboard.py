@@ -6,6 +6,8 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+BASELINE_PROVIDERS = {"random-baseline", "majority-baseline"}
+
 
 def load_result(path: Path) -> dict:
     """Load a single result JSON file and return the dict as-is."""
@@ -126,23 +128,229 @@ def _collect_topic_scores(
     return topic_scores
 
 
-def build_leaderboard(results: list[dict]) -> tuple[str, dict]:
+def _result_entry(r: dict, rank: int) -> dict:
+    """Build a leaderboard entry dict from a result dict."""
+    cfg = r.get("config", {})
+    agg = r.get("aggregate", {})
+    ts = r.get("timestamp", "")
+    date_str = ts[:10] if len(ts) >= 10 else "--"
+    return {
+        "rank": rank,
+        "provider": cfg.get("provider", "unknown"),
+        "dataset": cfg.get("dataset", "unknown"),
+        "n": cfg.get("n_evaluated", 0),
+        "samples_per_question": cfg.get("samples_per_question", 0),
+        "topic": cfg.get("topic"),
+        "composite_parity": round(agg.get("composite_parity", 0), 4),
+        "mean_jsd": round(agg.get("mean_jsd", 0), 4),
+        "mean_kendall_tau": round(agg.get("mean_kendall_tau", 0), 4),
+        "sps": round(
+            agg.get("composite_parity", 0), 4
+        ),  # alias for display compatibility
+        "date": date_str,
+    }
+
+
+def _count_runs(results: list[dict]) -> dict[tuple[str, str], int]:
+    """Count total runs per (provider, dataset) pair."""
+    counts: dict[tuple[str, str], int] = {}
+    for r in results:
+        cfg = r.get("config", {})
+        key = (cfg.get("provider", "unknown"), cfg.get("dataset", "unknown"))
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def _format_leaderboard_md(
+    entries: list[dict],
+    title: str = "# SynthBench Leaderboard",
+    topics_present: list[str] | None = None,
+    topic_scores: dict[str, dict[str, float]] | None = None,
+    show_samples: bool = False,
+    show_baselines: bool = False,
+) -> str:
+    """Format leaderboard entries as markdown table."""
+    topics_present = topics_present or []
+    topic_scores = topic_scores or {}
+
+    extra_cols = ""
+    extra_seps = ""
+    if show_samples:
+        extra_cols = " Samples |"
+        extra_seps = "---------|"
+
+    baseline_cols = ""
+    baseline_seps = ""
+    if show_baselines:
+        baseline_cols = " vs Random | vs Majority |"
+        baseline_seps = "-----------|-------------|"
+
+    if topics_present:
+        topic_headers = " | ".join(t.capitalize() for t in topics_present)
+        topic_seps = " | ".join("---" for _ in topics_present)
+        lines = [
+            title,
+            "",
+            f"| Rank | Provider | Dataset | N |{extra_cols} Parity |{baseline_cols} {topic_headers} | JSD | tau | Date |",
+            f"|------|----------|---------|---|{extra_seps}--------|{baseline_seps}{topic_seps}|-----|-----|------|",
+        ]
+    else:
+        lines = [
+            title,
+            "",
+            f"| Rank | Provider | Dataset | N |{extra_cols} Parity |{baseline_cols} JSD | tau | Date |",
+            f"|------|----------|---------|---|{extra_seps}--------|{baseline_seps}-----|-----|------|",
+        ]
+
+    for e in entries:
+        samples_col = (
+            f" {e.get('samples_per_question', '--')} |" if show_samples else ""
+        )
+        topic_str = ""
+        if topics_present:
+            topic_cells = []
+            for t in topics_present:
+                score = topic_scores.get(e["provider"], {}).get(t)
+                topic_cells.append(f"{score:.4f}" if score is not None else "--")
+            topic_str = " | " + " | ".join(topic_cells) + " "
+
+        baseline_str = ""
+        if show_baselines:
+            vs_r = e.get("vs_random") or "--"
+            vs_m = e.get("vs_majority") or "--"
+            baseline_str = f" {vs_r} | {vs_m} |"
+
+        runs_note = ""
+        if "n_runs" in e and e["n_runs"] > 1:
+            runs_note = f" ({e['n_runs']} runs)"
+
+        lines.append(
+            f"| {e['rank']} "
+            f"| {e['provider']}{runs_note} "
+            f"| {e['dataset']} "
+            f"| {e['n']} "
+            f"|{samples_col} {e['composite_parity']:.4f} "
+            f"|{baseline_str}"
+            f"{topic_str}"
+            f" {e['mean_jsd']:.4f} "
+            f"| {e['mean_kendall_tau']:.4f} "
+            f"| {e['date']} |"
+        )
+
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _extract_baseline_scores(
+    results: list[dict],
+) -> dict[str, dict[str, float]]:
+    """Extract best baseline scores per (baseline_provider, dataset).
+
+    Returns {baseline_name: {dataset: composite_parity}}.
+    """
+    baselines: dict[str, dict[str, float]] = {}
+    for r in results:
+        cfg = r.get("config", {})
+        provider = cfg.get("provider", "unknown")
+        if provider not in BASELINE_PROVIDERS:
+            continue
+        dataset = cfg.get("dataset", "unknown")
+        cp = r.get("aggregate", {}).get("composite_parity", 0)
+        existing = baselines.setdefault(provider, {})
+        if dataset not in existing or cp > existing[dataset]:
+            existing[dataset] = cp
+    return baselines
+
+
+def _add_baseline_deltas(
+    entries: list[dict], baseline_scores: dict[str, dict[str, float]]
+) -> None:
+    """Add vs_random and vs_majority delta fields to entries in-place."""
+    for entry in entries:
+        dataset = entry["dataset"]
+        provider = entry["provider"]
+        for baseline_name, label in [
+            ("random-baseline", "vs_random"),
+            ("majority-baseline", "vs_majority"),
+        ]:
+            base_cp = baseline_scores.get(baseline_name, {}).get(dataset)
+            if base_cp is not None and provider not in BASELINE_PROVIDERS:
+                delta = entry["composite_parity"] - base_cp
+                entry[label] = f"{delta:+.4f}"
+            else:
+                entry[label] = None
+
+
+def build_convergence_data(
+    results: list[dict],
+) -> dict[str, list[dict[str, object]]]:
+    """Group runs by provider and extract sample-count sweeps.
+
+    Returns {provider: [{samples: N, runs: [parity1, parity2, ...]}, ...]}
+    Only includes providers with 2+ runs at different sample counts.
+    """
+    # Group by provider -> {samples_per_question: [composite_parity, ...]}
+    provider_sweeps: dict[str, dict[int, list[float]]] = {}
+    for r in results:
+        cfg = r.get("config", {})
+        provider = cfg.get("provider", "unknown")
+        if provider in BASELINE_PROVIDERS:
+            continue
+        samples = cfg.get("samples_per_question", 0)
+        cp = r.get("aggregate", {}).get("composite_parity", 0)
+        provider_sweeps.setdefault(provider, {}).setdefault(samples, []).append(
+            round(cp, 4)
+        )
+
+    # Filter to providers with 2+ distinct sample counts
+    convergence: dict[str, list[dict[str, object]]] = {}
+    for provider, sweep in provider_sweeps.items():
+        if len(sweep) < 2:
+            continue
+        convergence[provider] = sorted(
+            [{"samples": s, "runs": scores} for s, scores in sweep.items()],
+            key=lambda x: x["samples"],
+        )
+    return convergence
+
+
+def build_leaderboard(
+    results: list[dict],
+    *,
+    show_all: bool = False,
+    model_filter: str | None = None,
+) -> tuple[str, dict]:
     """Build a ranked leaderboard from multiple result dicts.
 
-    When multiple runs exist for the same provider+dataset+topic combination,
-    only the run with the largest n_evaluated is kept.
-
-    If results with topic tags exist, per-topic columns are included.
+    Args:
+        results: List of SynthBench result dicts.
+        show_all: If True, show all runs (detail tier) instead of summary.
+        model_filter: If set, filter to results whose provider contains this string.
 
     Returns:
         (markdown_table, leaderboard_json) where leaderboard_json has the
-        structure {"leaderboard": [...], "generated": "ISO timestamp"}.
+        structure with "summary" and "detail" tiers plus "generated" timestamp.
     """
     if not results:
         return "No results for leaderboard.\n", {
-            "leaderboard": [],
+            "summary": [],
+            "detail": [],
             "generated": _now_iso(),
         }
+
+    # Apply model filter
+    if model_filter:
+        results = [
+            r
+            for r in results
+            if model_filter.lower() in r.get("config", {}).get("provider", "").lower()
+        ]
+        if not results:
+            return f"No results matching model '{model_filter}'.\n", {
+                "summary": [],
+                "detail": [],
+                "generated": _now_iso(),
+            }
 
     # Separate topic-tagged results from overall results
     overall_results = [r for r in results if not r.get("config", {}).get("topic")]
@@ -158,8 +366,17 @@ def build_leaderboard(results: list[dict]) -> tuple[str, dict]:
         }
     )
 
-    # De-duplicate overall: keep the run with the most questions per provider+dataset
+    # --- Detail tier: ALL runs, no dedup ---
     target = overall_results if overall_results else results
+    detail_ranked = sorted(
+        target,
+        key=lambda r: r.get("aggregate", {}).get("composite_parity", 0),
+        reverse=True,
+    )
+    detail_entries = [_result_entry(r, i + 1) for i, r in enumerate(detail_ranked)]
+
+    # --- Summary tier: best per provider+dataset ---
+    run_counts = _count_runs(target)
     best: dict[tuple[str, str], dict] = {}
     for r in target:
         cfg = r.get("config", {})
@@ -172,92 +389,60 @@ def build_leaderboard(results: list[dict]) -> tuple[str, dict]:
         if existing is None or n_eval > existing["config"].get("n_evaluated", 0):
             best[key] = r
 
-    # Sort by composite_parity descending
-    ranked = sorted(
+    summary_ranked = sorted(
         best.values(),
         key=lambda r: r.get("aggregate", {}).get("composite_parity", 0),
         reverse=True,
     )
 
-    # Build entries
-    entries = []
-    for rank, r in enumerate(ranked, 1):
+    summary_entries = []
+    for rank, r in enumerate(summary_ranked, 1):
+        entry = _result_entry(r, rank)
         cfg = r.get("config", {})
-        agg = r.get("aggregate", {})
-        ts = r.get("timestamp", "")
-        date_str = ts[:10] if len(ts) >= 10 else "--"
+        key = (cfg.get("provider", "unknown"), cfg.get("dataset", "unknown"))
+        entry["n_runs"] = run_counts.get(key, 1)
+        if entry["provider"] in topic_scores:
+            entry["topic_scores"] = topic_scores[entry["provider"]]
+        summary_entries.append(entry)
 
-        provider = cfg.get("provider", "unknown")
-        entry = {
-            "rank": rank,
-            "provider": provider,
-            "dataset": cfg.get("dataset", "unknown"),
-            "n": cfg.get("n_evaluated", 0),
-            "composite_parity": round(agg.get("composite_parity", 0), 4),
-            "mean_jsd": round(agg.get("mean_jsd", 0), 4),
-            "mean_kendall_tau": round(agg.get("mean_kendall_tau", 0), 4),
-            "date": date_str,
-        }
+    # --- Baseline deltas ---
+    baseline_scores = _extract_baseline_scores(target)
+    _add_baseline_deltas(summary_entries, baseline_scores)
+    _add_baseline_deltas(detail_entries, baseline_scores)
 
-        # Add per-topic scores if available
-        if provider in topic_scores:
-            entry["topic_scores"] = topic_scores[provider]
-
-        entries.append(entry)
-
-    # Build markdown
-    if topics_present:
-        topic_headers = " | ".join(t.capitalize() for t in topics_present)
-        topic_seps = " | ".join("---" for _ in topics_present)
-        lines = [
-            "# SynthBench Leaderboard",
-            "",
-            f"| Rank | Provider | Dataset | N | Parity | {topic_headers} | JSD | tau | Date |",
-            f"|------|----------|---------|---|--------|{topic_seps}|-----|-----|------|",
-        ]
-        for e in entries:
-            topic_cells = []
-            for t in topics_present:
-                score = e.get("topic_scores", {}).get(t)
-                topic_cells.append(f"{score:.4f}" if score is not None else "--")
-            topic_str = " | ".join(topic_cells)
-            lines.append(
-                f"| {e['rank']} "
-                f"| {e['provider']} "
-                f"| {e['dataset']} "
-                f"| {e['n']} "
-                f"| {e['composite_parity']:.4f} "
-                f"| {topic_str} "
-                f"| {e['mean_jsd']:.4f} "
-                f"| {e['mean_kendall_tau']:.4f} "
-                f"| {e['date']} |"
-            )
+    # Build markdown for the selected tier
+    if show_all:
+        md = _format_leaderboard_md(
+            detail_entries,
+            title="# SynthBench Leaderboard (All Runs)",
+            topics_present=topics_present,
+            topic_scores=topic_scores,
+            show_samples=True,
+            show_baselines=bool(baseline_scores),
+        )
     else:
-        lines = [
-            "# SynthBench Leaderboard",
-            "",
-            "| Rank | Provider | Dataset | N | Parity | JSD | tau | Date |",
-            "|------|----------|---------|---|--------|-----|-----|------|",
-        ]
-        for e in entries:
-            lines.append(
-                f"| {e['rank']} "
-                f"| {e['provider']} "
-                f"| {e['dataset']} "
-                f"| {e['n']} "
-                f"| {e['composite_parity']:.4f} "
-                f"| {e['mean_jsd']:.4f} "
-                f"| {e['mean_kendall_tau']:.4f} "
-                f"| {e['date']} |"
-            )
-    lines.append("")
+        md = _format_leaderboard_md(
+            summary_entries,
+            topics_present=topics_present,
+            topic_scores=topic_scores,
+            show_baselines=bool(baseline_scores),
+        )
+
+    # --- Convergence data ---
+    convergence = build_convergence_data(target)
 
     leaderboard_json = {
-        "leaderboard": entries,
+        "summary": summary_entries,
+        "detail": detail_entries,
+        "baselines": {
+            name: {ds: round(cp, 4) for ds, cp in scores.items()}
+            for name, scores in baseline_scores.items()
+        },
+        "convergence": convergence,
         "generated": _now_iso(),
     }
 
-    return "\n".join(lines), leaderboard_json
+    return md, leaderboard_json
 
 
 def _now_iso() -> str:

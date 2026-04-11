@@ -351,38 +351,48 @@ def _collect_topic_scores(
 def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     """Build a complete HTML leaderboard page from a list of result dicts.
 
-    Results are de-duplicated (best n_evaluated per provider+dataset kept),
-    then ranked by composite_parity descending. Includes SVG charts,
-    baseline comparison table, metric explanations, and per-topic columns
-    when topic-tagged results are available.
+    Generates a two-tier leaderboard: summary rows (best per provider+dataset)
+    with expandable detail sub-rows (all runs). Includes SVG charts,
+    baseline delta columns, convergence data table, metric explanations,
+    and per-topic columns when topic-tagged results are available.
     """
-    # Separate overall from topic-tagged results for dedup
+    from synthbench.leaderboard import build_leaderboard
+
+    # Get structured leaderboard data
+    _md, lb_json = build_leaderboard(results)
+    summary_entries = lb_json.get("summary", [])
+    detail_entries = lb_json.get("detail", [])
+    baseline_data = lb_json.get("baselines", {})
+    convergence_data = lb_json.get("convergence", {})
+
+    # Separate overall from topic-tagged results for charts
     overall_results = [r for r in results if not r.get("config", {}).get("topic")]
     topic_results = [r for r in results if r.get("config", {}).get("topic")]
 
     topic_scores, topics_present = _collect_topic_scores(topic_results)
 
     deduped = _dedup_results(overall_results if overall_results else results)
-
-    # Sort by composite_parity descending
     ranked = sorted(
         deduped,
         key=lambda r: r.get("aggregate", {}).get("composite_parity", 0),
         reverse=True,
     )
 
-    models, baselines = _split_baselines(ranked)
+    _models, baselines = _split_baselines(ranked)
 
+    # Group detail entries by provider+dataset for expandable sub-rows
+    detail_by_key: dict[tuple[str, str], list[dict]] = {}
+    for d in detail_entries:
+        key = (d["provider"], d["dataset"])
+        detail_by_key.setdefault(key, []).append(d)
+
+    has_baselines = bool(baseline_data)
+
+    # Build table rows
     rows_html = []
     medals = {1: "&#x1f947;", 2: "&#x1f948;", 3: "&#x1f949;"}
-    for rank, r in enumerate(ranked, 1):
-        cfg = r.get("config", {})
-        agg = r.get("aggregate", {})
-        ts = r.get("timestamp", "")
-        date_str = escape(ts[:10]) if len(ts) >= 10 else "--"
-
-        provider_raw = cfg.get("provider", "unknown")
-        # Split provider/model if present
+    for rank, e in enumerate(summary_entries, 1):
+        provider_raw = e["provider"]
         if "/" in provider_raw:
             provider_name, model_name = provider_raw.split("/", 1)
         else:
@@ -391,18 +401,19 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 
         medal = medals.get(rank, "")
         medal_html = f'<span class="medal">{medal}</span>' if medal else ""
-
         model_display = escape(model_name) if model_name else "&mdash;"
 
-        composite = agg.get("composite_parity", 0)
-        mean_jsd = agg.get("mean_jsd", 0)
-        mean_tau = agg.get("mean_kendall_tau", 0)
-        n = cfg.get("n_evaluated", 0)
-        dataset_name = escape(cfg.get("dataset", "unknown"))
+        n_runs = e.get("n_runs", 1)
+        toggle = (
+            f'<span class="toggle" data-provider="{escape(provider_raw)}_{escape(e["dataset"])}">'
+            f"[{n_runs} runs]</span>"
+            if n_runs > 1
+            else ""
+        )
 
         topic_cells = ""
         if topics_present:
-            provider_topics = topic_scores.get(provider_raw, {})
+            provider_topics = e.get("topic_scores", {})
             for t in topics_present:
                 score = provider_topics.get(t)
                 if score is not None:
@@ -410,20 +421,68 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                 else:
                     topic_cells += '        <td class="num">&mdash;</td>\n'
 
+        baseline_cells = ""
+        if has_baselines:
+            vs_r = e.get("vs_random")
+            vs_m = e.get("vs_majority")
+            if vs_r:
+                delta_val = float(vs_r)
+                color = "var(--green)" if delta_val > 0 else "var(--red)"
+                baseline_cells += (
+                    f'        <td class="num" style="color:{color}">{vs_r}</td>\n'
+                )
+            else:
+                baseline_cells += '        <td class="num">&mdash;</td>\n'
+            if vs_m:
+                delta_val = float(vs_m)
+                color = "var(--green)" if delta_val > 0 else "var(--red)"
+                baseline_cells += (
+                    f'        <td class="num" style="color:{color}">{vs_m}</td>\n'
+                )
+            else:
+                baseline_cells += '        <td class="num">&mdash;</td>\n'
+
         rows_html.append(
             f"      <tr>\n"
             f'        <td class="rank num">{medal_html}{rank}</td>\n'
             f'        <td><span class="provider-name">{escape(provider_name)}</span>'
-            f'<br><span class="model-name">{model_display}</span></td>\n'
-            f"        <td>{dataset_name}</td>\n"
-            f'        <td class="num">{n}</td>\n'
-            f'        <td class="num composite">{composite:.4f}</td>\n'
+            f'<br><span class="model-name">{model_display}</span> {toggle}</td>\n'
+            f"        <td>{escape(e['dataset'])}</td>\n"
+            f'        <td class="num">{e["n"]}</td>\n'
+            f'        <td class="num composite">{e["composite_parity"]:.4f}</td>\n'
+            f"{baseline_cells}"
             f"{topic_cells}"
-            f'        <td class="num">{mean_jsd:.4f}</td>\n'
-            f'        <td class="num">{mean_tau:.4f}</td>\n'
-            f"        <td>{date_str}</td>\n"
+            f'        <td class="num">{e["mean_jsd"]:.4f}</td>\n'
+            f'        <td class="num">{e["mean_kendall_tau"]:.4f}</td>\n'
+            f"        <td>{e['date']}</td>\n"
             f"      </tr>"
         )
+
+        # Add hidden detail sub-rows
+        detail_key = (provider_raw, e["dataset"])
+        sub_runs = detail_by_key.get(detail_key, [])
+        if len(sub_runs) > 1:
+            for sub in sub_runs:
+                baseline_sub = ""
+                if has_baselines:
+                    baseline_sub = '        <td class="num"></td>\n' * 2
+                topic_sub = ""
+                if topics_present:
+                    topic_sub = '        <td class="num"></td>\n' * len(topics_present)
+                rows_html.append(
+                    f'      <tr class="detail-row" data-provider="{escape(provider_raw)}_{escape(e["dataset"])}" style="display:none">\n'
+                    f'        <td class="num"></td>\n'
+                    f'        <td class="model-name" style="padding-left:2rem">n={sub["n"]} s={sub["samples_per_question"]}</td>\n'
+                    f"        <td></td>\n"
+                    f'        <td class="num">{sub["n"]}</td>\n'
+                    f'        <td class="num">{sub["composite_parity"]:.4f}</td>\n'
+                    f"{baseline_sub}"
+                    f"{topic_sub}"
+                    f'        <td class="num">{sub["mean_jsd"]:.4f}</td>\n'
+                    f'        <td class="num">{sub["mean_kendall_tau"]:.4f}</td>\n'
+                    f"        <td>{sub['date']}</td>\n"
+                    f"      </tr>"
+                )
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     tbody = "\n".join(rows_html)
@@ -434,11 +493,57 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
         for t in topics_present:
             topic_th += f'        <th class="num">{escape(t.capitalize())}</th>\n'
 
+    # Baseline column headers
+    baseline_th = ""
+    if has_baselines:
+        baseline_th = '        <th class="num">vs Random</th>\n        <th class="num">vs Majority</th>\n'
+
     # Generate chart sections
     sps_chart = _svg_sps_bars(ranked)
     metric_chart = _svg_metric_bars(ranked)
     baseline_table = _baseline_delta_html(ranked, baselines)
     explanations = _metric_explanations_html()
+
+    # Convergence section
+    convergence_html = ""
+    if convergence_data:
+        conv_rows = []
+        for provider, sweeps in sorted(convergence_data.items()):
+            for sweep in sweeps:
+                samples = sweep["samples"]
+                runs = sweep["runs"]
+                mean_cp = sum(runs) / len(runs)
+                conv_rows.append(
+                    f"      <tr>\n"
+                    f'        <td class="provider-name">{escape(provider)}</td>\n'
+                    f'        <td class="num">{samples}</td>\n'
+                    f'        <td class="num">{len(runs)}</td>\n'
+                    f'        <td class="num composite">{mean_cp:.4f}</td>\n'
+                    f'        <td class="num">{min(runs):.4f}</td>\n'
+                    f'        <td class="num">{max(runs):.4f}</td>\n'
+                    f"      </tr>"
+                )
+        conv_tbody = "\n".join(conv_rows)
+        convergence_html = f"""
+  <h2 class="section-title">Convergence Data</h2>
+  <div class="about" style="margin-bottom:1rem">
+    <p>How scores change as sample count increases. Providers with runs at 2+ different sample counts are shown.</p>
+  </div>
+  <table class="leaderboard-table">
+    <thead>
+      <tr>
+        <th>Provider</th>
+        <th class="num">Samples/q</th>
+        <th class="num">Runs</th>
+        <th class="num">Mean Parity</th>
+        <th class="num">Min</th>
+        <th class="num">Max</th>
+      </tr>
+    </thead>
+    <tbody>
+{conv_tbody}
+    </tbody>
+  </table>"""
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -491,6 +596,9 @@ header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
 .provider-name{{font-weight:600;color:var(--text)}}
 .model-name{{color:var(--text-muted);font-size:0.85rem}}
 .composite{{font-weight:700;color:var(--green);font-size:1rem}}
+.toggle{{color:var(--accent);cursor:pointer;font-size:0.8rem;margin-left:0.5rem}}
+.toggle:hover{{text-decoration:underline}}
+.detail-row{{background:var(--surface)}}
 
 footer{{text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem}}
 footer a{{color:var(--accent)}}
@@ -540,7 +648,7 @@ footer a{{color:var(--accent)}}
         <th>Dataset</th>
         <th class="num">N</th>
         <th class="num">Composite Parity</th>
-{topic_th}        <th class="num">JSD</th>
+{baseline_th}{topic_th}        <th class="num">JSD</th>
         <th class="num">Tau</th>
         <th>Date</th>
       </tr>
@@ -560,6 +668,8 @@ footer a{{color:var(--accent)}}
 
 {baseline_table}
 
+{convergence_html}
+
 {explanations}
 </div>
 
@@ -567,6 +677,21 @@ footer a{{color:var(--accent)}}
   <p>Generated by <a href="https://github.com/DataViking-Tech/synthbench">SynthBench</a> v{escape(version)}</p>
   <p>Last updated: {today}</p>
 </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){{
+  document.querySelectorAll('.toggle').forEach(function(el){{
+    el.addEventListener('click',function(){{
+      var key=this.dataset.provider;
+      var rows=document.querySelectorAll('.detail-row[data-provider="'+key+'"]');
+      var showing=rows[0]&&rows[0].style.display!=='none';
+      rows.forEach(function(r){{r.style.display=showing?'none':'table-row'}});
+      this.textContent=showing?this.textContent.replace('-','+').replace('hide','runs'):
+        this.textContent.replace('+','-');
+    }});
+  }});
+}});
+</script>
 
 </body>
 </html>"""
