@@ -80,10 +80,17 @@ class SynthPanelProvider(Provider):
 
     Shells out to ``synthpanel panel run`` for each respond() call,
     using temporary instrument and persona YAML files.
+
+    Supports synthpanel v0.6.0+ flags: --models, --temperature, --profile.
     """
 
     def __init__(
-        self, model: str = "haiku", synthpanel_path: str | None = None, **kwargs
+        self,
+        model: str = "haiku",
+        temperature: float | None = None,
+        profile: str | None = None,
+        synthpanel_path: str | None = None,
+        **kwargs,
     ):
         if synthpanel_path:
             self._synthpanel_bin = synthpanel_path
@@ -96,10 +103,17 @@ class SynthPanelProvider(Provider):
                 )
             self._synthpanel_bin = found
         self._model = model
+        self._temperature = temperature
+        self._profile = profile
 
     @property
     def name(self) -> str:
-        return f"synthpanel/{self._model}"
+        parts = [f"synthpanel/{self._model}"]
+        if self._temperature is not None:
+            parts.append(f"t={self._temperature}")
+        if self._profile:
+            parts.append(f"profile={self._profile}")
+        return " ".join(parts)
 
     async def respond(
         self, question: str, options: list[str], *, persona: PersonaSpec | None = None
@@ -130,19 +144,31 @@ class SynthPanelProvider(Provider):
         self, inst_path: str, pers_path: str, options: list[str]
     ) -> Response:
         """Execute synthpanel CLI and parse the JSON output."""
-        proc = await asyncio.create_subprocess_exec(
+        cmd = [
             self._synthpanel_bin,
-            "--model",
-            self._model,
             "--output-format",
             "json",
-            "panel",
-            "run",
-            "--personas",
-            pers_path,
-            "--instrument",
-            inst_path,
-            "--no-synthesis",
+        ]
+        if self._profile:
+            cmd.extend(["--profile", self._profile])
+        cmd.extend(
+            [
+                "panel",
+                "run",
+                "--personas",
+                pers_path,
+                "--instrument",
+                inst_path,
+                "--models",
+                f"{self._model}:1.0",
+                "--no-synthesis",
+            ]
+        )
+        if self._temperature is not None:
+            cmd.extend(["--temperature", str(self._temperature)])
+
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
