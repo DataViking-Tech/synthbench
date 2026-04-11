@@ -50,6 +50,7 @@ header .tagline{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}
   padding:0.75rem 1rem;text-align:left;border-bottom:2px solid var(--border);
 }
 .leaderboard-table th.num{text-align:right}
+.leaderboard-table th:nth-child(5),.leaderboard-table td:nth-child(5){border-left:1px solid var(--border)}
 .leaderboard-table th.sortable{cursor:pointer;user-select:none}
 .leaderboard-table th.sortable:hover{color:var(--accent)}
 .leaderboard-table th .sort-arrow{font-size:0.65rem;margin-left:0.25rem;opacity:0.5}
@@ -79,6 +80,10 @@ header .tagline{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}
 
 .low-n td{opacity:0.7}
 .low-n-marker{color:var(--red);font-weight:700;margin-left:1px}
+
+.chart-text{fill:var(--text)}
+.chart-muted{fill:var(--text-muted);stroke:var(--text-muted)}
+.chart-accent{fill:var(--accent)}
 
 .footnote{font-size:0.85rem;color:var(--text-muted);margin-top:0.75rem;padding-left:0.5rem;border-left:2px solid var(--border)}
 
@@ -136,6 +141,8 @@ footer a{color:var(--accent)}
        <strong>P_rank</strong> &mdash; rank-order agreement (normalized Kendall&rsquo;s &tau;).
        <strong>P_refuse</strong> &mdash; refusal-rate calibration (1 &minus; mean |&Delta;refusal|).
        All [0,&thinsp;1]; higher = better.</p>
+    <p style="margin-top:0.5rem;font-size:0.88rem"><strong>vs Random</strong> &mdash; SPS improvement over uniform random baseline. <strong>vs Majority</strong> &mdash; SPS improvement over always-pick-the-mode baseline.</p>
+    <p style="margin-top:0.5rem;font-size:0.88rem"><strong>Topics</strong> &mdash; <span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#3fb950;opacity:0.85"></span><span style="font-size:0.8rem;color:var(--text-muted)">Consumer</span></span><span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#58a6ff;opacity:0.85"></span><span style="font-size:0.8rem;color:var(--text-muted)">Neutral</span></span><span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#f0c040;opacity:0.85"></span><span style="font-size:0.8rem;color:var(--text-muted)">Political</span></span></p>
   </div>
 
   <table class="leaderboard-table" id="leaderboard">
@@ -147,8 +154,8 @@ footer a{color:var(--accent)}
         <th>Dataset</th>
         <th class="num sortable" data-sort="n">N</th>
         <th class="num sortable" data-sort="sps" title="SynthBench Parity Score: overall fidelity (0=random, 1=human-identical)">SPS <span class="sort-arrow">&#x25BC;</span></th>
-        <th class="num sortable" data-sort="vs-random">vs Random</th>
-        <th class="num sortable" data-sort="vs-majority">vs Majority</th>
+        <th class="num sortable" data-sort="vs-random" title="SPS improvement over uniform random baseline">vs Random</th>
+        <th class="num sortable" data-sort="vs-majority" title="SPS improvement over always-pick-the-mode baseline">vs Majority</th>
         <th class="num">Topics</th>
         <th class="num" title="Refusal calibration: 1 − mean |Δrefusal|">P_refuse</th>
         <th class="num sortable" data-sort="jsd" title="Mean Jensen-Shannon divergence (lower = closer to human distributions)">JSD</th>
@@ -193,7 +200,7 @@ footer a{color:var(--accent)}
         <td><span class="model-name">anthropic/claude-haiku-4-5</span></td>
         <td>opinionsqa</td>
         <td class="num">30<span class="low-n-marker">*</span></td>
-        <td class="num composite">0.7467<svg xmlns="http://www.w3.org/2000/svg" width="60" height="16" style="vertical-align:middle;margin-left:4px"><line x1="40.3" y1="8.0" x2="46.3" y2="8.0" stroke="#8b949e" stroke-width="1.5"/><line x1="40.3" y1="5.0" x2="40.3" y2="11.0" stroke="#8b949e" stroke-width="1"/><line x1="46.3" y1="5.0" x2="46.3" y2="11.0" stroke="#8b949e" stroke-width="1"/><circle cx="43.8" cy="8.0" r="3" fill="#58a6ff"/></svg></td>
+        <td class="num composite">0.7467<svg xmlns="http://www.w3.org/2000/svg" width="60" height="16" style="vertical-align:middle;margin-left:4px"><line x1="40.3" y1="8.0" x2="46.3" y2="8.0" class="chart-muted" stroke-width="1.5"/><line x1="40.3" y1="5.0" x2="40.3" y2="11.0" class="chart-muted" stroke-width="1"/><line x1="46.3" y1="5.0" x2="46.3" y2="11.0" class="chart-muted" stroke-width="1"/><circle cx="43.8" cy="8.0" r="3" class="chart-accent"/></svg></td>
         <td class="num" style="color:var(--green)">+0.1076</td>
         <td class="num" style="color:var(--green)">+0.1984</td>
         <td class="num"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="16" style="vertical-align:middle"><rect x="2" y="4.3" width="13" height="10.7" rx="1" fill="#3fb950" opacity="0.85"/><rect x="32" y="4.6" width="13" height="10.4" rx="1" fill="#f0c040" opacity="0.85"/></svg></td>
@@ -315,7 +322,7 @@ footer a{color:var(--accent)}
         <td><span class="model-name">claude-haiku-4-5-20251001 n=20</span></td>
         <td>opinionsqa</td>
         <td class="num">20<span class="low-n-marker">*</span></td>
-        <td class="num composite">0.5497<svg xmlns="http://www.w3.org/2000/svg" width="60" height="16" style="vertical-align:middle;margin-left:4px"><line x1="26.6" y1="8.0" x2="39.2" y2="8.0" stroke="#8b949e" stroke-width="1.5"/><line x1="26.6" y1="5.0" x2="26.6" y2="11.0" stroke="#8b949e" stroke-width="1"/><line x1="39.2" y1="5.0" x2="39.2" y2="11.0" stroke="#8b949e" stroke-width="1"/><circle cx="32.8" cy="8.0" r="3" fill="#58a6ff"/></svg></td>
+        <td class="num composite">0.5497<svg xmlns="http://www.w3.org/2000/svg" width="60" height="16" style="vertical-align:middle;margin-left:4px"><line x1="26.6" y1="8.0" x2="39.2" y2="8.0" class="chart-muted" stroke-width="1.5"/><line x1="26.6" y1="5.0" x2="26.6" y2="11.0" class="chart-muted" stroke-width="1"/><line x1="39.2" y1="5.0" x2="39.2" y2="11.0" class="chart-muted" stroke-width="1"/><circle cx="32.8" cy="8.0" r="3" class="chart-accent"/></svg></td>
         <td class="num" style="color:var(--red)">-0.0894</td>
         <td class="num" style="color:var(--green)">+0.0014</td>
         <td class="num">&mdash;</td>
@@ -374,59 +381,58 @@ footer a{color:var(--accent)}
   </table>
   <p class="footnote"><strong>Adapter test:</strong> SynthPanel entries use an early, untuned adapter integration and are not representative of production SynthPanel quality. Included for transparency and baseline comparison.</p>
   <p class="footnote">* Scores from small samples (N&nbsp;&lt;&nbsp;50) have higher variance and should be interpreted with caution.</p>
-  <div style="margin-top:0.5rem;margin-bottom:1rem;padding-left:0.25rem"><span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#3fb950;opacity:0.85"></span><span style="font-size:0.8rem;color:var(--text-muted)">Consumer</span></span><span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#58a6ff;opacity:0.85"></span><span style="font-size:0.8rem;color:var(--text-muted)">Neutral</span></span><span style="display:inline-flex;align-items:center;gap:0.25rem;margin-right:0.75rem"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#f0c040;opacity:0.85"></span><span style="font-size:0.8rem;color:var(--text-muted)">Political</span></span></div>
 
   <div class="chart-section">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 482" width="100%" style="font-family:sans-serif;max-width:660px">
-<text x="330.0" y="18" text-anchor="middle" font-size="14" fill="#e6edf3" font-weight="600">SPS by Model</text>
+<text x="330.0" y="18" text-anchor="middle" font-size="14" class="chart-text" font-weight="600">SPS by Model</text>
 <line x1="449.2" y1="30" x2="449.2" y2="467" stroke="#f85149" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/><text x="449.2" y="24" text-anchor="middle" font-size="9" fill="#f85149" opacity="0.8">Random</text>
 <line x1="439.3" y1="30" x2="439.3" y2="467" stroke="#f0c040" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/><text x="439.3" y="24" text-anchor="middle" font-size="9" fill="#f0c040" opacity="0.8">Majority</text>
-<text x="212" y="59.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/meta-llama/llama-3.3-70b-instruct</text>
-<circle cx="522.4" cy="56.0" r="4" fill="#58a6ff"/>
-<text x="530.4" y="59.2" font-size="10" fill="#e6edf3">0.7560</text>
-<text x="212" y="95.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/google/gemini-2.5-flash</text>
-<circle cx="520.4" cy="92.0" r="4" fill="#58a6ff"/>
-<text x="528.4" y="95.2" font-size="10" fill="#e6edf3">0.7511</text>
-<text x="212" y="131.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/anthropic/claude-haiku-4-5</text>
-<line x1="493.2" y1="128.0" x2="536.7" y2="128.0" stroke="#58a6ff" stroke-width="2" opacity="0.5"/><line x1="493.2" y1="121.6" x2="493.2" y2="134.4" stroke="#58a6ff" stroke-width="1" opacity="0.5"/><line x1="536.7" y1="121.6" x2="536.7" y2="134.4" stroke="#58a6ff" stroke-width="1" opacity="0.5"/>
-<circle cx="518.7" cy="128.0" r="4" fill="#58a6ff"/>
-<text x="526.7" y="131.2" font-size="10" fill="#e6edf3">0.7467</text>
-<text x="212" y="167.2" text-anchor="end" font-size="11" fill="#e6edf3">raw-gemini/gemini-2.5-flash-lite</text>
-<circle cx="515.1" cy="164.0" r="4" fill="#58a6ff"/>
-<text x="523.1" y="167.2" font-size="10" fill="#e6edf3">0.7378</text>
-<text x="212" y="203.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/openai/gpt-4o-mini</text>
-<circle cx="511.6" cy="200.0" r="4" fill="#58a6ff"/>
-<text x="519.6" y="203.2" font-size="10" fill="#e6edf3">0.7290</text>
-<text x="212" y="239.2" text-anchor="end" font-size="11" fill="#e6edf3">raw-anthropic/claude-haiku-4-5-20251001</text>
-<circle cx="509.5" cy="236.0" r="4" fill="#58a6ff"/>
-<text x="517.5" y="239.2" font-size="10" fill="#e6edf3">0.7238</text>
-<text x="212" y="275.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/openai/gpt-4o</text>
-<circle cx="501.5" cy="272.0" r="4" fill="#58a6ff"/>
-<text x="509.5" y="275.2" font-size="10" fill="#e6edf3">0.7037</text>
-<text x="212" y="311.2" text-anchor="end" font-size="11" fill="#e6edf3">openrouter/anthropic/claude-sonnet-4</text>
-<circle cx="475.4" cy="308.0" r="4" fill="#58a6ff"/>
-<text x="483.4" y="311.2" font-size="10" fill="#e6edf3">0.6384</text>
-<text x="212" y="347.2" text-anchor="end" font-size="11" fill="#8b949e">random-baseline</text>
-<circle cx="475.1" cy="344.0" r="4" fill="#8b949e"/>
-<text x="483.1" y="347.2" font-size="10" fill="#8b949e">0.6378</text>
-<text x="212" y="383.2" text-anchor="end" font-size="11" fill="#8b949e">random-baseline</text>
-<line x1="412.3" y1="380.0" x2="491.9" y2="380.0" stroke="#8b949e" stroke-width="2" opacity="0.5"/><line x1="412.3" y1="373.6" x2="412.3" y2="386.4" stroke="#8b949e" stroke-width="1" opacity="0.5"/><line x1="491.9" y1="373.6" x2="491.9" y2="386.4" stroke="#8b949e" stroke-width="1" opacity="0.5"/>
-<circle cx="449.2" cy="380.0" r="4" fill="#8b949e"/>
-<text x="457.2" y="383.2" font-size="10" fill="#8b949e">0.5729</text>
-<text x="212" y="419.2" text-anchor="end" font-size="11" fill="#e6edf3">synthpanel/claude-haiku-4-5-20251001 (adapter test, n=20)</text>
-<line x1="395.6" y1="416.0" x2="485.6" y2="416.0" stroke="#58a6ff" stroke-width="2" opacity="0.5"/><line x1="395.6" y1="409.6" x2="395.6" y2="422.4" stroke="#58a6ff" stroke-width="1" opacity="0.5"/><line x1="485.6" y1="409.6" x2="485.6" y2="422.4" stroke="#58a6ff" stroke-width="1" opacity="0.5"/>
-<circle cx="439.9" cy="416.0" r="4" fill="#58a6ff"/>
-<text x="447.9" y="419.2" font-size="10" fill="#e6edf3">0.5497</text>
-<text x="212" y="455.2" text-anchor="end" font-size="11" fill="#8b949e">majority-baseline</text>
-<circle cx="439.3" cy="452.0" r="4" fill="#8b949e"/>
-<text x="447.3" y="455.2" font-size="10" fill="#8b949e">0.5483</text>
+<text x="212" y="59.2" text-anchor="end" font-size="11" class="chart-text">openrouter/meta-llama/llama-3.3-70b-instruct</text>
+<circle cx="522.4" cy="56.0" r="4" class="chart-accent"/>
+<text x="530.4" y="59.2" font-size="10" class="chart-text">0.7560</text>
+<text x="212" y="95.2" text-anchor="end" font-size="11" class="chart-text">openrouter/google/gemini-2.5-flash</text>
+<circle cx="520.4" cy="92.0" r="4" class="chart-accent"/>
+<text x="528.4" y="95.2" font-size="10" class="chart-text">0.7511</text>
+<text x="212" y="131.2" text-anchor="end" font-size="11" class="chart-text">openrouter/anthropic/claude-haiku-4-5</text>
+<line x1="493.2" y1="128.0" x2="536.7" y2="128.0" class="chart-accent" stroke-width="2" opacity="0.5"/><line x1="493.2" y1="121.6" x2="493.2" y2="134.4" class="chart-accent" stroke-width="1" opacity="0.5"/><line x1="536.7" y1="121.6" x2="536.7" y2="134.4" class="chart-accent" stroke-width="1" opacity="0.5"/>
+<circle cx="518.7" cy="128.0" r="4" class="chart-accent"/>
+<text x="526.7" y="131.2" font-size="10" class="chart-text">0.7467</text>
+<text x="212" y="167.2" text-anchor="end" font-size="11" class="chart-text">raw-gemini/gemini-2.5-flash-lite</text>
+<circle cx="515.1" cy="164.0" r="4" class="chart-accent"/>
+<text x="523.1" y="167.2" font-size="10" class="chart-text">0.7378</text>
+<text x="212" y="203.2" text-anchor="end" font-size="11" class="chart-text">openrouter/openai/gpt-4o-mini</text>
+<circle cx="511.6" cy="200.0" r="4" class="chart-accent"/>
+<text x="519.6" y="203.2" font-size="10" class="chart-text">0.7290</text>
+<text x="212" y="239.2" text-anchor="end" font-size="11" class="chart-text">raw-anthropic/claude-haiku-4-5-20251001</text>
+<circle cx="509.5" cy="236.0" r="4" class="chart-accent"/>
+<text x="517.5" y="239.2" font-size="10" class="chart-text">0.7238</text>
+<text x="212" y="275.2" text-anchor="end" font-size="11" class="chart-text">openrouter/openai/gpt-4o</text>
+<circle cx="501.5" cy="272.0" r="4" class="chart-accent"/>
+<text x="509.5" y="275.2" font-size="10" class="chart-text">0.7037</text>
+<text x="212" y="311.2" text-anchor="end" font-size="11" class="chart-text">openrouter/anthropic/claude-sonnet-4</text>
+<circle cx="475.4" cy="308.0" r="4" class="chart-accent"/>
+<text x="483.4" y="311.2" font-size="10" class="chart-text">0.6384</text>
+<text x="212" y="347.2" text-anchor="end" font-size="11" class="chart-muted">random-baseline</text>
+<circle cx="475.1" cy="344.0" r="4" class="chart-muted"/>
+<text x="483.1" y="347.2" font-size="10" class="chart-muted">0.6378</text>
+<text x="212" y="383.2" text-anchor="end" font-size="11" class="chart-muted">random-baseline</text>
+<line x1="412.3" y1="380.0" x2="491.9" y2="380.0" class="chart-muted" stroke-width="2" opacity="0.5"/><line x1="412.3" y1="373.6" x2="412.3" y2="386.4" class="chart-muted" stroke-width="1" opacity="0.5"/><line x1="491.9" y1="373.6" x2="491.9" y2="386.4" class="chart-muted" stroke-width="1" opacity="0.5"/>
+<circle cx="449.2" cy="380.0" r="4" class="chart-muted"/>
+<text x="457.2" y="383.2" font-size="10" class="chart-muted">0.5729</text>
+<text x="212" y="419.2" text-anchor="end" font-size="11" class="chart-text">synthpanel/claude-haiku-4-5-20251001 (adapter test, n=20)</text>
+<line x1="395.6" y1="416.0" x2="485.6" y2="416.0" class="chart-accent" stroke-width="2" opacity="0.5"/><line x1="395.6" y1="409.6" x2="395.6" y2="422.4" class="chart-accent" stroke-width="1" opacity="0.5"/><line x1="485.6" y1="409.6" x2="485.6" y2="422.4" class="chart-accent" stroke-width="1" opacity="0.5"/>
+<circle cx="439.9" cy="416.0" r="4" class="chart-accent"/>
+<text x="447.9" y="419.2" font-size="10" class="chart-text">0.5497</text>
+<text x="212" y="455.2" text-anchor="end" font-size="11" class="chart-muted">majority-baseline</text>
+<circle cx="439.3" cy="452.0" r="4" class="chart-muted"/>
+<text x="447.3" y="455.2" font-size="10" class="chart-muted">0.5483</text>
 </svg>
   </div>
 
 
-  <h2 class="section-title">Convergence Data</h2>
+  <h2 class="section-title">Convergence</h2>
   <div class="about" style="margin-bottom:1rem">
-    <p>How scores change as sample count increases. Providers with runs at 2+ different sample counts are shown.</p>
+    <p>How scores change as sample count increases. Providers with 3+ different sample counts are shown.</p>
   </div>
   <table class="leaderboard-table">
     <thead>
@@ -520,6 +526,24 @@ footer a{color:var(--accent)}
         <td class="num">0.7560</td>
         <td class="num">0.7573</td>
       </tr>
+    </tbody>
+  </table>
+  <h2 class="section-title">Replicate Runs</h2>
+  <div class="about" style="margin-bottom:1rem">
+    <p>Repeated runs at the same sample size. Useful for measuring score variance, not convergence trends.</p>
+  </div>
+  <table class="leaderboard-table">
+    <thead>
+      <tr>
+        <th>Provider</th>
+        <th class="num">Samples/q</th>
+        <th class="num">Runs</th>
+        <th class="num">Mean SPS</th>
+        <th class="num">Min</th>
+        <th class="num">Max</th>
+      </tr>
+    </thead>
+    <tbody>
       <tr>
         <td class="provider-name">raw-anthropic/claude-haiku-4-5-20251001</td>
         <td class="num">10</td>

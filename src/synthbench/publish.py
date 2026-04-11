@@ -90,12 +90,12 @@ def _ci_whisker_svg(ci_low: float, ci_high: float, point: float) -> str:
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" '
         f'style="vertical-align:middle;margin-left:4px">'
         f'<line x1="{x_low:.1f}" y1="{y_mid}" x2="{x_high:.1f}" y2="{y_mid}" '
-        f'stroke="#8b949e" stroke-width="1.5"/>'
+        f'class="chart-muted" stroke-width="1.5"/>'
         f'<line x1="{x_low:.1f}" y1="{y_mid - 3}" x2="{x_low:.1f}" y2="{y_mid + 3}" '
-        f'stroke="#8b949e" stroke-width="1"/>'
+        f'class="chart-muted" stroke-width="1"/>'
         f'<line x1="{x_high:.1f}" y1="{y_mid - 3}" x2="{x_high:.1f}" y2="{y_mid + 3}" '
-        f'stroke="#8b949e" stroke-width="1"/>'
-        f'<circle cx="{x_point:.1f}" cy="{y_mid}" r="3" fill="#58a6ff"/>'
+        f'class="chart-muted" stroke-width="1"/>'
+        f'<circle cx="{x_point:.1f}" cy="{y_mid}" r="3" class="chart-accent"/>'
         f"</svg>"
     )
 
@@ -170,13 +170,13 @@ def _dot_plot_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
 
         y = i * (row_h + gap) + 40
         x_dot = label_w + cp * chart_w
-        color = "#8b949e" if is_baseline else "#58a6ff"
-        text_color = "#8b949e" if is_baseline else "#e6edf3"
+        dot_class = "chart-muted" if is_baseline else "chart-accent"
+        text_class = "chart-muted" if is_baseline else "chart-text"
 
         display_name = _display_provider_name(provider)
         dots.append(
             f'<text x="{label_w - 8}" y="{y + row_h * 0.6}" '
-            f'text-anchor="end" font-size="11" fill="{text_color}">'
+            f'text-anchor="end" font-size="11" class="{text_class}">'
             f"{escape(display_name)}</text>"
         )
 
@@ -188,28 +188,28 @@ def _dot_plot_svg(ranked: list[dict], baselines: dict[str, dict]) -> str:
             dots.append(
                 f'<line x1="{x_lo:.1f}" y1="{y + row_h * 0.5}" '
                 f'x2="{x_hi:.1f}" y2="{y + row_h * 0.5}" '
-                f'stroke="{color}" stroke-width="2" opacity="0.5"/>'
+                f'class="{dot_class}" stroke-width="2" opacity="0.5"/>'
                 f'<line x1="{x_lo:.1f}" y1="{y + row_h * 0.3}" '
                 f'x2="{x_lo:.1f}" y2="{y + row_h * 0.7}" '
-                f'stroke="{color}" stroke-width="1" opacity="0.5"/>'
+                f'class="{dot_class}" stroke-width="1" opacity="0.5"/>'
                 f'<line x1="{x_hi:.1f}" y1="{y + row_h * 0.3}" '
                 f'x2="{x_hi:.1f}" y2="{y + row_h * 0.7}" '
-                f'stroke="{color}" stroke-width="1" opacity="0.5"/>'
+                f'class="{dot_class}" stroke-width="1" opacity="0.5"/>'
             )
 
         dots.append(
-            f'<circle cx="{x_dot:.1f}" cy="{y + row_h * 0.5}" r="4" fill="{color}"/>'
+            f'<circle cx="{x_dot:.1f}" cy="{y + row_h * 0.5}" r="4" class="{dot_class}"/>'
         )
         dots.append(
             f'<text x="{x_dot + 8:.1f}" y="{y + row_h * 0.6}" '
-            f'font-size="10" fill="{text_color}">{cp:.4f}</text>'
+            f'font-size="10" class="{text_class}">{cp:.4f}</text>'
         )
 
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
         f'width="100%" style="font-family:sans-serif;max-width:{w}px">\n'
         f'<text x="{w / 2}" y="18" text-anchor="middle" font-size="14" '
-        f'fill="#e6edf3" font-weight="600">SPS by Model</text>\n'
+        f'class="chart-text" font-weight="600">SPS by Model</text>\n'
         + "\n".join(ref_lines)
         + "\n"
         + "\n".join(dots)
@@ -287,9 +287,14 @@ def _baseline_delta_html(ranked: list[dict], baselines: dict[str, dict]) -> str:
   </table>"""
 
 
-def _metric_legend_html() -> str:
+def _metric_legend_html(topic_legend_inline: str = "") -> str:
     """Return a compact metric callout card to appear ABOVE the main table."""
-    return """
+    vs_defs = (
+        '<p style="margin-top:0.5rem;font-size:0.88rem">'
+        "<strong>vs Random</strong> &mdash; SPS improvement over uniform random baseline. "
+        "<strong>vs Majority</strong> &mdash; SPS improvement over always-pick-the-mode baseline.</p>"
+    )
+    return f"""
   <div class="about metric-legend">
     <p><strong>SPS</strong> (SynthBench Parity Score) measures how well AI reproduces human survey responses.
        Higher is better (0&nbsp;=&nbsp;random, 1&nbsp;=&nbsp;human-identical).</p>
@@ -298,6 +303,8 @@ def _metric_legend_html() -> str:
        <strong>P_rank</strong> &mdash; rank-order agreement (normalized Kendall&rsquo;s &tau;).
        <strong>P_refuse</strong> &mdash; refusal-rate calibration (1 &minus; mean |&Delta;refusal|).
        All [0,&thinsp;1]; higher = better.</p>
+    {vs_defs}
+    {topic_legend_inline}
   </div>"""
 
 
@@ -668,7 +675,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
 
     # #7 Single "Topics" column header (replaces per-topic columns)
     topic_th = ""
-    topic_legend_html = ""
+    topic_legend_inline = ""
     if topics_present:
         topic_th = '        <th class="num">Topics</th>\n'
         legend_items = []
@@ -679,9 +686,9 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                 f'<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:{color};opacity:0.85"></span>'
                 f'<span style="font-size:0.8rem;color:var(--text-muted)">{escape(t.capitalize())}</span></span>'
             )
-        topic_legend_html = (
-            f'  <div style="margin-top:0.5rem;margin-bottom:1rem;padding-left:0.25rem">'
-            f"{''.join(legend_items)}</div>"
+        topic_legend_inline = (
+            f'<p style="margin-top:0.5rem;font-size:0.88rem">'
+            f"<strong>Topics</strong> &mdash; {''.join(legend_items)}</p>"
         )
 
     # P_refuse column header
@@ -690,24 +697,26 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     # Baseline column headers
     baseline_th = ""
     if has_baselines:
-        baseline_th = '        <th class="num sortable" data-sort="vs-random">vs Random</th>\n        <th class="num sortable" data-sort="vs-majority">vs Majority</th>\n'
+        baseline_th = '        <th class="num sortable" data-sort="vs-random" title="SPS improvement over uniform random baseline">vs Random</th>\n        <th class="num sortable" data-sort="vs-majority" title="SPS improvement over always-pick-the-mode baseline">vs Majority</th>\n'
 
     # Generate chart section: dot-plot instead of bar charts (#9)
     dot_plot = _dot_plot_svg(ranked, baselines)
     explanations = _metric_explanations_html()
-    metric_legend = _metric_legend_html()
+    metric_legend = _metric_legend_html(topic_legend_inline)
 
-    # Convergence section
+    # Convergence section — split into "Convergence" (3+ sample sizes) and "Replicate" (fewer)
     convergence_html = ""
     if convergence_data:
-        conv_rows = []
+        convergence_rows = []
+        replicate_rows = []
         for provider, sweeps in sorted(convergence_data.items()):
+            display_name = _display_provider_name(provider)
+            is_convergence = len(sweeps) >= 3
             for sweep in sweeps:
                 samples = sweep["samples"]
                 runs = sweep["runs"]
                 mean_cp = sum(runs) / len(runs)
-                display_name = _display_provider_name(provider)
-                conv_rows.append(
+                row = (
                     f"      <tr>\n"
                     f'        <td class="provider-name">{escape(display_name)}</td>\n'
                     f'        <td class="num">{samples}</td>\n'
@@ -717,14 +726,12 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                     f'        <td class="num">{max(runs):.4f}</td>\n'
                     f"      </tr>"
                 )
-        conv_tbody = "\n".join(conv_rows)
-        convergence_html = f"""
-  <h2 class="section-title">Convergence Data</h2>
-  <div class="about" style="margin-bottom:1rem">
-    <p>How scores change as sample count increases. Providers with runs at 2+ different sample counts are shown.</p>
-  </div>
-  <table class="leaderboard-table">
-    <thead>
+                if is_convergence:
+                    convergence_rows.append(row)
+                else:
+                    replicate_rows.append(row)
+
+        table_header = """    <thead>
       <tr>
         <th>Provider</th>
         <th class="num">Samples/q</th>
@@ -733,9 +740,33 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
         <th class="num">Min</th>
         <th class="num">Max</th>
       </tr>
-    </thead>
+    </thead>"""
+
+        if convergence_rows:
+            conv_tbody = "\n".join(convergence_rows)
+            convergence_html += f"""
+  <h2 class="section-title">Convergence</h2>
+  <div class="about" style="margin-bottom:1rem">
+    <p>How scores change as sample count increases. Providers with 3+ different sample counts are shown.</p>
+  </div>
+  <table class="leaderboard-table">
+{table_header}
     <tbody>
 {conv_tbody}
+    </tbody>
+  </table>"""
+
+        if replicate_rows:
+            rep_tbody = "\n".join(replicate_rows)
+            convergence_html += f"""
+  <h2 class="section-title">Replicate Runs</h2>
+  <div class="about" style="margin-bottom:1rem">
+    <p>Repeated runs at the same sample size. Useful for measuring score variance, not convergence trends.</p>
+  </div>
+  <table class="leaderboard-table">
+{table_header}
+    <tbody>
+{rep_tbody}
     </tbody>
   </table>"""
 
@@ -811,6 +842,7 @@ header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
   padding:0.75rem 1rem;text-align:left;border-bottom:2px solid var(--border);
 }}
 .leaderboard-table th.num{{text-align:right}}
+.leaderboard-table th:nth-child(5),.leaderboard-table td:nth-child(5){{border-left:1px solid var(--border)}}
 .leaderboard-table th.sortable{{cursor:pointer;user-select:none}}
 .leaderboard-table th.sortable:hover{{color:var(--accent)}}
 .leaderboard-table th .sort-arrow{{font-size:0.65rem;margin-left:0.25rem;opacity:0.5}}
@@ -840,6 +872,10 @@ header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
 
 .low-n td{{opacity:0.7}}
 .low-n-marker{{color:var(--red);font-weight:700;margin-left:1px}}
+
+.chart-text{{fill:var(--text)}}
+.chart-muted{{fill:var(--text-muted);stroke:var(--text-muted)}}
+.chart-accent{{fill:var(--accent)}}
 
 .footnote{{font-size:0.85rem;color:var(--text-muted);margin-top:0.75rem;padding-left:0.5rem;border-left:2px solid var(--border)}}
 
@@ -910,7 +946,6 @@ footer a{{color:var(--accent)}}
   </table>
   {synthpanel_footnote}
   {low_n_footnote}
-{topic_legend_html}
 
   <div class="chart-section">
 {dot_plot}
