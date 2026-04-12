@@ -48,9 +48,22 @@ Want to add your provider to the leaderboard? Here's how:
 5. **CI validates** the result JSON schema automatically.
 6. **Maintainers review and merge** — your results appear on the leaderboard.
 
+## Key Research Findings
+
+Our benchmarking experiments across 3 models, 3 datasets, and 200+ runs reveal:
+
+| Finding | Impact |
+|---------|--------|
+| **3-model ensemble hits SPS 0.90** | Equal-weight average of Haiku + Gemini + GPT-4o-mini beats any single model by +5-7 pts |
+| **Temperature is model-specific** | Gemini benefits from high temp (+4.5%), Haiku is insensitive, GPT-4o-mini mild |
+| **Demographic conditioning quantifies LLM bias** | Republican conditioning 2.4x stronger than Democrat — model defaults approximate liberal responses |
+| **Persona template matters** | Default template beats stripped/broken templates by +11 SPS pts |
+
+See [FINDINGS.md](FINDINGS.md) for the full experimental report with methodology, replications, and per-metric breakdowns.
+
 ## Status
 
-Phase 1 complete: OpinionsQA evaluation harness with CLI, multiple providers, and public leaderboard.
+Phase 2 complete: Multi-model benchmarking, ensemble blending, temperature sweeps, and demographic conditioning analysis across OpinionsQA, SubPOP, and GlobalOpinionQA.
 
 ## Ground Truth
 

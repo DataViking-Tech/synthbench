@@ -19,13 +19,27 @@ MODEL_MAP: dict[str, tuple[str, str]] = {
     "openrouter/anthropic/claude-haiku-4-5": ("Claude Haiku 4.5", "raw"),
     "openrouter/anthropic/claude-sonnet-4": ("Claude Sonnet 4", "raw"),
     "openrouter/google/gemini-2.5-flash": ("Gemini 2.5 Flash", "raw"),
+    "openrouter/google/gemini-2.5-flash-lite": ("Gemini Flash Lite", "raw"),
     # Raw LLMs via direct API
     "raw-anthropic/claude-haiku-4-5-20251001": ("Claude Haiku 4.5 (direct)", "raw"),
     "raw-gemini/gemini-2.5-flash-lite": ("Gemini Flash Lite (direct)", "raw"),
     # Products (orchestration / adapter layers)
     "synthpanel/claude-haiku-4-5-20251001": ("SynthPanel (Haiku 4.5)", "product"),
     "synthpanel/gemini-2.5-flash-lite": (
-        "SynthPanel (Gemini 2.5 Flash Lite)",
+        "SynthPanel (Gemini Flash Lite)",
+        "product",
+    ),
+    # Products — via OpenRouter
+    "synthpanel/openrouter/anthropic/claude-haiku-4-5": (
+        "SynthPanel (Haiku 4.5)",
+        "product",
+    ),
+    "synthpanel/openrouter/google/gemini-2.5-flash-lite": (
+        "SynthPanel (Gemini Flash Lite)",
+        "product",
+    ),
+    "synthpanel/openrouter/openai/gpt-4o-mini": (
+        "SynthPanel (GPT-4o-mini)",
         "product",
     ),
     "synthpanel/gpt-4o-mini": ("SynthPanel (GPT-4o-mini)", "product"),
@@ -35,9 +49,61 @@ MODEL_MAP: dict[str, tuple[str, str]] = {
 }
 
 
+def _parse_provider_base(provider: str) -> str:
+    """Strip temperature/template suffixes from provider name.
+
+    'synthpanel/openrouter/anthropic/claude-haiku-4-5 t=0.85 tpl=current'
+    → 'synthpanel/openrouter/anthropic/claude-haiku-4-5'
+    """
+    return provider.split(" t=")[0].split(" tpl=")[0].split(" profile=")[0].strip()
+
+
+def _extract_hyperparams(result: dict) -> dict[str, object]:
+    """Extract temperature, template, and other hyperparams from a result."""
+    cfg = result.get("config", {})
+    hp: dict[str, object] = {}
+    temp = cfg.get("temperature")
+    if temp is not None:
+        hp["temperature"] = temp
+    tpl = cfg.get("prompt_template")
+    if tpl:
+        from pathlib import Path
+
+        hp["template"] = Path(tpl).stem
+    return hp
+
+
+def _config_key(result: dict) -> tuple:
+    """Build a grouping key: (display_name, framework, dataset, temperature, template).
+
+    Results with the same key are replications to be aggregated.
+    """
+    cfg = result.get("config", {})
+    provider = _parse_provider_base(cfg.get("provider", "unknown"))
+    name = display_provider_name(provider)
+    fw = provider_framework(provider)
+    dataset = cfg.get("dataset", "unknown")
+    temp = cfg.get("temperature")
+    tpl = cfg.get("prompt_template")
+    tpl_name = None
+    if tpl:
+        from pathlib import Path
+
+        tpl_name = Path(tpl).stem
+    return (name, fw, dataset, temp, tpl_name)
+
+
 def display_provider_name(provider: str) -> str:
-    """Map full provider paths to human-friendly display names via MODEL_MAP."""
+    """Map full provider paths to human-friendly display names via MODEL_MAP.
+
+    Handles suffixed names like 'synthpanel/... t=0.85 tpl=current' by
+    stripping suffixes before lookup.
+    """
     entry = MODEL_MAP.get(provider)
+    if entry:
+        return entry[0]
+    base = _parse_provider_base(provider)
+    entry = MODEL_MAP.get(base)
     if entry:
         return entry[0]
     return provider
@@ -46,6 +112,10 @@ def display_provider_name(provider: str) -> str:
 def provider_framework(provider: str) -> str:
     """Return the framework category for a provider: 'raw', 'product', or 'baseline'."""
     entry = MODEL_MAP.get(provider)
+    if entry:
+        return entry[1]
+    base = _parse_provider_base(provider)
+    entry = MODEL_MAP.get(base)
     if entry:
         return entry[1]
     if provider in BASELINE_PROVIDERS:
@@ -179,7 +249,8 @@ def _result_entry(r: dict, rank: int) -> dict:
     agg = r.get("aggregate", {})
     ts = r.get("timestamp", "")
     date_str = ts[:10] if len(ts) >= 10 else "--"
-    return {
+    hp = _extract_hyperparams(r)
+    entry = {
         "rank": rank,
         "provider": cfg.get("provider", "unknown"),
         "dataset": cfg.get("dataset", "unknown"),
@@ -189,25 +260,75 @@ def _result_entry(r: dict, rank: int) -> dict:
         "composite_parity": round(agg.get("composite_parity", 0), 4),
         "mean_jsd": round(agg.get("mean_jsd", 0), 4),
         "mean_kendall_tau": round(agg.get("mean_kendall_tau", 0), 4),
-        "sps": round(
-            agg.get("composite_parity", 0), 4
-        ),  # alias for display compatibility
+        "sps": round(agg.get("composite_parity", 0), 4),
         "date": date_str,
     }
+    # Hyperparameters
+    if "temperature" in hp:
+        entry["temperature"] = hp["temperature"]
+    if "template" in hp:
+        entry["template"] = hp["template"]
+    # Per-metric SPS components from CI data
+    ci = agg.get("per_metric_ci", {})
+    if ci:
+        for metric in ("p_dist", "p_rank", "p_refuse"):
+            bounds = ci.get(metric)
+            if bounds and len(bounds) == 2:
+                entry[metric] = round((bounds[0] + bounds[1]) / 2, 4)
+    return entry
 
 
-def _count_runs(results: list[dict]) -> dict[tuple[str, str, str], int]:
-    """Count total runs per (display_name, framework, dataset) triple."""
-    counts: dict[tuple[str, str, str], int] = {}
+def _count_runs(results: list[dict]) -> dict[tuple, int]:
+    """Count total runs per config key (includes temperature/template)."""
+    counts: dict[tuple, int] = {}
     for r in results:
-        cfg = r.get("config", {})
-        provider = cfg.get("provider", "unknown")
-        name = display_provider_name(provider)
-        fw = provider_framework(provider)
-        dataset = cfg.get("dataset", "unknown")
-        key = (name, fw, dataset)
+        key = _config_key(r)
         counts[key] = counts.get(key, 0) + 1
     return counts
+
+
+def _aggregate_replications(
+    results: list[dict],
+) -> dict[tuple, dict]:
+    """Aggregate replications into mean ± std per config key.
+
+    Returns {config_key: {"mean_sps": ..., "std_sps": ..., "n_runs": ...,
+                          "mean_jsd": ..., "mean_tau": ..., "best_result": dict}}
+    """
+    import math
+
+    groups: dict[tuple, list[dict]] = {}
+    for r in results:
+        key = _config_key(r)
+        groups.setdefault(key, []).append(r)
+
+    aggregated: dict[tuple, dict] = {}
+    for key, runs in groups.items():
+        sps_vals = [r.get("aggregate", {}).get("composite_parity", 0) for r in runs]
+        jsd_vals = [r.get("aggregate", {}).get("mean_jsd", 0) for r in runs]
+        tau_vals = [r.get("aggregate", {}).get("mean_kendall_tau", 0) for r in runs]
+
+        n = len(sps_vals)
+        mean_sps = sum(sps_vals) / n if n else 0
+        std_sps = (
+            math.sqrt(sum((v - mean_sps) ** 2 for v in sps_vals) / n) if n > 1 else 0
+        )
+
+        # Pick the result with most questions evaluated as representative
+        best = max(
+            runs,
+            key=lambda r: r.get("config", {}).get("n_evaluated", 0),
+        )
+
+        aggregated[key] = {
+            "mean_sps": round(mean_sps, 4),
+            "std_sps": round(std_sps, 4),
+            "mean_jsd": round(sum(jsd_vals) / n, 4) if n else 0,
+            "mean_tau": round(sum(tau_vals) / n, 4) if n else 0,
+            "n_runs": n,
+            "best_result": best,
+        }
+    return aggregated
 
 
 def _format_leaderboard_md(
@@ -217,6 +338,8 @@ def _format_leaderboard_md(
     topic_scores: dict[str, dict[str, float]] | None = None,
     show_samples: bool = False,
     show_baselines: bool = False,
+    show_hyperparams: bool = False,
+    show_aggregation: bool = False,
 ) -> str:
     """Format leaderboard entries as markdown table."""
     topics_present = topics_present or []
@@ -234,27 +357,47 @@ def _format_leaderboard_md(
         baseline_cols = " vs Random | vs Majority |"
         baseline_seps = "-----------|-------------|"
 
+    # Build header with optional hyperparameter columns
+    hp_cols = " Temp | Template |" if show_hyperparams else ""
+    hp_seps = "------|----------|" if show_hyperparams else ""
+    agg_cols = " ± Std | Runs |" if show_aggregation else ""
+    agg_seps = "-------|------|" if show_aggregation else ""
+
     if topics_present:
         topic_headers = " | ".join(t.capitalize() for t in topics_present)
         topic_seps = " | ".join("---" for _ in topics_present)
         lines = [
             title,
             "",
-            f"| Rank | Provider | Dataset | N |{extra_cols} SPS |{baseline_cols} {topic_headers} | JSD | tau | Date |",
-            f"|------|----------|---------|---|{extra_seps}--------|{baseline_seps}{topic_seps}|-----|-----|------|",
+            f"| Rank | Provider | Dataset | N |{extra_cols}{hp_cols} SPS |{agg_cols}{baseline_cols} {topic_headers} | JSD | tau | Date |",
+            f"|------|----------|---------|---|{extra_seps}{hp_seps}--------|{agg_seps}{baseline_seps}{topic_seps}|-----|-----|------|",
         ]
     else:
         lines = [
             title,
             "",
-            f"| Rank | Provider | Dataset | N |{extra_cols} SPS |{baseline_cols} JSD | tau | Date |",
-            f"|------|----------|---------|---|{extra_seps}--------|{baseline_seps}-----|-----|------|",
+            f"| Rank | Provider | Dataset | N |{extra_cols}{hp_cols} SPS |{agg_cols}{baseline_cols} JSD | tau | Date |",
+            f"|------|----------|---------|---|{extra_seps}{hp_seps}--------|{agg_seps}{baseline_seps}-----|-----|------|",
         ]
 
     for e in entries:
         samples_col = (
             f" {e.get('samples_per_question', '--')} |" if show_samples else ""
         )
+        hp_str = ""
+        if show_hyperparams:
+            temp = e.get("temperature")
+            temp_str = f"{temp}" if temp is not None else "default"
+            tpl = e.get("template", "—")
+            hp_str = f" {temp_str} | {tpl} |"
+
+        agg_str = ""
+        if show_aggregation:
+            std = e.get("std_sps")
+            n_runs = e.get("n_runs", 1)
+            std_str = f"±{std:.4f}" if std is not None and std > 0 else "—"
+            agg_str = f" {std_str} | {n_runs} |"
+
         topic_str = ""
         if topics_present:
             topic_cells = []
@@ -270,7 +413,7 @@ def _format_leaderboard_md(
             baseline_str = f" {vs_r} | {vs_m} |"
 
         runs_note = ""
-        if "n_runs" in e and e["n_runs"] > 1:
+        if not show_aggregation and "n_runs" in e and e["n_runs"] > 1:
             runs_note = f" ({e['n_runs']} runs)"
 
         provider_label = display_provider_name(e["provider"])
@@ -279,8 +422,8 @@ def _format_leaderboard_md(
             f"| {provider_label}{runs_note} "
             f"| {e['dataset']} "
             f"| {e['n']} "
-            f"|{samples_col} {e['composite_parity']:.4f} "
-            f"|{baseline_str}"
+            f"|{samples_col}{hp_str} {e['composite_parity']:.4f} "
+            f"|{agg_str}{baseline_str}"
             f"{topic_str}"
             f" {e['mean_jsd']:.4f} "
             f"| {e['mean_kendall_tau']:.4f} "
@@ -425,39 +568,29 @@ def build_leaderboard(
     )
     detail_entries = [_result_entry(r, i + 1) for i, r in enumerate(detail_ranked)]
 
-    # --- Summary tier: best per (display_name, framework, dataset) ---
-    run_counts = _count_runs(target)
-    best: dict[tuple[str, str, str], dict] = {}
-    for r in target:
-        cfg = r.get("config", {})
-        provider = cfg.get("provider", "unknown")
-        dataset = cfg.get("dataset", "unknown")
-        n_eval = cfg.get("n_evaluated", 0)
-        name = display_provider_name(provider)
-        fw = provider_framework(provider)
-        key = (name, fw, dataset)
+    # --- Summary tier: aggregate replications per config key ---
+    aggregated = _aggregate_replications(target)
 
-        existing = best.get(key)
-        if existing is None or n_eval > existing["config"].get("n_evaluated", 0):
-            best[key] = r
-
-    summary_ranked = sorted(
-        best.values(),
-        key=lambda r: r.get("aggregate", {}).get("composite_parity", 0),
+    # Sort by mean SPS descending
+    sorted_keys = sorted(
+        aggregated.keys(),
+        key=lambda k: aggregated[k]["mean_sps"],
         reverse=True,
     )
 
     summary_entries = []
-    for rank, r in enumerate(summary_ranked, 1):
-        entry = _result_entry(r, rank)
-        cfg = r.get("config", {})
-        provider = cfg.get("provider", "unknown")
-        name = display_provider_name(provider)
-        fw = provider_framework(provider)
-        dataset = cfg.get("dataset", "unknown")
-        key = (name, fw, dataset)
-        entry["n_runs"] = run_counts.get(key, 1)
-        entry["framework"] = fw
+    for rank, key in enumerate(sorted_keys, 1):
+        agg_data = aggregated[key]
+        best_r = agg_data["best_result"]
+        entry = _result_entry(best_r, rank)
+        # Override SPS with aggregated mean
+        entry["composite_parity"] = agg_data["mean_sps"]
+        entry["sps"] = agg_data["mean_sps"]
+        entry["mean_jsd"] = agg_data["mean_jsd"]
+        entry["mean_kendall_tau"] = agg_data["mean_tau"]
+        entry["std_sps"] = agg_data["std_sps"]
+        entry["n_runs"] = agg_data["n_runs"]
+        entry["framework"] = key[1]  # framework from config key
         if entry["provider"] in topic_scores:
             entry["topic_scores"] = topic_scores[entry["provider"]]
         summary_entries.append(entry)
@@ -468,6 +601,13 @@ def build_leaderboard(
     _add_baseline_deltas(detail_entries, baseline_scores)
 
     # Build markdown for the selected tier
+    # Check if any results have hyperparameters worth showing
+    has_hyperparams = any(
+        e.get("temperature") is not None or e.get("template") is not None
+        for e in summary_entries
+    )
+    has_multi_runs = any(e.get("n_runs", 1) > 1 for e in summary_entries)
+
     if show_all:
         md = _format_leaderboard_md(
             detail_entries,
@@ -476,6 +616,7 @@ def build_leaderboard(
             topic_scores=topic_scores,
             show_samples=True,
             show_baselines=bool(baseline_scores),
+            show_hyperparams=has_hyperparams,
         )
     else:
         md = _format_leaderboard_md(
@@ -483,6 +624,8 @@ def build_leaderboard(
             topics_present=topics_present,
             topic_scores=topic_scores,
             show_baselines=bool(baseline_scores),
+            show_hyperparams=has_hyperparams,
+            show_aggregation=has_multi_runs,
         )
 
     # --- Convergence data ---

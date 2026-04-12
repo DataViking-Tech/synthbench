@@ -131,6 +131,12 @@ def main():
     default=None,
     help="Sampling temperature to pass to the provider (e.g., 0.7, 1.0).",
 )
+@click.option(
+    "--prompt-template",
+    type=click.Path(exists=True),
+    default=None,
+    help="Path to a custom persona prompt template file (synthpanel only).",
+)
 def run(
     provider,
     model,
@@ -149,6 +155,7 @@ def run(
     full_evaluation,
     country,
     temperature,
+    prompt_template,
 ):
     """Run a benchmark evaluation.
 
@@ -193,6 +200,7 @@ def run(
             demo_list,
             country,
             temperature,
+            prompt_template,
         )
     )
 
@@ -214,6 +222,7 @@ async def _run_async(
     demographics=None,
     country=None,
     temperature=None,
+    prompt_template=None,
 ):
     from synthbench.datasets import DATASETS
     from synthbench.providers import load_provider
@@ -243,6 +252,8 @@ async def _run_async(
         provider_kwargs["url"] = url
     if temperature is not None:
         provider_kwargs["temperature"] = temperature
+    if prompt_template is not None:
+        provider_kwargs["prompt_template"] = prompt_template
     try:
         prov = load_provider(provider_name, **provider_kwargs)
     except KeyError as e:
@@ -319,6 +330,8 @@ async def _run_async(
         result.config["topic"] = topic
     if temperature is not None:
         result.config["temperature"] = temperature
+    if prompt_template is not None:
+        result.config["prompt_template"] = prompt_template
 
     click.echo()  # Newline after progress
     click.echo()
@@ -1224,6 +1237,183 @@ def publish(results_dir, output):
     except ValueError as e:
         click.echo(str(e), err=True)
         sys.exit(1)
+
+
+@main.command()
+@click.argument("files", nargs=-1, required=True, type=click.Path(exists=True))
+@click.option(
+    "--output", "-o", type=click.Path(), default="results", help="Output directory."
+)
+@click.option(
+    "--weights",
+    default=None,
+    help="Comma-separated weights for each input file (default: equal).",
+)
+def ensemble(files, output, weights):
+    """Blend N result files into a single ensemble result.
+
+    Aligns questions by key (intersection), averages model distributions
+    with equal (or custom) weights, and recomputes all metrics.
+
+    Example:
+        synthbench ensemble results/haiku.json results/gemini.json results/gpt4omini.json
+        synthbench ensemble a.json b.json --weights 0.6,0.4
+    """
+    from datetime import datetime, timezone
+    from synthbench.metrics.distributional import jensen_shannon_divergence
+    from synthbench.metrics.ranking import kendall_tau_b
+    from synthbench.metrics.composite import parity_score
+
+    if len(files) < 2:
+        click.echo("Error: need at least 2 result files to ensemble.", err=True)
+        sys.exit(1)
+
+    # Parse weights
+    if weights:
+        w = [float(x) for x in weights.split(",")]
+        if len(w) != len(files):
+            click.echo(f"Error: got {len(w)} weights for {len(files)} files.", err=True)
+            sys.exit(1)
+        w_total = sum(w)
+        w = [x / w_total for x in w]  # normalize
+    else:
+        w = [1.0 / len(files)] * len(files)
+
+    # Load all result files
+    datasets = []
+    source_providers = []
+    for fpath in files:
+        with open(fpath) as f:
+            data = json.load(f)
+        datasets.append(data)
+        source_providers.append(
+            data.get("config", {}).get("provider", Path(fpath).stem)
+        )
+
+    # Index per-question data by key for each file
+    per_q_maps = []
+    for data in datasets:
+        pq = {q["key"]: q for q in data.get("per_question", [])}
+        per_q_maps.append(pq)
+
+    # Intersection of question keys across all files
+    common_keys = set(per_q_maps[0].keys())
+    for pq in per_q_maps[1:]:
+        common_keys &= set(pq.keys())
+    common_keys = sorted(common_keys)
+
+    if not common_keys:
+        click.echo("Error: no common questions across all input files.", err=True)
+        sys.exit(1)
+
+    click.echo(
+        f"Ensembling {len(files)} results over {len(common_keys)} common questions"
+    )
+
+    # Blend distributions and recompute metrics
+    per_question = []
+    for key in common_keys:
+        qs = [pq[key] for pq in per_q_maps]
+        ref_q = qs[0]
+
+        # Human distribution — take from first file (should be identical)
+        human_dist = ref_q["human_distribution"]
+
+        # Blend model distributions with weights
+        all_option_keys = set()
+        for q in qs:
+            all_option_keys.update(q["model_distribution"].keys())
+
+        blended = {}
+        for opt in all_option_keys:
+            blended[opt] = sum(
+                w[i] * qs[i]["model_distribution"].get(opt, 0.0) for i in range(len(qs))
+            )
+
+        # Recompute metrics
+        jsd = jensen_shannon_divergence(human_dist, blended)
+        tau = kendall_tau_b(human_dist, blended)
+        parity = parity_score(jsd, tau)
+
+        per_question.append(
+            {
+                "key": key,
+                "text": ref_q.get("text", ""),
+                "options": ref_q.get("options", []),
+                "human_distribution": {k: round(v, 4) for k, v in human_dist.items()},
+                "model_distribution": {k: round(v, 4) for k, v in blended.items()},
+                "jsd": round(jsd, 6),
+                "kendall_tau": round(tau, 6),
+                "parity": round(parity, 6),
+                "n_samples": sum(q.get("n_samples", 0) for q in qs),
+                "n_parse_failures": sum(q.get("n_parse_failures", 0) for q in qs),
+                "model_refusal_rate": round(
+                    sum(
+                        w[i] * qs[i].get("model_refusal_rate", 0.0)
+                        for i in range(len(qs))
+                    ),
+                    6,
+                ),
+                "human_refusal_rate": ref_q.get("human_refusal_rate", 0.0),
+                "temporal_year": ref_q.get("temporal_year", 0),
+            }
+        )
+
+    # Aggregate metrics
+    n_q = len(per_question)
+    mean_jsd = sum(q["jsd"] for q in per_question) / n_q
+    mean_tau = sum(q["kendall_tau"] for q in per_question) / n_q
+    p_dist = round(1.0 - mean_jsd, 6)
+    p_rank = round((1.0 + mean_tau) / 2.0, 6)
+    composite = round(parity_score(mean_jsd, mean_tau), 6)
+
+    # Build result JSON
+    provider_label = f"ensemble/{len(files)}-model-blend"
+    dataset_name = datasets[0].get("config", {}).get("dataset", "unknown")
+
+    result_json = {
+        "benchmark": "synthbench",
+        "version": __version__,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "config": {
+            "dataset": dataset_name,
+            "provider": provider_label,
+            "ensemble_sources": [
+                {"file": str(Path(f).name), "provider": sp, "weight": round(w[i], 6)}
+                for i, (f, sp) in enumerate(zip(files, source_providers))
+            ],
+            "n_common_questions": len(common_keys),
+        },
+        "scores": {
+            "sps": round((p_dist + p_rank) / 2.0, 6),
+            "p_dist": p_dist,
+            "p_rank": p_rank,
+        },
+        "aggregate": {
+            "mean_jsd": round(mean_jsd, 6),
+            "median_jsd": round(sorted(q["jsd"] for q in per_question)[n_q // 2], 6),
+            "mean_kendall_tau": round(mean_tau, 6),
+            "composite_parity": composite,
+            "n_questions": n_q,
+            "elapsed_seconds": 0.0,
+        },
+        "per_question": per_question,
+    }
+
+    # Summary output
+    click.echo(f"  Provider: {provider_label}")
+    click.echo(f"  P_dist:   {p_dist:.4f}")
+    click.echo(f"  P_rank:   {p_rank:.4f}")
+    click.echo(f"  SPS:      {result_json['scores']['sps']:.4f}")
+    click.echo()
+
+    # Save
+    out_dir = Path(output)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    json_path = out_dir / f"{dataset_name}_ensemble_{len(files)}blend_{ts}.json"
+    json_path.write_text(json.dumps(result_json, indent=2))
+    click.echo(f"Saved: {json_path}")
 
 
 if __name__ == "__main__":

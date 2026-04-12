@@ -1,0 +1,3211 @@
+{
+  "benchmark": "synthbench",
+  "version": "0.1.0",
+  "timestamp": "2026-04-11T19:33:35.876038+00:00",
+  "config": {
+    "dataset": "subpop",
+    "provider": "synthpanel/openrouter/anthropic/claude-haiku-4-5 t=0.85 tpl=values",
+    "samples_per_question": 30,
+    "n_requested": 100,
+    "n_evaluated": 100,
+    "temperature": 0.85,
+    "prompt_template": "templates/values.txt",
+    "question_set_hash": "35cb150487abfe257069ff733fa97cb90993aa979e056c45928c4efc22d71297",
+    "parse_failure_rate": 0.0,
+    "topic_filter": null
+  },
+  "scores": {
+    "sps": 0.531753,
+    "p_dist": 0.579585,
+    "p_rank": 0.615394,
+    "p_refuse": 0.400282
+  },
+  "aggregate": {
+    "mean_jsd": 0.420415,
+    "median_jsd": 0.322188,
+    "mean_kendall_tau": 0.230787,
+    "composite_parity": 0.597489,
+    "n_questions": 100,
+    "elapsed_seconds": 188.5,
+    "per_metric_ci": {
+      "p_dist": [
+        0.517107,
+        0.635212
+      ],
+      "p_rank": [
+        0.562975,
+        0.660294
+      ],
+      "p_refuse": [
+        0.345895,
+        0.456545
+      ],
+      "sps": [
+        0.541502,
+        0.643529
+      ]
+    },
+    "question_set_hash": "35cb150487abfe257069ff733fa97cb90993aa979e056c45928c4efc22d71297",
+    "n_parse_failures": 0
+  },
+  "demographic_breakdown": {},
+  "per_question": [
+    {
+      "key": "AAPERSADV_W125",
+      "text": "Do you think that you have ever been at an advantage in your education, career, or job because of efforts to increase ra",
+      "options": [
+        "Yes",
+        "No",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.1247,
+        "No": 0.7034,
+        "Not sure": 0.1645,
+        "Refused": 0.0074
+      },
+      "model_distribution": {
+        "Yes": 0.0,
+        "No": 0.8667,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.167013,
+      "kendall_tau": 0.707107,
+      "parity": 0.84327,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.133333,
+      "human_refusal_rate": 0.007423,
+      "temporal_year": 0
+    },
+    {
+      "key": "AAPERSDIS_W125",
+      "text": "Do you think that you have ever been at a disadvantage in your education, career, or job because of efforts to increase ",
+      "options": [
+        "Yes",
+        "No",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.2461,
+        "No": 0.5676,
+        "Not sure": 0.1785,
+        "Refused": 0.0078
+      },
+      "model_distribution": {
+        "Yes": 0.1333,
+        "No": 0.7333,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.120787,
+      "kendall_tau": 0.912871,
+      "parity": 0.917824,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.133333,
+      "human_refusal_rate": 0.007754,
+      "temporal_year": 0
+    },
+    {
+      "key": "AAPERSSTER_W125",
+      "text": "Do you think people have ever assumed that you benefited unfairly in your education, career, or job from efforts to incr",
+      "options": [
+        "Yes",
+        "No",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.1471,
+        "No": 0.646,
+        "Not sure": 0.2022,
+        "Refused": 0.0046
+      },
+      "model_distribution": {
+        "Yes": 0.2,
+        "No": 0.7333,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.112868,
+      "kendall_tau": 0.547723,
+      "parity": 0.830497,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.066667,
+      "human_refusal_rate": 0.004633,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABORTION2_W125",
+      "text": "Thinking about abortion policies around the country, which is your greater concern?",
+      "options": [
+        "That some states are making it too DIFFICULT for people to be able to get an abortion",
+        "That some states are making it too EASY for people to be able to get an abortion",
+        "Refused"
+      ],
+      "human_distribution": {
+        "That some states are making it too DIFFICULT for people to be able to get an abortion": 0.6452,
+        "That some states are making it too EASY for people to be able to get an abortion": 0.3317,
+        "Refused": 0.0232
+      },
+      "model_distribution": {
+        "That some states are making it too DIFFICULT for people to be able to get an abortion": 0.0333,
+        "That some states are making it too EASY for people to be able to get an abortion": 0.0,
+        "Refused": 0.0667
+      },
+      "jsd": 0.474066,
+      "kendall_tau": -0.333333,
+      "parity": 0.429634,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.9,
+      "human_refusal_rate": 0.023173,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABORTION3_W125",
+      "text": "Thinking about the area where you live, how easy or difficult do you think it would be for someone to obtain an abortion",
+      "options": [
+        "Very difficult",
+        "Somewhat difficult",
+        "Somewhat easy",
+        "Very easy",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Very difficult": 0.1368,
+        "Somewhat difficult": 0.2821,
+        "Somewhat easy": 0.3522,
+        "Very easy": 0.1935,
+        "Refused": 0.0353
+      },
+      "model_distribution": {
+        "Very difficult": 0.0,
+        "Somewhat difficult": 0.0,
+        "Somewhat easy": 0.0,
+        "Very easy": 0.0333,
+        "Refused": 0.1
+      },
+      "jsd": 0.67691,
+      "kendall_tau": -0.597614,
+      "parity": 0.262141,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.866667,
+      "human_refusal_rate": 0.035328,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABORTION4_W125",
+      "text": "Still thinking about the area where you live, do you think that obtaining an abortion should be...",
+      "options": [
+        "Harder than it is now",
+        "Easier than it is now",
+        "About what it is now",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Harder than it is now": 0.2552,
+        "Easier than it is now": 0.3547,
+        "About what it is now": 0.3596,
+        "Refused": 0.0305
+      },
+      "model_distribution": {
+        "Harder than it is now": 0.0333,
+        "Easier than it is now": 0.0,
+        "About what it is now": 0.0,
+        "Refused": 0.1333
+      },
+      "jsd": 0.680564,
+      "kendall_tau": -0.912871,
+      "parity": 0.1815,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.833333,
+      "human_refusal_rate": 0.030484,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABORTION5_W104",
+      "text": "Do you personally know someone (such as a close friend, family member, or yourself) who has had an abortion?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.5557,
+        "No": 0.4364,
+        "Refused": 0.0079
+      },
+      "model_distribution": {
+        "Yes": 0.2,
+        "No": 0.5333,
+        "Refused": 0.0
+      },
+      "jsd": 0.066038,
+      "kendall_tau": 0.333333,
+      "parity": 0.800314,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.266667,
+      "human_refusal_rate": 0.00791,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABORTLGL_W87",
+      "text": "Do you think abortion should be...",
+      "options": [
+        "Legal in all cases",
+        "Legal in most cases",
+        "Illegal in most cases",
+        "Illegal in all cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal in all cases": 0.2766,
+        "Legal in most cases": 0.3464,
+        "Illegal in most cases": 0.2368,
+        "Illegal in all cases": 0.1254,
+        "Refused": 0.0148
+      },
+      "model_distribution": {
+        "Legal in all cases": 0.0333,
+        "Legal in most cases": 0.0,
+        "Illegal in most cases": 0.0,
+        "Illegal in all cases": 0.0,
+        "Refused": 0.1333
+      },
+      "jsd": 0.712745,
+      "kendall_tau": -0.358569,
+      "parity": 0.303985,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.833333,
+      "human_refusal_rate": 0.014817,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL1_W104",
+      "text": "Just to confirm, do you think there are any exceptions when abortion should be against the law, or do you think abortion",
+      "options": [
+        "There are some exceptions when abortion should be against the law",
+        "Abortion should be legal in all cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "There are some exceptions when abortion should be against the law": 0.2495,
+        "Abortion should be legal in all cases": 0.7464,
+        "Refused": 0.0041
+      },
+      "model_distribution": {
+        "There are some exceptions when abortion should be against the law": 0.0,
+        "Abortion should be legal in all cases": 0.0,
+        "Refused": 0.0333
+      },
+      "jsd": 0.980923,
+      "kendall_tau": -0.816497,
+      "parity": 0.055414,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.966667,
+      "human_refusal_rate": 0.004064,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL3_a_W104",
+      "text": "Do you think abortion should be legal or illegal in the situation where the pregnancy threatens the woman\u2019s life or heal",
+      "options": [
+        "Legal",
+        "Illegal",
+        "It depends",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal": 0.7667,
+        "Illegal": 0.0548,
+        "It depends": 0.1766,
+        "Refused": 0.0019
+      },
+      "model_distribution": {
+        "Legal": 0.1,
+        "Illegal": 0.0,
+        "It depends": 0.0,
+        "Refused": 0.0667
+      },
+      "jsd": 0.315249,
+      "kendall_tau": 0.182574,
+      "parity": 0.638019,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.833333,
+      "human_refusal_rate": 0.001914,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL3_b_W104",
+      "text": "Do you think abortion should be legal or illegal in the situation where the pregnancy is the result of rape?",
+      "options": [
+        "Legal",
+        "Illegal",
+        "It depends",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal": 0.7106,
+        "Illegal": 0.0935,
+        "It depends": 0.1932,
+        "Refused": 0.0027
+      },
+      "model_distribution": {
+        "Legal": 0.3333,
+        "Illegal": 0.0,
+        "It depends": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.162465,
+      "kendall_tau": 0.707107,
+      "parity": 0.845544,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.666667,
+      "human_refusal_rate": 0.002672,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL3_c_W104",
+      "text": "Do you think abortion should be legal or illegal in the situation where the baby is likely to be born with severe disabi",
+      "options": [
+        "Legal",
+        "Illegal",
+        "It depends",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal": 0.516,
+        "Illegal": 0.1329,
+        "It depends": 0.3471,
+        "Refused": 0.0041
+      },
+      "model_distribution": {
+        "Legal": 0.3667,
+        "Illegal": 0.0,
+        "It depends": 0.0667,
+        "Refused": 0.0
+      },
+      "jsd": 0.125242,
+      "kendall_tau": 0.912871,
+      "parity": 0.915597,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.566667,
+      "human_refusal_rate": 0.004094,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL_W104",
+      "text": "Do you think abortion should be...",
+      "options": [
+        "Legal in all cases",
+        "Legal in most cases",
+        "Illegal in most cases",
+        "Illegal in all cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal in all cases": 0.2648,
+        "Legal in most cases": 0.3631,
+        "Illegal in most cases": 0.2583,
+        "Illegal in all cases": 0.0963,
+        "Refused": 0.0174
+      },
+      "model_distribution": {
+        "Legal in all cases": 0.0333,
+        "Legal in most cases": 0.0,
+        "Illegal in most cases": 0.0,
+        "Illegal in all cases": 0.0,
+        "Refused": 0.0333
+      },
+      "jsd": 0.589123,
+      "kendall_tau": -0.258199,
+      "parity": 0.390889,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.933333,
+      "human_refusal_rate": 0.017422,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL_W110",
+      "text": "Do you think abortion should be...",
+      "options": [
+        "Legal in all cases",
+        "Legal in most cases",
+        "Illegal in most cases",
+        "Illegal in all cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal in all cases": 0.3153,
+        "Legal in most cases": 0.3381,
+        "Illegal in most cases": 0.2544,
+        "Illegal in all cases": 0.076,
+        "Refused": 0.0162
+      },
+      "model_distribution": {
+        "Legal in all cases": 0.0,
+        "Legal in most cases": 0.0,
+        "Illegal in most cases": 0.0,
+        "Illegal in all cases": 0.0,
+        "Refused": 0.2
+      },
+      "jsd": 0.940055,
+      "kendall_tau": -0.632456,
+      "parity": 0.121859,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.8,
+      "human_refusal_rate": 0.016196,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL_W125",
+      "text": "Do you think abortion should be\u2026",
+      "options": [
+        "Legal in all cases",
+        "Legal in most cases",
+        "Illegal in most cases",
+        "Illegal in all cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal in all cases": 0.2912,
+        "Legal in most cases": 0.3593,
+        "Illegal in most cases": 0.2562,
+        "Illegal in all cases": 0.0812,
+        "Refused": 0.0121
+      },
+      "model_distribution": {
+        "Legal in all cases": 0.0,
+        "Legal in most cases": 0.0,
+        "Illegal in most cases": 0.0,
+        "Illegal in all cases": 0.0,
+        "Refused": 0.2667
+      },
+      "jsd": 0.952612,
+      "kendall_tau": -0.632456,
+      "parity": 0.11558,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.733333,
+      "human_refusal_rate": 0.012124,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTMOR_W104",
+      "text": "Regardless of whether you think abortion should be legal or illegal, do you personally think that having an abortion is\u2026",
+      "options": [
+        "Morally acceptable in all cases",
+        "Morally acceptable in most cases",
+        "Morally wrong in most cases",
+        "Morally wrong in all cases",
+        "Not a moral issue",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Morally acceptable in all cases": 0.0891,
+        "Morally acceptable in most cases": 0.2456,
+        "Morally wrong in most cases": 0.3144,
+        "Morally wrong in all cases": 0.1174,
+        "Not a moral issue": 0.2202,
+        "Refused": 0.0133
+      },
+      "model_distribution": {
+        "Morally acceptable in all cases": 0.0,
+        "Morally acceptable in most cases": 0.0,
+        "Morally wrong in most cases": 0.0,
+        "Morally wrong in all cases": 0.0,
+        "Not a moral issue": 0.0,
+        "Refused": 0.1667
+      },
+      "jsd": 0.948957,
+      "kendall_tau": -0.57735,
+      "parity": 0.131184,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.833333,
+      "human_refusal_rate": 0.013281,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTMORa_W104",
+      "text": "Do you think there are situations when abortion should be legal but is also morally wrong?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.7398,
+        "No": 0.2466,
+        "Refused": 0.0136
+      },
+      "model_distribution": {
+        "Yes": 0.5,
+        "No": 0.1667,
+        "Refused": 0.0
+      },
+      "jsd": 0.006832,
+      "kendall_tau": 1.0,
+      "parity": 0.996584,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.333333,
+      "human_refusal_rate": 0.013596,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTNMED_HRD_W125",
+      "text": "How much have you heard or read about medication abortion, which involves the use of a prescription pill or a series of ",
+      "options": [
+        "A lot",
+        "A little",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lot": 0.2211,
+        "A little": 0.5525,
+        "Nothing at all": 0.2172,
+        "Refused": 0.0092
+      },
+      "model_distribution": {
+        "A lot": 0.2333,
+        "A little": 0.1667,
+        "Nothing at all": 0.0,
+        "Refused": 0.0333
+      },
+      "jsd": 0.19077,
+      "kendall_tau": 0.333333,
+      "parity": 0.737948,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.566667,
+      "human_refusal_rate": 0.009207,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTNMED_KNOW_REFUSED_W125",
+      "text": "Did you refuse to answer the previous question?",
+      "options": [
+        "Not asked",
+        "Did not refuse",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not asked": 0.0,
+        "Did not refuse": 0.9704,
+        "Refused": 0.0296
+      },
+      "model_distribution": {
+        "Not asked": 0.0,
+        "Did not refuse": 0.3,
+        "Refused": 0.1
+      },
+      "jsd": 0.081939,
+      "kendall_tau": 1.0,
+      "parity": 0.959031,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.6,
+      "human_refusal_rate": 1.0,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_CHNGE_W125",
+      "text": "Have your personal views about abortion changed in any way over the past year or so?",
+      "options": [
+        "Changed a lot",
+        "Changed a little",
+        "Stayed about the same",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Changed a lot": 0.0652,
+        "Changed a little": 0.1496,
+        "Stayed about the same": 0.768,
+        "Refused": 0.0173
+      },
+      "model_distribution": {
+        "Changed a lot": 0.0,
+        "Changed a little": 0.0,
+        "Stayed about the same": 0.1,
+        "Refused": 0.2
+      },
+      "jsd": 0.454637,
+      "kendall_tau": -0.182574,
+      "parity": 0.477038,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.7,
+      "human_refusal_rate": 0.017333,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_MED_W125",
+      "text": "Do you think medication abortion should be legal or illegal in your state?",
+      "options": [
+        "Legal",
+        "Illegal",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal": 0.5558,
+        "Illegal": 0.2088,
+        "Not sure": 0.2275,
+        "Refused": 0.008
+      },
+      "model_distribution": {
+        "Legal": 0.1333,
+        "Illegal": 0.0,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.268512,
+      "kendall_tau": 0.707107,
+      "parity": 0.79252,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.866667,
+      "human_refusal_rate": 0.008018,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_PEN_a_W104",
+      "text": "If an abortion was carried out in a situation where it was illegal, do you think the woman who had the abortion should o",
+      "options": [
+        "Should face penalties",
+        "Should not face penalties",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Should face penalties": 0.4526,
+        "Should not face penalties": 0.5215,
+        "Refused": 0.0259
+      },
+      "model_distribution": {
+        "Should face penalties": 0.3,
+        "Should not face penalties": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.180322,
+      "kendall_tau": 0.333333,
+      "parity": 0.743173,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.666667,
+      "human_refusal_rate": 0.0259,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_PEN_b_W104",
+      "text": "If an abortion was carried out in a situation where it was illegal, do you think the doctor or provider who performed th",
+      "options": [
+        "Should face penalties",
+        "Should not face penalties",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Should face penalties": 0.5556,
+        "Should not face penalties": 0.4239,
+        "Refused": 0.0205
+      },
+      "model_distribution": {
+        "Should face penalties": 0.3667,
+        "Should not face penalties": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.13268,
+      "kendall_tau": 1.0,
+      "parity": 0.93366,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.6,
+      "human_refusal_rate": 0.020498,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_PEN_c_W104",
+      "text": "If an abortion was carried out in a situation where it was illegal, do you think the person who helped find and schedule",
+      "options": [
+        "Should face penalties",
+        "Should not face penalties",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Should face penalties": 0.3807,
+        "Should not face penalties": 0.6035,
+        "Refused": 0.0157
+      },
+      "model_distribution": {
+        "Should face penalties": 0.2,
+        "Should not face penalties": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.186047,
+      "kendall_tau": 0.333333,
+      "parity": 0.74031,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.766667,
+      "human_refusal_rate": 0.015734,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_PEN_d_W104",
+      "text": "If an abortion was carried out in a situation where it was illegal, do you think the person who helped pay for the abort",
+      "options": [
+        "Should face penalties",
+        "Should not face penalties",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Should face penalties": 0.4156,
+        "Should not face penalties": 0.5529,
+        "Refused": 0.0316
+      },
+      "model_distribution": {
+        "Should face penalties": 0.1667,
+        "Should not face penalties": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.381916,
+      "kendall_tau": 0.0,
+      "parity": 0.559042,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.833333,
+      "human_refusal_rate": 0.031555,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_PENa_2_W104",
+      "text": "If a woman had an abortion in a situation where it was illegal, what should be the consequence?",
+      "options": [
+        "Serve jail time",
+        "Pay a fine or do community service",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Serve jail time": 0.3174,
+        "Pay a fine or do community service": 0.3417,
+        "Not sure": 0.3396,
+        "Refused": 0.0013
+      },
+      "model_distribution": {
+        "Serve jail time": 0.0,
+        "Pay a fine or do community service": 0.0,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 1.0,
+      "kendall_tau": 0.0,
+      "parity": 0.25,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 1.0,
+      "human_refusal_rate": 0.001316,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_PENb_2a_W104",
+      "text": "If a doctor or provider performed an abortion in a situation where it was illegal, should they...",
+      "options": [
+        "Serve jail time",
+        "Pay a fine or do community service",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Serve jail time": 0.3916,
+        "Pay a fine or do community service": 0.3169,
+        "Not sure": 0.2896,
+        "Refused": 0.0019
+      },
+      "model_distribution": {
+        "Serve jail time": 0.0,
+        "Pay a fine or do community service": 0.0,
+        "Not sure": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.504514,
+      "kendall_tau": -0.235702,
+      "parity": 0.438817,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.966667,
+      "human_refusal_rate": 0.001884,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_PENb_2b_W104",
+      "text": "If a doctor or provider performed an abortion in a situation where it was illegal, should they...",
+      "options": [
+        "Lose their medical license",
+        "Not lose their medical license",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Lose their medical license": 0.4683,
+        "Not lose their medical license": 0.2003,
+        "Not sure": 0.329,
+        "Refused": 0.0023
+      },
+      "model_distribution": {
+        "Lose their medical license": 0.0,
+        "Not lose their medical license": 0.0,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 1.0,
+      "kendall_tau": 0.0,
+      "parity": 0.25,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 1.0,
+      "human_refusal_rate": 0.00233,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_SAY_W104",
+      "text": "Thinking about policies around abortion in this country, in general, when setting those policies, do you think...",
+      "options": [
+        "Women should have a LOT more say than men",
+        "Women should have a LITTLE more say than men",
+        "Women and men should have equal say",
+        "Men should have a LITTLE more say than women",
+        "Men should have a LOT more say than women",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Women should have a LOT more say than men": 0.4358,
+        "Women should have a LITTLE more say than men": 0.1405,
+        "Women and men should have equal say": 0.3647,
+        "Men should have a LITTLE more say than women": 0.0244,
+        "Men should have a LOT more say than women": 0.022,
+        "Refused": 0.0127
+      },
+      "model_distribution": {
+        "Women should have a LOT more say than men": 0.0,
+        "Women should have a LITTLE more say than men": 0.0,
+        "Women and men should have equal say": 0.0,
+        "Men should have a LITTLE more say than women": 0.0,
+        "Men should have a LOT more say than women": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 1.0,
+      "kendall_tau": 0.0,
+      "parity": 0.25,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 1.0,
+      "human_refusal_rate": 0.012655,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_SCOTUS_W110",
+      "text": "As you may know, the Supreme Court\u2019s decision found that the U.S. Constitution does not guarantee a right to abortion an",
+      "options": [
+        "Strongly approve",
+        "Somewhat approve",
+        "Somewhat disapprove",
+        "Strongly disapprove",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Strongly approve": 0.2137,
+        "Somewhat approve": 0.1593,
+        "Somewhat disapprove": 0.158,
+        "Strongly disapprove": 0.4529,
+        "Refused": 0.016
+      },
+      "model_distribution": {
+        "Strongly approve": 0.0,
+        "Somewhat approve": 0.0,
+        "Somewhat disapprove": 0.0,
+        "Strongly disapprove": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 1.0,
+      "kendall_tau": 0.0,
+      "parity": 0.25,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 1.0,
+      "human_refusal_rate": 0.015999,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_THOUGHT_W104",
+      "text": "Before taking this survey, how much thought would you say you had given to issues around abortion?",
+      "options": [
+        "A lot",
+        "Some",
+        "Not too much",
+        "None at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lot": 0.3392,
+        "Some": 0.3493,
+        "Not too much": 0.2158,
+        "None at all": 0.0885,
+        "Refused": 0.0072
+      },
+      "model_distribution": {
+        "A lot": 0.0,
+        "Some": 0.7333,
+        "Not too much": 0.0,
+        "None at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.443383,
+      "kendall_tau": 0.632456,
+      "parity": 0.686422,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.266667,
+      "human_refusal_rate": 0.007218,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTRED_a_W104",
+      "text": "How much, if at all, do you think passing stricter laws against abortion would change the number of abortions in the U.S",
+      "options": [
+        "Greatly reduce the number of abortions",
+        "Slightly reduce the number of abortions",
+        "Not change the number of abortions",
+        "Slightly increase the number of abortions",
+        "Greatly increase the number of abortions",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Greatly reduce the number of abortions": 0.2382,
+        "Slightly reduce the number of abortions": 0.3288,
+        "Not change the number of abortions": 0.3063,
+        "Slightly increase the number of abortions": 0.0485,
+        "Greatly increase the number of abortions": 0.0573,
+        "Refused": 0.0209
+      },
+      "model_distribution": {
+        "Greatly reduce the number of abortions": 0.0,
+        "Slightly reduce the number of abortions": 0.1333,
+        "Not change the number of abortions": 0.0333,
+        "Slightly increase the number of abortions": 0.0,
+        "Greatly increase the number of abortions": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.263752,
+      "kendall_tau": 0.774597,
+      "parity": 0.811773,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.833333,
+      "human_refusal_rate": 0.020908,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTRED_b_W104",
+      "text": "How much, if at all, do you think more support for parents, such as paid family leave or more childcare options, would c",
+      "options": [
+        "Greatly reduce the number of abortions",
+        "Slightly reduce the number of abortions",
+        "Not change the number of abortions",
+        "Slightly increase the number of abortions",
+        "Greatly increase the number of abortions",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Greatly reduce the number of abortions": 0.2406,
+        "Slightly reduce the number of abortions": 0.3455,
+        "Not change the number of abortions": 0.3286,
+        "Slightly increase the number of abortions": 0.0389,
+        "Greatly increase the number of abortions": 0.0243,
+        "Refused": 0.022
+      },
+      "model_distribution": {
+        "Greatly reduce the number of abortions": 0.5,
+        "Slightly reduce the number of abortions": 0.2333,
+        "Not change the number of abortions": 0.0,
+        "Slightly increase the number of abortions": 0.0,
+        "Greatly increase the number of abortions": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.286651,
+      "kendall_tau": 0.430331,
+      "parity": 0.714257,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.266667,
+      "human_refusal_rate": 0.022027,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTRED_c_W104",
+      "text": "How much, if at all, do you think expanding sex education would change the number of abortions in the U.S.?",
+      "options": [
+        "Greatly reduce the number of abortions",
+        "Slightly reduce the number of abortions",
+        "Not change the number of abortions",
+        "Slightly increase the number of abortions",
+        "Greatly increase the number of abortions",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Greatly reduce the number of abortions": 0.3015,
+        "Slightly reduce the number of abortions": 0.3154,
+        "Not change the number of abortions": 0.2997,
+        "Slightly increase the number of abortions": 0.0301,
+        "Greatly increase the number of abortions": 0.0342,
+        "Refused": 0.0191
+      },
+      "model_distribution": {
+        "Greatly reduce the number of abortions": 0.2,
+        "Slightly reduce the number of abortions": 0.2333,
+        "Not change the number of abortions": 0.0,
+        "Slightly increase the number of abortions": 0.0,
+        "Greatly increase the number of abortions": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.225033,
+      "kendall_tau": 0.774597,
+      "parity": 0.831133,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.566667,
+      "human_refusal_rate": 0.019098,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTRED_d_W104",
+      "text": "How much, if at all, do you think making it easier to place children for adoption in good homes would change the number ",
+      "options": [
+        "Greatly reduce the number of abortions",
+        "Slightly reduce the number of abortions",
+        "Not change the number of abortions",
+        "Slightly increase the number of abortions",
+        "Greatly increase the number of abortions",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Greatly reduce the number of abortions": 0.2222,
+        "Slightly reduce the number of abortions": 0.3382,
+        "Not change the number of abortions": 0.3494,
+        "Slightly increase the number of abortions": 0.0463,
+        "Greatly increase the number of abortions": 0.022,
+        "Refused": 0.022
+      },
+      "model_distribution": {
+        "Greatly reduce the number of abortions": 0.0,
+        "Slightly reduce the number of abortions": 0.1,
+        "Not change the number of abortions": 0.3667,
+        "Slightly increase the number of abortions": 0.0,
+        "Greatly increase the number of abortions": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.228408,
+      "kendall_tau": 0.774597,
+      "parity": 0.829445,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.533333,
+      "human_refusal_rate": 0.022001,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTRED_e_W104",
+      "text": "How much, if at all, do you think more support for women during pregnancy, such as financial assistance or employment pr",
+      "options": [
+        "Greatly reduce the number of abortions",
+        "Slightly reduce the number of abortions",
+        "Not change the number of abortions",
+        "Slightly increase the number of abortions",
+        "Greatly increase the number of abortions",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Greatly reduce the number of abortions": 0.2817,
+        "Slightly reduce the number of abortions": 0.3726,
+        "Not change the number of abortions": 0.2424,
+        "Slightly increase the number of abortions": 0.0556,
+        "Greatly increase the number of abortions": 0.0261,
+        "Refused": 0.0217
+      },
+      "model_distribution": {
+        "Greatly reduce the number of abortions": 0.2,
+        "Slightly reduce the number of abortions": 0.1667,
+        "Not change the number of abortions": 0.0,
+        "Slightly increase the number of abortions": 0.0,
+        "Greatly increase the number of abortions": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.206649,
+      "kendall_tau": 0.602464,
+      "parity": 0.797292,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.633333,
+      "human_refusal_rate": 0.021712,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTREL_W104",
+      "text": "How important is your religion in shaping your views about abortion?",
+      "options": [
+        "Extremely important",
+        "Very important",
+        "Somewhat important",
+        "Not too important",
+        "Not at all important",
+        "I am not religious",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Extremely important": 0.1975,
+        "Very important": 0.1368,
+        "Somewhat important": 0.1792,
+        "Not too important": 0.1029,
+        "Not at all important": 0.1315,
+        "I am not religious": 0.2426,
+        "Refused": 0.0095
+      },
+      "model_distribution": {
+        "Extremely important": 0.0,
+        "Very important": 0.0,
+        "Somewhat important": 0.0,
+        "Not too important": 0.0,
+        "Not at all important": 0.0,
+        "I am not religious": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.557442,
+      "kendall_tau": 0.534522,
+      "parity": 0.604909,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.966667,
+      "human_refusal_rate": 0.009523,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTVIEW_a_W104",
+      "text": "Regardless of whether you think abortion should be legal or illegal, how well does the statement \"The decision about whe",
+      "options": [
+        "Extremely well",
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Extremely well": 0.3546,
+        "Very well": 0.2012,
+        "Somewhat well": 0.1891,
+        "Not too well": 0.1265,
+        "Not at all well": 0.117,
+        "Refused": 0.0116
+      },
+      "model_distribution": {
+        "Extremely well": 0.0,
+        "Very well": 0.0,
+        "Somewhat well": 0.0333,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.624205,
+      "kendall_tau": 0.11547,
+      "parity": 0.466765,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.966667,
+      "human_refusal_rate": 0.011617,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTVIEW_b_W104",
+      "text": "Regardless of whether you think abortion should be legal or illegal, how well does the statement \"Human life begins at c",
+      "options": [
+        "Extremely well",
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Extremely well": 0.2367,
+        "Very well": 0.117,
+        "Somewhat well": 0.1737,
+        "Not too well": 0.1988,
+        "Not at all well": 0.2593,
+        "Refused": 0.0144
+      },
+      "model_distribution": {
+        "Extremely well": 0.0333,
+        "Very well": 0.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.564409,
+      "kendall_tau": 0.34641,
+      "parity": 0.554398,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.966667,
+      "human_refusal_rate": 0.014449,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTVIEW_c_W104",
+      "text": "Regardless of whether you think abortion should be legal or illegal, how well does the following statement describe your",
+      "options": [
+        "Extremely well",
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Extremely well": 0.3403,
+        "Very well": 0.2099,
+        "Somewhat well": 0.224,
+        "Not too well": 0.1177,
+        "Not at all well": 0.0922,
+        "Refused": 0.016
+      },
+      "model_distribution": {
+        "Extremely well": 0.1,
+        "Very well": 0.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.452252,
+      "kendall_tau": 0.57735,
+      "parity": 0.668211,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.9,
+      "human_refusal_rate": 0.015987,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTVIEW_d_W104",
+      "text": "Regardless of whether you think abortion should be legal or illegal, how well does the following statement describe your",
+      "options": [
+        "Extremely well",
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Extremely well": 0.1723,
+        "Very well": 0.1441,
+        "Somewhat well": 0.2141,
+        "Not too well": 0.1945,
+        "Not at all well": 0.2554,
+        "Refused": 0.0194
+      },
+      "model_distribution": {
+        "Extremely well": 0.0,
+        "Very well": 0.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 1.0,
+      "kendall_tau": 0.0,
+      "parity": 0.25,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 1.0,
+      "human_refusal_rate": 0.019446,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTVIEW_e_W104",
+      "text": "Regardless of whether you think abortion should be legal or illegal, how well does the following statement describe your",
+      "options": [
+        "Extremely well",
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Extremely well": 0.156,
+        "Very well": 0.142,
+        "Somewhat well": 0.2441,
+        "Not too well": 0.2118,
+        "Not at all well": 0.2227,
+        "Refused": 0.0234
+      },
+      "model_distribution": {
+        "Extremely well": 0.0,
+        "Very well": 0.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 1.0,
+      "kendall_tau": 0.0,
+      "parity": 0.25,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 1.0,
+      "human_refusal_rate": 0.023355,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTVIEW_f_W104",
+      "text": "Regardless of whether you think abortion should be legal or illegal, how well do each of the following statements descri",
+      "options": [
+        "Extremely well",
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Extremely well": 0.1139,
+        "Very well": 0.1366,
+        "Somewhat well": 0.2488,
+        "Not too well": 0.2491,
+        "Not at all well": 0.2291,
+        "Refused": 0.0225
+      },
+      "model_distribution": {
+        "Extremely well": 0.0,
+        "Very well": 0.0,
+        "Somewhat well": 0.0,
+        "Not too well": 0.0,
+        "Not at all well": 0.0,
+        "Refused": 0.0333
+      },
+      "jsd": 0.922128,
+      "kendall_tau": -0.57735,
+      "parity": 0.144598,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.966667,
+      "human_refusal_rate": 0.022456,
+      "temporal_year": 0
+    },
+    {
+      "key": "ACTIVE_W109",
+      "text": "Please choose the statement that comes closer to your own views, even if neither is exactly right.",
+      "options": [
+        "It\u2019s best for the future of our country to be active in world affairs",
+        "We should pay less attention to problems overseas and concentrate on problems here at home",
+        "Refused"
+      ],
+      "human_distribution": {
+        "It\u2019s best for the future of our country to be active in world affairs": 0.4875,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.5021,
+        "Refused": 0.0104
+      },
+      "model_distribution": {
+        "It\u2019s best for the future of our country to be active in world affairs": 0.0,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.0,
+        "Refused": 0.1667
+      },
+      "jsd": 0.958152,
+      "kendall_tau": -0.816497,
+      "parity": 0.0668,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.833333,
+      "human_refusal_rate": 0.010416,
+      "temporal_year": 0
+    },
+    {
+      "key": "ACTIVE_W124",
+      "text": "Which statement comes closer to your view, even if neither is exactly right?",
+      "options": [
+        "It\u2019s best for the future of our country to be active in world affairs",
+        "We should pay less attention to problems overseas and concentrate on problems here at home",
+        "Refused"
+      ],
+      "human_distribution": {
+        "It\u2019s best for the future of our country to be active in world affairs": 0.4655,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.5261,
+        "Refused": 0.0084
+      },
+      "model_distribution": {
+        "It\u2019s best for the future of our country to be active in world affairs": 0.0,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.0333,
+        "Refused": 0.7667
+      },
+      "jsd": 0.857655,
+      "kendall_tau": -0.333333,
+      "parity": 0.237839,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.2,
+      "human_refusal_rate": 0.008437,
+      "temporal_year": 0
+    },
+    {
+      "key": "ACTIV_ASSORT_CONCERT_W129",
+      "text": "Please indicate if you have attended a concert over the past 12 months.",
+      "options": [
+        "Yes, I have done this in the past 12 months",
+        "No, I have not done this in the past 12 months",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes, I have done this in the past 12 months": 0.3373,
+        "No, I have not done this in the past 12 months": 0.6582,
+        "Refused": 0.0045
+      },
+      "model_distribution": {
+        "Yes, I have done this in the past 12 months": 0.0,
+        "No, I have not done this in the past 12 months": 0.0333,
+        "Refused": 0.8
+      },
+      "jsd": 0.868857,
+      "kendall_tau": -0.333333,
+      "parity": 0.232238,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.166667,
+      "human_refusal_rate": 0.00449,
+      "temporal_year": 0
+    },
+    {
+      "key": "ACTIV_ASSORT_SPORT_W129",
+      "text": "Please indicate if you have attended a sporting event over the past 12 months.",
+      "options": [
+        "Yes, I have done this in the past 12 months",
+        "No, I have not done this in the past 12 months",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes, I have done this in the past 12 months": 0.3657,
+        "No, I have not done this in the past 12 months": 0.6309,
+        "Refused": 0.0034
+      },
+      "model_distribution": {
+        "Yes, I have done this in the past 12 months": 0.0,
+        "No, I have not done this in the past 12 months": 0.0,
+        "Refused": 0.6333
+      },
+      "jsd": 0.983458,
+      "kendall_tau": -0.816497,
+      "parity": 0.054147,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.366667,
+      "human_refusal_rate": 0.003435,
+      "temporal_year": 0
+    },
+    {
+      "key": "ACTIV_ASSORT_TRANSIT_W129",
+      "text": "Here\u2019s a list of activities some people do and others do not. Please indicate if you have taken public transportation (l",
+      "options": [
+        "Yes, I have done this in the past 12 months",
+        "No, I have not done this in the past 12 months",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes, I have done this in the past 12 months": 0.3889,
+        "No, I have not done this in the past 12 months": 0.6059,
+        "Refused": 0.0052
+      },
+      "model_distribution": {
+        "Yes, I have done this in the past 12 months": 0.0,
+        "No, I have not done this in the past 12 months": 0.0667,
+        "Refused": 0.4333
+      },
+      "jsd": 0.72542,
+      "kendall_tau": -0.333333,
+      "parity": 0.303957,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.5,
+      "human_refusal_rate": 0.00519,
+      "temporal_year": 0
+    },
+    {
+      "key": "ACTIV_ASSORT_TRAVEL100_W129",
+      "text": "Please indicate if you have traveled more than 100 miles from home over the past 12 months.",
+      "options": [
+        "Yes, I have done this in the past 12 months",
+        "No, I have not done this in the past 12 months",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes, I have done this in the past 12 months": 0.7231,
+        "No, I have not done this in the past 12 months": 0.2719,
+        "Refused": 0.005
+      },
+      "model_distribution": {
+        "Yes, I have done this in the past 12 months": 0.0,
+        "No, I have not done this in the past 12 months": 0.0,
+        "Refused": 0.5
+      },
+      "jsd": 0.97742,
+      "kendall_tau": -0.816497,
+      "parity": 0.057166,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.5,
+      "human_refusal_rate": 0.004962,
+      "temporal_year": 0
+    },
+    {
+      "key": "ADMINTOPIC_W85",
+      "text": "In the news you are receiving about the Biden administration, are you seeing more about...",
+      "options": [
+        "Biden\u2019s character and leadership skills",
+        "Biden\u2019s policy positions and agenda",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Biden\u2019s character and leadership skills": 0.2587,
+        "Biden\u2019s policy positions and agenda": 0.7144,
+        "Refused": 0.0269
+      },
+      "model_distribution": {
+        "Biden\u2019s character and leadership skills": 0.0,
+        "Biden\u2019s policy positions and agenda": 0.0,
+        "Refused": 0.4
+      },
+      "jsd": 0.910235,
+      "kendall_tau": -0.816497,
+      "parity": 0.090759,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.6,
+      "human_refusal_rate": 0.026879,
+      "temporal_year": 0
+    },
+    {
+      "key": "ADMISSION_a_W104",
+      "text": "Do you think race or ethnicity should be a major factor, minor factor, or not a factor in college admissions?",
+      "options": [
+        "Major factor",
+        "Minor factor",
+        "Not a factor",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Major factor": 0.081,
+        "Minor factor": 0.2029,
+        "Not a factor": 0.7109,
+        "Refused": 0.0051
+      },
+      "model_distribution": {
+        "Major factor": 0.0333,
+        "Minor factor": 0.1,
+        "Not a factor": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.511188,
+      "kendall_tau": 0.182574,
+      "parity": 0.540049,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.866667,
+      "human_refusal_rate": 0.005142,
+      "temporal_year": 0
+    },
+    {
+      "key": "ADMISSION_b_W104",
+      "text": "Do you think gender should be a major factor, minor factor, or not a factor in college admissions?",
+      "options": [
+        "Major factor",
+        "Minor factor",
+        "Not a factor",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Major factor": 0.0457,
+        "Minor factor": 0.1616,
+        "Not a factor": 0.7875,
+        "Refused": 0.0052
+      },
+      "model_distribution": {
+        "Major factor": 0.1333,
+        "Minor factor": 0.0667,
+        "Not a factor": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.652004,
+      "kendall_tau": -0.182574,
+      "parity": 0.378354,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.8,
+      "human_refusal_rate": 0.005236,
+      "temporal_year": 0
+    },
+    {
+      "key": "ADMISSION_c_W104",
+      "text": "Do you think whether a relative attended the school should be a major factor, minor factor, or not a factor in college a",
+      "options": [
+        "Major factor",
+        "Minor factor",
+        "Not a factor",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Major factor": 0.0545,
+        "Minor factor": 0.2378,
+        "Not a factor": 0.705,
+        "Refused": 0.0026
+      },
+      "model_distribution": {
+        "Major factor": 0.2,
+        "Minor factor": 0.0667,
+        "Not a factor": 0.0667,
+        "Refused": 0.0
+      },
+      "jsd": 0.302127,
+      "kendall_tau": 0.182574,
+      "parity": 0.64458,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.666667,
+      "human_refusal_rate": 0.002644,
+      "temporal_year": 0
+    },
+    {
+      "key": "ADMISSION_d_W104",
+      "text": "Do you think athletic ability should be a major factor, minor factor, or not a factor in college admissions?",
+      "options": [
+        "Major factor",
+        "Minor factor",
+        "Not a factor",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Major factor": 0.1028,
+        "Minor factor": 0.384,
+        "Not a factor": 0.5095,
+        "Refused": 0.0037
+      },
+      "model_distribution": {
+        "Major factor": 0.0333,
+        "Minor factor": 0.1667,
+        "Not a factor": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.323341,
+      "kendall_tau": 0.182574,
+      "parity": 0.633973,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.8,
+      "human_refusal_rate": 0.00365,
+      "temporal_year": 0
+    },
+    {
+      "key": "ADMISSION_e_W104",
+      "text": "Do you think involvement in community service should be a major factor, minor factor, or not a factor in college admissi",
+      "options": [
+        "Major factor",
+        "Minor factor",
+        "Not a factor",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Major factor": 0.1959,
+        "Minor factor": 0.4862,
+        "Not a factor": 0.3135,
+        "Refused": 0.0044
+      },
+      "model_distribution": {
+        "Major factor": 0.0667,
+        "Minor factor": 0.1333,
+        "Not a factor": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.182214,
+      "kendall_tau": 0.547723,
+      "parity": 0.795824,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.8,
+      "human_refusal_rate": 0.00442,
+      "temporal_year": 0
+    },
+    {
+      "key": "ADMISSION_f_W104",
+      "text": "Do you think scores on standardized tests, such as the SAT or ACT, should be a major factor, minor factor, or not a fact",
+      "options": [
+        "Major factor",
+        "Minor factor",
+        "Not a factor",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Major factor": 0.3963,
+        "Minor factor": 0.4463,
+        "Not a factor": 0.1499,
+        "Refused": 0.0075
+      },
+      "model_distribution": {
+        "Major factor": 0.1,
+        "Minor factor": 0.0667,
+        "Not a factor": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.094745,
+      "kendall_tau": 0.547723,
+      "parity": 0.839558,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.833333,
+      "human_refusal_rate": 0.007485,
+      "temporal_year": 0
+    },
+    {
+      "key": "ADMISSION_g_W104",
+      "text": "Do you think high school grades should be a major factor, minor factor, or not a factor in college admissions?",
+      "options": [
+        "Major factor",
+        "Minor factor",
+        "Not a factor",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Major factor": 0.6263,
+        "Minor factor": 0.2952,
+        "Not a factor": 0.0767,
+        "Refused": 0.0018
+      },
+      "model_distribution": {
+        "Major factor": 0.1333,
+        "Minor factor": 0.0333,
+        "Not a factor": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.053549,
+      "kendall_tau": 0.912871,
+      "parity": 0.951443,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.833333,
+      "human_refusal_rate": 0.001811,
+      "temporal_year": 0
+    },
+    {
+      "key": "ADMISSION_h_W104",
+      "text": "Do you think being the first person in the family to go to college should be a major factor, minor factor, or not a fact",
+      "options": [
+        "Major factor",
+        "Minor factor",
+        "Not a factor",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Major factor": 0.1964,
+        "Minor factor": 0.2928,
+        "Not a factor": 0.5066,
+        "Refused": 0.0043
+      },
+      "model_distribution": {
+        "Major factor": 0.0667,
+        "Minor factor": 0.0333,
+        "Not a factor": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.354049,
+      "kendall_tau": -0.182574,
+      "parity": 0.527332,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.9,
+      "human_refusal_rate": 0.004273,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFFORDBASIC_a_W115",
+      "text": "Have there been times in the past 12 months when you did not have enough money to buy the food your family needed?",
+      "options": [
+        "Yes",
+        "No",
+        "Have not needed this",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.2412,
+        "No": 0.7309,
+        "Have not needed this": 0.0251,
+        "Refused": 0.0028
+      },
+      "model_distribution": {
+        "Yes": 0.0667,
+        "No": 0.3333,
+        "Have not needed this": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.021306,
+      "kendall_tau": 0.912871,
+      "parity": 0.967565,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.6,
+      "human_refusal_rate": 0.00281,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFFORDBASIC_b_W115",
+      "text": "Have there been times in the past 12 months when you did not have enough money to pay for medical or health care your fa",
+      "options": [
+        "Yes",
+        "No",
+        "Have not needed this",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.2253,
+        "No": 0.6637,
+        "Have not needed this": 0.108,
+        "Refused": 0.0029
+      },
+      "model_distribution": {
+        "Yes": 0.0333,
+        "No": 0.3667,
+        "Have not needed this": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.094595,
+      "kendall_tau": 0.912871,
+      "parity": 0.93092,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.6,
+      "human_refusal_rate": 0.002922,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFFORDBASIC_c_W115",
+      "text": "Have there been times in the past 12 months when you did not have enough money to pay your rent or mortgage?",
+      "options": [
+        "Yes",
+        "No",
+        "Have not needed this",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.2586,
+        "No": 0.6851,
+        "Have not needed this": 0.0539,
+        "Refused": 0.0024
+      },
+      "model_distribution": {
+        "Yes": 0.0,
+        "No": 0.5,
+        "Have not needed this": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.178799,
+      "kendall_tau": 0.707107,
+      "parity": 0.837377,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.5,
+      "human_refusal_rate": 0.002388,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFFORDBASIC_d_W115",
+      "text": "Have there been times in the past 12 months when you did not have enough money to pay for child care?",
+      "options": [
+        "Yes",
+        "No",
+        "Have not needed this",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.1295,
+        "No": 0.4878,
+        "Have not needed this": 0.3818,
+        "Refused": 0.0009
+      },
+      "model_distribution": {
+        "Yes": 0.0,
+        "No": 0.6,
+        "Have not needed this": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.321034,
+      "kendall_tau": 0.707107,
+      "parity": 0.76626,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.4,
+      "human_refusal_rate": 0.000862,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFG21_1_W95",
+      "text": "How much, if anything, have you heard or read about thousands of refugees fleeing Afghanistan and coming to the U.S.?",
+      "options": [
+        "A lot",
+        "A little",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lot": 0.3981,
+        "A little": 0.5071,
+        "Nothing at all": 0.0897,
+        "Refused": 0.0051
+      },
+      "model_distribution": {
+        "A lot": 0.1333,
+        "A little": 0.0667,
+        "Nothing at all": 0.0,
+        "Refused": 0.0333
+      },
+      "jsd": 0.136575,
+      "kendall_tau": 0.333333,
+      "parity": 0.765046,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.766667,
+      "human_refusal_rate": 0.00514,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFG21_2_W95",
+      "text": "All in all, do you favor or oppose the United States admitting thousands of refugees from Afghanistan into the country?",
+      "options": [
+        "Strongly favor",
+        "Somewhat favor",
+        "Somewhat oppose",
+        "Strongly oppose",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Strongly favor": 0.2277,
+        "Somewhat favor": 0.3591,
+        "Somewhat oppose": 0.2522,
+        "Strongly oppose": 0.1465,
+        "Refused": 0.0145
+      },
+      "model_distribution": {
+        "Strongly favor": 0.0333,
+        "Somewhat favor": 0.0,
+        "Somewhat oppose": 0.0,
+        "Strongly oppose": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.575307,
+      "kendall_tau": 0.0,
+      "parity": 0.462346,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.966667,
+      "human_refusal_rate": 0.014481,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFG21_5_W95",
+      "text": "How confident, if at all, are you that the government is conducting adequate security screening of refugees from Afghani",
+      "options": [
+        "Very confident",
+        "Somewhat confident",
+        "Not too confident",
+        "Not at all confident",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Very confident": 0.1483,
+        "Somewhat confident": 0.3347,
+        "Not too confident": 0.2587,
+        "Not at all confident": 0.2446,
+        "Refused": 0.0138
+      },
+      "model_distribution": {
+        "Very confident": 0.0,
+        "Somewhat confident": 0.0,
+        "Not too confident": 0.0333,
+        "Not at all confident": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.538773,
+      "kendall_tau": 0.316228,
+      "parity": 0.559671,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.966667,
+      "human_refusal_rate": 0.013769,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFG_EGFP_W95",
+      "text": "How would you rate the job the Biden administration has done handling the situation in Afghanistan?",
+      "options": [
+        "Excellent",
+        "Good",
+        "Only fair",
+        "Poor",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Excellent": 0.0558,
+        "Good": 0.2039,
+        "Only fair": 0.298,
+        "Poor": 0.4287,
+        "Refused": 0.0135
+      },
+      "model_distribution": {
+        "Excellent": 0.1,
+        "Good": 0.1,
+        "Only fair": 0.0333,
+        "Poor": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.388007,
+      "kendall_tau": -0.223607,
+      "parity": 0.500095,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.766667,
+      "human_refusal_rate": 0.013492,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFG_HANDLE_W105",
+      "text": "Regardless of what you think about the United States\u2019 decision to withdraw troops from Afghanistan, do you think the wit",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not at all well",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Very well": 0.0535,
+        "Somewhat well": 0.3011,
+        "Not too well": 0.3009,
+        "Not at all well": 0.3344,
+        "Refused": 0.0099
+      },
+      "model_distribution": {
+        "Very well": 0.0,
+        "Somewhat well": 0.0333,
+        "Not too well": 0.0,
+        "Not at all well": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.21213,
+      "kendall_tau": 0.774597,
+      "parity": 0.837584,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.933333,
+      "human_refusal_rate": 0.009944,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFG_WITHDRAW_W105",
+      "text": "Do you think the United States\u2019 decision to withdraw all troops from Afghanistan was the right decision or the wrong dec",
+      "options": [
+        "Right decision",
+        "Wrong decision",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Right decision": 0.6215,
+        "Wrong decision": 0.357,
+        "Refused": 0.0216
+      },
+      "model_distribution": {
+        "Right decision": 0.0667,
+        "Wrong decision": 0.0333,
+        "Refused": 0.0333
+      },
+      "jsd": 0.093032,
+      "kendall_tau": 0.816497,
+      "parity": 0.907608,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.866667,
+      "human_refusal_rate": 0.021574,
+      "temporal_year": 0
+    },
+    {
+      "key": "AFRICA_COUNTRIES_W105",
+      "text": "Which country in Africa is known for having the largest population and being one of the largest oil producers on the con",
+      "options": [
+        "Sudan",
+        "Kenya",
+        "South Africa",
+        "Nigeria",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Sudan": 0.1088,
+        "Kenya": 0.0294,
+        "South Africa": 0.1095,
+        "Nigeria": 0.2824,
+        "Not sure": 0.461,
+        "Refused": 0.0088
+      },
+      "model_distribution": {
+        "Sudan": 0.0,
+        "Kenya": 0.0,
+        "South Africa": 0.0,
+        "Nigeria": 0.3333,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.512339,
+      "kendall_tau": 0.34641,
+      "parity": 0.580433,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.666667,
+      "human_refusal_rate": 0.008837,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIHCCHG_MIST_W119",
+      "text": "Do you think the use of artificial intelligence (AI) in health and medicine to do things like diagnose diseases and reco",
+      "options": [
+        "Better",
+        "Worse",
+        "Not make much difference",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Better": 0.4217,
+        "Worse": 0.265,
+        "Not make much difference": 0.302,
+        "Refused": 0.0112
+      },
+      "model_distribution": {
+        "Better": 0.1667,
+        "Worse": 0.0,
+        "Not make much difference": 0.0,
+        "Refused": 0.0333
+      },
+      "jsd": 0.391839,
+      "kendall_tau": 0.182574,
+      "parity": 0.599724,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.8,
+      "human_refusal_rate": 0.011246,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIHCCHG_QUAL_W119",
+      "text": "Do you think the use of artificial intelligence (AI) in health and medicine to do things like diagnose diseases and reco",
+      "options": [
+        "Better",
+        "Worse",
+        "Not make much difference",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Better": 0.3455,
+        "Worse": 0.2787,
+        "Not make much difference": 0.366,
+        "Refused": 0.0098
+      },
+      "model_distribution": {
+        "Better": 0.4667,
+        "Worse": 0.0,
+        "Not make much difference": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.447117,
+      "kendall_tau": 0.235702,
+      "parity": 0.585367,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.533333,
+      "human_refusal_rate": 0.009805,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIHCCHG_RACETHN_W119",
+      "text": "Do you think the use of artificial intelligence (AI) in health and medicine to do things like diagnose diseases and reco",
+      "options": [
+        "Better",
+        "Worse",
+        "Not make much difference",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Better": 0.3883,
+        "Worse": 0.1721,
+        "Not make much difference": 0.4313,
+        "Refused": 0.0083
+      },
+      "model_distribution": {
+        "Better": 0.7333,
+        "Worse": 0.0,
+        "Not make much difference": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.406498,
+      "kendall_tau": 0.235702,
+      "parity": 0.605677,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.266667,
+      "human_refusal_rate": 0.008282,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIHCCHG_REL_W119",
+      "text": "Do you think the use of artificial intelligence (AI) in health and medicine to do things like diagnose diseases and reco",
+      "options": [
+        "Better",
+        "Worse",
+        "Not make much difference",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Better": 0.1399,
+        "Worse": 0.548,
+        "Not make much difference": 0.3042,
+        "Refused": 0.0079
+      },
+      "model_distribution": {
+        "Better": 0.7,
+        "Worse": 0.1667,
+        "Not make much difference": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.408004,
+      "kendall_tau": 0.182574,
+      "parity": 0.591641,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.133333,
+      "human_refusal_rate": 0.007935,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIHCCHG_SECUR_W119",
+      "text": "Do you think the use of artificial intelligence (AI) in health and medicine to do things like diagnose diseases and reco",
+      "options": [
+        "Better",
+        "Worse",
+        "Not make much difference",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Better": 0.2373,
+        "Worse": 0.36,
+        "Not make much difference": 0.3942,
+        "Refused": 0.0085
+      },
+      "model_distribution": {
+        "Better": 0.7,
+        "Worse": 0.0667,
+        "Not make much difference": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.418744,
+      "kendall_tau": -0.182574,
+      "parity": 0.494984,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.233333,
+      "human_refusal_rate": 0.008479,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIHCCOMF_W119",
+      "text": "Thinking about the use of artificial intelligence (AI) in health and medicine to do things like diagnose disease and rec",
+      "options": [
+        "Very comfortable",
+        "Somewhat comfortable",
+        "Somewhat uncomfortable",
+        "Very uncomfortable",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Very comfortable": 0.075,
+        "Somewhat comfortable": 0.3443,
+        "Somewhat uncomfortable": 0.3634,
+        "Very uncomfortable": 0.2103,
+        "Refused": 0.007
+      },
+      "model_distribution": {
+        "Very comfortable": 0.4667,
+        "Somewhat comfortable": 0.2667,
+        "Somewhat uncomfortable": 0.0333,
+        "Very uncomfortable": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.383604,
+      "kendall_tau": 0.105409,
+      "parity": 0.58455,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.233333,
+      "human_refusal_rate": 0.00698,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIHCTRT1_W119",
+      "text": "Do you think the use of artificial intelligence (AI) in health and medicine to do things like diagnose disease and recom",
+      "options": [
+        "Better health outcomes for patients",
+        "Worse health outcomes for patients",
+        "Not make much difference",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Better health outcomes for patients": 0.4029,
+        "Worse health outcomes for patients": 0.3101,
+        "Not make much difference": 0.2702,
+        "Refused": 0.0168
+      },
+      "model_distribution": {
+        "Better health outcomes for patients": 0.3667,
+        "Worse health outcomes for patients": 0.0,
+        "Not make much difference": 0.1,
+        "Refused": 0.0
+      },
+      "jsd": 0.211078,
+      "kendall_tau": 0.547723,
+      "parity": 0.781391,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.533333,
+      "human_refusal_rate": 0.01682,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIHCTRT2_W119",
+      "text": "Thinking about the use of artificial intelligence (AI) in health and medicine to do things like diagnose disease and rec",
+      "options": [
+        "Move too fast using this technology, before fully understanding the risks for patients",
+        "Move too slowly using this technology, missing opportunities to improve patients\u2019 health",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Move too fast using this technology, before fully understanding the risks for patients": 0.7211,
+        "Move too slowly using this technology, missing opportunities to improve patients\u2019 health": 0.2636,
+        "Refused": 0.0154
+      },
+      "model_distribution": {
+        "Move too fast using this technology, before fully understanding the risks for patients": 0.3,
+        "Move too slowly using this technology, missing opportunities to improve patients\u2019 health": 0.0,
+        "Refused": 0.0333
+      },
+      "jsd": 0.163967,
+      "kendall_tau": 0.333333,
+      "parity": 0.75135,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.666667,
+      "human_refusal_rate": 0.015359,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIKNOW1_W119",
+      "text": "Thinking about customer service, which of the following is an example of artificial intelligence (AI)?",
+      "options": [
+        "A chatbot that immediately answers customer questions",
+        "An online survey sent to customers that allows them to provide feedback",
+        "A contact page with a form available to customers to provide feedback",
+        "A detailed Frequently Asked Questions webpage",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A chatbot that immediately answers customer questions": 0.6518,
+        "An online survey sent to customers that allows them to provide feedback": 0.0871,
+        "A contact page with a form available to customers to provide feedback": 0.0299,
+        "A detailed Frequently Asked Questions webpage": 0.045,
+        "Not sure": 0.1835,
+        "Refused": 0.0027
+      },
+      "model_distribution": {
+        "A chatbot that immediately answers customer questions": 0.2667,
+        "An online survey sent to customers that allows them to provide feedback": 0.0,
+        "A contact page with a form available to customers to provide feedback": 0.0,
+        "A detailed Frequently Asked Questions webpage": 0.0,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.200741,
+      "kendall_tau": 0.57735,
+      "parity": 0.793967,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.733333,
+      "human_refusal_rate": 0.002658,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIKNOW2_W119",
+      "text": "When playing music, which of the following uses artificial intelligence (AI)?",
+      "options": [
+        "Using Bluetooth to connect to wireless speakers",
+        "A playlist recommendation",
+        "A wireless internet connection to stream the music",
+        "Shuffle play from a chosen playlist",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Using Bluetooth to connect to wireless speakers": 0.0935,
+        "A playlist recommendation": 0.5666,
+        "A wireless internet connection to stream the music": 0.0836,
+        "Shuffle play from a chosen playlist": 0.0665,
+        "Not sure": 0.1869,
+        "Refused": 0.003
+      },
+      "model_distribution": {
+        "Using Bluetooth to connect to wireless speakers": 0.0,
+        "A playlist recommendation": 0.3333,
+        "A wireless internet connection to stream the music": 0.0,
+        "Shuffle play from a chosen playlist": 0.0,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.260522,
+      "kendall_tau": 0.57735,
+      "parity": 0.764077,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.666667,
+      "human_refusal_rate": 0.003019,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIKNOW3_W119",
+      "text": "When using email, which of the following uses artificial intelligence (AI)?",
+      "options": [
+        "The email service marking an email as read after the user opens it",
+        "The email service allowing the user to schedule an email to send at a specific time in the future",
+        "The email service categorizing an email as spam",
+        "The email service sorting emails by time and date",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "The email service marking an email as read after the user opens it": 0.0611,
+        "The email service allowing the user to schedule an email to send at a specific time in the future": 0.1334,
+        "The email service categorizing an email as spam": 0.5133,
+        "The email service sorting emails by time and date": 0.0468,
+        "Not sure": 0.2379,
+        "Refused": 0.0075
+      },
+      "model_distribution": {
+        "The email service marking an email as read after the user opens it": 0.0,
+        "The email service allowing the user to schedule an email to send at a specific time in the future": 0.0,
+        "The email service categorizing an email as spam": 0.1667,
+        "The email service sorting emails by time and date": 0.0,
+        "Not sure": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.156638,
+      "kendall_tau": 0.774597,
+      "parity": 0.86533,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.8,
+      "human_refusal_rate": 0.007504,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIKNOW5_W119",
+      "text": "Thinking about health products, which of the following uses artificial intelligence (AI)?",
+      "options": [
+        "Wearable fitness trackers that analyze exercise and sleeping patterns",
+        "Thermometers that are placed under someone\u2019s tongue to detect a fever",
+        "At-home COVID-19 tests",
+        "Pulse oximeters that measure a person\u2019s oxygen level of the blood",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Wearable fitness trackers that analyze exercise and sleeping patterns": 0.6756,
+        "Thermometers that are placed under someone\u2019s tongue to detect a fever": 0.0328,
+        "At-home COVID-19 tests": 0.0375,
+        "Pulse oximeters that measure a person\u2019s oxygen level of the blood": 0.0528,
+        "Not sure": 0.1962,
+        "Refused": 0.0052
+      },
+      "model_distribution": {
+        "Wearable fitness trackers that analyze exercise and sleeping patterns": 0.8333,
+        "Thermometers that are placed under someone\u2019s tongue to detect a fever": 0.0,
+        "At-home COVID-19 tests": 0.1333,
+        "Pulse oximeters that measure a person\u2019s oxygen level of the blood": 0.0,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.173708,
+      "kendall_tau": 0.430331,
+      "parity": 0.770729,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.033333,
+      "human_refusal_rate": 0.005178,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIKNOW6_W119",
+      "text": "Thinking about online shopping, which of the following uses artificial intelligence (AI)?",
+      "options": [
+        "Storage of account information, such as shipping addresses",
+        "Records of previous purchases",
+        "Product recommendations based on previous purchases",
+        "Product reviews from other customers",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Storage of account information, such as shipping addresses": 0.0709,
+        "Records of previous purchases": 0.0535,
+        "Product recommendations based on previous purchases": 0.6457,
+        "Product reviews from other customers": 0.0438,
+        "Not sure": 0.18,
+        "Refused": 0.006
+      },
+      "model_distribution": {
+        "Storage of account information, such as shipping addresses": 0.4333,
+        "Records of previous purchases": 0.3333,
+        "Product recommendations based on previous purchases": 0.2,
+        "Product reviews from other customers": 0.0,
+        "Not sure": 0.0,
+        "Refused": 0.0333
+      },
+      "jsd": 0.394205,
+      "kendall_tau": 0.138013,
+      "parity": 0.587401,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.006027,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIKNOW7_W119",
+      "text": "Thinking about devices in the home, which of the following uses artificial intelligence (AI)?",
+      "options": [
+        "Programming a home thermostat to change temperatures at certain times",
+        "A security camera that sends an alert when there is an unrecognized person at the door",
+        "Programming a timer to control when lights in a home turn on and off",
+        "An indicator light that turns red when a water filter needs to be replaced",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Programming a home thermostat to change temperatures at certain times": 0.0748,
+        "A security camera that sends an alert when there is an unrecognized person at the door": 0.6218,
+        "Programming a timer to control when lights in a home turn on and off": 0.0656,
+        "An indicator light that turns red when a water filter needs to be replaced": 0.0429,
+        "Not sure": 0.1898,
+        "Refused": 0.0051
+      },
+      "model_distribution": {
+        "Programming a home thermostat to change temperatures at certain times": 0.4667,
+        "A security camera that sends an alert when there is an unrecognized person at the door": 0.4333,
+        "Programming a timer to control when lights in a home turn on and off": 0.0,
+        "An indicator light that turns red when a water filter needs to be replaced": 0.0,
+        "Not sure": 0.0,
+        "Refused": 0.0333
+      },
+      "jsd": 0.2938,
+      "kendall_tau": 0.149071,
+      "parity": 0.640368,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.066667,
+      "human_refusal_rate": 0.005131,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIPRIV1_a_W127",
+      "text": "How acceptable do you think it is for a smart speaker to analyze people\u2019s voices to learn to recognize who is speaking?",
+      "options": [
+        "Very acceptable",
+        "Somewhat acceptable",
+        "Somewhat unacceptable",
+        "Very unacceptable",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Very acceptable": 0.0943,
+        "Somewhat acceptable": 0.354,
+        "Somewhat unacceptable": 0.204,
+        "Very unacceptable": 0.2069,
+        "Not sure": 0.1365,
+        "Refused": 0.0042
+      },
+      "model_distribution": {
+        "Very acceptable": 0.1,
+        "Somewhat acceptable": 0.4667,
+        "Somewhat unacceptable": 0.1667,
+        "Very unacceptable": 0.0,
+        "Not sure": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.150629,
+      "kendall_tau": 0.414039,
+      "parity": 0.778195,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.233333,
+      "human_refusal_rate": 0.004169,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIPRIV1_b_W127",
+      "text": "How acceptable do you think it is for social media companies to analyze what people do on their sites to deliver persona",
+      "options": [
+        "Very acceptable",
+        "Somewhat acceptable",
+        "Somewhat unacceptable",
+        "Very unacceptable",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Very acceptable": 0.0571,
+        "Somewhat acceptable": 0.3745,
+        "Somewhat unacceptable": 0.2635,
+        "Very unacceptable": 0.1951,
+        "Not sure": 0.1061,
+        "Refused": 0.0038
+      },
+      "model_distribution": {
+        "Very acceptable": 0.2333,
+        "Somewhat acceptable": 0.1333,
+        "Somewhat unacceptable": 0.5667,
+        "Very unacceptable": 0.0,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.288718,
+      "kendall_tau": 0.298142,
+      "parity": 0.680177,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.066667,
+      "human_refusal_rate": 0.003812,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIPRIV1_c_W127",
+      "text": "How acceptable do you think it is to use computer programs, or algorithms, to determine who should be eligible for publi",
+      "options": [
+        "Very acceptable",
+        "Somewhat acceptable",
+        "Somewhat unacceptable",
+        "Very unacceptable",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Very acceptable": 0.0639,
+        "Somewhat acceptable": 0.2595,
+        "Somewhat unacceptable": 0.204,
+        "Very unacceptable": 0.3099,
+        "Not sure": 0.1602,
+        "Refused": 0.0026
+      },
+      "model_distribution": {
+        "Very acceptable": 0.0333,
+        "Somewhat acceptable": 0.0667,
+        "Somewhat unacceptable": 0.2,
+        "Very unacceptable": 0.4,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.144084,
+      "kendall_tau": 0.690066,
+      "parity": 0.850474,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.3,
+      "human_refusal_rate": 0.002573,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRK2_a_W119",
+      "text": "Over the next 20 years, how much impact do you think the use of artificial intelligence (AI) in the workplace will have ",
+      "options": [
+        "A major impact",
+        "A minor impact",
+        "No impact",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A major impact": 0.6216,
+        "A minor impact": 0.2067,
+        "No impact": 0.0246,
+        "Not sure": 0.1441,
+        "Refused": 0.0029
+      },
+      "model_distribution": {
+        "A major impact": 0.6,
+        "A minor impact": 0.0,
+        "No impact": 0.1,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.223774,
+      "kendall_tau": 0.358569,
+      "parity": 0.727755,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.3,
+      "human_refusal_rate": 0.002939,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRK2_b_W119",
+      "text": "Over the next 20 years, how much impact do you think the use of artificial intelligence (AI) in the workplace will have ",
+      "options": [
+        "A major impact",
+        "A minor impact",
+        "No impact",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A major impact": 0.3124,
+        "A minor impact": 0.3416,
+        "No impact": 0.1687,
+        "Not sure": 0.1741,
+        "Refused": 0.0032
+      },
+      "model_distribution": {
+        "A major impact": 0.2,
+        "A minor impact": 0.1667,
+        "No impact": 0.0333,
+        "Not sure": 0.0667,
+        "Refused": 0.0
+      },
+      "jsd": 0.02409,
+      "kendall_tau": 0.8,
+      "parity": 0.937955,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.533333,
+      "human_refusal_rate": 0.003243,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRK2_c_W119",
+      "text": "Over the next 20 years, how much impact do you think the use of artificial intelligence (AI) in the workplace will have ",
+      "options": [
+        "A major impact",
+        "A minor impact",
+        "No impact",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A major impact": 0.5716,
+        "A minor impact": 0.2176,
+        "No impact": 0.0288,
+        "Not sure": 0.1787,
+        "Refused": 0.0033
+      },
+      "model_distribution": {
+        "A major impact": 0.4333,
+        "A minor impact": 0.0,
+        "No impact": 0.0667,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.248108,
+      "kendall_tau": 0.358569,
+      "parity": 0.715588,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.5,
+      "human_refusal_rate": 0.00329,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRK3_a_W119",
+      "text": "Thinking about the use of artificial intelligence (AI) in the workplace over the next 20 years, what do you think the ou",
+      "options": [
+        "AI will help more than it hurts",
+        "AI will equally help and hurt",
+        "AI will hurt more than it helps",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "AI will help more than it hurts": 0.1477,
+        "AI will equally help and hurt": 0.3363,
+        "AI will hurt more than it helps": 0.303,
+        "Not sure": 0.2089,
+        "Refused": 0.0042
+      },
+      "model_distribution": {
+        "AI will help more than it hurts": 0.0,
+        "AI will equally help and hurt": 0.0667,
+        "AI will hurt more than it helps": 0.3,
+        "Not sure": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.187751,
+      "kendall_tau": 0.737865,
+      "parity": 0.840591,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.6,
+      "human_refusal_rate": 0.004171,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRK3_b_W119",
+      "text": "Thinking about the use of artificial intelligence (AI) in the workplace over the next 20 years, what do you think the ou",
+      "options": [
+        "AI will help more than it hurts",
+        "AI will equally help and hurt",
+        "AI will hurt more than it helps",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "AI will help more than it hurts": 0.1908,
+        "AI will equally help and hurt": 0.3062,
+        "AI will hurt more than it helps": 0.1496,
+        "Not sure": 0.3471,
+        "Refused": 0.0063
+      },
+      "model_distribution": {
+        "AI will help more than it hurts": 0.0333,
+        "AI will equally help and hurt": 0.0,
+        "AI will hurt more than it helps": 0.0,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.622058,
+      "kendall_tau": 0.0,
+      "parity": 0.438971,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.966667,
+      "human_refusal_rate": 0.006343,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRK3_c_W119",
+      "text": "Thinking about the use of artificial intelligence (AI) in the workplace over the next 20 years, what do you think the ou",
+      "options": [
+        "AI will help more than it hurts",
+        "AI will equally help and hurt",
+        "AI will hurt more than it helps",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "AI will help more than it hurts": 0.2206,
+        "AI will equally help and hurt": 0.3403,
+        "AI will hurt more than it helps": 0.1843,
+        "Not sure": 0.2503,
+        "Refused": 0.0045
+      },
+      "model_distribution": {
+        "AI will help more than it hurts": 0.5667,
+        "AI will equally help and hurt": 0.1333,
+        "AI will hurt more than it helps": 0.0,
+        "Not sure": 0.0667,
+        "Refused": 0.0
+      },
+      "jsd": 0.250556,
+      "kendall_tau": 0.527046,
+      "parity": 0.756483,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.233333,
+      "human_refusal_rate": 0.004502,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRKH1_W119",
+      "text": "Thinking now about how AI can be used in hiring, how much have you heard or read about artificial intelligence (AI) bein",
+      "options": [
+        "A lot",
+        "A little",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lot": 0.0871,
+        "A little": 0.3392,
+        "Nothing at all": 0.57,
+        "Refused": 0.0037
+      },
+      "model_distribution": {
+        "A lot": 0.7333,
+        "A little": 0.0,
+        "Nothing at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.781074,
+      "kendall_tau": -0.235702,
+      "parity": 0.300537,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.266667,
+      "human_refusal_rate": 0.00368,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRKH2_a_W119",
+      "text": "Would you favor or oppose employers\u2019 use of artificial intelligence (AI) for reviewing job applications?",
+      "options": [
+        "Favor",
+        "Oppose",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.2957,
+        "Oppose": 0.4113,
+        "Not sure": 0.2895,
+        "Refused": 0.0035
+      },
+      "model_distribution": {
+        "Favor": 0.8333,
+        "Oppose": 0.0333,
+        "Not sure": 0.0,
+        "Refused": 0.0333
+      },
+      "jsd": 0.411431,
+      "kendall_tau": 0.182574,
+      "parity": 0.589928,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.1,
+      "human_refusal_rate": 0.003528,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRKH2_b_W119",
+      "text": "Would you favor or oppose employers\u2019 use of artificial intelligence (AI) for making a final hiring decision?",
+      "options": [
+        "Favor",
+        "Oppose",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Favor": 0.0935,
+        "Oppose": 0.6891,
+        "Not sure": 0.2147,
+        "Refused": 0.0027
+      },
+      "model_distribution": {
+        "Favor": 0.2,
+        "Oppose": 0.6,
+        "Not sure": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.136315,
+      "kendall_tau": 0.547723,
+      "parity": 0.818773,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.2,
+      "human_refusal_rate": 0.002691,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRKH3_a_W119",
+      "text": "Do you think artificial intelligence (AI) would do better, worse, or about the same as humans at identifying job applica",
+      "options": [
+        "AI would do a better job than humans",
+        "AI would do a worse job than humans",
+        "AI would do about the same job as humans",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "AI would do a better job than humans": 0.2949,
+        "AI would do a worse job than humans": 0.2328,
+        "AI would do about the same job as humans": 0.2405,
+        "Not sure": 0.2261,
+        "Refused": 0.0057
+      },
+      "model_distribution": {
+        "AI would do a better job than humans": 0.0,
+        "AI would do a worse job than humans": 0.0,
+        "AI would do about the same job as humans": 0.0333,
+        "Not sure": 0.8667,
+        "Refused": 0.0
+      },
+      "jsd": 0.504053,
+      "kendall_tau": -0.119523,
+      "parity": 0.468093,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.1,
+      "human_refusal_rate": 0.005691,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRKH3_b_W119",
+      "text": "Do you think artificial intelligence (AI) would do better, worse, or about the same as humans at treating all job applic",
+      "options": [
+        "AI would do a better job than humans",
+        "AI would do a worse job than humans",
+        "AI would do about the same job as humans",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "AI would do a better job than humans": 0.4734,
+        "AI would do a worse job than humans": 0.1583,
+        "AI would do about the same job as humans": 0.1469,
+        "Not sure": 0.2166,
+        "Refused": 0.0047
+      },
+      "model_distribution": {
+        "AI would do a better job than humans": 0.5,
+        "AI would do a worse job than humans": 0.0,
+        "AI would do about the same job as humans": 0.0,
+        "Not sure": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.243559,
+      "kendall_tau": 0.83666,
+      "parity": 0.837385,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.466667,
+      "human_refusal_rate": 0.004725,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRKH3_c_W119",
+      "text": "Do you think artificial intelligence (AI) would do better, worse, or about the same as humans at seeing potential in job",
+      "options": [
+        "AI would do a better job than humans",
+        "AI would do a worse job than humans",
+        "AI would do about the same job as humans",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "AI would do a better job than humans": 0.1802,
+        "AI would do a worse job than humans": 0.431,
+        "AI would do about the same job as humans": 0.1418,
+        "Not sure": 0.2413,
+        "Refused": 0.0057
+      },
+      "model_distribution": {
+        "AI would do a better job than humans": 0.2,
+        "AI would do a worse job than humans": 0.3,
+        "AI would do about the same job as humans": 0.0,
+        "Not sure": 0.0333,
+        "Refused": 0.0
+      },
+      "jsd": 0.145707,
+      "kendall_tau": 0.737865,
+      "parity": 0.861613,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.466667,
+      "human_refusal_rate": 0.005679,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRKH3_d_W119",
+      "text": "Do you think artificial intelligence (AI) would do better, worse, or about the same as humans at figuring out which job ",
+      "options": [
+        "AI would do a better job than humans",
+        "AI would do a worse job than humans",
+        "AI would do about the same job as humans",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "AI would do a better job than humans": 0.1399,
+        "AI would do a worse job than humans": 0.4105,
+        "AI would do about the same job as humans": 0.1643,
+        "Not sure": 0.2763,
+        "Refused": 0.0089
+      },
+      "model_distribution": {
+        "AI would do a better job than humans": 0.0667,
+        "AI would do a worse job than humans": 0.2667,
+        "AI would do about the same job as humans": 0.0,
+        "Not sure": 0.0667,
+        "Refused": 0.0
+      },
+      "jsd": 0.119537,
+      "kendall_tau": 0.67082,
+      "parity": 0.857937,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.6,
+      "human_refusal_rate": 0.008921,
+      "temporal_year": 0
+    },
+    {
+      "key": "AIWRKH4_W119",
+      "text": "If you were looking for work, would you want to apply for a job with an employer that uses artificial intelligence (AI) ",
+      "options": [
+        "Yes, I would",
+        "No, I would not",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes, I would": 0.3586,
+        "No, I would not": 0.6226,
+        "Refused": 0.0188
+      },
+      "model_distribution": {
+        "Yes, I would": 0.0333,
+        "No, I would not": 0.1333,
+        "Refused": 0.1333
+      },
+      "jsd": 0.235223,
+      "kendall_tau": 0.0,
+      "parity": 0.632389,
+      "n_samples": 30,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.7,
+      "human_refusal_rate": 0.018768,
+      "temporal_year": 0
+    }
+  ],
+  "temporal_breakdown": {}
+}

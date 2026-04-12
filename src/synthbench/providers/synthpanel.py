@@ -45,7 +45,7 @@ def _parse_letter(text: str, options: list[str]) -> str | None:
 
     text_lower = text.lower()
     for opt in options:
-        if opt.lower() in text_lower:
+        if str(opt).lower() in text_lower:
             return opt
 
     return None
@@ -202,12 +202,14 @@ class SynthPanelProvider(Provider):
         model: str = "haiku",
         temperature: float | None = None,
         profile: str | None = None,
+        prompt_template: str | None = None,
         synthpanel_path: str | None = None,
         **kwargs,
     ):
         self._model = model
         self._temperature = temperature
         self._profile = profile
+        self._prompt_template = prompt_template
         self._use_api = _HAS_SYNTH_PANEL_API
         self._client: Any = None
         self._executor: ThreadPoolExecutor | None = None
@@ -234,6 +236,12 @@ class SynthPanelProvider(Provider):
             parts.append(f"t={self._temperature}")
         if self._profile:
             parts.append(f"profile={self._profile}")
+        if self._prompt_template:
+            # Extract template name from path
+            from pathlib import Path
+
+            tname = Path(self._prompt_template).stem
+            parts.append(f"tpl={tname}")
         return " ".join(parts)
 
     @property
@@ -593,6 +601,8 @@ class SynthPanelProvider(Provider):
         )
         if self._temperature is not None:
             cmd.extend(["--temperature", str(self._temperature)])
+        if self._prompt_template is not None:
+            cmd.extend(["--prompt-template", self._prompt_template])
         return cmd
 
     async def _run_cli(
