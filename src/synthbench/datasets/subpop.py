@@ -23,12 +23,12 @@ from synthbench.datasets.base import Dataset, Question
 SUBPOP_ATTRIBUTES = [
     "CREGION",
     "EDUCATION",
-    "GENDER",
     "INCOME",
     "POLIDEOLOGY",
     "POLPARTY",
     "RACE",
-    "RELIGION",
+    "RELIG",
+    "SEX",
 ]
 
 
