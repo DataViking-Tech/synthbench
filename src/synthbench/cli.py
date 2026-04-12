@@ -1365,6 +1365,20 @@ def ensemble(files, output, weights):
     mean_tau = sum(q["kendall_tau"] for q in per_question) / n_q
     p_dist = round(1.0 - mean_jsd, 6)
     p_rank = round((1.0 + mean_tau) / 2.0, 6)
+
+    # P_refuse from blended refusal rates
+    from synthbench.metrics.refusal import refusal_calibration
+
+    p_refuse = round(
+        refusal_calibration(
+            [q["model_refusal_rate"] for q in per_question],
+            [q["human_refusal_rate"] for q in per_question],
+        ),
+        6,
+    )
+
+    # SPS = mean of all available metrics
+    sps = round((p_dist + p_rank + p_refuse) / 3.0, 6)
     composite = round(parity_score(mean_jsd, mean_tau), 6)
 
     # Build result JSON
@@ -1385,15 +1399,16 @@ def ensemble(files, output, weights):
             "n_common_questions": len(common_keys),
         },
         "scores": {
-            "sps": round((p_dist + p_rank) / 2.0, 6),
+            "sps": sps,
             "p_dist": p_dist,
             "p_rank": p_rank,
+            "p_refuse": p_refuse,
         },
         "aggregate": {
             "mean_jsd": round(mean_jsd, 6),
             "median_jsd": round(sorted(q["jsd"] for q in per_question)[n_q // 2], 6),
             "mean_kendall_tau": round(mean_tau, 6),
-            "composite_parity": composite,
+            "composite_parity": sps,
             "n_questions": n_q,
             "elapsed_seconds": 0.0,
         },
@@ -1404,7 +1419,8 @@ def ensemble(files, output, weights):
     click.echo(f"  Provider: {provider_label}")
     click.echo(f"  P_dist:   {p_dist:.4f}")
     click.echo(f"  P_rank:   {p_rank:.4f}")
-    click.echo(f"  SPS:      {result_json['scores']['sps']:.4f}")
+    click.echo(f"  P_refuse: {p_refuse:.4f}")
+    click.echo(f"  SPS:      {sps:.4f}")
     click.echo()
 
     # Save

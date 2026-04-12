@@ -1,0 +1,2971 @@
+{
+  "benchmark": "synthbench",
+  "version": "0.1.0",
+  "timestamp": "2026-04-12T07:13:43.952972+00:00",
+  "config": {
+    "dataset": "globalopinionqa",
+    "provider": "ensemble/3-model-blend",
+    "ensemble_sources": [
+      {
+        "file": "globalopinionqa_synthpanel_openrouter_anthropic_claude-haiku-4-5_20260411_164425.json",
+        "provider": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+        "weight": 0.333333
+      },
+      {
+        "file": "globalopinionqa_synthpanel_gemini-2.5-flash-lite_20260411_075828.json",
+        "provider": "synthpanel/gemini-2.5-flash-lite",
+        "weight": 0.333333
+      },
+      {
+        "file": "globalopinionqa_synthpanel_openrouter_openai_gpt-4o-mini_20260411_154954.json",
+        "provider": "synthpanel/openrouter/openai/gpt-4o-mini",
+        "weight": 0.333333
+      }
+    ],
+    "n_common_questions": 100
+  },
+  "scores": {
+    "sps": 0.81346,
+    "p_dist": 0.807219,
+    "p_rank": 0.68741,
+    "p_refuse": 0.945752
+  },
+  "aggregate": {
+    "mean_jsd": 0.192781,
+    "median_jsd": 0.163681,
+    "mean_kendall_tau": 0.374819,
+    "composite_parity": 0.81346,
+    "n_questions": 100,
+    "elapsed_seconds": 0.0
+  },
+  "per_question": [
+    {
+      "key": "GOQA_0_adeba4f8",
+      "text": "When it comes to Germany\u2019s decision-making in the European Union, do you think Germany has too much influence, has too l",
+      "options": [
+        "Has too much influence",
+        "Has too little influence",
+        "Has about the right amount of influence",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Has too much influence": 0.3806,
+        "Has too little influence": 0.0803,
+        "Has about the right amount of influence": 0.5215,
+        "DK/Refused": 0.0175
+      },
+      "model_distribution": {
+        "Has about the right amount of influence": 1.0,
+        "Has too little influence": 0.0,
+        "DK/Refused": 0.0,
+        "Has too much influence": 0.0
+      },
+      "jsd": 0.294418,
+      "kendall_tau": 0.707107,
+      "parity": 0.779568,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.017538,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_10_996adb3c",
+      "text": "Thinking about our relations with China, in your view, which is more important - being tough with China on territorial d",
+      "options": [
+        "Being tough with China",
+        "Having a strong relationship with China",
+        "Being tough with China on territorial disputes",
+        "Having a strong economic relationship with China",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Being tough with China": 0.4259,
+        "Having a strong relationship with China": 0.4199,
+        "Being tough with China on territorial disputes": 0.04,
+        "Having a strong economic relationship with China": 0.0957,
+        "DK/Refused": 0.0186
+      },
+      "model_distribution": {
+        "Having a strong relationship with China": 0.1444,
+        "Having a strong economic relationship with China": 0.4444,
+        "DK/Refused": 0.1222,
+        "Being tough with China on territorial disputes": 0.0444,
+        "Being tough with China": 0.1556
+      },
+      "jsd": 0.224612,
+      "kendall_tau": 0.4,
+      "parity": 0.737694,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.088889,
+      "human_refusal_rate": 0.018571,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_11_56587129",
+      "text": "Do you think this change in the working conditions for ordinary workers is largely because of the way the world has beco",
+      "options": [
+        "Largely more connected",
+        "Other reasons"
+      ],
+      "human_distribution": {
+        "Largely more connected": 0.366,
+        "Other reasons": 0.634
+      },
+      "model_distribution": {
+        "Largely more connected": 0.9778,
+        "Other reasons": 0.0222
+      },
+      "jsd": 0.362387,
+      "kendall_tau": -1.0,
+      "parity": 0.318806,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_12_6a134fab",
+      "text": "Do you think that using military force against countries that may seriously threaten our country, but have not attacked ",
+      "options": [
+        "Often be justified",
+        "Sometimes be justified",
+        "Rarely be justified",
+        "Never be justified"
+      ],
+      "human_distribution": {
+        "Often be justified": 0.1533,
+        "Sometimes be justified": 0.2697,
+        "Rarely be justified": 0.2264,
+        "Never be justified": 0.3507
+      },
+      "model_distribution": {
+        "Never be justified": 0.0,
+        "Often be justified": 0.0,
+        "Rarely be justified": 0.5556,
+        "Sometimes be justified": 0.4444
+      },
+      "jsd": 0.319134,
+      "kendall_tau": -0.182574,
+      "parity": 0.544789,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_13_60b622de",
+      "text": "On the subject of Iraq, did your country make the right decision or the wrong decision to use military force against Ira",
+      "options": [
+        "Right decision",
+        "Wrong decision"
+      ],
+      "human_distribution": {
+        "Right decision": 0.4541,
+        "Wrong decision": 0.5459
+      },
+      "model_distribution": {
+        "Right decision": 0.0,
+        "Wrong decision": 1.0
+      },
+      "jsd": 0.275877,
+      "kendall_tau": 1.0,
+      "parity": 0.862061,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_14_e32efdb2",
+      "text": "Do you think the U.S. should keep military troops in Iraq until the situation has stabilized, or do you think the U.S. s",
+      "options": [
+        "Keep troops in Iraq",
+        "Remove its troops"
+      ],
+      "human_distribution": {
+        "Keep troops in Iraq": 0.2537,
+        "Remove its troops": 0.7463
+      },
+      "model_distribution": {
+        "Remove its troops": 0.8778,
+        "Keep troops in Iraq": 0.1
+      },
+      "jsd": 0.029027,
+      "kendall_tau": 1.0,
+      "parity": 0.985486,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.022222,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_15_b3fdeab2",
+      "text": "Do you approve or disapprove of the way President Vladimir Putin is handling each of the following areas? c. civil socie",
+      "options": [
+        "Approve",
+        "Disapprove",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Approve": 0.57,
+        "Disapprove": 0.35,
+        "DK/Refused": 0.08
+      },
+      "model_distribution": {
+        "Disapprove": 0.2556,
+        "Approve": 0.6333,
+        "DK/Refused": 0.1111
+      },
+      "jsd": 0.008369,
+      "kendall_tau": 1.0,
+      "parity": 0.995815,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.08,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_16_b33656e1",
+      "text": "I'm going to read you a list of issues that human rights organizations in your country might work on. As I read each one",
+      "options": [
+        "Top priority",
+        "Important but lower priority",
+        "Not too important",
+        "Should not work on this issue",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Top priority": 0.6846,
+        "Important but lower priority": 0.2052,
+        "Not too important": 0.0426,
+        "Should not work on this issue": 0.0176,
+        "DK/Refused": 0.05
+      },
+      "model_distribution": {
+        "Should not work on this issue": 0.0,
+        "DK/Refused": 0.0,
+        "Top priority": 1.0,
+        "Important but lower priority": 0.0,
+        "Not too important": 0.0
+      },
+      "jsd": 0.179124,
+      "kendall_tau": 0.632456,
+      "parity": 0.818552,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.050025,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_17_9d6f6c27",
+      "text": "Please tell me if you think the PRI, the PAN, or the PRD party could do a better job in each of the following areas. Whi",
+      "options": [
+        "PRI",
+        "PAN",
+        "PRD",
+        "Other (VOL)",
+        "None (VOL)"
+      ],
+      "human_distribution": {
+        "PRI": 0.2697,
+        "PAN": 0.2697,
+        "PRD": 0.1573,
+        "Other (VOL)": 0.0112,
+        "None (VOL)": 0.2921
+      },
+      "model_distribution": {
+        "Other (VOL)": 0.0111,
+        "PRI": 0.1889,
+        "PRD": 0.0,
+        "None (VOL)": 0.3556,
+        "PAN": 0.2667
+      },
+      "jsd": 0.091567,
+      "kendall_tau": 0.737865,
+      "parity": 0.888683,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.177778,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_18_6565d4ba",
+      "text": "Do you personally believe that drinking alcohol is morally acceptable, morally unacceptable, or is it not a moral issue?",
+      "options": [
+        "Morally acceptable",
+        "Morally unacceptable",
+        "Not a moral issue",
+        "Depends on the situation (VOL)"
+      ],
+      "human_distribution": {
+        "Morally acceptable": 0.2168,
+        "Morally unacceptable": 0.4698,
+        "Not a moral issue": 0.2641,
+        "Depends on the situation (VOL)": 0.0493
+      },
+      "model_distribution": {
+        "Depends on the situation (VOL)": 0.0,
+        "Morally acceptable": 0.4111,
+        "Not a moral issue": 0.4333,
+        "Morally unacceptable": 0.0556
+      },
+      "jsd": 0.207416,
+      "kendall_tau": 0.333333,
+      "parity": 0.729625,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.1,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_19_a2004952",
+      "text": "I am going to read you the same list.  Does...you can openly say what you think and can criticize the (state or governme",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not well at all"
+      ],
+      "human_distribution": {
+        "Very well": 0.3257,
+        "Somewhat well": 0.3746,
+        "Not too well": 0.2063,
+        "Not well at all": 0.0934
+      },
+      "model_distribution": {
+        "Very well": 0.4,
+        "Not well at all": 0.1556,
+        "Somewhat well": 0.2667,
+        "Not too well": 0.1778
+      },
+      "jsd": 0.015756,
+      "kendall_tau": 0.666667,
+      "parity": 0.908789,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_1_3c42d99b",
+      "text": "Please tell me if you have a very favorable, somewhat favorable, somewhat unfavorable or very unfavorable opinion of ___",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.06,
+        "Somewhat favorable": 0.4,
+        "Somewhat unfavorable": 0.38,
+        "Very unfavorable": 0.13,
+        "DK/Refused": 0.03
+      },
+      "model_distribution": {
+        "Very unfavorable": 0.0222,
+        "Somewhat unfavorable": 0.0111,
+        "DK/Refused": 0.9,
+        "Somewhat favorable": 0.0667,
+        "Very favorable": 0.0
+      },
+      "jsd": 0.68427,
+      "kendall_tau": 0.0,
+      "parity": 0.407865,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.03,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_20_b4f3d7a6",
+      "text": "As I read a list of groups and organizations, please tell me how good a job each has done in responding to the impact of",
+      "options": [
+        "Very good",
+        "Somewhat good",
+        "Somewhat poor",
+        "Very poor"
+      ],
+      "human_distribution": {
+        "Very good": 0.0103,
+        "Somewhat good": 0.1753,
+        "Somewhat poor": 0.433,
+        "Very poor": 0.3814
+      },
+      "model_distribution": {
+        "Somewhat good": 0.5778,
+        "Very good": 0.0,
+        "Very poor": 0.0556,
+        "Somewhat poor": 0.3667
+      },
+      "jsd": 0.187312,
+      "kendall_tau": 0.333333,
+      "parity": 0.739677,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_21_e28aec32",
+      "text": "Here is a list of three dangers in the world today.  In your opinion, which one of these poses the greatest threat to th",
+      "options": [
+        "AIDS and other infectious diseases",
+        "Pollution and other environmental problems",
+        "Growing gap between the rich and poor"
+      ],
+      "human_distribution": {
+        "AIDS and other infectious diseases": 0.5556,
+        "Pollution and other environmental problems": 0.2828,
+        "Growing gap between the rich and poor": 0.1616
+      },
+      "model_distribution": {
+        "Growing gap between the rich and poor": 0.1111,
+        "AIDS and other infectious diseases": 0.0111,
+        "Pollution and other environmental problems": 0.8778
+      },
+      "jsd": 0.362752,
+      "kendall_tau": -0.333333,
+      "parity": 0.485291,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_22_37912b82",
+      "text": "Do you think Arabs and blacks in North Africa can live peacefully together or don't you think so?",
+      "options": [
+        "Can live together",
+        "Cannot live together"
+      ],
+      "human_distribution": {
+        "Can live together": 0.5602,
+        "Cannot live together": 0.4398
+      },
+      "model_distribution": {
+        "Cannot live together": 0.0,
+        "Can live together": 1.0
+      },
+      "jsd": 0.265226,
+      "kendall_tau": 1.0,
+      "parity": 0.867387,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_23_22156b82",
+      "text": "What kind of influence is\u2026acting President Oleksandr Turchynov...having on the way things are going in Ukraine? Is the i",
+      "options": [
+        "Very good",
+        "Somewhat good",
+        "Somewhat bad",
+        "Very bad"
+      ],
+      "human_distribution": {
+        "Very good": 0.0909,
+        "Somewhat good": 0.3864,
+        "Somewhat bad": 0.2727,
+        "Very bad": 0.25
+      },
+      "model_distribution": {
+        "Somewhat good": 0.3333,
+        "Somewhat bad": 0.5889,
+        "Very good": 0.0111,
+        "Very bad": 0.0111
+      },
+      "jsd": 0.172694,
+      "kendall_tau": 0.547723,
+      "parity": 0.800584,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.055556,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_24_fcc32e08",
+      "text": "How satisfied are you with the way democracy is working in our country - very satisfied, somewhat satisfied, not too sat",
+      "options": [
+        "Very satisfied",
+        "Somewhat satisfied",
+        "Not too satisfied",
+        "Not at all satisfied",
+        "Don't know/Refused",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very satisfied": 0.1144,
+        "Somewhat satisfied": 0.3614,
+        "Not too satisfied": 0.2932,
+        "Not at all satisfied": 0.2112,
+        "Don't know/Refused": 0.0,
+        "DK/Refused": 0.0198
+      },
+      "model_distribution": {
+        "Not too satisfied": 0.9333,
+        "Somewhat satisfied": 0.0444,
+        "DK/Refused": 0.0,
+        "Very satisfied": 0.0222,
+        "Not at all satisfied": 0.0,
+        "Don't know/Refused": 0.0
+      },
+      "jsd": 0.368499,
+      "kendall_tau": 0.596285,
+      "parity": 0.714822,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.019768,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_25_aeff64c7",
+      "text": "For each, tell me how much confidence you have in each leader to do the right thing regarding world affairs \u2013 a lot of c",
+      "options": [
+        "A lot of confidence",
+        "Some confidence",
+        "Not too much confidence",
+        "No confidence at all",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "A lot of confidence": 0.0481,
+        "Some confidence": 0.2147,
+        "Not too much confidence": 0.2053,
+        "No confidence at all": 0.2274,
+        "DK/Refused": 0.3044
+      },
+      "model_distribution": {
+        "DK/Refused": 0.0,
+        "No confidence at all": 0.2222,
+        "Not too much confidence": 0.7333,
+        "Some confidence": 0.0333,
+        "A lot of confidence": 0.0111
+      },
+      "jsd": 0.328289,
+      "kendall_tau": -0.2,
+      "parity": 0.535855,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.304404,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_26_e98eb96f",
+      "text": "Has each of the following gotten better or worse over the last five years in our country: the gap between rich and poor ",
+      "options": [
+        "Better",
+        "Worse",
+        "Has not changed"
+      ],
+      "human_distribution": {
+        "Better": 0.1353,
+        "Worse": 0.7707,
+        "Has not changed": 0.0939
+      },
+      "model_distribution": {
+        "Worse": 0.8222,
+        "Has not changed": 0.0,
+        "Better": 0.1778
+      },
+      "jsd": 0.049637,
+      "kendall_tau": 1.0,
+      "parity": 0.975182,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_27_dec7a01d",
+      "text": "Would you say that each of the following is doing a very good, somewhat good, somewhat bad, or very bad job dealing with",
+      "options": [
+        "Very good job",
+        "Somewhat good job",
+        "Somewhat bad job",
+        "Very bad job",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very good job": 0.0941,
+        "Somewhat good job": 0.488,
+        "Somewhat bad job": 0.3053,
+        "Very bad job": 0.1014,
+        "DK/Refused": 0.0112
+      },
+      "model_distribution": {
+        "DK/Refused": 0.0,
+        "Somewhat bad job": 0.8556,
+        "Very good job": 0.0111,
+        "Very bad job": 0.1,
+        "Somewhat good job": 0.0333
+      },
+      "jsd": 0.301876,
+      "kendall_tau": 0.6,
+      "parity": 0.749062,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.011212,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_28_676f2eb8",
+      "text": "Thinking about possible war with Iraq, would you favor or oppose your country's joining the US and other allies in milit",
+      "options": [
+        "Favor",
+        "Oppose"
+      ],
+      "human_distribution": {
+        "Favor": 0.2956,
+        "Oppose": 0.7044
+      },
+      "model_distribution": {
+        "Favor": 0.0556,
+        "Oppose": 0.9444
+      },
+      "jsd": 0.077602,
+      "kendall_tau": 1.0,
+      "parity": 0.961199,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_29_a47e2d41",
+      "text": "(Now/And thinking about the American people...) Which of these characteristics do you associate with the American people",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "human_distribution": {
+        "Yes": 0.899,
+        "No": 0.101
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0
+      },
+      "jsd": 0.052438,
+      "kendall_tau": 1.0,
+      "parity": 0.973781,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_2_8cc6fc68",
+      "text": "Which statement comes closer to your own views, even if neither is exactly right? Using overwhelming military force is t",
+      "options": [
+        "Using overwhelming military force is the best way to defeat terrorism around the world",
+        "If (survey country) had cooperated more with other countries, the number of coronavirus cases would have been lower in this country",
+        "Many of the problems facing our country can be solved by working with other countries",
+        "Relying too much on military force to defeat terrorism creates hatred that leads to more terrorism",
+        "No amount of cooperation between (survey country) and other countries would have reduced the number of coronavirus cases in this country",
+        "Few of the problems facing our country can be solved by working with other countries",
+        "DK/Refused",
+        "When dealing with major international issues, our country should take into account the interests of other countries, even if it means making compromises with them",
+        "When dealing with major international issues, our country should follow its own interests, even when other countries strongly disagree"
+      ],
+      "human_distribution": {
+        "Using overwhelming military force is the best way to defeat terrorism around the world": 0.1247,
+        "If (survey country) had cooperated more with other countries, the number of coronavirus cases would have been lower in this country": 0.182,
+        "Many of the problems facing our country can be solved by working with other countries": 0.0284,
+        "Relying too much on military force to defeat terrorism creates hatred that leads to more terrorism": 0.1023,
+        "No amount of cooperation between (survey country) and other countries would have reduced the number of coronavirus cases in this country": 0.1523,
+        "Few of the problems facing our country can be solved by working with other countries": 0.0237,
+        "DK/Refused": 0.0467,
+        "When dealing with major international issues, our country should take into account the interests of other countries, even if it means making compromises with them": 0.196,
+        "When dealing with major international issues, our country should follow its own interests, even when other countries strongly disagree": 0.1439
+      },
+      "model_distribution": {
+        "Using overwhelming military force is the best way to defeat terrorism around the world": 0.0,
+        "When dealing with major international issues, our country should take into account the interests of other countries, even if it means making compromises with them": 0.0,
+        "DK/Refused": 0.0,
+        "No amount of cooperation between (survey country) and other countries would have reduced the number of coronavirus cases in this country": 0.0,
+        "Relying too much on military force to defeat terrorism creates hatred that leads to more terrorism": 1.0,
+        "Few of the problems facing our country can be solved by working with other countries": 0.0,
+        "Many of the problems facing our country can be solved by working with other countries": 0.0,
+        "If (survey country) had cooperated more with other countries, the number of coronavirus cases would have been lower in this country": 0.0,
+        "When dealing with major international issues, our country should follow its own interests, even when other countries strongly disagree": 0.0
+      },
+      "jsd": 0.754316,
+      "kendall_tau": -0.117851,
+      "parity": 0.343379,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.046658,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_30_bca03022",
+      "text": "Now I'd like to ask your views about some additional political leaders. Please tell me if you have a very favorable, som",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.2228,
+        "Somewhat favorable": 0.3111,
+        "Somewhat unfavorable": 0.1948,
+        "Very unfavorable": 0.2714
+      },
+      "model_distribution": {
+        "Somewhat favorable": 0.0556,
+        "Very unfavorable": 0.0333,
+        "Very favorable": 0.0889,
+        "Somewhat unfavorable": 0.8
+      },
+      "jsd": 0.314808,
+      "kendall_tau": -0.666667,
+      "parity": 0.425929,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.022222,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_31_f1a89f60",
+      "text": "Now I am going to read you a list of things that may be problems in our country.  As I read each one, please tell me if ",
+      "options": [
+        "Very big problem",
+        "Moderately big problem",
+        "Small problem",
+        "Not a problem at all"
+      ],
+      "human_distribution": {
+        "Very big problem": 0.4483,
+        "Moderately big problem": 0.3276,
+        "Small problem": 0.1379,
+        "Not a problem at all": 0.0862
+      },
+      "model_distribution": {
+        "Very big problem": 0.0,
+        "Moderately big problem": 0.3222,
+        "Not a problem at all": 0.6667,
+        "Small problem": 0.0111
+      },
+      "jsd": 0.45337,
+      "kendall_tau": -0.666667,
+      "parity": 0.356648,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_32_76dc5592",
+      "text": "For each statement, please tell me whether you completely agree with it, mostly agree with it, mostly disagree with it o",
+      "options": [
+        "Completely agree",
+        "Mostly agree",
+        "Mostly disagree",
+        "Completely disagree"
+      ],
+      "human_distribution": {
+        "Completely agree": 0.2342,
+        "Mostly agree": 0.3718,
+        "Mostly disagree": 0.2449,
+        "Completely disagree": 0.1491
+      },
+      "model_distribution": {
+        "Completely disagree": 0.3222,
+        "Mostly agree": 0.0,
+        "Mostly disagree": 0.6778,
+        "Completely agree": 0.0
+      },
+      "jsd": 0.402684,
+      "kendall_tau": -0.182574,
+      "parity": 0.503014,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_33_adfa47b9",
+      "text": "I\u2019d like your opinion about some possible international concerns. Do you think that ____ is a major threat, a minor thre",
+      "options": [
+        "Major threat",
+        "Minor threat",
+        "Not a threat",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Major threat": 0.7136,
+        "Minor threat": 0.174,
+        "Not a threat": 0.0616,
+        "DK/Refused": 0.0508
+      },
+      "model_distribution": {
+        "Not a threat": 0.0222,
+        "DK/Refused": 0.0,
+        "Minor threat": 0.2778,
+        "Major threat": 0.7
+      },
+      "jsd": 0.041062,
+      "kendall_tau": 1.0,
+      "parity": 0.979469,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.050769,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_34_0f67d596",
+      "text": "Do you think the government of Ukraine respects the personal freedoms of its people, or don\u2019t you think so?",
+      "options": [
+        "Yes, respects personal freedoms",
+        "No, does not respect personal freedoms"
+      ],
+      "human_distribution": {
+        "Yes, respects personal freedoms": 0.2279,
+        "No, does not respect personal freedoms": 0.7721
+      },
+      "model_distribution": {
+        "Yes, respects personal freedoms": 0.6889,
+        "No, does not respect personal freedoms": 0.2778
+      },
+      "jsd": 0.17765,
+      "kendall_tau": -1.0,
+      "parity": 0.411175,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.033333,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_35_b8555e45",
+      "text": "Now I am going to read you a list of things that may be problems in our country.  As I read each one, please tell me if ",
+      "options": [
+        "Very big problem",
+        "Moderately big problem",
+        "Small problem",
+        "Not a problem at all"
+      ],
+      "human_distribution": {
+        "Very big problem": 0.7273,
+        "Moderately big problem": 0.202,
+        "Small problem": 0.0505,
+        "Not a problem at all": 0.0202
+      },
+      "model_distribution": {
+        "Very big problem": 0.6667,
+        "Moderately big problem": 0.2778,
+        "Not a problem at all": 0.0111,
+        "Small problem": 0.0444
+      },
+      "jsd": 0.006393,
+      "kendall_tau": 1.0,
+      "parity": 0.996803,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_36_2cc0537a",
+      "text": "How serious of a threat is the Taliban to our country? Is it a very serious threat, a somewhat serious threat, a minor t",
+      "options": [
+        "Very serious threat",
+        "Somewhat serious threat",
+        "Minor threat",
+        "No threat at all",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very serious threat": 0.55,
+        "Somewhat serious threat": 0.18,
+        "Minor threat": 0.06,
+        "No threat at all": 0.05,
+        "DK/Refused": 0.16
+      },
+      "model_distribution": {
+        "Minor threat": 0.2333,
+        "DK/Refused": 0.0,
+        "Somewhat serious threat": 0.6111,
+        "Very serious threat": 0.0333,
+        "No threat at all": 0.1222
+      },
+      "jsd": 0.419758,
+      "kendall_tau": 0.0,
+      "parity": 0.540121,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.16,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_37_0a59d5ad",
+      "text": "According to news reports, the American government has been monitoring communications, such as emails and phone calls, i",
+      "options": [
+        "Acceptable",
+        "Unacceptable"
+      ],
+      "human_distribution": {
+        "Acceptable": 0.3689,
+        "Unacceptable": 0.6311
+      },
+      "model_distribution": {
+        "Unacceptable": 0.3667,
+        "Acceptable": 0.6333
+      },
+      "jsd": 0.051045,
+      "kendall_tau": -1.0,
+      "parity": 0.474477,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_38_0a93671f",
+      "text": "How likely or unlikely do you think it is that, in the future, a cyberattack will result in the following situation? a. ",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Somewhat unlikely",
+        "Very unlikely",
+        "Has already happened (DO NOT READ)",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very likely": 0.2902,
+        "Somewhat likely": 0.3898,
+        "Somewhat unlikely": 0.1665,
+        "Very unlikely": 0.0919,
+        "Has already happened (DO NOT READ)": 0.0061,
+        "DK/Refused": 0.0554
+      },
+      "model_distribution": {
+        "Has already happened (DO NOT READ)": 0.0,
+        "Very unlikely": 0.0,
+        "DK/Refused": 0.0,
+        "Somewhat likely": 0.4556,
+        "Very likely": 0.5333,
+        "Somewhat unlikely": 0.0111
+      },
+      "jsd": 0.163681,
+      "kendall_tau": 0.745356,
+      "parity": 0.854499,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.055441,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_39_febec555",
+      "text": "On another topic, had you heard that President Barack Obama's father was Kenyan, or hadn't you heard this?",
+      "options": [
+        "Had heard",
+        "Had not heard"
+      ],
+      "human_distribution": {
+        "Had heard": 0.96,
+        "Had not heard": 0.04
+      },
+      "model_distribution": {
+        "Had not heard": 0.0,
+        "Had heard": 1.0
+      },
+      "jsd": 0.020294,
+      "kendall_tau": 1.0,
+      "parity": 0.989853,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_3_2f86b3b4",
+      "text": "Do you think China will replace the U.S. as the world's leading superpower in the next 10 years, the next 20 years, the ",
+      "options": [
+        "Next 10 years",
+        "Next 20 years",
+        "Next 50 years",
+        "China will not replace U.S."
+      ],
+      "human_distribution": {
+        "Next 10 years": 0.1456,
+        "Next 20 years": 0.2159,
+        "Next 50 years": 0.1567,
+        "China will not replace U.S.": 0.4818
+      },
+      "model_distribution": {
+        "Next 50 years": 0.3889,
+        "Next 10 years": 0.0,
+        "China will not replace U.S.": 0.3333,
+        "Next 20 years": 0.2778
+      },
+      "jsd": 0.122216,
+      "kendall_tau": 0.333333,
+      "parity": 0.772225,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_40_406ad9b5",
+      "text": "And thinking about some political leaders and organizations in our country, please tell me if you have a very favorable,",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.1771,
+        "Somewhat favorable": 0.3646,
+        "Somewhat unfavorable": 0.2812,
+        "Very unfavorable": 0.1771
+      },
+      "model_distribution": {
+        "Somewhat favorable": 0.1555,
+        "Very unfavorable": 0.1222,
+        "Very favorable": 0.0556,
+        "Somewhat unfavorable": 0.4555
+      },
+      "jsd": 0.073576,
+      "kendall_tau": 0.547723,
+      "parity": 0.850143,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.211111,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_41_f73803a1",
+      "text": "To end the conflict in eastern Ukraine, which one of the following solutions do you think is best...Use military force t",
+      "options": [
+        "Use military force to fight the rebels",
+        "Negotiate a settlement with the rebels and Russia",
+        "Both/neither (VOL)"
+      ],
+      "human_distribution": {
+        "Use military force to fight the rebels": 0.2584,
+        "Negotiate a settlement with the rebels and Russia": 0.5281,
+        "Both/neither (VOL)": 0.2135
+      },
+      "model_distribution": {
+        "Use military force to fight the rebels": 0.0,
+        "Both/neither (VOL)": 0.0,
+        "Negotiate a settlement with the rebels and Russia": 0.7444
+      },
+      "jsd": 0.28938,
+      "kendall_tau": 0.816497,
+      "parity": 0.809434,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.255556,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_42_fa4a4441",
+      "text": "Do you think the upcoming parliamentary elections will improve conditions in our country, make them worse, or have no ef",
+      "options": [
+        "Improve",
+        "Worse",
+        "No effect"
+      ],
+      "human_distribution": {
+        "Improve": 0.4787,
+        "Worse": 0.2872,
+        "No effect": 0.234
+      },
+      "model_distribution": {
+        "Worse": 0.0222,
+        "No effect": 0.3667,
+        "Improve": 0.5444
+      },
+      "jsd": 0.113311,
+      "kendall_tau": 0.333333,
+      "parity": 0.776678,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.066667,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_43_723c4877",
+      "text": "Do you think that the rise of nontraditional political parties in your country, such as [INSERT COUNTRY-SPECIFIC EXAMPLE",
+      "options": [
+        "Good",
+        "Bad"
+      ],
+      "human_distribution": {
+        "Good": 0.5896,
+        "Bad": 0.4104
+      },
+      "model_distribution": {
+        "Good": 0.7556,
+        "Bad": 0.1556
+      },
+      "jsd": 0.051404,
+      "kendall_tau": 1.0,
+      "parity": 0.974298,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.088889,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_44_146e5f30",
+      "text": "Which of these characteristics do you associate with people in Western countries such as the United States and Europe?..",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "human_distribution": {
+        "Yes": 0.4523,
+        "No": 0.5477
+      },
+      "model_distribution": {
+        "Yes": 0.8,
+        "No": 0.2
+      },
+      "jsd": 0.095906,
+      "kendall_tau": -1.0,
+      "parity": 0.452047,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_45_c715df85",
+      "text": "Do you approve or disapprove of the way President Nicolas Maduro is handling each of the following areas? d. dealing wit",
+      "options": [
+        "Approve",
+        "Disapprove",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Approve": 0.2,
+        "Disapprove": 0.77,
+        "DK/Refused": 0.03
+      },
+      "model_distribution": {
+        "Disapprove": 0.4111,
+        "Approve": 0.5889,
+        "DK/Refused": 0.0
+      },
+      "jsd": 0.127224,
+      "kendall_tau": 0.333333,
+      "parity": 0.769721,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.03,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_46_3b67d9e7",
+      "text": "Do you think that an increase in trade and business ties between your country and (India/Pakistan) would be a very good ",
+      "options": [
+        "Very good",
+        "Somewhat good",
+        "Somewhat bad",
+        "Very bad"
+      ],
+      "human_distribution": {
+        "Very good": 0.2912,
+        "Somewhat good": 0.4074,
+        "Somewhat bad": 0.1567,
+        "Very bad": 0.1448
+      },
+      "model_distribution": {
+        "Somewhat good": 0.3889,
+        "Somewhat bad": 0.0778,
+        "Very good": 0.2667,
+        "Very bad": 0.1
+      },
+      "jsd": 0.008637,
+      "kendall_tau": 0.666667,
+      "parity": 0.912348,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.166667,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_47_88f80aa3",
+      "text": "Do you think this change in the availability of modern medicines and treatments is largely because of the way the world ",
+      "options": [
+        "Largely more connected",
+        "Other reasons"
+      ],
+      "human_distribution": {
+        "Largely more connected": 0.616,
+        "Other reasons": 0.384
+      },
+      "model_distribution": {
+        "Largely more connected": 0.7889,
+        "Other reasons": 0.2111
+      },
+      "jsd": 0.026076,
+      "kendall_tau": 1.0,
+      "parity": 0.986962,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_48_82c7a187",
+      "text": "Here is the 'ladder of life.'  Let's suppose the top of the ladder represents the best possible life for you; and the bo",
+      "options": [
+        0.0,
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        6.0,
+        7.0,
+        8.0,
+        9.0,
+        10.0
+      ],
+      "human_distribution": {
+        "0.0": 0.0122,
+        "1.0": 0.0148,
+        "2.0": 0.0288,
+        "3.0": 0.0565,
+        "4.0": 0.0875,
+        "5.0": 0.2031,
+        "6.0": 0.1546,
+        "7.0": 0.1772,
+        "8.0": 0.1508,
+        "9.0": 0.0555,
+        "10.0": 0.0589
+      },
+      "model_distribution": {
+        "6.0": 0.0222,
+        "1.0": 0.0,
+        "7.0": 0.0556,
+        "2.0": 0.0111,
+        "4.0": 0.0111,
+        "3.0": 0.0,
+        "5.0": 0.3,
+        "10.0": 0.0,
+        "8.0": 0.6,
+        "0.0": 0.0,
+        "9.0": 0.0
+      },
+      "jsd": 0.301009,
+      "kendall_tau": 0.650493,
+      "parity": 0.762119,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_49_77581743",
+      "text": "Now thinking about standards for products and services...In general, do you trust European standards or American standar",
+      "options": [
+        "European standards",
+        "American standards",
+        "Neither (VOL)",
+        "Both (VOL)"
+      ],
+      "human_distribution": {
+        "European standards": 0.6011,
+        "American standards": 0.2907,
+        "Neither (VOL)": 0.0913,
+        "Both (VOL)": 0.0169
+      },
+      "model_distribution": {
+        "Both (VOL)": 0.0,
+        "European standards": 1.0,
+        "Neither (VOL)": 0.0,
+        "American standards": 0.0
+      },
+      "jsd": 0.235675,
+      "kendall_tau": 0.707107,
+      "parity": 0.808939,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_4_91ab651e",
+      "text": "In your opinion, how strong a sense of Islamic identity do Muslims in our country have--very strong, fairly strong, not ",
+      "options": [
+        "Very strong",
+        "Fairly strong",
+        "Not too strong",
+        "Not strong at all"
+      ],
+      "human_distribution": {
+        "Very strong": 0.2841,
+        "Fairly strong": 0.4747,
+        "Not too strong": 0.1917,
+        "Not strong at all": 0.0494
+      },
+      "model_distribution": {
+        "Very strong": 0.2222,
+        "Not strong at all": 0.0,
+        "Fairly strong": 0.5889,
+        "Not too strong": 0.1667
+      },
+      "jsd": 0.032894,
+      "kendall_tau": 1.0,
+      "parity": 0.983553,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.022222,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_50_336b4131",
+      "text": "For each of the following, please tell me how news organizations in your country are doing on the issue. Would you say n",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not well at all",
+        "News organizations should not do this (VOL)",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very well": 0.2905,
+        "Somewhat well": 0.4172,
+        "Not too well": 0.1829,
+        "Not well at all": 0.0796,
+        "News organizations should not do this (VOL)": 0.0019,
+        "DK/Refused": 0.028
+      },
+      "model_distribution": {
+        "Somewhat well": 0.7333,
+        "Very well": 0.0,
+        "DK/Refused": 0.0,
+        "Not well at all": 0.0,
+        "News organizations should not do this (VOL)": 0.0,
+        "Not too well": 0.2667
+      },
+      "jsd": 0.237391,
+      "kendall_tau": 0.602464,
+      "parity": 0.78192,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.027977,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_51_7f8ddb52",
+      "text": "Do you think our country's efforts to reduce government spending have gone too far, not gone far enough or have they bee",
+      "options": [
+        "Gone too far",
+        "Not gone far enough",
+        "About right"
+      ],
+      "human_distribution": {
+        "Gone too far": 0.3483,
+        "Not gone far enough": 0.3916,
+        "About right": 0.26
+      },
+      "model_distribution": {
+        "About right": 0.1778,
+        "Not gone far enough": 0.7,
+        "Gone too far": 0.1222
+      },
+      "jsd": 0.078306,
+      "kendall_tau": 0.333333,
+      "parity": 0.79418,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_52_3eaf2ae3",
+      "text": "Overall, was the break-up of Czechoslovakia into two independent states a good thing or a bad thing?",
+      "options": [
+        "Good",
+        "Bad"
+      ],
+      "human_distribution": {
+        "Good": 0.4935,
+        "Bad": 0.5065
+      },
+      "model_distribution": {
+        "Good": 0.9555,
+        "Bad": 0.0222
+      },
+      "jsd": 0.255421,
+      "kendall_tau": -1.0,
+      "parity": 0.372289,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.022222,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_53_63551b2d",
+      "text": "I am going to read you a list of things that the government might do to improve public health and health care in our cou",
+      "options": [
+        "One of the most important priorities",
+        "A very important priority",
+        "A lower priority",
+        "Not a priority at all"
+      ],
+      "human_distribution": {
+        "One of the most important priorities": 0.6652,
+        "A very important priority": 0.2796,
+        "A lower priority": 0.0457,
+        "Not a priority at all": 0.0095
+      },
+      "model_distribution": {
+        "A lower priority": 0.0,
+        "Not a priority at all": 0.0,
+        "One of the most important priorities": 1.0,
+        "A very important priority": 0.0
+      },
+      "jsd": 0.191845,
+      "kendall_tau": 0.707107,
+      "parity": 0.830854,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_54_f6124585",
+      "text": "Do you personally believe that getting a divorce is morally acceptable, morally unacceptable, or is it not a moral issue",
+      "options": [
+        "Morally acceptable",
+        "Morally unacceptable",
+        "Not a moral issue",
+        "Depends on the situation (VOL)"
+      ],
+      "human_distribution": {
+        "Morally acceptable": 0.3723,
+        "Morally unacceptable": 0.3076,
+        "Not a moral issue": 0.2214,
+        "Depends on the situation (VOL)": 0.0987
+      },
+      "model_distribution": {
+        "Depends on the situation (VOL)": 0.0555,
+        "Morally acceptable": 0.5778,
+        "Not a moral issue": 0.0111,
+        "Morally unacceptable": 0.0
+      },
+      "jsd": 0.309318,
+      "kendall_tau": 0.0,
+      "parity": 0.595341,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.355556,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_55_18566aa0",
+      "text": "Please tell me whether you think the following statements apply to the United Nations or not. The United Nations\u2026 b. Pro",
+      "options": [
+        "Yes",
+        "No",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.6105,
+        "No": 0.3481,
+        "DK/Refused": 0.0415
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "DK/Refused": 0.0
+      },
+      "jsd": 0.229108,
+      "kendall_tau": 0.816497,
+      "parity": 0.83957,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.041452,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_56_1b93b3b0",
+      "text": "In general, do you think our country is covered fairly or unfairly in the international news media?",
+      "options": [
+        "Covered fairly",
+        "Covered unfairly"
+      ],
+      "human_distribution": {
+        "Covered fairly": 0.5101,
+        "Covered unfairly": 0.4899
+      },
+      "model_distribution": {
+        "Covered fairly": 0.0222,
+        "Covered unfairly": 0.9778
+      },
+      "jsd": 0.259156,
+      "kendall_tau": -1.0,
+      "parity": 0.370422,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_57_ca71b519",
+      "text": "Thinking about some issues, do you approve or disapprove of the way the European Union is dealing with ____? a. European",
+      "options": [
+        "Approve",
+        "Disapprove",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Approve": 0.3834,
+        "Disapprove": 0.5167,
+        "DK/Refused": 0.0998
+      },
+      "model_distribution": {
+        "Disapprove": 0.4444,
+        "Approve": 0.5,
+        "DK/Refused": 0.0556
+      },
+      "jsd": 0.012135,
+      "kendall_tau": 0.333333,
+      "parity": 0.827266,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.099832,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_58_986bb318",
+      "text": "How concerned, if at all, are you about Hindu extremism in our country these days? Are you very concerned, somewhat conc",
+      "options": [
+        "Very concerned",
+        "Somewhat concerned",
+        "Not too concerned",
+        "Not at all concerned"
+      ],
+      "human_distribution": {
+        "Very concerned": 0.3176,
+        "Somewhat concerned": 0.2,
+        "Not too concerned": 0.1882,
+        "Not at all concerned": 0.2941
+      },
+      "model_distribution": {
+        "Not too concerned": 0.3555,
+        "Somewhat concerned": 0.3111,
+        "Very concerned": 0.1,
+        "Not at all concerned": 0.1222
+      },
+      "jsd": 0.100793,
+      "kendall_tau": -1.0,
+      "parity": 0.449604,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.111111,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_59_06260d4f",
+      "text": "Again, which one better describes George W. Bush...He makes decisions based entirely on U.S. interests or He takes into ",
+      "options": [
+        "He makes decisions based entirely on U.S. interests",
+        "He takes into account European interests"
+      ],
+      "human_distribution": {
+        "He makes decisions based entirely on U.S. interests": 0.8048,
+        "He takes into account European interests": 0.1952
+      },
+      "model_distribution": {
+        "He makes decisions based entirely on U.S. interests": 1.0,
+        "He takes into account European interests": 0.0
+      },
+      "jsd": 0.105229,
+      "kendall_tau": 1.0,
+      "parity": 0.947385,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_5_60e0a1e8",
+      "text": "Please tell me if you approve or disapprove of the way Prime Minister Viktor Orb\u00e1n is handling each of the following are",
+      "options": [
+        "Approve",
+        "Disapprove",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Approve": 0.703,
+        "Disapprove": 0.2277,
+        "DK/Refused": 0.0693
+      },
+      "model_distribution": {
+        "Disapprove": 0.6556,
+        "Approve": 0.2444,
+        "DK/Refused": 0.1
+      },
+      "jsd": 0.163526,
+      "kendall_tau": 0.333333,
+      "parity": 0.75157,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.069307,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_60_cde6942e",
+      "text": "As you think about relations between the United States and Germany over the last 75 years, which one of these events is ",
+      "options": [
+        "World War II and the Holocaust",
+        "The Marshall Plan",
+        "The fall of the Berlin Wall",
+        "U.S.-German disagreements over the Iraq War",
+        "U.S. monitoring of [U.S. ONLY: German Chancellor] Angela Merkel's communications",
+        "None of the above (VOL)"
+      ],
+      "human_distribution": {
+        "World War II and the Holocaust": 0.3564,
+        "The Marshall Plan": 0.1223,
+        "The fall of the Berlin Wall": 0.3298,
+        "U.S.-German disagreements over the Iraq War": 0.0851,
+        "U.S. monitoring of [U.S. ONLY: German Chancellor] Angela Merkel's communications": 0.1011,
+        "None of the above (VOL)": 0.0053
+      },
+      "model_distribution": {
+        "U.S.-German disagreements over the Iraq War": 0.0,
+        "World War II and the Holocaust": 0.6333,
+        "None of the above (VOL)": 0.0,
+        "The Marshall Plan": 0.0222,
+        "The fall of the Berlin Wall": 0.3333,
+        "U.S. monitoring of [U.S. ONLY: German Chancellor] Angela Merkel's communications": 0.0
+      },
+      "jsd": 0.152676,
+      "kendall_tau": 0.894427,
+      "parity": 0.897269,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.011111,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_61_08eb1282",
+      "text": "Does this statement describe your country very well, somewhat well, not too well, or not well at all? c. Most politician",
+      "options": [
+        "Very well",
+        "Somewhat well",
+        "Not too well",
+        "Not well at all",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very well": 0.293,
+        "Somewhat well": 0.2507,
+        "Not too well": 0.2136,
+        "Not well at all": 0.2102,
+        "DK/Refused": 0.0326
+      },
+      "model_distribution": {
+        "Somewhat well": 0.7,
+        "Very well": 0.0444,
+        "DK/Refused": 0.0,
+        "Not well at all": 0.0222,
+        "Not too well": 0.2333
+      },
+      "jsd": 0.233559,
+      "kendall_tau": 0.6,
+      "parity": 0.783221,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.032554,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_62_48030fd9",
+      "text": "If robots and computers were able to do much of the work currently being done by humans, do you think each of the follow",
+      "options": [
+        "Yes, likely",
+        "No, not likely",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Yes, likely": 0.8041,
+        "No, not likely": 0.1547,
+        "DK/Refused": 0.0412
+      },
+      "model_distribution": {
+        "Yes, likely": 1.0,
+        "DK/Refused": 0.0,
+        "No, not likely": 0.0
+      },
+      "jsd": 0.105637,
+      "kendall_tau": 0.816497,
+      "parity": 0.901305,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.041201,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_63_dcc8a683",
+      "text": "How important is it to have the following things in our country? Is it very important, somewhat important, not too impor",
+      "options": [
+        "Very important",
+        "Somewhat important",
+        "Not too important",
+        "Not important at all",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very important": 0.7951,
+        "Somewhat important": 0.1372,
+        "Not too important": 0.0306,
+        "Not important at all": 0.018,
+        "DK/Refused": 0.0191
+      },
+      "model_distribution": {
+        "DK/Refused": 0.0,
+        "Very important": 1.0,
+        "Somewhat important": 0.0,
+        "Not important at all": 0.0,
+        "Not too important": 0.0
+      },
+      "jsd": 0.110904,
+      "kendall_tau": 0.632456,
+      "parity": 0.852662,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.019113,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_64_d6c440c5",
+      "text": "Do you think people should be able to say these types of things publically OR the government should be able to prevent p",
+      "options": [
+        "People should be able to say these things publically",
+        "Government should be able to prevent people from saying these things",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "People should be able to say these things publically": 0.252,
+        "Government should be able to prevent people from saying these things": 0.6928,
+        "DK/Refused": 0.0552
+      },
+      "model_distribution": {
+        "Government should be able to prevent people from saying these things": 1.0,
+        "People should be able to say these things publically": 0.0,
+        "DK/Refused": 0.0
+      },
+      "jsd": 0.173819,
+      "kendall_tau": 0.816497,
+      "parity": 0.867215,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.05523,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_65_4894056f",
+      "text": "(Now I'd like to ask you about some political parties.) Please tell me if you have a very favorable, somewhat favorable,",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.03,
+        "Somewhat favorable": 0.26,
+        "Somewhat unfavorable": 0.29,
+        "Very unfavorable": 0.32,
+        "DK/Refused": 0.1
+      },
+      "model_distribution": {
+        "Very unfavorable": 0.0,
+        "Somewhat unfavorable": 0.0889,
+        "DK/Refused": 0.8444,
+        "Somewhat favorable": 0.0222,
+        "Very favorable": 0.0444
+      },
+      "jsd": 0.528604,
+      "kendall_tau": -0.4,
+      "parity": 0.385698,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.1,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_66_e2ce2eed",
+      "text": "And how much influence do you think China is having on economic conditions in your country -- a great deal of influence,",
+      "options": [
+        "Great deal",
+        "Fair amount",
+        "Not too much",
+        "No influence at all"
+      ],
+      "human_distribution": {
+        "Great deal": 0.2774,
+        "Fair amount": 0.4226,
+        "Not too much": 0.1954,
+        "No influence at all": 0.1046
+      },
+      "model_distribution": {
+        "No influence at all": 0.0,
+        "Not too much": 0.2667,
+        "Great deal": 0.3222,
+        "Fair amount": 0.4111
+      },
+      "jsd": 0.057548,
+      "kendall_tau": 1.0,
+      "parity": 0.971226,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_67_8cf4bc27",
+      "text": "How much of a threat, if any, does Islamic extremism pose to our country these days - very great, fairly great, not too ",
+      "options": [
+        "Very great",
+        "Fairly great",
+        "Not too great",
+        "Not a threat at all"
+      ],
+      "human_distribution": {
+        "Very great": 0.2603,
+        "Fairly great": 0.2231,
+        "Not too great": 0.2342,
+        "Not a threat at all": 0.2825
+      },
+      "model_distribution": {
+        "Not a threat at all": 0.0,
+        "Not too great": 0.3444,
+        "Very great": 0.0778,
+        "Fairly great": 0.5778
+      },
+      "jsd": 0.245048,
+      "kendall_tau": -1.0,
+      "parity": 0.377476,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_68_3a049429",
+      "text": "Thinking about the future of your country, please tell me whether you feel generally optimistic or generally pessimistic",
+      "options": [
+        "Optimistic",
+        "Pessimistic",
+        "Neither (DO NOT READ)",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Optimistic": 0.6651,
+        "Pessimistic": 0.2351,
+        "Neither (DO NOT READ)": 0.0555,
+        "DK/Refused": 0.0443
+      },
+      "model_distribution": {
+        "Optimistic": 0.8778,
+        "Neither (DO NOT READ)": 0.0222,
+        "DK/Refused": 0.0,
+        "Pessimistic": 0.0444
+      },
+      "jsd": 0.092168,
+      "kendall_tau": 1.0,
+      "parity": 0.953916,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.055556,
+      "human_refusal_rate": 0.044282,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_69_ee625d1f",
+      "text": "As I read this list of countries and organizations, please tell me if each has done a great deal, fair amount, not very ",
+      "options": [
+        "Great deal",
+        "Fair amount",
+        "Not very much",
+        "Nothing at all"
+      ],
+      "human_distribution": {
+        "Great deal": 0.5876,
+        "Fair amount": 0.3299,
+        "Not very much": 0.0722,
+        "Nothing at all": 0.0103
+      },
+      "model_distribution": {
+        "Not very much": 0.0,
+        "Nothing at all": 0.0,
+        "Great deal": 0.9556,
+        "Fair amount": 0.0111
+      },
+      "jsd": 0.212891,
+      "kendall_tau": 0.912871,
+      "parity": 0.871772,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.033333,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_6_e5125a6a",
+      "text": "And thinking about some political leaders and organizations in our country, please tell me if you have a very favorable,",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.0968,
+        "Somewhat favorable": 0.2581,
+        "Somewhat unfavorable": 0.1613,
+        "Very unfavorable": 0.4839
+      },
+      "model_distribution": {
+        "Somewhat favorable": 0.0556,
+        "Very unfavorable": 0.3222,
+        "Very favorable": 0.0,
+        "Somewhat unfavorable": 0.1
+      },
+      "jsd": 0.081857,
+      "kendall_tau": 0.666667,
+      "parity": 0.875738,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.522222,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_70_f030d71f",
+      "text": "And thinking about some political leaders and organizations in our country, please tell me if you have a very favorable,",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.0824,
+        "Somewhat favorable": 0.2706,
+        "Somewhat unfavorable": 0.2,
+        "Very unfavorable": 0.4471
+      },
+      "model_distribution": {
+        "Somewhat favorable": 0.3667,
+        "Very unfavorable": 0.0444,
+        "Very favorable": 0.1222,
+        "Somewhat unfavorable": 0.1333
+      },
+      "jsd": 0.163056,
+      "kendall_tau": 0.0,
+      "parity": 0.668472,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.333333,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_71_216197d8",
+      "text": "Who do you think has more political power in our country - Vladimir Putin or Dmitry Medvedev?",
+      "options": [
+        "Vladimir Putin",
+        "Dmitri Medvedev",
+        "Both equally (VOL)",
+        "Neither (VOL)"
+      ],
+      "human_distribution": {
+        "Vladimir Putin": 0.5859,
+        "Dmitri Medvedev": 0.1616,
+        "Both equally (VOL)": 0.2323,
+        "Neither (VOL)": 0.0202
+      },
+      "model_distribution": {
+        "Vladimir Putin": 0.7444,
+        "Both equally (VOL)": 0.0,
+        "Neither (VOL)": 0.0,
+        "Dmitri Medvedev": 0.2556
+      },
+      "jsd": 0.14078,
+      "kendall_tau": 0.547723,
+      "parity": 0.816541,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_72_098169f0",
+      "text": "Do you know someone who went to the U.S., but returned to your area because they were captured by 'La Migra' at the bord",
+      "options": [
+        "Yes, I know someone",
+        "No, I do not know anyone"
+      ],
+      "human_distribution": {
+        "Yes, I know someone": 0.4796,
+        "No, I do not know anyone": 0.5204
+      },
+      "model_distribution": {
+        "No, I do not know anyone": 0.9222,
+        "Yes, I know someone": 0.0222
+      },
+      "jsd": 0.233915,
+      "kendall_tau": 1.0,
+      "parity": 0.883043,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.055556,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_73_3bd0b3f9",
+      "text": "As I read another list of statements, for each one, please tell me whether you completely agree, mostly agree, mostly di",
+      "options": [
+        "Completely agree",
+        "Mostly agree",
+        "Mostly disagree",
+        "Completely disagree"
+      ],
+      "human_distribution": {
+        "Completely agree": 0.2169,
+        "Mostly agree": 0.3398,
+        "Mostly disagree": 0.3091,
+        "Completely disagree": 0.1342
+      },
+      "model_distribution": {
+        "Completely disagree": 0.0667,
+        "Mostly agree": 0.5778,
+        "Mostly disagree": 0.2333,
+        "Completely agree": 0.1222
+      },
+      "jsd": 0.044368,
+      "kendall_tau": 1.0,
+      "parity": 0.977816,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_74_2ee8eb85",
+      "text": "As I read a list of groups and organizations, for each, please tell me what kind of influence the group is having on the",
+      "options": [
+        "Very good",
+        "Somewhat good",
+        "Somewhat bad",
+        "Very bad"
+      ],
+      "human_distribution": {
+        "Very good": 0.226,
+        "Somewhat good": 0.4682,
+        "Somewhat bad": 0.1952,
+        "Very bad": 0.1107
+      },
+      "model_distribution": {
+        "Somewhat good": 0.0,
+        "Somewhat bad": 0.5222,
+        "Very good": 0.0111,
+        "Very bad": 0.4667
+      },
+      "jsd": 0.461244,
+      "kendall_tau": -0.666667,
+      "parity": 0.352711,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_75_9ad47b8e",
+      "text": "For each of the following issues, how likely are you personally to take political action on it, such as contact an elect",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not too likely",
+        "Not at all likely",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very likely": 0.3521,
+        "Somewhat likely": 0.2928,
+        "Not too likely": 0.1345,
+        "Not at all likely": 0.1949,
+        "DK/Refused": 0.0257
+      },
+      "model_distribution": {
+        "Not too likely": 0.2889,
+        "DK/Refused": 0.0,
+        "Not at all likely": 0.0556,
+        "Somewhat likely": 0.2444,
+        "Very likely": 0.4111
+      },
+      "jsd": 0.06646,
+      "kendall_tau": 0.6,
+      "parity": 0.86677,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.025701,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_76_945b342a",
+      "text": "Please tell me if you have a very favorable, somewhat favorable, somewhat unfavorable or very unfavorable opinion of ___",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.1212,
+        "Somewhat favorable": 0.5051,
+        "Somewhat unfavorable": 0.2424,
+        "Very unfavorable": 0.101,
+        "DK/Refused": 0.0303
+      },
+      "model_distribution": {
+        "Very unfavorable": 0.3,
+        "Somewhat unfavorable": 0.2,
+        "DK/Refused": 0.3666,
+        "Somewhat favorable": 0.1111,
+        "Very favorable": 0.0111
+      },
+      "jsd": 0.298549,
+      "kendall_tau": -0.6,
+      "parity": 0.450726,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.011111,
+      "human_refusal_rate": 0.030303,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_77_8e33e852",
+      "text": "In your opinion, has the European Union provided too much financial assistance to EU countries that have experienced maj",
+      "options": [
+        "Too much",
+        "Not enough",
+        "About the right amount"
+      ],
+      "human_distribution": {
+        "Too much": 0.2444,
+        "Not enough": 0.3691,
+        "About the right amount": 0.3865
+      },
+      "model_distribution": {
+        "About the right amount": 0.3111,
+        "Not enough": 0.2222,
+        "Too much": 0.4444
+      },
+      "jsd": 0.037824,
+      "kendall_tau": -0.333333,
+      "parity": 0.647755,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.022222,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_78_c49dbadb",
+      "text": "As I read a list of groups and organizations, please tell me how good a job each has done in responding to the impact of",
+      "options": [
+        "Very good",
+        "Somewhat good",
+        "Somewhat poor",
+        "Very poor"
+      ],
+      "human_distribution": {
+        "Very good": 0.0102,
+        "Somewhat good": 0.1939,
+        "Somewhat poor": 0.4592,
+        "Very poor": 0.3367
+      },
+      "model_distribution": {
+        "Somewhat good": 0.2333,
+        "Very good": 0.0111,
+        "Very poor": 0.0333,
+        "Somewhat poor": 0.4333
+      },
+      "jsd": 0.109688,
+      "kendall_tau": 0.666667,
+      "parity": 0.861823,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.288889,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_79_c840ea3e",
+      "text": "As I read a list of groups and organizations, for each, please tell me what kind of influence the group is having on the",
+      "options": [
+        "Very good",
+        "Somewhat good",
+        "Somewhat bad",
+        "Very bad"
+      ],
+      "human_distribution": {
+        "Very good": 0.2921,
+        "Somewhat good": 0.5169,
+        "Somewhat bad": 0.1461,
+        "Very bad": 0.0449
+      },
+      "model_distribution": {
+        "Somewhat good": 0.2778,
+        "Somewhat bad": 0.0444,
+        "Very good": 0.3555,
+        "Very bad": 0.0
+      },
+      "jsd": 0.062461,
+      "kendall_tau": 0.666667,
+      "parity": 0.885436,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.322222,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_7_f06b55c4",
+      "text": "Please tell me which of the following is closest to your own opinion. Less inefficient large enterprises is helpful for ",
+      "options": [
+        "Less inefficient large enterprises is helpful for economic improvement",
+        "Less inefficient large enterprises is not helpful for economic development"
+      ],
+      "human_distribution": {
+        "Less inefficient large enterprises is helpful for economic improvement": 0.8072,
+        "Less inefficient large enterprises is not helpful for economic development": 0.1928
+      },
+      "model_distribution": {
+        "Less inefficient large enterprises is not helpful for economic development": 0.0,
+        "Less inefficient large enterprises is helpful for economic improvement": 1.0
+      },
+      "jsd": 0.103833,
+      "kendall_tau": 1.0,
+      "parity": 0.948084,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_80_7c450fd2",
+      "text": "For each of the following statements about the missile strikes from pilotless aircraft called drones, please tell me whe",
+      "options": [
+        "Agree",
+        "Disagree"
+      ],
+      "human_distribution": {
+        "Agree": 0.3134,
+        "Disagree": 0.6866
+      },
+      "model_distribution": {
+        "Disagree": 0.7,
+        "Agree": 0.3
+      },
+      "jsd": 0.000152,
+      "kendall_tau": 1.0,
+      "parity": 0.999924,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_81_24a3d05c",
+      "text": "Has the Turkish parliament made the right decision not to allow the American military to use Turkey as a staging ground ",
+      "options": [
+        "Right decision",
+        "Wrong decision"
+      ],
+      "human_distribution": {
+        "Right decision": 0.5843,
+        "Wrong decision": 0.4157
+      },
+      "model_distribution": {
+        "Right decision": 0.9667,
+        "Wrong decision": 0.0333
+      },
+      "jsd": 0.17321,
+      "kendall_tau": 1.0,
+      "parity": 0.913395,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_82_388dfa06",
+      "text": "Do you approve or disapprove of the U.S. military operation that killed Osama bin Laden?",
+      "options": [
+        "Approve",
+        "Disapprove"
+      ],
+      "human_distribution": {
+        "Approve": 0.137,
+        "Disapprove": 0.863
+      },
+      "model_distribution": {
+        "Disapprove": 0.0,
+        "Approve": 1.0
+      },
+      "jsd": 0.698254,
+      "kendall_tau": -1.0,
+      "parity": 0.150873,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_83_252eaf5f",
+      "text": "And, would you support or oppose the U.S. ending its trade embargo against Cuba, which would allow U.S. companies to do ",
+      "options": [
+        "Support",
+        "Oppose",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Support": 0.7155,
+        "Oppose": 0.1303,
+        "DK/Refused": 0.1541
+      },
+      "model_distribution": {
+        "Support": 0.6667,
+        "DK/Refused": 0.0,
+        "Oppose": 0.3333
+      },
+      "jsd": 0.110857,
+      "kendall_tau": 0.333333,
+      "parity": 0.777905,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.154147,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_84_9caee34a",
+      "text": "Now I am going to read you a list of things that may be problems in our country.  As I read each one, please tell me if ",
+      "options": [
+        "Very big problem",
+        "Moderately big problem",
+        "Small problem",
+        "Not a problem at all"
+      ],
+      "human_distribution": {
+        "Very big problem": 0.3222,
+        "Moderately big problem": 0.2695,
+        "Small problem": 0.2207,
+        "Not a problem at all": 0.1876
+      },
+      "model_distribution": {
+        "Very big problem": 0.0333,
+        "Moderately big problem": 0.3667,
+        "Not a problem at all": 0.0111,
+        "Small problem": 0.5889
+      },
+      "jsd": 0.234489,
+      "kendall_tau": 0.0,
+      "parity": 0.632756,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_85_29e427bc",
+      "text": "As I read some specific policies of [American] President George W. Bush tell me if you approve or disapprove of them...B",
+      "options": [
+        "Approve",
+        "Disapprove"
+      ],
+      "human_distribution": {
+        "Approve": 0.2497,
+        "Disapprove": 0.7503
+      },
+      "model_distribution": {
+        "Disapprove": 0.6445,
+        "Approve": 0.3555
+      },
+      "jsd": 0.009608,
+      "kendall_tau": 1.0,
+      "parity": 0.995196,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_86_f184826b",
+      "text": "Which of these characteristics do you associate with (the Chinese, the Japanese)?...Generous...Do you associate this wit",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "human_distribution": {
+        "Yes": 0.1571,
+        "No": 0.8429
+      },
+      "model_distribution": {
+        "Yes": 0.3444,
+        "No": 0.6556
+      },
+      "jsd": 0.034329,
+      "kendall_tau": 1.0,
+      "parity": 0.982836,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_87_46cfaa73",
+      "text": "After the dissolution of the Soviet Union, we changed from a country where there was just one party to a country with a ",
+      "options": [
+        "Strongly approve",
+        "Approve",
+        "Disapprove",
+        "Strongly disapprove",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Strongly approve": 0.1877,
+        "Approve": 0.3613,
+        "Disapprove": 0.2305,
+        "Strongly disapprove": 0.1102,
+        "DK/Refused": 0.1103
+      },
+      "model_distribution": {
+        "DK/Refused": 0.0111,
+        "Strongly disapprove": 0.1556,
+        "Disapprove": 0.0,
+        "Strongly approve": 0.5333,
+        "Approve": 0.1778
+      },
+      "jsd": 0.253543,
+      "kendall_tau": 0.0,
+      "parity": 0.623229,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.122222,
+      "human_refusal_rate": 0.110337,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_88_7fe652b6",
+      "text": "In general, when European companies build factories in our country, does that mostly help or mostly hurt our economy? ",
+      "options": [
+        "Mostly help",
+        "Mostly hurt",
+        "No effect (VOL)"
+      ],
+      "human_distribution": {
+        "Mostly help": 0.7097,
+        "Mostly hurt": 0.2903,
+        "No effect (VOL)": 0.0
+      },
+      "model_distribution": {
+        "No effect (VOL)": 0.0,
+        "Mostly hurt": 0.0667,
+        "Mostly help": 0.8667
+      },
+      "jsd": 0.061794,
+      "kendall_tau": 1.0,
+      "parity": 0.969103,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.066667,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_89_160051ef",
+      "text": "And thinking about some political leaders and organizations in our country, please tell me if you have a very favorable,",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.1443,
+        "Somewhat favorable": 0.3711,
+        "Somewhat unfavorable": 0.3505,
+        "Very unfavorable": 0.134
+      },
+      "model_distribution": {
+        "Somewhat favorable": 0.5667,
+        "Very unfavorable": 0.0667,
+        "Very favorable": 0.0556,
+        "Somewhat unfavorable": 0.1889
+      },
+      "jsd": 0.056426,
+      "kendall_tau": 0.666667,
+      "parity": 0.888453,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.122222,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_8_3a7caba0",
+      "text": "Now I am going to read you a list of things that may be problems in our country.  As I read each one, please tell me if ",
+      "options": [
+        "Very big problem",
+        "Moderately big problem",
+        "Small problem",
+        "Not a problem at all",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very big problem": 0.5345,
+        "Moderately big problem": 0.3007,
+        "Small problem": 0.127,
+        "Not a problem at all": 0.0331,
+        "DK/Refused": 0.0047
+      },
+      "model_distribution": {
+        "Small problem": 0.0,
+        "Very big problem": 0.7445,
+        "DK/Refused": 0.0,
+        "Moderately big problem": 0.2555,
+        "Not a problem at all": 0.0
+      },
+      "jsd": 0.096213,
+      "kendall_tau": 0.83666,
+      "parity": 0.911058,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004722,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_90_b6adbfa2",
+      "text": "(Now I am going to read you a list of things that may be problems in our country. As I read each one, please tell me if ",
+      "options": [
+        "Very big problem",
+        "Not a problem at all",
+        "Moderately big problem",
+        "DK/Refused",
+        "Small problem"
+      ],
+      "human_distribution": {
+        "Very big problem": 0.8346,
+        "Not a problem at all": 0.0125,
+        "Moderately big problem": 0.0952,
+        "DK/Refused": 0.0175,
+        "Small problem": 0.0401
+      },
+      "model_distribution": {
+        "Small problem": 0.0,
+        "Very big problem": 0.6889,
+        "DK/Refused": 0.0,
+        "Moderately big problem": 0.3111,
+        "Not a problem at all": 0.0
+      },
+      "jsd": 0.083673,
+      "kendall_tau": 0.83666,
+      "parity": 0.917328,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.017538,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_91_c2f87015",
+      "text": "Please tell me if you approve or disapprove of the way President Barack Obama is dealing with...the world economic crisi",
+      "options": [
+        "Approve",
+        "Disapprove"
+      ],
+      "human_distribution": {
+        "Approve": 0.6153,
+        "Disapprove": 0.3847
+      },
+      "model_distribution": {
+        "Disapprove": 0.4,
+        "Approve": 0.6
+      },
+      "jsd": 0.000177,
+      "kendall_tau": 1.0,
+      "parity": 0.999911,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_92_ec6ecd38",
+      "text": "Which of these characteristics do you associate with people in Western countries such as the United States and Europe?..",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "human_distribution": {
+        "Yes": 0.5525,
+        "No": 0.4475
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0
+      },
+      "jsd": 0.27094,
+      "kendall_tau": 1.0,
+      "parity": 0.86453,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_93_f0c5f2a9",
+      "text": "How likely are you personally to take political action on __ , such as contact an elected official or participate in a d",
+      "options": [
+        "Very likely",
+        "Somewhat likely",
+        "Not too likely",
+        "Not at all likely",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very likely": 0.207,
+        "Somewhat likely": 0.2364,
+        "Not too likely": 0.2135,
+        "Not at all likely": 0.2848,
+        "DK/Refused": 0.0583
+      },
+      "model_distribution": {
+        "Not too likely": 0.5444,
+        "DK/Refused": 0.0,
+        "Not at all likely": 0.0111,
+        "Somewhat likely": 0.0889,
+        "Very likely": 0.3556
+      },
+      "jsd": 0.236215,
+      "kendall_tau": 0.0,
+      "parity": 0.631892,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.058319,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_94_fdc918da",
+      "text": "Now I am going to read you a list of things that may be problems in our country.  As I read each one, please tell me if ",
+      "options": [
+        "Very big problem",
+        "Moderately big problem",
+        "Small problem",
+        "Not a problem at all"
+      ],
+      "human_distribution": {
+        "Very big problem": 0.71,
+        "Moderately big problem": 0.2033,
+        "Small problem": 0.06,
+        "Not a problem at all": 0.0267
+      },
+      "model_distribution": {
+        "Very big problem": 0.3556,
+        "Moderately big problem": 0.2667,
+        "Not a problem at all": 0.3,
+        "Small problem": 0.0778
+      },
+      "jsd": 0.143927,
+      "kendall_tau": 0.333333,
+      "parity": 0.76137,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_95_92d33774",
+      "text": "Please tell me if you have a very favorable, somewhat favorable, somewhat unfavorable or very unfavorable opinion of ___",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.0505,
+        "Somewhat favorable": 0.1919,
+        "Somewhat unfavorable": 0.2323,
+        "Very unfavorable": 0.4949,
+        "DK/Refused": 0.0303
+      },
+      "model_distribution": {
+        "Very unfavorable": 0.4,
+        "Somewhat unfavorable": 0.2333,
+        "DK/Refused": 0.3667,
+        "Somewhat favorable": 0.0,
+        "Very favorable": 0.0
+      },
+      "jsd": 0.246101,
+      "kendall_tau": 0.316228,
+      "parity": 0.706007,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.030303,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_96_fdd52dee",
+      "text": "Please tell me if you have a very favorable, somewhat favorable, somewhat unfavorable or very unfavorable opinion of ___",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.01,
+        "Somewhat favorable": 0.07,
+        "Somewhat unfavorable": 0.3,
+        "Very unfavorable": 0.59,
+        "DK/Refused": 0.03
+      },
+      "model_distribution": {
+        "Very unfavorable": 0.0,
+        "Somewhat unfavorable": 0.0,
+        "DK/Refused": 0.6667,
+        "Somewhat favorable": 0.3333,
+        "Very favorable": 0.0
+      },
+      "jsd": 0.776507,
+      "kendall_tau": -0.358569,
+      "parity": 0.272104,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.03,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_97_348c0239",
+      "text": "Please tell me if you have a very favorable, somewhat favorable, somewhat unfavorable or very unfavorable opinion of ___",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.03,
+        "Somewhat favorable": 0.24,
+        "Somewhat unfavorable": 0.34,
+        "Very unfavorable": 0.37,
+        "DK/Refused": 0.02
+      },
+      "model_distribution": {
+        "Very unfavorable": 0.0,
+        "Somewhat unfavorable": 0.1111,
+        "DK/Refused": 0.5556,
+        "Somewhat favorable": 0.3,
+        "Very favorable": 0.0333
+      },
+      "jsd": 0.456495,
+      "kendall_tau": -0.6,
+      "parity": 0.371753,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.02,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_98_c0f43d23",
+      "text": "Please tell me if you have a very favorable, somewhat favorable, somewhat unfavorable, or very unfavorable opinion of...",
+      "options": [
+        "Very favorable",
+        "Somewhat favorable",
+        "Somewhat unfavorable",
+        "Very unfavorable",
+        "Never heard of"
+      ],
+      "human_distribution": {
+        "Very favorable": 0.1974,
+        "Somewhat favorable": 0.4154,
+        "Somewhat unfavorable": 0.1798,
+        "Very unfavorable": 0.1855,
+        "Never heard of": 0.0219
+      },
+      "model_distribution": {
+        "Very unfavorable": 0.0,
+        "Somewhat unfavorable": 0.0,
+        "Somewhat favorable": 0.2778,
+        "Very favorable": 0.4889,
+        "Never heard of": 0.2333
+      },
+      "jsd": 0.312402,
+      "kendall_tau": 0.316228,
+      "parity": 0.672856,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_99_7b2f27b9",
+      "text": "Please tell me if you approve or disapprove of the way Prime Minister Malcom Turnbull is handling each of the following ",
+      "options": [
+        "Approve",
+        "Disapprove",
+        "DK/Refused"
+      ],
+      "human_distribution": {
+        "Approve": 0.32,
+        "Disapprove": 0.54,
+        "DK/Refused": 0.14
+      },
+      "model_distribution": {
+        "Disapprove": 0.6222,
+        "Approve": 0.1222,
+        "DK/Refused": 0.2555
+      },
+      "jsd": 0.047508,
+      "kendall_tau": 0.333333,
+      "parity": 0.809579,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.14,
+      "temporal_year": 0
+    },
+    {
+      "key": "GOQA_9_72cc9ee4",
+      "text": "Please tell me how worried you are about each of the following issues related to Muslims living in your country...extrem",
+      "options": [
+        "Very worried",
+        "Somewhat worried",
+        "Not too worried",
+        "Not at all worried"
+      ],
+      "human_distribution": {
+        "Very worried": 0.3074,
+        "Somewhat worried": 0.2968,
+        "Not too worried": 0.1809,
+        "Not at all worried": 0.2149
+      },
+      "model_distribution": {
+        "Not too worried": 0.1667,
+        "Very worried": 0.1667,
+        "Somewhat worried": 0.6667,
+        "Not at all worried": 0.0
+      },
+      "jsd": 0.175508,
+      "kendall_tau": 0.182574,
+      "parity": 0.707889,
+      "n_samples": 90,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0,
+      "temporal_year": 0
+    }
+  ]
+}
