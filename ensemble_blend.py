@@ -371,7 +371,7 @@ def run_optimal_temp_experiment():
     # 5. Comparison table
     # -----------------------------------------------------------------------
     print(f"\n{'='*80}")
-    print(f"ENSEMBLE COMPARISON: Default-Temp vs Optimal-Temp")
+    print("ENSEMBLE COMPARISON: Default-Temp vs Optimal-Temp")
     print(f"({len(opt_common)} common questions, OpinionsQA)")
     print(f"{'='*80}")
 
