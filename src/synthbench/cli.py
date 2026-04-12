@@ -1379,7 +1379,6 @@ def ensemble(files, output, weights):
 
     # SPS = mean of all available metrics
     sps = round((p_dist + p_rank + p_refuse) / 3.0, 6)
-    composite = round(parity_score(mean_jsd, mean_tau), 6)
 
     # Build result JSON
     provider_label = f"ensemble/{len(files)}-model-blend"
