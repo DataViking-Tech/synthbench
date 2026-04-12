@@ -20,14 +20,15 @@ MODEL_MAP: dict[str, tuple[str, str]] = {
     "openrouter/anthropic/claude-sonnet-4": ("Claude Sonnet 4", "raw"),
     "openrouter/google/gemini-2.5-flash": ("Gemini 2.5 Flash", "raw"),
     # Raw LLMs via direct API
-    "raw-anthropic/claude-haiku-4-5-20251001": ("Claude Haiku 4.5", "raw"),
-    "raw-gemini/gemini-2.5-flash-lite": ("Gemini Flash Lite", "raw"),
+    "raw-anthropic/claude-haiku-4-5-20251001": ("Claude Haiku 4.5 (direct)", "raw"),
+    "raw-gemini/gemini-2.5-flash-lite": ("Gemini Flash Lite (direct)", "raw"),
     # Products (orchestration / adapter layers)
     "synthpanel/claude-haiku-4-5-20251001": ("SynthPanel (Haiku 4.5)", "product"),
     "synthpanel/gemini-2.5-flash-lite": (
         "SynthPanel (Gemini 2.5 Flash Lite)",
         "product",
     ),
+    "synthpanel/gpt-4o-mini": ("SynthPanel (GPT-4o-mini)", "product"),
     # Baselines
     "random-baseline": ("Random Baseline", "baseline"),
     "majority-baseline": ("Majority Baseline", "baseline"),

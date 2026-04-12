@@ -11,6 +11,29 @@ from html import escape
 BASELINE_PROVIDERS = {"random-baseline", "majority-baseline"}
 SYNTHPANEL_PREFIX = "synthpanel/"
 N_THRESHOLD = 50
+FULL_SPS_METRICS = {"p_dist", "p_rank", "p_refuse", "p_cond", "p_sub"}
+NEAR_BASELINE_THRESHOLD = 0.01
+
+
+def _sps_metric_count(result: dict) -> int:
+    """Count how many of the 5 SPS component metrics are present in a result."""
+    per_ci = result.get("aggregate", {}).get("per_metric_ci", {})
+    return len(FULL_SPS_METRICS & set(per_ci.keys()))
+
+
+def _is_partial_sps(result: dict) -> bool:
+    """Return True if SPS was computed from fewer than 5 metrics."""
+    return _sps_metric_count(result) < 5
+
+
+def _sps_label(result: dict) -> str:
+    """Return 'SPS' or 'SPS*' depending on metric completeness."""
+    return "SPS*" if _is_partial_sps(result) else "SPS"
+
+
+def _is_near_baseline(sps: float, random_sps: float) -> bool:
+    """Return True if sps is within NEAR_BASELINE_THRESHOLD of random baseline."""
+    return abs(sps - random_sps) <= NEAR_BASELINE_THRESHOLD
 
 
 def _extract_metrics(result: dict) -> dict[str, float]:
@@ -1016,16 +1039,25 @@ def _baseline_delta_html(ranked: list[dict], baselines: dict[str, dict]) -> str:
   </table>"""
 
 
-def _metric_legend_html(topic_legend_inline: str = "") -> str:
+def _metric_legend_html(
+    topic_legend_inline: str = "", *, partial_sps: bool = False
+) -> str:
     """Return a compact metric callout card to appear ABOVE the main table."""
     vs_defs = (
         '<p style="margin-top:0.5rem;font-size:0.88rem">'
         "<strong>vs Random</strong> &mdash; SPS improvement over uniform random baseline. "
         "<strong>vs Majority</strong> &mdash; SPS improvement over always-pick-the-mode baseline.</p>"
     )
+    partial_note = ""
+    if partial_sps:
+        partial_note = (
+            '<p style="margin-top:0.5rem;font-size:0.88rem">'
+            "<strong>SPS*</strong> &mdash; Computed from available metrics only. "
+            "Full SPS requires P_cond and P_sub from persona-conditioned runs.</p>"
+        )
     return f"""
   <div class="about metric-legend">
-    <p><strong>SPS</strong> (SynthBench Parity Score) measures how well AI reproduces human survey responses.
+    <p><strong>{"SPS*" if partial_sps else "SPS"}</strong> (SynthBench Parity Score) measures how well AI reproduces human survey responses.
        Higher is better (0&nbsp;=&nbsp;random, 1&nbsp;=&nbsp;human-identical).</p>
     <p style="margin-top:0.5rem;font-size:0.88rem">
        <strong>P_dist</strong> &mdash; distributional match (1 &minus; JSD).
@@ -1033,6 +1065,7 @@ def _metric_legend_html(topic_legend_inline: str = "") -> str:
        <strong>P_refuse</strong> &mdash; refusal-rate calibration (1 &minus; mean |&Delta;refusal|).
        All [0,&thinsp;1]; higher = better.</p>
     {vs_defs}
+    {partial_note}
     {topic_legend_inline}
   </div>"""
 
@@ -1224,7 +1257,9 @@ def _build_heatmap_data(
     return rows
 
 
-def _heatmap_html(heatmap_rows: list[dict], datasets: list[str]) -> str:
+def _heatmap_html(
+    heatmap_rows: list[dict], datasets: list[str], *, partial_sps: bool = False
+) -> str:
     """Generate heatmap matrix table HTML for the overview tab."""
     ds_headers = "".join(
         f'<th class="num mob-hide">{escape(DATASET_LABELS.get(ds, ds))}</th>'
@@ -1271,7 +1306,7 @@ def _heatmap_html(heatmap_rows: list[dict], datasets: list[str]) -> str:
         "  <thead><tr>\n"
         '    <th class="rank">Rank</th><th>Model</th>\n'
         f"    {ds_headers}\n"
-        '    <th class="num">Aggregate SPS</th><th>Coverage</th>'
+        f'    <th class="num">Aggregate {"SPS*" if partial_sps else "SPS"}</th><th>Coverage</th>'
         '<th class="mob-hide">Strengths</th>\n'
         "  </tr></thead>\n"
         "  <tbody>\n" + "\n".join(trs) + "\n  </tbody>\n"
@@ -1283,6 +1318,9 @@ def _dataset_table_html(
     summary_entries: list[dict],
     dataset: str,
     baseline_data: dict[str, dict],
+    *,
+    partial_sps: bool = False,
+    random_sps: float = 0.65,
 ) -> str:
     """Generate a ranked leaderboard table filtered to one dataset."""
     from synthbench.leaderboard import display_provider_name, provider_framework
@@ -1340,8 +1378,16 @@ def _dataset_table_html(
                 else:
                     bl_cells += '<td class="num mob-hide">&mdash;</td>'
 
+        near_bl = (
+            _is_near_baseline(e["composite_parity"], random_sps)
+            and e["provider"] not in BASELINE_PROVIDERS
+        )
+        near_bl_cls = " near-baseline" if near_bl else ""
+        near_bl_attr = ' title="Within margin of random baseline"' if near_bl else ""
+        row_cls = f"{css_class}{near_bl_cls}".strip()
+
         trs.append(
-            f'<tr class="{css_class}">'
+            f'<tr class="{row_cls}"{near_bl_attr}>'
             f'<td class="rank num">{medal_html}{rank_display}</td>'
             f'<td class="provider-name">{escape(name)}</td>'
             f'<td class="num">{e.get("n", 0)}</td>'
@@ -1376,7 +1422,7 @@ def _dataset_table_html(
         '<table class="leaderboard-table">\n'
         "  <thead><tr>\n"
         '    <th class="rank">Rank</th><th>Provider</th>'
-        f'<th class="num">N</th><th class="num">SPS</th>'
+        f'<th class="num">N</th><th class="num">{"SPS*" if partial_sps else "SPS"}</th>'
         f"{bl_th}"
         '<th class="num">JSD</th><th class="num">Tau</th>'
         '<th class="mob-hide">Date</th>\n'
@@ -1424,6 +1470,20 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     )
 
     _models, baselines = _split_baselines(ranked)
+
+    # Compute random baseline SPS for near-baseline detection
+    random_sps_val = 0.65
+    best_n_random = -1
+    for r in ranked:
+        cfg = r.get("config", {})
+        if cfg.get("provider") == "random-baseline":
+            n_eval = cfg.get("n_evaluated", 0)
+            if n_eval > best_n_random:
+                best_n_random = n_eval
+                random_sps_val = r.get("aggregate", {}).get("composite_parity", 0)
+
+    # Detect if any result has partial SPS (fewer than 5 metrics)
+    any_partial_sps = any(_is_partial_sps(r) for r in ranked)
 
     # Group detail entries by provider+dataset for expandable sub-rows
     detail_by_key: dict[tuple[str, str], list[dict]] = {}
@@ -1567,8 +1627,17 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                 f'title="Show details">&#x25B6;</span>'
             )
 
+        # Near-baseline detection
+        near_bl = (
+            _is_near_baseline(cp, random_sps_val)
+            and provider_raw not in BASELINE_PROVIDERS
+        )
+        near_bl_class = " near-baseline" if near_bl else ""
+        near_bl_title = ' title="Within margin of random baseline"' if near_bl else ""
+        row_classes = f"{low_n_class}{near_bl_class}".strip()
+
         rows_html.append(
-            f'      <tr class="{low_n_class}" data-sps="{cp:.4f}" data-n="{n_eval}" '
+            f'      <tr class="{row_classes}"{near_bl_title} data-sps="{cp:.4f}" data-n="{n_eval}" '
             f'data-jsd="{e["mean_jsd"]:.4f}" data-tau="{e["mean_kendall_tau"]:.4f}">\n'
             f'        <td class="rank num">{toggle_html}{medal_html}{rank}</td>\n'
             f'        <td class="provider-name">{escape(display_name)}</td>\n'
@@ -1683,8 +1752,14 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
                     f'        <td class="num mob-hide">{topic_cell_svg}</td>\n'
                 )
 
+            near_bl = _is_near_baseline(cp, random_sps_val)
+            near_bl_class = " near-baseline" if near_bl else ""
+            near_bl_title = (
+                ' title="Within margin of random baseline"' if near_bl else ""
+            )
+
             rows_html.append(
-                f'      <tr class="product-row" data-sps="{cp:.4f}" data-n="{e.get("n", 0)}" '
+                f'      <tr class="product-row{near_bl_class}"{near_bl_title} data-sps="{cp:.4f}" data-n="{e.get("n", 0)}" '
                 f'data-jsd="{e["mean_jsd"]:.4f}" data-tau="{e["mean_kendall_tau"]:.4f}">\n'
                 f'        <td class="rank num"></td>\n'
                 f'        <td class="provider-name">{escape(display_name)}</td>\n'
@@ -1773,18 +1848,11 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     per_metric_dot = _per_metric_dot_svg(ranked, baselines)
     topic_bar = _topic_grouped_bar_svg(topic_scores, topics_present, topic_colors)
     explanations = _metric_explanations_html()
-    metric_legend = _metric_legend_html(topic_legend_inline)
+    metric_legend = _metric_legend_html(
+        topic_legend_inline, partial_sps=any_partial_sps
+    )
 
     # Compute hero headline: best model SPS vs random baseline SPS
-    random_sps = 0.65
-    best_n_rand = -1
-    for r in ranked:
-        cfg = r.get("config", {})
-        if cfg.get("provider") == "random-baseline":
-            n_eval = cfg.get("n_evaluated", 0)
-            if n_eval > best_n_rand:
-                best_n_rand = n_eval
-                random_sps = r.get("aggregate", {}).get("composite_parity", 0)
     best_sps = 0.0
     for r in ranked:
         provider = r.get("config", {}).get("provider", "")
@@ -1792,7 +1860,7 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             cp = r.get("aggregate", {}).get("composite_parity", 0)
             if cp > best_sps:
                 best_sps = cp
-    delta_points = round((best_sps - random_sps) * 100)
+    delta_points = round((best_sps - random_sps_val) * 100)
     hero_headline = (
         f'<h2 class="hero-headline">The best AI is only '
         f"{delta_points}&nbsp;points above random chance.</h2>"
@@ -1883,6 +1951,28 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
             "have higher variance and should be interpreted with caution.</p>"
         )
 
+    # Partial SPS footnote
+    partial_sps_footnote = ""
+    if any_partial_sps:
+        partial_sps_footnote = (
+            '<p class="footnote"><strong>SPS*</strong> &mdash; Computed from available metrics only. '
+            "Full SPS requires P_cond and P_sub from persona-conditioned runs.</p>"
+        )
+
+    # Near-baseline footnote
+    has_near_bl = any(
+        _is_near_baseline(e["composite_parity"], random_sps_val)
+        and e["provider"] not in BASELINE_PROVIDERS
+        for e in summary_entries
+    )
+    near_baseline_footnote = ""
+    if has_near_bl:
+        near_baseline_footnote = (
+            '<p class="footnote" style="border-left-color:var(--gold)">'
+            '<span style="color:var(--gold)">&#x26A0;</span> '
+            "Highlighted rows are within 0.01 SPS of the random baseline.</p>"
+        )
+
     # ── Multi-dataset tabs ──
     all_datasets = sorted(
         {e["dataset"] for e in summary_entries if e["dataset"] != "unknown"}
@@ -1903,14 +1993,20 @@ def generate_html(results: list[dict], version: str = "0.1.0") -> str:
     heatmap_rows = _build_heatmap_data(summary_entries, all_datasets, topic_scores)
     overview_panel = (
         '<div class="tab-panel active" id="panel-overview">\n'
-        + _heatmap_html(heatmap_rows, all_datasets)
+        + _heatmap_html(heatmap_rows, all_datasets, partial_sps=any_partial_sps)
         + "\n</div>"
     )
 
     # Per-dataset panels
     dataset_panels = []
     for ds in all_datasets:
-        panel_html = _dataset_table_html(summary_entries, ds, baseline_data)
+        panel_html = _dataset_table_html(
+            summary_entries,
+            ds,
+            baseline_data,
+            partial_sps=any_partial_sps,
+            random_sps=random_sps_val,
+        )
         dataset_panels.append(
             f'<div class="tab-panel" id="panel-{escape(ds)}">\n{panel_html}\n</div>'
         )
@@ -2017,6 +2113,10 @@ header .tagline{{color:var(--text-muted);font-size:1.05rem;margin-top:0.5rem}}
 .low-n td{{opacity:0.7}}
 .low-n-marker{{color:var(--red);font-weight:700;margin-left:1px}}
 
+.near-baseline td{{color:var(--gold)}}
+.near-baseline .composite{{color:var(--gold) !important;font-weight:600}}
+.near-baseline .provider-name{{color:var(--gold) !important}}
+
 .chart-text{{fill:var(--text)}}
 .chart-muted{{fill:var(--text-muted);stroke:var(--text-muted)}}
 .chart-accent{{fill:var(--accent)}}
@@ -2114,6 +2214,8 @@ footer a{{color:var(--accent)}}
 {dataset_panels_html}
   {synthpanel_footnote}
   {low_n_footnote}
+  {partial_sps_footnote}
+  {near_baseline_footnote}
 
   <details class="collapsible">
     <summary>Full Leaderboard (All Datasets)</summary>
@@ -2126,7 +2228,7 @@ footer a{{color:var(--accent)}}
         <th class="mob-hide">Model</th>
         <th class="mob-hide">Dataset</th>
         <th class="num sortable" data-sort="n">N</th>
-        <th class="num sortable" data-sort="sps" title="SynthBench Parity Score: overall fidelity (0=random, 1=human-identical)">SPS <span class="sort-arrow">&#x25BC;</span></th>
+        <th class="num sortable" data-sort="sps" title="SynthBench Parity Score: overall fidelity (0=random, 1=human-identical)">{"SPS*" if any_partial_sps else "SPS"} <span class="sort-arrow">&#x25BC;</span></th>
 {baseline_th}{topic_th}{p_refuse_th}        <th class="num sortable" data-sort="jsd" title="Mean Jensen-Shannon divergence (lower = closer to human distributions)">JSD</th>
         <th class="num sortable" data-sort="tau" title="Mean Kendall&rsquo;s tau-b rank correlation (higher = better rank agreement)">Tau</th>
         <th class="mob-hide">Date</th>
