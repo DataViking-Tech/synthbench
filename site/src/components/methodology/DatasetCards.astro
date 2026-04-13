@@ -1,0 +1,117 @@
+---
+const datasets = [
+  {
+    name: "OpinionsQA",
+    questions: { full: 1498, core: 300 },
+    source: "Pew American Trends Panel",
+    scope: "US population",
+    temporal: "2017\u20132022 (15 survey waves)",
+    demographics: "56 groups across 11 attributes",
+    description:
+      "The primary ground-truth dataset. Multiple-choice questions covering political, social, and economic attitudes from nationally representative US surveys.",
+    highlight: true,
+  },
+  {
+    name: "SubPOP",
+    questions: { full: 3362 },
+    source: "22 US subpopulations",
+    scope: "US demographic subgroups",
+    temporal: "Cross-sectional",
+    demographics:
+      "11 attributes: age, education, gender, ideology, party, income, religion, attendance, region, marital status, citizenship",
+    description:
+      "Extended dataset focused on demographic subgroup variation. Tests whether models can differentiate between fine-grained population segments.",
+  },
+  {
+    name: "GlobalOpinionQA",
+    questions: { full: 2556 },
+    source: "Pew Global Attitudes",
+    scope: "138 countries",
+    temporal: "Cross-national",
+    demographics: "Country-level cultural variation",
+    description:
+      "Cross-cultural attitudes dataset for Phase 2 expansion. Tests whether models capture cultural differences in opinion beyond US demographics.",
+    phase: 2,
+  },
+];
+---
+
+<section class="w-full max-w-4xl mx-auto py-12" id="datasets">
+  <h2
+    class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    Datasets
+  </h2>
+  <p class="text-muted mb-8 max-w-2xl">
+    SynthBench validates models against real human survey data. Each dataset
+    provides ground-truth response distributions from representative
+    populations.
+  </p>
+
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      datasets.map((d) => (
+        <div
+          class:list={[
+            "rounded-lg border p-6 flex flex-col",
+            d.highlight
+              ? "border-primary/40 bg-primary/5 dark:border-primary-light/30 dark:bg-primary-light/5"
+              : "border-muted/20 bg-surface dark:bg-surface-dark",
+          ]}
+        >
+          <div class="flex items-baseline gap-2 mb-3">
+            <h3 class="text-lg font-semibold text-text dark:text-text-dark">
+              {d.name}
+            </h3>
+            {d.phase && (
+              <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
+                Phase {d.phase}
+              </span>
+            )}
+          </div>
+
+          <p class="text-sm text-muted mb-4 flex-1">{d.description}</p>
+
+          <dl class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <dt class="text-muted">Questions</dt>
+              <dd class="font-medium text-text dark:text-text-dark text-right">
+                {d.questions.full.toLocaleString()}
+                {d.questions.core && (
+                  <span class="text-muted font-normal">
+                    {" "}
+                    ({d.questions.core} core)
+                  </span>
+                )}
+              </dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-muted">Source</dt>
+              <dd class="font-medium text-text dark:text-text-dark text-right">
+                {d.source}
+              </dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-muted">Scope</dt>
+              <dd class="font-medium text-text dark:text-text-dark text-right">
+                {d.scope}
+              </dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-muted">Coverage</dt>
+              <dd class="font-medium text-text dark:text-text-dark text-right">
+                {d.temporal}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-muted mb-0.5">Demographics</dt>
+              <dd class="text-xs text-text/80 dark:text-text-dark/80">
+                {d.demographics}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      ))
+    }
+  </div>
+</section>

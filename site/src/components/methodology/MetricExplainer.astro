@@ -1,0 +1,195 @@
+---
+const metrics = [
+  {
+    id: "p_dist",
+    name: "P_dist",
+    label: "Distributional Parity",
+    definition: "How closely the model's answer percentages match real human survey responses.",
+    math: "P_dist = 1 - mean(JSD) across all question-demographic pairs, where JSD is Jensen-Shannon divergence.",
+    interpretation: {
+      poor: "Completely different distributions",
+      fair: "Some overlap but systematic divergence",
+      good: "Close match on most questions",
+      excellent: "Nearly identical to human distributions",
+    },
+    phase: 1,
+  },
+  {
+    id: "p_rank",
+    name: "P_rank",
+    label: "Rank-Order Parity",
+    definition:
+      "Whether the model ranks response options in the same order as humans, even if exact percentages differ.",
+    math: "P_rank = (1 + mean(tau_b)) / 2, where tau_b is Kendall's tau-b on probability rankings, normalized to [0, 1].",
+    interpretation: {
+      poor: "Reversed or random ordering",
+      fair: "Gets the top option right but scrambles the rest",
+      good: "Mostly correct ordering with minor swaps",
+      excellent: "Perfect rank agreement with humans",
+    },
+    phase: 1,
+  },
+  {
+    id: "p_cond",
+    name: "P_cond",
+    label: "Conditioning Fidelity",
+    definition:
+      'When told "respond as a 65-year-old conservative," does the model actually shift its answers to match that demographic?',
+    math: "P_cond = mean(max(0, align_conditioned(G) - align_default(G))) across all demographic groups G.",
+    interpretation: {
+      poor: "Personas have no effect on output",
+      fair: "Some demographic sensitivity but inconsistent",
+      good: "Meaningful shifts that track real demographic differences",
+      excellent: "Conditioning precisely reproduces demographic patterns",
+    },
+    phase: 1,
+  },
+  {
+    id: "p_sub",
+    name: "P_sub",
+    label: "Subgroup Consistency",
+    definition:
+      "Whether accuracy is even across all demographic groups, or if some populations are systematically underserved.",
+    math: "P_sub = 1 - CV(group_scores), where CV is the coefficient of variation (std / mean) of per-group P_dist.",
+    interpretation: {
+      poor: "Wildly uneven across groups",
+      fair: "Accurate for majorities, poor for minorities",
+      good: "Modest variation across groups",
+      excellent: "Equally accurate for all demographics",
+    },
+    phase: 1,
+  },
+  {
+    id: "p_refuse",
+    name: "P_refuse",
+    label: "Refusal Calibration",
+    definition:
+      "Whether the model declines to answer at rates matching real human refusal patterns.",
+    math: "P_refuse = 1 - mean(|R_provider - R_human|) across all question-demographic pairs.",
+    interpretation: {
+      poor: "Refusal rates completely off (answers everything or refuses everything)",
+      fair: "Gets the direction right but magnitudes are off",
+      good: "Close calibration on most questions",
+      excellent: "Matches human refusal patterns precisely",
+    },
+    phase: 1,
+  },
+  {
+    id: "p_theme",
+    name: "P_theme",
+    label: "Thematic Parity",
+    definition:
+      "For open-ended responses, whether the model's themes and reasoning align with human qualitative patterns.",
+    math: "LLM-as-judge evaluation: theme relevance, theme distribution accuracy, and reasoning quality scored on a rubric.",
+    interpretation: {
+      poor: "Off-topic or generic reasoning",
+      fair: "Hits some themes but misses key ones",
+      good: "Covers most human themes with reasonable proportions",
+      excellent: "Themes and reasoning indistinguishable from human responses",
+    },
+    phase: 2,
+  },
+];
+
+const zones = [
+  { label: "Poor", end: 0.25, color: "bg-red-500/20 dark:bg-red-400/20" },
+  { label: "Fair", end: 0.5, color: "bg-amber-500/20 dark:bg-amber-400/20" },
+  { label: "Good", end: 0.75, color: "bg-blue-500/20 dark:bg-blue-400/20" },
+  {
+    label: "Excellent",
+    end: 1.0,
+    color: "bg-emerald-500/20 dark:bg-emerald-400/20",
+  },
+];
+---
+
+<section class="w-full max-w-4xl mx-auto py-12" id="metrics">
+  <h2
+    class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    How We Score
+  </h2>
+  <p class="text-muted mb-8 max-w-2xl">
+    The <strong class="text-text dark:text-text-dark"
+      >SynthBench Parity Score (SPS)</strong
+    > is the average of five sub-metrics (six in later phases). Each measures a
+    distinct dimension of how well a model reproduces human survey behavior on a
+    0&ndash;1 scale.
+  </p>
+
+  <!-- Composite formula -->
+  <div
+    class="rounded-lg border border-muted/20 bg-surface p-4 mb-10 font-mono text-sm text-text dark:bg-surface-dark dark:text-text-dark overflow-x-auto"
+  >
+    SPS = 0.2 &times; P_dist + 0.2 &times; P_rank + 0.2 &times; P_cond + 0.2
+    &times; P_sub + 0.2 &times; P_refuse
+  </div>
+
+  <div class="space-y-6">
+    {
+      metrics.map((m) => (
+        <div class="rounded-lg border border-muted/20 bg-surface p-6 dark:bg-surface-dark">
+          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
+            <h3 class="text-lg font-semibold text-text dark:text-text-dark">
+              {m.name}
+            </h3>
+            <span class="text-sm font-medium text-primary dark:text-primary-light">
+              {m.label}
+            </span>
+            {m.phase > 1 && (
+              <span class="ml-auto text-xs font-medium px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
+                Phase {m.phase}+
+              </span>
+            )}
+          </div>
+
+          <p class="text-muted mb-4">{m.definition}</p>
+
+          {/* Scale bar */}
+          <div class="mb-4">
+            <div class="flex h-6 rounded overflow-hidden text-[10px] font-medium">
+              {zones.map((z, i) => (
+                <div
+                  class={`flex-1 flex items-center justify-center ${z.color} ${i > 0 ? "border-l border-muted/30" : ""}`}
+                >
+                  <span class="text-text/70 dark:text-text-dark/70">
+                    {z.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div class="flex justify-between text-[10px] text-muted mt-1">
+              <span>0</span>
+              <span>0.25</span>
+              <span>0.5</span>
+              <span>0.75</span>
+              <span>1.0</span>
+            </div>
+          </div>
+
+          {/* Interpretation */}
+          <dl class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs mb-3">
+            {Object.entries(m.interpretation).map(([level, desc]) => (
+              <div>
+                <dt class="font-semibold text-text dark:text-text-dark capitalize">
+                  {level}
+                </dt>
+                <dd class="text-muted">{desc}</dd>
+              </div>
+            ))}
+          </dl>
+
+          {/* Collapsible math */}
+          <details class="text-sm">
+            <summary class="cursor-pointer text-primary dark:text-primary-light hover:underline">
+              Mathematical detail
+            </summary>
+            <p class="mt-2 font-mono text-xs text-muted bg-surface-dark/5 dark:bg-white/5 rounded p-3">
+              {m.math}
+            </p>
+          </details>
+        </div>
+      ))
+    }
+  </div>
+</section>

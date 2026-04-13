@@ -1,0 +1,133 @@
+---
+const baselines = [
+  {
+    name: "Random Baseline",
+    description:
+      "Uniform random distribution over all non-refusal options. For a question with k options, each gets P = 1/k.",
+    tests: "The absolute floor. Any provider scoring at or below this is adding negative value.",
+    spsRange: "~0.31",
+    position: "floor",
+  },
+  {
+    name: "Majority-Class",
+    description:
+      "Always picks the most popular human answer. Assigns P = 1.0 to the mode, 0.0 to everything else.",
+    tests:
+      "Whether a model does better than just echoing the most common response. Scores well on consensus questions, poorly on divisive ones.",
+    spsRange: "~0.45",
+    position: "low",
+  },
+  {
+    name: "Population-Average",
+    description:
+      "Uses the overall population distribution (ignoring demographics) for every group. The same answer regardless of who is being simulated.",
+    tests:
+      "Isolates the value of demographic conditioning. The gap between this baseline and a conditioned provider is the conditioning premium.",
+    spsRange: "~0.52",
+    position: "mid",
+  },
+  {
+    name: "Unconditioned LLM",
+    description:
+      'Raw model output with no persona or demographic conditioning. This is the "just prompt ChatGPT" approach many researchers currently use.',
+    tests:
+      "The competitive baseline. Every dedicated synthetic respondent product must beat this to justify its existence.",
+    spsRange: "~0.58",
+    position: "high",
+  },
+  {
+    name: "Human Ceiling",
+    description:
+      "Agreement between independent human survey panels, measured via split-half reliability. The theoretical maximum score.",
+    tests:
+      "A provider scoring above this is overfitting or exploiting artifacts. Sets the upper bound for meaningful evaluation.",
+    spsRange: "~0.89",
+    position: "ceiling",
+  },
+];
+---
+
+<section class="w-full max-w-4xl mx-auto py-12" id="baselines">
+  <h2
+    class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    Baselines: What to Compare Against
+  </h2>
+  <p class="text-muted mb-8 max-w-2xl">
+    A model that scores 0.70 SPS sounds good — until you realize the
+    majority-class baseline scores 0.45. Baselines give meaning to raw scores by
+    anchoring the scale.
+  </p>
+
+  <!-- Visual scale -->
+  <div
+    class="rounded-lg border border-muted/20 bg-surface p-6 mb-8 dark:bg-surface-dark overflow-x-auto"
+  >
+    <div class="min-w-[400px]">
+      <div class="relative h-8 bg-muted/10 rounded-full">
+        {/* Gradient fill from 0 to 1 */}
+        <div
+          class="absolute inset-y-0 left-0 rounded-full"
+          style="width: 100%; background: linear-gradient(to right, oklch(0.65 0.05 30), oklch(0.55 0.18 264));"
+        >
+        </div>
+        {/* Markers */}
+        <div
+          class="absolute top-full mt-1 text-[10px] font-medium text-muted"
+          style="left: 0%;"
+        >
+          0.0
+        </div>
+        {
+          baselines.map((b) => {
+            const value = parseFloat(b.spsRange.replace("~", ""));
+            const pct = value * 100;
+            return (
+              <div class="absolute top-0 bottom-0 flex flex-col items-center" style={`left: ${pct}%;`}>
+                <div class="w-0.5 h-full bg-text/60 dark:bg-text-dark/60" />
+                <span class="mt-1 text-[10px] font-medium text-text dark:text-text-dark whitespace-nowrap -translate-x-1/2">
+                  {b.spsRange}
+                </span>
+                <span class="text-[9px] text-muted whitespace-nowrap -translate-x-1/2">
+                  {b.name.replace(" Baseline", "")}
+                </span>
+              </div>
+            );
+          })
+        }
+        <div
+          class="absolute top-full mt-1 text-[10px] font-medium text-muted"
+          style="left: 100%;"
+        >
+          1.0
+        </div>
+      </div>
+      <div class="mt-10 text-center text-xs text-muted">
+        Meaningful evaluation range: Unconditioned LLM (~0.58) to Human Ceiling
+        (~0.89)
+      </div>
+    </div>
+  </div>
+
+  <!-- Baseline cards -->
+  <div class="space-y-4">
+    {
+      baselines.map((b) => (
+        <div class="rounded-lg border border-muted/20 bg-surface p-5 dark:bg-surface-dark">
+          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
+            <h3 class="text-base font-semibold text-text dark:text-text-dark">
+              {b.name}
+            </h3>
+            <span class="text-sm font-mono text-primary dark:text-primary-light">
+              SPS {b.spsRange}
+            </span>
+          </div>
+          <p class="text-sm text-muted mb-2">{b.description}</p>
+          <p class="text-sm text-text/80 dark:text-text-dark/80">
+            <span class="font-medium">What it tests:</span> {b.tests}
+          </p>
+        </div>
+      ))
+    }
+  </div>
+</section>

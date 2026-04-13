@@ -1,0 +1,123 @@
+---
+const steps = [
+  {
+    number: 1,
+    title: "Select dataset and question set",
+    detail:
+      "Choose a suite: Core (300 questions, ~1h) for iteration or Full (1,498 questions, ~6h) for publication-grade results.",
+  },
+  {
+    number: 2,
+    title: "Generate samples for each question",
+    detail:
+      "For each question-persona pair, generate N independent samples from the model. Default: 30 samples. Publication-grade: 100 samples.",
+  },
+  {
+    number: 3,
+    title: "Parse responses into distributions",
+    detail:
+      "Map each model response to a survey option. Compute P(option_i) = count(option_i) / N. Logprob-capable providers return distributions directly.",
+  },
+  {
+    number: 4,
+    title: "Compare against human ground truth",
+    detail:
+      "For each question-demographic pair, compute JSD between the model distribution and the human distribution from real survey data.",
+  },
+  {
+    number: 5,
+    title: "Compute per-question metrics",
+    detail:
+      "Calculate all five sub-metrics (P_dist, P_rank, P_cond, P_sub, P_refuse) at the question level.",
+  },
+  {
+    number: 6,
+    title: "Aggregate with confidence intervals",
+    detail:
+      "Average across questions. Bootstrap resampling produces 95% confidence intervals for each metric and the composite SPS.",
+  },
+];
+
+const protocols = [
+  {
+    title: "Sampling",
+    items: [
+      "Minimum 30 samples per question-persona pair",
+      "100 samples recommended for publication",
+      "Wilson score intervals quantify estimation uncertainty",
+      "Parse failures are logged and excluded from counts",
+    ],
+  },
+  {
+    title: "Replication",
+    items: [
+      "Multiple independent runs recommended",
+      "Convergence data validates stability",
+      "Run-to-run variance reported alongside point estimates",
+    ],
+  },
+  {
+    title: "Fairness",
+    items: [
+      "Temperature fixed at provider default (not optimized)",
+      "Each provider tested via its native interface",
+      "Same question sets and evaluation pipeline for all providers",
+    ],
+  },
+];
+---
+
+<section class="w-full max-w-4xl mx-auto py-12" id="scoring">
+  <h2
+    class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    How a Benchmark Run Works
+  </h2>
+  <p class="text-muted mb-8 max-w-2xl">
+    Every provider goes through the same evaluation pipeline. Here is what
+    happens when you run <code
+      class="text-sm bg-muted/10 rounded px-1.5 py-0.5"
+      >synthbench run</code
+    >.
+  </p>
+
+  <!-- Steps -->
+  <ol class="relative border-l border-muted/30 ml-4 mb-10 space-y-6">
+    {
+      steps.map((s) => (
+        <li class="pl-8">
+          <div class="absolute -left-3 flex size-6 items-center justify-center rounded-full bg-primary text-white text-xs font-bold dark:bg-primary-light">
+            {s.number}
+          </div>
+          <h3 class="text-base font-semibold text-text dark:text-text-dark mb-1">
+            {s.title}
+          </h3>
+          <p class="text-sm text-muted">{s.detail}</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <!-- Protocol details -->
+  <div class="grid gap-6 sm:grid-cols-3">
+    {
+      protocols.map((p) => (
+        <div class="rounded-lg border border-muted/20 bg-surface p-5 dark:bg-surface-dark">
+          <h3 class="text-sm font-semibold text-text dark:text-text-dark mb-3">
+            {p.title}
+          </h3>
+          <ul class="space-y-2">
+            {p.items.map((item) => (
+              <li class="text-sm text-muted flex gap-2">
+                <span class="text-primary dark:text-primary-light mt-1 shrink-0">
+                  &bull;
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>
