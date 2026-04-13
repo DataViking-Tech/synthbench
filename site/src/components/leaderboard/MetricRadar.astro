@@ -1,0 +1,66 @@
+---
+import Chart from "@/components/shared/Chart.astro";
+import type { LeaderboardData, LeaderboardEntry } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+
+// Deduplicate: best SPS per model across all datasets
+const modelMap = new Map<string, LeaderboardEntry>();
+for (const entry of leaderboard.entries) {
+  const key = `${entry.provider}/${entry.model}`;
+  const existing = modelMap.get(key);
+  if (!existing || entry.sps > existing.sps) {
+    modelMap.set(key, entry);
+  }
+}
+const top3 = [...modelMap.values()].sort((a, b) => b.sps - a.sps).slice(0, 3);
+
+const radarColors = ["#4f46e5", "#0891b2", "#d946ef"];
+
+const chartOption = {
+  tooltip: {
+    trigger: "item",
+  },
+  legend: {
+    data: top3.map((m) => m.model),
+    bottom: 0,
+    textStyle: { fontSize: 11 },
+  },
+  radar: {
+    indicator: [
+      { name: "p_dist", max: 1 },
+      { name: "p_rank", max: 1 },
+      { name: "p_refuse", max: 1 },
+    ],
+    shape: "polygon",
+    splitNumber: 5,
+    axisName: {
+      fontSize: 12,
+      fontWeight: "bold",
+    },
+  },
+  series: [
+    {
+      type: "radar",
+      data: top3.map((entry, i) => ({
+        value: [entry.p_dist, entry.p_rank, entry.p_refuse],
+        name: entry.model,
+        lineStyle: { width: 2 },
+        areaStyle: { opacity: 0.1 },
+        itemStyle: { color: radarColors[i] },
+      })),
+    },
+  ],
+};
+---
+
+<section class="w-full max-w-4xl mx-auto py-8">
+  <h2 class="text-2xl font-bold text-center mb-2">Sub-Metric Radar</h2>
+  <p class="text-center text-sm text-muted mb-6">
+    Top 3 models compared on SPS sub-metrics: distribution accuracy (p_dist),
+    rank correlation (p_rank), and refusal match (p_refuse).
+  </p>
+  <Chart option={chartOption} height="420px" />
+</section>

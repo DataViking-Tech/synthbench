@@ -1,9 +1,18 @@
 ---
+import DatasetTabs from "@/components/leaderboard/DatasetTabs.astro";
 import DotPlot from "@/components/leaderboard/DotPlot.astro";
 import LeaderboardTable from "@/components/leaderboard/LeaderboardTable.astro";
+import MetricRadar from "@/components/leaderboard/MetricRadar.astro";
 import PerMetricDot from "@/components/leaderboard/PerMetricDot.astro";
+import ViewToggle from "@/components/leaderboard/ViewToggle.astro";
 import WhiskerPlot from "@/components/leaderboard/WhiskerPlot.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+import type { LeaderboardData } from "@/types/leaderboard";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+const datasets = leaderboard.datasets;
 ---
 
 <BaseLayout title="Leaderboard - SynthBench">
@@ -14,18 +23,17 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     </p>
   </div>
 
+  <div class="w-full max-w-5xl mx-auto px-4 space-y-4">
+    <DatasetTabs datasets={datasets} />
+    <ViewToggle />
+  </div>
+
   <LeaderboardTable />
+  <MetricRadar />
 
   <div class="mt-12 space-y-8">
     <DotPlot />
     <PerMetricDot />
     <WhiskerPlot />
   </div>
-
-  <!-- Placeholder: Dataset tabs (Slice 3) -->
-  <section class="w-full max-w-4xl mx-auto py-12">
-    <div class="text-center text-muted py-8 border border-muted/20 rounded-lg">
-      Dataset filtering coming in a future update.
-    </div>
-  </section>
 </BaseLayout>

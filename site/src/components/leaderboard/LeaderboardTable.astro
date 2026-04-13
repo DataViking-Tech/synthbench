@@ -34,18 +34,21 @@ const entries = leaderboard.entries;
         {entries.map((entry) => (
           <tr
             class:list={[
-              "border-b border-muted/10 cursor-pointer transition-colors",
+              "leaderboard-row border-b border-muted/10 cursor-pointer transition-colors",
               "hover:bg-primary/5 dark:hover:bg-primary/10",
               entry.is_baseline && "bg-baseline/5",
               entry.is_ensemble && "bg-primary/5",
             ]}
             data-entry={JSON.stringify(entry)}
+            data-dataset={entry.dataset}
+            data-variant={entry.temperature != null || entry.template != null ? "variant" : "best"}
           >
             <td class="px-4 py-3 text-muted">{entry.rank}</td>
             <td class="px-4 py-3 font-medium">
               {entry.model}
               {entry.is_ensemble && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 text-primary">ensemble</span>}
               {entry.is_baseline && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-muted/20 text-muted">baseline</span>}
+              {entry.temperature != null && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent">t={entry.temperature}</span>}
               <span class="block text-xs text-muted">{entry.provider}</span>
             </td>
             <td class="px-4 py-3">{entry.dataset}</td>
@@ -59,7 +62,7 @@ const entries = leaderboard.entries;
               [{entry.ci_lower.toFixed(3)}, {entry.ci_upper.toFixed(3)}]
             </td>
           </tr>
-          <tr class="detail-row hidden border-b border-muted/10">
+          <tr class="detail-row hidden border-b border-muted/10" data-dataset={entry.dataset} data-variant={entry.temperature != null || entry.template != null ? "variant" : "best"}>
             <td colspan="10" class="px-4 py-4 bg-surface/50 dark:bg-surface-dark/50">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 {entry.topic_scores && (
@@ -104,12 +107,14 @@ const entries = leaderboard.entries;
     {entries.map((entry) => (
       <div
         class:list={[
-          "rounded-lg border border-muted/20 p-4 cursor-pointer transition-colors",
+          "leaderboard-card rounded-lg border border-muted/20 p-4 cursor-pointer transition-colors",
           "hover:border-primary/30",
           entry.is_baseline && "bg-baseline/5",
           entry.is_ensemble && "bg-primary/5",
         ]}
         data-entry={JSON.stringify(entry)}
+        data-dataset={entry.dataset}
+        data-variant={entry.temperature != null || entry.template != null ? "variant" : "best"}
       >
         <div class="flex items-baseline justify-between mb-2">
           <div>
@@ -228,5 +233,61 @@ const entries = leaderboard.entries;
     }
   }
 
+  // Dataset filter: show/hide rows based on active tab
+  function filterByDataset(dataset: string) {
+    // Desktop rows
+    const rows = document.querySelectorAll<HTMLElement>("#leaderboard-table tbody tr[data-dataset]");
+    for (const row of rows) {
+      const match = dataset === "all" || row.dataset.dataset === dataset;
+      row.classList.toggle("hidden", !match);
+      // Also hide detail rows when their parent is hidden
+      if (row.classList.contains("detail-row") && !match) {
+        row.classList.add("hidden");
+      }
+    }
+
+    // Mobile cards
+    const cards = document.querySelectorAll<HTMLElement>(".leaderboard-card[data-dataset]");
+    for (const card of cards) {
+      const match = dataset === "all" || card.dataset.dataset === dataset;
+      card.classList.toggle("hidden", !match);
+    }
+  }
+
+  // View toggle: show/hide variant rows
+  function filterByView(view: string) {
+    if (view === "all") {
+      // Show all rows
+      const rows = document.querySelectorAll<HTMLElement>("[data-variant]");
+      for (const row of rows) {
+        row.classList.remove("view-hidden");
+      }
+    } else {
+      // Hide variant rows (those with temperature/template)
+      const rows = document.querySelectorAll<HTMLElement>("[data-variant='variant']");
+      for (const row of rows) {
+        row.classList.add("view-hidden");
+      }
+      const bestRows = document.querySelectorAll<HTMLElement>("[data-variant='best']");
+      for (const row of bestRows) {
+        row.classList.remove("view-hidden");
+      }
+    }
+  }
+
+  document.addEventListener("dataset-filter", ((e: CustomEvent) => {
+    filterByDataset(e.detail.dataset);
+  }) as EventListener);
+
+  document.addEventListener("view-toggle", ((e: CustomEvent) => {
+    filterByView(e.detail.view);
+  }) as EventListener);
+
   initLeaderboard();
 </script>
+
+<style>
+  .view-hidden {
+    display: none !important;
+  }
+</style>

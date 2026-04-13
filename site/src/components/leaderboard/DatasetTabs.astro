@@ -1,0 +1,65 @@
+---
+interface Props {
+  datasets: string[];
+}
+
+const { datasets } = Astro.props;
+
+const labels: Record<string, string> = {
+  opinionsqa: "OpinionsQA",
+  subpop: "SubPOP",
+  globalopinionqa: "GlobalOpinionQA",
+};
+---
+
+<nav class="flex flex-wrap gap-2 justify-center" id="dataset-tabs" aria-label="Filter by dataset">
+  <button
+    class="tab-btn px-4 py-2 rounded-full text-sm font-medium transition-colors bg-primary text-white"
+    data-dataset="all"
+    aria-pressed="true"
+  >
+    All
+  </button>
+  {datasets.map((ds) => (
+    <button
+      class="tab-btn px-4 py-2 rounded-full text-sm font-medium transition-colors bg-muted/10 text-muted hover:bg-muted/20"
+      data-dataset={ds}
+      aria-pressed="false"
+    >
+      {labels[ds] ?? ds}
+    </button>
+  ))}
+</nav>
+
+<script>
+  function initDatasetTabs() {
+    const nav = document.getElementById("dataset-tabs");
+    if (!nav) return;
+
+    const buttons = nav.querySelectorAll<HTMLButtonElement>(".tab-btn");
+
+    for (const btn of buttons) {
+      btn.addEventListener("click", () => {
+        const dataset = btn.dataset.dataset ?? "all";
+
+        // Update active styling
+        for (const b of buttons) {
+          const isActive = b === btn;
+          b.setAttribute("aria-pressed", String(isActive));
+          b.classList.toggle("bg-primary", isActive);
+          b.classList.toggle("text-white", isActive);
+          b.classList.toggle("bg-muted/10", !isActive);
+          b.classList.toggle("text-muted", !isActive);
+          b.classList.toggle("hover:bg-muted/20", !isActive);
+        }
+
+        // Dispatch custom event for table and charts
+        document.dispatchEvent(
+          new CustomEvent("dataset-filter", { detail: { dataset } }),
+        );
+      });
+    }
+  }
+
+  initDatasetTabs();
+</script>
