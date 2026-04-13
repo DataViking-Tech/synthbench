@@ -1,0 +1,130 @@
+---
+import type { LeaderboardData } from "@/types/leaderboard";
+import Chart from "./Chart.astro";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+
+// For each dataset, find the best non-baseline model and the random baseline
+const datasets = leaderboard.datasets;
+const bestModels: { dataset: string; model: string; sps: number }[] = [];
+const baselines: { dataset: string; sps: number }[] = [];
+
+for (const ds of datasets) {
+  const dsEntries = leaderboard.entries.filter((e) => e.dataset === ds);
+  const models = dsEntries.filter((e) => !e.is_baseline);
+  const baselineEntry = dsEntries.find((e) => e.is_baseline);
+
+  if (models.length > 0) {
+    const best = models.reduce((a, b) => (a.sps > b.sps ? a : b));
+    bestModels.push({ dataset: ds, model: best.model, sps: best.sps });
+  }
+  if (baselineEntry) {
+    baselines.push({ dataset: ds, sps: baselineEntry.sps });
+  }
+}
+
+const chartOption = {
+  tooltip: {
+    trigger: "axis",
+    axisPointer: { type: "shadow" },
+    formatter: (params: { name: string; seriesName: string; value: number }[]) => {
+      const lines = params.map(
+        (p: { seriesName: string; value: number }) =>
+          `<strong>${p.seriesName}</strong>: ${p.value.toFixed(3)}`,
+      );
+      return `<div style="font-size:13px">${params[0].name}<br/>${lines.join("<br/>")}</div>`;
+    },
+  },
+  legend: {
+    data: ["Best Model", "Random Baseline"],
+    top: 10,
+  },
+  grid: {
+    left: 60,
+    right: 30,
+    bottom: 50,
+    top: 60,
+    containLabel: true,
+  },
+  xAxis: {
+    type: "category",
+    data: datasets,
+    axisLabel: {
+      rotate: datasets.length > 5 ? 30 : 0,
+      overflow: "truncate",
+      width: 120,
+    },
+  },
+  yAxis: {
+    type: "value",
+    name: "SPS Score",
+    nameLocation: "middle",
+    nameGap: 45,
+    min: 0,
+    max: 1,
+    axisLabel: {
+      formatter: (v: number) => v.toFixed(1),
+    },
+  },
+  series: [
+    {
+      name: "Best Model",
+      type: "bar",
+      data: bestModels.map((m) => m.sps),
+      itemStyle: { color: "#4f46e5" },
+      barMaxWidth: 50,
+      emphasis: {
+        focus: "series",
+        itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.3)" },
+      },
+      label: {
+        show: true,
+        position: "top",
+        formatter: (p: { value: number }) => p.value.toFixed(3),
+        fontSize: 11,
+      },
+    },
+    {
+      name: "Random Baseline",
+      type: "bar",
+      data: baselines.map((b) => b.sps),
+      itemStyle: { color: "#a3a3a3" },
+      barMaxWidth: 50,
+      emphasis: {
+        focus: "series",
+        itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.3)" },
+      },
+      label: {
+        show: true,
+        position: "top",
+        formatter: (p: { value: number }) => p.value.toFixed(3),
+        fontSize: 11,
+      },
+    },
+  ],
+  dataZoom: datasets.length > 8 ? [{ type: "slider", start: 0, end: 100, bottom: 5 }] : undefined,
+  toolbox: {
+    feature: {
+      saveAsImage: { title: "Save as PNG" },
+    },
+    right: 20,
+    top: 10,
+  },
+};
+---
+
+<section class="w-full max-w-4xl mx-auto py-8">
+  <h2 class="text-2xl font-bold text-center mb-2">
+    Best Model vs Random Baseline
+  </h2>
+  <p class="text-center text-sm text-muted mb-6">
+    Survey Parity Score (SPS) — higher is better. 1.0 = perfect match to human
+    survey distributions.
+  </p>
+  <Chart option={chartOption} height="450px" />
+  <div class="mt-4 text-xs text-muted text-center">
+    {bestModels.map((m) => `${m.dataset}: ${m.model}`).join(" · ")}
+  </div>
+</section>

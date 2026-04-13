@@ -1,0 +1,61 @@
+---
+interface Props {
+  option: Record<string, unknown>;
+  height?: string;
+  theme?: "dark" | "light" | "auto";
+  renderer?: "svg" | "canvas";
+}
+
+const { option, height = "400px", theme = "auto", renderer = "svg" } = Astro.props;
+const chartId = `chart-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+  id={chartId}
+  class="echarts-container w-full"
+  style={`height: ${height}; min-height: 200px;`}
+  data-option={JSON.stringify(option)}
+  data-theme={theme}
+  data-renderer={renderer}
+></div>
+
+<script>
+  import * as echarts from "echarts";
+
+  function getPreferredTheme(): string {
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "";
+  }
+
+  function initChart(container: HTMLElement) {
+    const optionStr = container.dataset.option;
+    const themeMode = container.dataset.theme ?? "auto";
+    const renderer = (container.dataset.renderer ?? "svg") as "svg" | "canvas";
+
+    if (!optionStr) return;
+
+    const resolvedTheme = themeMode === "auto" ? getPreferredTheme() : themeMode === "dark" ? "dark" : "";
+
+    const chart = echarts.init(container, resolvedTheme, { renderer });
+    const option = JSON.parse(optionStr);
+    chart.setOption(option);
+
+    const ro = new ResizeObserver(() => {
+      chart.resize();
+    });
+    ro.observe(container);
+
+    if (themeMode === "auto") {
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+        chart.dispose();
+        const newTheme = e.matches ? "dark" : "";
+        const newChart = echarts.init(container, newTheme, { renderer });
+        newChart.setOption(option);
+      });
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>(".echarts-container").forEach(initChart);
+</script>

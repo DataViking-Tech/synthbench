@@ -1,0 +1,51 @@
+---
+import HeroChart from "@/components/HeroChart.astro";
+import "@/styles/global.css";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+import type { LeaderboardData } from "@/types/leaderboard";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SynthBench Leaderboard</title>
+    <link rel="icon" type="image/svg+xml" href="/synthbench/next/favicon.svg" />
+    <meta
+      name="description"
+      content="SynthBench: Open benchmark for synthetic survey respondent quality"
+    />
+  </head>
+  <body
+    class="min-h-screen bg-surface text-text dark:bg-surface-dark dark:text-text-dark"
+  >
+    <header class="py-8 px-4 text-center">
+      <h1 class="text-4xl font-bold tracking-tight">SynthBench</h1>
+      <p class="mt-2 text-lg text-muted max-w-2xl mx-auto">
+        Open benchmark for synthetic survey respondent quality. Measuring how
+        well LLMs replicate human survey response distributions.
+      </p>
+      <p class="mt-1 text-xs text-muted">
+        v{leaderboard.synthbench_version} · Generated {
+          new Date(leaderboard.generated_at).toLocaleDateString()
+        }
+      </p>
+    </header>
+
+    <main class="px-4 pb-16">
+      <HeroChart />
+    </main>
+
+    <footer class="text-center py-8 text-xs text-muted border-t border-muted/20">
+      <p>
+        SynthBench &mdash; DataViking-Tech · <a
+          href="https://github.com/DataViking-Tech/synthbench"
+          class="underline hover:text-primary">GitHub</a
+        >
+      </p>
+    </footer>
+  </body>
+</html>

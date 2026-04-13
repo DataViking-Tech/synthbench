@@ -1242,6 +1242,41 @@ def publish(results_dir, output):
         sys.exit(1)
 
 
+@main.command("publish-data")
+@click.option(
+    "--results-dir",
+    "-d",
+    type=click.Path(exists=True),
+    default="leaderboard-results",
+    help="Directory containing result JSON files.",
+)
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    default="site/src/data/leaderboard.json",
+    help="Output path for the leaderboard JSON file.",
+)
+def publish_data(results_dir, output):
+    """Export leaderboard data as JSON for the Astro frontend.
+
+    Example:
+        synthbench publish-data --results-dir ./leaderboard-results --output site/src/data/leaderboard.json
+    """
+    from synthbench.publish import publish_leaderboard_data
+
+    try:
+        out_path = publish_leaderboard_data(
+            results_dir=Path(results_dir),
+            output_path=Path(output),
+            version=__version__,
+        )
+        click.echo(f"Leaderboard data exported: {out_path}")
+    except ValueError as e:
+        click.echo(str(e), err=True)
+        sys.exit(1)
+
+
 @main.command()
 @click.argument("files", nargs=-1, required=True, type=click.Path(exists=True))
 @click.option(

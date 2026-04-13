@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/synthbench/publish.py'
       - 'leaderboard-results/**'
+      - 'site/**'
 
 jobs:
   regenerate:
@@ -14,11 +15,37 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - run: pip install -e .
+
+      # Generate the existing HTML leaderboard
       - run: synthbench publish --results-dir leaderboard-results --output docs/
+
+      # Export JSON data for the Astro site
+      - run: synthbench publish-data --results-dir leaderboard-results --output site/src/data/leaderboard.json
+
+      # Build the Astro site
+      - name: Build Astro site
+        working-directory: site
+        run: |
+          npm ci
+          npx astro check
+          npm run build
+
+      # Copy Astro output into docs/next/
+      - name: Deploy Astro site to /next/
+        run: |
+          rm -rf docs/next
+          cp -r site/dist docs/next
+
       - name: Commit if changed
         run: |
           git diff --quiet docs/ && exit 0

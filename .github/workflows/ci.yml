@@ -30,14 +30,40 @@ jobs:
       - run: pip install -e '.[dev]'
       - run: pytest tests/
 
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: pip install -e .
+      - name: Generate leaderboard data
+        run: synthbench publish-data --results-dir leaderboard-results --output site/src/data/leaderboard.json
+      - name: Install site dependencies
+        working-directory: site
+        run: npm ci
+      - name: Astro check
+        working-directory: site
+        run: npx astro check
+      - name: Biome lint
+        working-directory: site
+        run: npx biome check .
+      - name: Build site
+        working-directory: site
+        run: npm run build
+
   merge-ready:
     if: always()
-    needs: [lint, test]
+    needs: [lint, test, site]
     runs-on: ubuntu-latest
     steps:
       - name: Check all jobs passed
         run: |
-          if [[ "${{ needs.lint.result }}" != "success" || "${{ needs.test.result }}" != "success" ]]; then
+          if [[ "${{ needs.lint.result }}" != "success" || "${{ needs.test.result }}" != "success" || "${{ needs.site.result }}" != "success" ]]; then
             echo "Required jobs failed"
             exit 1
           fi

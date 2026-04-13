@@ -19,6 +19,11 @@ build/
 venv/
 
 # SynthBench data & results (downloaded, not committed)
-data/
-results/
+/data/
+/results/
 *.json.bak
+
+# Astro site build artifacts
+site/dist/
+site/node_modules/
+site/.astro/
