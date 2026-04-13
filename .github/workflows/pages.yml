@@ -1,4 +1,4 @@
-name: Regenerate Pages
+name: Deploy Pages
 
 on:
   workflow_dispatch:
@@ -8,13 +8,20 @@ on:
       - 'src/synthbench/publish.py'
       - 'leaderboard-results/**'
       - 'site/**'
+      - '.github/workflows/pages.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
-  regenerate:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
@@ -28,10 +35,9 @@ jobs:
 
       - run: pip install -e .
 
-      # Export JSON data for the Astro site
-      - run: synthbench publish-data --results-dir leaderboard-results --output site/src/data/leaderboard.json
+      - name: Generate leaderboard data
+        run: synthbench publish-data --results-dir leaderboard-results --output site/src/data/leaderboard.json
 
-      # Build the Astro site
       - name: Build Astro site
         working-directory: site
         run: |
@@ -40,39 +46,18 @@ jobs:
           npx tsc --noEmit
           npm run build
 
-      # Copy Astro output into docs/
-      - name: Deploy Astro site
-        run: |
-          rm -rf docs/index.html docs/leaderboard docs/leaderboard.json docs/_astro
-          cp -r site/dist/* docs/
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/dist
 
-      - name: Create PR if changed
-        run: |
-          git add docs/
-          git diff --cached --quiet docs/ && echo "No changes to docs/" && exit 0
-
-          BRANCH="auto/regenerate-pages"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B "$BRANCH"
-          git add docs/
-          git commit -m "chore: auto-regenerate GitHub Pages leaderboard"
-          git push -f origin "$BRANCH"
-
-          # Close any existing PR from this branch before creating a new one
-          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' || true)
-          if [ -n "$EXISTING_PR" ]; then
-            gh pr close "$EXISTING_PR" --delete-branch=false
-          fi
-
-          gh pr create \
-            --title "chore: auto-regenerate GitHub Pages leaderboard" \
-            --body "Automated update of \`docs/\` from the Astro build pipeline.
-
-          Triggered by a push to \`main\` that changed site sources or leaderboard results." \
-            --head "$BRANCH" \
-            --base main
-
-          gh pr merge "$BRANCH" --squash --auto
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
