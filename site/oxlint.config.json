@@ -1,4 +1,4 @@
 {
-  "rules": {},
-  "ignorePatterns": ["dist/**", "node_modules/**", ".astro/**"]
+	"rules": {},
+	"ignorePatterns": ["dist/**", "node_modules/**", ".astro/**"]
 }

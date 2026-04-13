@@ -1,6 +1,6 @@
 ---
-import Chart from "./Chart.astro";
 import type { LeaderboardEntry } from "@/types/leaderboard";
+import Chart from "./Chart.astro";
 
 interface Props {
 	entries: LeaderboardEntry[];
@@ -40,13 +40,16 @@ const barColors = allSorted.map((e) => {
 const option = {
 	title: {
 		text: "Best SPS by Model",
-		subtext: "Survey Parity Score — higher is better (1.0 = perfect parity with humans)",
+		subtext:
+			"Survey Parity Score — higher is better (1.0 = perfect parity with humans)",
 		left: "center",
 	},
 	tooltip: {
 		trigger: "axis",
 		axisPointer: { type: "shadow" },
-		formatter(params: Array<{ name: string; value: number; dataIndex: number }>) {
+		formatter(
+			params: Array<{ name: string; value: number; dataIndex: number }>,
+		) {
 			const p = params[0];
 			const idx = p.dataIndex;
 			const entry = allSorted[idx];
@@ -112,7 +115,12 @@ const option = {
 				symbol: "none",
 				lineStyle: { type: "dashed", color: "#999" },
 				data: baselines.length
-					? [{ yAxis: baselines[0].sps, label: { formatter: "Random Baseline" } }]
+					? [
+							{
+								yAxis: baselines[0].sps,
+								label: { formatter: "Random Baseline" },
+							},
+						]
 					: [],
 			},
 		},
