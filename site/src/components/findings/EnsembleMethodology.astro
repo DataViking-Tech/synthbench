@@ -1,0 +1,49 @@
+---
+const cards = [
+  {
+    heading: "What we blend",
+    body: "Per-question response distributions from three models — Claude Haiku 4.5, Gemini Flash Lite, and GPT-4o-mini — run through the SynthPanel conditioning framework on the same inputs.",
+  },
+  {
+    heading: "How the blend works",
+    body: "Equal-weight arithmetic average of the three distributions per question. For each option on each question, we take the mean of the three models' probability mass. No learned weights, no router, no post-hoc calibration.",
+  },
+  {
+    heading: "Why it works",
+    body: "The three models make uncorrelated errors on different questions. Blending cancels noise that is specific to any one model while preserving signal they agree on — 72–81% of questions improve under blending across datasets.",
+  },
+  {
+    heading: "What we tested against it",
+    body: "Equal-weight, score-proportional, and inverse-JSD weighting — scores are indistinguishable to three decimals. The blending weights don't matter; the ensemble itself does.",
+  },
+  {
+    heading: "What we didn't beat",
+    body: "Per-question oracle selection (the best single model picked retroactively) adds negligible headroom over equal-weight blending. There is little left to extract from this set of models without adding new ones.",
+  },
+  {
+    heading: "What it costs",
+    body: "Zero additional API calls. The blend is pure offline arithmetic on results we already have. The only cost is running the three base models once — which is what any serious evaluation does anyway.",
+  },
+];
+---
+
+<section class="w-full max-w-4xl mx-auto py-10" id="ensemble-methodology">
+  <h2 class="text-2xl font-bold text-center mb-2">How the Ensemble Is Built</h2>
+  <p class="text-center text-sm text-muted mb-8 max-w-2xl mx-auto">
+    The biggest lever in the benchmark is also the simplest. Six things worth
+    knowing about how blending turns three good models into one better one.
+  </p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    {
+      cards.map((c) => (
+        <div class="rounded-lg border border-muted/20 bg-surface p-5 dark:bg-surface-dark">
+          <h3 class="text-base font-semibold text-text dark:text-text-dark mb-2">
+            {c.heading}
+          </h3>
+          <p class="text-sm text-muted">{c.body}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>

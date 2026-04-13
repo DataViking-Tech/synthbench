@@ -6,29 +6,59 @@ import leaderboardRaw from "@/data/leaderboard.json";
 
 const leaderboard = leaderboardRaw as LeaderboardData;
 
-// Collect all topic categories and deduplicate models
-const topicSet = new Set<string>();
-const modelMap = new Map<string, LeaderboardEntry>();
+// Full topic taxonomy — show every slot even when a model didn't score on it.
+const ALL_TOPICS = [
+  "Politics & Governance",
+  "International Relations & Security",
+  "Economy & Work",
+  "Technology & Digital Life",
+  "Media & Information",
+  "Health & Science",
+  "Social Values & Religion",
+  "Identity & Demographics",
+  "Trust & Wellbeing",
+  "General Attitudes",
+];
+
+// Best per (display name + dataset), excluding baselines. Entries that are
+// temperature/template variants lose to the plain config (same key, lower or
+// equal SPS) because we keep only the highest-SPS entry per key.
+const bestByKey = new Map<string, LeaderboardEntry>();
 for (const entry of leaderboard.entries) {
-  if (entry.topic_scores) {
-    for (const topic of Object.keys(entry.topic_scores)) {
-      topicSet.add(topic);
-    }
-  }
-  const key = `${entry.provider}/${entry.model}`;
-  const existing = modelMap.get(key);
+  if (entry.is_baseline) continue;
+  if (!entry.topic_scores) continue;
+  const key = `${entry.model}::${entry.dataset}`;
+  const existing = bestByKey.get(key);
   if (!existing || entry.sps > existing.sps) {
-    modelMap.set(key, entry);
+    bestByKey.set(key, entry);
   }
 }
 
-const topics = [...topicSet].sort();
-const models = [...modelMap.values()].sort((a, b) => b.sps - a.sps);
+// Roll up to one row per model — keep the dataset where that model scored highest.
+const bestByModel = new Map<string, LeaderboardEntry>();
+for (const entry of bestByKey.values()) {
+  const existing = bestByModel.get(entry.model);
+  if (!existing || entry.sps > existing.sps) {
+    bestByModel.set(entry.model, entry);
+  }
+}
+
+const models = [...bestByModel.values()].sort((a, b) => b.sps - a.sps);
 
 const modelColors: Record<string, string> = {
-  "Ensemble (3-model)": "var(--color-provider-synthpanel)",
-  "Haiku 4.5": "var(--color-provider-raw-llm)",
-  Random: "var(--color-provider-baseline)",
+  "SynthPanel Ensemble (3-model)": "var(--color-provider-synthpanel)",
+  "SynthPanel (Haiku 4.5)": "#7c3aed",
+  "SynthPanel (Gemini Flash Lite)": "#0891b2",
+  "SynthPanel (GPT-4o-mini)": "#d97706",
+  "SynthPanel (Sonnet 4)": "#9333ea",
+  "Claude Haiku 4.5": "#6366f1",
+  "Gemini Flash Lite (direct)": "#22d3ee",
+  "GPT-4o-mini": "#f59e0b",
+  "Claude Sonnet 4": "#a78bfa",
+  "GPT-4o": "#fbbf24",
+  "Gemini 2.5 Flash": "#0ea5e9",
+  "Llama 3.3 70B": "#94a3b8",
+  "Claude Haiku 4.5 (direct)": "#818cf8",
 };
 
 const chartOption = {
@@ -36,10 +66,12 @@ const chartOption = {
     trigger: "axis",
     axisPointer: { type: "shadow" },
     formatter: (params: { seriesName: string; value: number; marker: string; name?: string }[]) => {
-      const topic = params[0].name ?? "";
-      const lines = params.map(
-        (p) =>
-          `${p.marker} ${p.seriesName}: ${typeof p.value === "number" ? p.value.toFixed(3) : "—"}`,
+      const topic = params[0]?.name ?? "";
+      const active = params.filter((p) => typeof p.value === "number");
+      if (active.length === 0)
+        return `<div style="font-size:13px"><strong>${topic}</strong><br/>no data</div>`;
+      const lines = active.map(
+        (p) => `${p.marker} ${p.seriesName}: ${(p.value as number).toFixed(3)}`,
       );
       return `<div style="font-size:13px"><strong>${topic}</strong><br/>${lines.join("<br/>")}</div>`;
     },
@@ -47,13 +79,14 @@ const chartOption = {
   legend: {
     data: models.map((m) => m.model),
     top: 10,
+    type: "scroll",
   },
   grid: { left: 60, right: 30, top: 60, bottom: 50, containLabel: true },
   xAxis: {
     type: "category",
-    data: topics,
+    data: ALL_TOPICS,
     axisLabel: {
-      rotate: topics.length > 6 ? 30 : 0,
+      rotate: 30,
       overflow: "truncate",
       width: 100,
     },
@@ -70,15 +103,17 @@ const chartOption = {
   series: models.map((model) => ({
     name: model.model,
     type: "bar",
-    data: topics.map((t) => model.topic_scores?.[t] ?? null),
+    data: ALL_TOPICS.map((t) => {
+      const score = model.topic_scores?.[t as keyof typeof model.topic_scores];
+      return typeof score === "number" ? score : null;
+    }),
     itemStyle: { color: modelColors[model.model] ?? "#6366f1" },
-    barMaxWidth: 40,
+    barMaxWidth: 28,
     emphasis: {
       focus: "series",
       itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.3)" },
     },
   })),
-  dataZoom: topics.length > 8 ? [{ type: "slider", start: 0, end: 100, bottom: 5 }] : undefined,
   toolbox: {
     feature: { saveAsImage: { title: "Save as PNG" } },
     right: 10,
@@ -86,13 +121,13 @@ const chartOption = {
   },
 };
 
-const hasTopics = topics.length > 0;
+const hasTopics = models.length > 0;
 ---
 
 <section class="w-full max-w-4xl mx-auto py-8">
   <h2 class="text-2xl font-bold text-center mb-2">SPS by Topic</h2>
   <p class="text-center text-sm text-muted mb-6">
-    Performance across topic categories, grouped by model. Higher SPS indicates better survey parity for that topic.
+    Best-per-model performance across the ten topic categories. Baselines and temperature variants hidden; scroll the legend to toggle models.
   </p>
   {hasTopics ? (
     <Chart option={chartOption} height="450px" />

@@ -1,5 +1,17 @@
 ---
-const baselines = [
+interface Baseline {
+  name: string;
+  description: string;
+  tests: string;
+  spsRange: string;
+  position: string;
+  extended?: {
+    sections: { heading: string; body: string }[];
+    statusNote?: string;
+  };
+}
+
+const baselines: Baseline[] = [
   {
     name: "Random Baseline",
     description:
@@ -43,6 +55,24 @@ const baselines = [
       "A provider scoring above this is overfitting or exploiting artifacts. Sets the upper bound for meaningful evaluation.",
     spsRange: "~0.89",
     position: "ceiling",
+    extended: {
+      sections: [
+        {
+          heading: "What it is",
+          body: "Agreement between independent halves of the human survey panel itself. Split the respondents into two random subsamples, compute each subsample's answer distribution per question, and measure their agreement using the same SPS metric we apply to models.",
+        },
+        {
+          heading: "Why it matters",
+          body: "It is the theoretical maximum for any evaluation built on this human data. Humans disagree with each other; no model can be more consistent with the survey than the survey is with itself. If split-half agreement is 0.85, then 0.85 is the real upper bound — not 1.0.",
+        },
+        {
+          heading: "How to interpret scores against it",
+          body: "A model at 0.90 is closer to humans-agree-with-humans than to random noise. But if Human Ceiling sits at 0.85, a 0.90 model is above the ceiling — which points to overfitting, leakage, or a measurement artifact, not genuine superiority.",
+        },
+      ],
+      statusNote:
+        "Status: not yet measured for SynthBench datasets. Requires computing split-half SPS on OpinionsQA, SubPOP, and GlobalOpinionQA panels. See the Phase 1.5 roadmap on this page.",
+    },
   },
 ];
 ---
@@ -59,11 +89,39 @@ const baselines = [
     anchoring the scale.
   </p>
 
-  <!-- Visual scale -->
+  <!-- Values table — primary reference -->
   <div
-    class="rounded-lg border border-muted/20 bg-surface p-6 mb-8 dark:bg-surface-dark overflow-x-auto"
+    class="rounded-lg border border-muted/20 bg-surface mb-6 dark:bg-surface-dark overflow-x-auto"
   >
-    <div class="min-w-[400px]">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-muted/20 text-left">
+          <th class="px-4 py-2 font-semibold">Baseline</th>
+          <th class="px-4 py-2 font-semibold text-right">SPS</th>
+          <th class="px-4 py-2 font-semibold text-muted">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          baselines.map((b) => (
+            <tr class="border-b border-muted/10 last:border-b-0">
+              <td class="px-4 py-2 font-medium">{b.name}</td>
+              <td class="px-4 py-2 text-right font-mono text-primary dark:text-primary-light">
+                {b.spsRange}
+              </td>
+              <td class="px-4 py-2 text-muted capitalize">{b.position}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Visual scale (supplementary) -->
+  <div
+    class="rounded-lg border border-muted/20 bg-surface p-6 pb-16 mb-8 dark:bg-surface-dark overflow-x-auto"
+  >
+    <div class="min-w-[560px]">
       <div class="relative h-8 bg-muted/10 rounded-full">
         {/* Gradient fill from 0 to 1 */}
         <div
@@ -71,38 +129,45 @@ const baselines = [
           style="width: 100%; background: linear-gradient(to right, oklch(0.65 0.05 30), oklch(0.55 0.18 264));"
         >
         </div>
-        {/* Markers */}
+        {/* Axis endpoints */}
         <div
           class="absolute top-full mt-1 text-[10px] font-medium text-muted"
           style="left: 0%;"
         >
           0.0
         </div>
+        <div
+          class="absolute top-full mt-1 text-[10px] font-medium text-muted -translate-x-full"
+          style="left: 100%;"
+        >
+          1.0
+        </div>
+        {/* Markers — value above, name below, alternating vertical offset to avoid overlap */}
         {
-          baselines.map((b) => {
+          baselines.map((b, i) => {
             const value = parseFloat(b.spsRange.replace("~", ""));
             const pct = value * 100;
+            const stagger = i % 2 === 0 ? "mt-5" : "mt-10";
             return (
-              <div class="absolute top-0 bottom-0 flex flex-col items-center" style={`left: ${pct}%;`}>
-                <div class="w-0.5 h-full bg-text/60 dark:bg-text-dark/60" />
-                <span class="mt-1 text-[10px] font-medium text-text dark:text-text-dark whitespace-nowrap -translate-x-1/2">
+              <div class="absolute top-0 bottom-0" style={`left: ${pct}%;`}>
+                {/* Tick line through the bar */}
+                <div class="absolute inset-y-0 left-0 w-0.5 bg-text/70 dark:bg-text-dark/70" />
+                {/* Value label above the bar */}
+                <span class="absolute bottom-full mb-1 -translate-x-1/2 text-[11px] font-bold font-mono text-text dark:text-text-dark whitespace-nowrap">
                   {b.spsRange}
                 </span>
-                <span class="text-[9px] text-muted whitespace-nowrap -translate-x-1/2">
+                {/* Name label below with staggered offset */}
+                <span
+                  class:list={["absolute top-full -translate-x-1/2 text-[10px] font-medium text-muted whitespace-nowrap", stagger]}
+                >
                   {b.name.replace(" Baseline", "")}
                 </span>
               </div>
             );
           })
         }
-        <div
-          class="absolute top-full mt-1 text-[10px] font-medium text-muted"
-          style="left: 100%;"
-        >
-          1.0
-        </div>
       </div>
-      <div class="mt-10 text-center text-xs text-muted">
+      <div class="mt-16 text-center text-xs text-muted">
         Meaningful evaluation range: Unconditioned LLM (~0.58) to Human Ceiling
         (~0.89)
       </div>
@@ -126,6 +191,23 @@ const baselines = [
           <p class="text-sm text-text/80 dark:text-text-dark/80">
             <span class="font-medium">What it tests:</span> {b.tests}
           </p>
+          {b.extended && (
+            <div class="mt-4 pt-4 border-t border-muted/20 space-y-3">
+              {b.extended.sections.map((s) => (
+                <div>
+                  <h4 class="text-sm font-semibold text-text dark:text-text-dark mb-1">
+                    {s.heading}
+                  </h4>
+                  <p class="text-sm text-muted">{s.body}</p>
+                </div>
+              ))}
+              {b.extended.statusNote && (
+                <p class="text-xs italic text-muted border-l-2 border-muted/40 pl-3">
+                  {b.extended.statusNote}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       ))
     }

@@ -47,10 +47,25 @@ for (const ds of leaderboard.datasets) {
             >
               <td class="px-4 py-2.5 text-muted">{i + 1}</td>
               <td class="px-4 py-2.5">
-                {entry.model}
+                <span>{entry.model}</span>
                 {entry.is_ensemble && (
-                  <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+                  <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 text-primary" title={entry.provider}>
                     ensemble
+                  </span>
+                )}
+                {!entry.is_baseline && !entry.is_ensemble && entry.provider.startsWith("SynthPanel") && (
+                  <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-provider-synthpanel/10 text-provider-synthpanel" title={entry.provider}>
+                    conditioned
+                  </span>
+                )}
+                {entry.temperature != null && (
+                  <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent font-mono" title={`temperature=${entry.temperature}`}>
+                    t={entry.temperature}
+                  </span>
+                )}
+                {entry.template && (
+                  <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent font-mono" title={`prompt template=${entry.template}`}>
+                    tpl={entry.template}
                   </span>
                 )}
               </td>

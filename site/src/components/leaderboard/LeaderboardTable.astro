@@ -1,10 +1,31 @@
 ---
-import type { LeaderboardData } from "@/types/leaderboard";
+import type { LeaderboardData, LeaderboardEntry } from "@/types/leaderboard";
 
 import leaderboardRaw from "@/data/leaderboard.json";
 
 const leaderboard = leaderboardRaw as LeaderboardData;
 const entries = leaderboard.entries;
+
+// Best-effort coverage filter for the default view.
+// A config is a (model, temperature, template) triple. The default view
+// hides variant configs (those with a temperature or template override) that
+// appear in fewer than two datasets. Proper 3+ run tracking requires
+// replicate counts from publish.py (tracked as a follow-up).
+const configCoverage = new Map<string, Set<string>>();
+for (const entry of entries) {
+  const key = `${entry.model}::t=${entry.temperature ?? ""}::tpl=${entry.template ?? ""}`;
+  const set = configCoverage.get(key) ?? new Set<string>();
+  set.add(entry.dataset);
+  configCoverage.set(key, set);
+}
+
+function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
+  const isVariant = entry.temperature != null || entry.template != null;
+  if (!isVariant) return false;
+  const key = `${entry.model}::t=${entry.temperature ?? ""}::tpl=${entry.template ?? ""}`;
+  const datasets = configCoverage.get(key);
+  return !datasets || datasets.size < 2;
+}
 ---
 
 <section class="w-full max-w-5xl mx-auto py-8" id="leaderboard">
@@ -41,15 +62,19 @@ const entries = leaderboard.entries;
             ]}
             data-entry={JSON.stringify(entry)}
             data-dataset={entry.dataset}
-            data-variant={entry.temperature != null || entry.template != null ? "variant" : "best"}
+            data-variant={hiddenInDefaultView(entry) ? "variant" : "best"}
           >
             <td class="px-4 py-3 text-muted">{entry.rank}</td>
             <td class="px-4 py-3 font-medium">
-              {entry.model}
-              {entry.is_ensemble && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 text-primary">ensemble</span>}
-              {entry.is_baseline && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-muted/20 text-muted">baseline</span>}
-              {entry.temperature != null && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent">t={entry.temperature}</span>}
-              <span class="block text-xs text-muted">{entry.provider}</span>
+              <span>{entry.model}</span>
+              {entry.is_ensemble && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 text-primary" title={entry.provider}>ensemble</span>}
+              {entry.is_baseline && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-muted/20 text-muted" title={entry.provider}>baseline</span>}
+              {!entry.is_baseline && entry.provider.startsWith("SynthPanel") && !entry.is_ensemble && (
+                <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-provider-synthpanel/10 text-provider-synthpanel" title={entry.provider}>conditioned</span>
+              )}
+              {entry.temperature != null && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent font-mono" title={`temperature=${entry.temperature}`}>t={entry.temperature}</span>}
+              {entry.template && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent font-mono" title={`prompt template=${entry.template}`}>tpl={entry.template}</span>}
+              <span class="block text-xs text-muted" title={entry.provider}>{entry.provider}</span>
             </td>
             <td class="px-4 py-3">{entry.dataset}</td>
             <td class="px-4 py-3 text-xs text-muted">{entry.framework}</td>
@@ -62,7 +87,7 @@ const entries = leaderboard.entries;
               [{entry.ci_lower.toFixed(3)}, {entry.ci_upper.toFixed(3)}]
             </td>
           </tr>
-          <tr class="detail-row hidden border-b border-muted/10" data-dataset={entry.dataset} data-variant={entry.temperature != null || entry.template != null ? "variant" : "best"}>
+          <tr class="detail-row hidden border-b border-muted/10" data-dataset={entry.dataset} data-variant={hiddenInDefaultView(entry) ? "variant" : "best"}>
             <td colspan="10" class="px-4 py-4 bg-surface/50 dark:bg-surface-dark/50">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 {entry.topic_scores && (
@@ -114,13 +139,18 @@ const entries = leaderboard.entries;
         ]}
         data-entry={JSON.stringify(entry)}
         data-dataset={entry.dataset}
-        data-variant={entry.temperature != null || entry.template != null ? "variant" : "best"}
+        data-variant={hiddenInDefaultView(entry) ? "variant" : "best"}
       >
         <div class="flex items-baseline justify-between mb-2">
           <div>
             <span class="font-medium">{entry.model}</span>
             {entry.is_ensemble && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 text-primary">ensemble</span>}
             {entry.is_baseline && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-muted/20 text-muted">baseline</span>}
+            {!entry.is_baseline && entry.provider.startsWith("SynthPanel") && !entry.is_ensemble && (
+              <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-provider-synthpanel/10 text-provider-synthpanel">conditioned</span>
+            )}
+            {entry.temperature != null && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent font-mono">t={entry.temperature}</span>}
+            {entry.template && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent font-mono">tpl={entry.template}</span>}
           </div>
           <span class="text-lg font-mono font-bold">{entry.sps.toFixed(3)}</span>
         </div>

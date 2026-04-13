@@ -8,34 +8,58 @@ const leaderboard = leaderboardRaw as LeaderboardData;
 
 const convergence = leaderboard.convergence ?? [];
 
-const modelColors: Record<string, string> = {
-  "Ensemble (3-model)": "var(--color-provider-synthpanel)",
-  "Haiku 4.5": "var(--color-provider-raw-llm)",
-  Random: "var(--color-provider-baseline)",
+// Map raw provider strings to clean display names. Only providers that map to
+// the target display names below are kept on the chart.
+const providerDisplay: Record<string, string> = {
+  "ensemble/3-model-blend": "SynthPanel Ensemble (3-model)",
+  "openrouter/anthropic/claude-haiku-4-5": "Claude Haiku 4.5",
+  "raw-anthropic/claude-haiku-4-5-20251001": "Claude Haiku 4.5",
+  "openrouter/openai/gpt-4o-mini": "GPT-4o-mini",
+  "openrouter/google/gemini-2.5-flash-lite": "Gemini Flash Lite",
+  "raw-gemini/gemini-2.5-flash-lite": "Gemini Flash Lite",
 };
 
-// Group by model
-const modelGroups = new Map<string, { rep_count: number; sps: number }[]>();
+const targetDisplayOrder = [
+  "SynthPanel Ensemble (3-model)",
+  "Claude Haiku 4.5",
+  "Gemini Flash Lite",
+  "GPT-4o-mini",
+];
+
+const modelColors: Record<string, string> = {
+  "SynthPanel Ensemble (3-model)": "var(--color-provider-synthpanel)",
+  "Claude Haiku 4.5": "#6366f1",
+  "Gemini Flash Lite": "#0891b2",
+  "GPT-4o-mini": "#d97706",
+};
+
+// Group by display name, keeping the best (highest SPS) point per rep_count.
+const modelGroups = new Map<string, Map<number, number>>();
 for (const pt of convergence) {
-  const group = modelGroups.get(pt.model) ?? [];
-  group.push({ rep_count: pt.rep_count, sps: pt.sps });
-  modelGroups.set(pt.model, group);
+  const display = providerDisplay[pt.model];
+  if (!display) continue;
+  const bucket = modelGroups.get(display) ?? new Map<number, number>();
+  const prev = bucket.get(pt.rep_count);
+  if (prev === undefined || pt.sps > prev) {
+    bucket.set(pt.rep_count, pt.sps);
+  }
+  modelGroups.set(display, bucket);
 }
 
-const modelNames = [...modelGroups.keys()];
+const presentModels = targetDisplayOrder.filter((name) => modelGroups.has(name));
 
 const chartOption = {
   tooltip: {
     trigger: "axis",
     formatter: (params: { seriesName: string; value: number[]; marker: string }[]) => {
-      const repCount = params[0].value[0];
+      const repCount = params[0]?.value[0];
       const lines = params.map(
-        (p) => `${p.marker} ${p.seriesName}: ${(p.value[1] as number).toFixed(3)}`,
+        (p) => `${p.marker} ${p.seriesName}: SPS ${(p.value[1] as number).toFixed(3)}`,
       );
       return `<div style="font-size:13px"><strong>${repCount} replicates</strong><br/>${lines.join("<br/>")}</div>`;
     },
   },
-  legend: { data: modelNames, top: 10 },
+  legend: { data: presentModels, top: 10 },
   grid: { left: 60, right: 40, top: 60, bottom: 40, containLabel: true },
   xAxis: {
     type: "value",
@@ -53,9 +77,11 @@ const chartOption = {
     max: 1,
     axisLabel: { formatter: (v: number) => v.toFixed(1) },
   },
-  series: modelNames.map((model) => {
-    const points = modelGroups.get(model) ?? [];
-    points.sort((a, b) => a.rep_count - b.rep_count);
+  series: presentModels.map((model) => {
+    const bucket = modelGroups.get(model) ?? new Map<number, number>();
+    const points = [...bucket.entries()]
+      .map(([rep, sps]) => ({ rep_count: rep, sps }))
+      .sort((a, b) => a.rep_count - b.rep_count);
     return {
       name: model,
       type: "line",
@@ -78,13 +104,13 @@ const chartOption = {
   },
 };
 
-const hasData = convergence.length > 0;
+const hasData = presentModels.length > 0;
 ---
 
 <section class="w-full max-w-4xl mx-auto py-8">
   <h2 class="text-2xl font-bold text-center mb-2">SPS Convergence</h2>
   <p class="text-center text-sm text-muted mb-6">
-    How SPS stabilizes as replicate count increases. More replicates yield more reliable estimates.
+    How SPS stabilizes as replicate count increases. Showing the ensemble and the three blended single models.
   </p>
   {hasData ? (
     <Chart option={chartOption} height="400px" />
