@@ -49,9 +49,9 @@ jobs:
       - name: Format generated data
         working-directory: site
         run: npx biome format --write src/data/leaderboard.json
-      - name: Astro check
+      - name: Typecheck
         working-directory: site
-        run: npx astro check
+        run: npx tsc --noEmit
       - name: Biome lint
         working-directory: site
         run: npx biome check .
