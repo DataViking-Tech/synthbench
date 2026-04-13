@@ -1,50 +1,31 @@
 ---
-import ConvergenceLine from "@/components/findings/ConvergenceLine.astro";
-import TopicGroupedBar from "@/components/findings/TopicGroupedBar.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import LeverHierarchy from "@/components/findings/LeverHierarchy.astro";
+import EnsembleGain from "@/components/findings/EnsembleGain.astro";
+import TemperatureCurve from "@/components/findings/TemperatureCurve.astro";
+import ConditioningGap from "@/components/findings/ConditioningGap.astro";
+import TopicGroupedBar from "@/components/findings/TopicGroupedBar.astro";
+import ConvergenceLine from "@/components/findings/ConvergenceLine.astro";
 ---
 
 <BaseLayout title="Findings - SynthBench">
   <div class="py-12 text-center">
     <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Research Findings</h1>
     <p class="mt-3 text-lg text-muted max-w-2xl mx-auto">
-      Key insights from synthetic respondent evaluation.
+      Six experiments that reveal what drives synthetic survey quality —
+      from the levers that matter most to the biases hiding in default model behavior.
     </p>
   </div>
 
-  <ConvergenceLine />
+  <LeverHierarchy />
+
+  <EnsembleGain />
+
+  <TemperatureCurve />
+
+  <ConditioningGap />
 
   <TopicGroupedBar />
 
-  <!-- Placeholder: Lever Hierarchy (Slice 4) -->
-  <section class="w-full max-w-4xl mx-auto py-8">
-    <h2 class="text-2xl font-bold text-center mb-4">Lever Hierarchy</h2>
-    <div class="text-center text-muted py-8 border border-muted/20 rounded-lg">
-      Lever hierarchy visualization coming in a future update.
-    </div>
-  </section>
-
-  <!-- Placeholder: Temperature Curves (Slice 4) -->
-  <section class="w-full max-w-4xl mx-auto py-8">
-    <h2 class="text-2xl font-bold text-center mb-4">Temperature Curves</h2>
-    <div class="text-center text-muted py-8 border border-muted/20 rounded-lg">
-      Temperature sweep visualization coming in a future update.
-    </div>
-  </section>
-
-  <!-- Placeholder: Ensemble Gain (Slice 4) -->
-  <section class="w-full max-w-4xl mx-auto py-8">
-    <h2 class="text-2xl font-bold text-center mb-4">Ensemble Gain</h2>
-    <div class="text-center text-muted py-8 border border-muted/20 rounded-lg">
-      Ensemble comparison visualization coming in a future update.
-    </div>
-  </section>
-
-  <!-- Placeholder: Conditioning Gap (Slice 4) -->
-  <section class="w-full max-w-4xl mx-auto py-8">
-    <h2 class="text-2xl font-bold text-center mb-4">Conditioning Gap</h2>
-    <div class="text-center text-muted py-8 border border-muted/20 rounded-lg">
-      Conditioning analysis coming in a future update.
-    </div>
-  </section>
+  <ConvergenceLine />
 </BaseLayout>

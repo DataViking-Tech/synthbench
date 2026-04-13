@@ -1,0 +1,124 @@
+---
+import Chart from "@/components/shared/Chart.astro";
+import type { LeaderboardData } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+const sweepData = leaderboard.findings.temperature_sweep ?? [];
+
+const modelColors: Record<string, string> = {
+  "Claude Haiku 4.5": "#6366f1",
+  "Gemini Flash Lite": "#0891b2",
+  "GPT-4o-mini": "#d97706",
+};
+
+// Group by model
+const modelGroups = new Map<string, { temperature: number; sps: number; std?: number }[]>();
+for (const pt of sweepData) {
+  const group = modelGroups.get(pt.model) ?? [];
+  group.push({ temperature: pt.temperature, sps: pt.sps, std: pt.std });
+  modelGroups.set(pt.model, group);
+}
+
+const modelNames = [...modelGroups.keys()];
+
+// Build series with annotations on key models
+const series = modelNames.map((model) => {
+  const points = modelGroups.get(model) ?? [];
+  points.sort((a, b) => a.temperature - b.temperature);
+
+  const color = modelColors[model] ?? "#6366f1";
+  const lastPt = points[points.length - 1];
+  const firstPt = points[0];
+  const delta = lastPt && firstPt ? ((lastPt.sps - firstPt.sps) * 100).toFixed(1) : "0";
+  const isInsensitive = lastPt && firstPt && Math.abs(lastPt.sps - firstPt.sps) < 0.01;
+
+  const annotationLabel = isInsensitive ? "Insensitive" : `+${delta} pts`;
+
+  return {
+    name: model,
+    type: "line" as const,
+    data: points.map((p) => [p.temperature, p.sps]),
+    smooth: true,
+    symbol: "circle",
+    symbolSize: 8,
+    lineStyle: { color, width: 2 },
+    itemStyle: { color },
+    emphasis: {
+      focus: "series" as const,
+      lineStyle: { width: 4 },
+    },
+    markPoint: lastPt
+      ? {
+          data: [
+            {
+              name: annotationLabel,
+              coord: [lastPt.temperature, lastPt.sps],
+              symbolSize: 0,
+              label: {
+                show: true,
+                formatter: "{b}",
+                position: "top" as const,
+                fontSize: 11,
+                fontWeight: "bold" as const,
+                color,
+                padding: [2, 6] as [number, number],
+                backgroundColor: "rgba(255,255,255,0.85)",
+                borderRadius: 3,
+              },
+            },
+          ],
+        }
+      : undefined,
+  };
+});
+
+const chartOption = {
+  tooltip: {
+    trigger: "axis" as const,
+  },
+  legend: { data: modelNames, top: 10 },
+  grid: { left: 60, right: 40, top: 60, bottom: 40, containLabel: true },
+  xAxis: {
+    type: "value" as const,
+    name: "Temperature",
+    nameLocation: "middle" as const,
+    nameGap: 30,
+    min: 0.2,
+  },
+  yAxis: {
+    type: "value" as const,
+    name: "SPS",
+    nameLocation: "middle" as const,
+    nameGap: 45,
+    min: 0.8,
+    max: 0.88,
+    axisLabel: { formatter: "{value}" },
+  },
+  series,
+  toolbox: {
+    feature: { saveAsImage: { title: "Save as PNG" } },
+    right: 10,
+    top: 10,
+  },
+};
+
+const hasData = sweepData.length > 0;
+---
+
+<section class="w-full max-w-4xl mx-auto py-8">
+  <h2 class="text-2xl font-bold text-center mb-2">Temperature: It Depends on the Model</h2>
+  <p class="text-center text-sm text-muted mb-6">
+    SPS across temperature settings for each model.
+    Gemini Flash Lite gains +4.5 SPS points from 0.3 to 2.0,
+    while Claude Haiku 4.5 is nearly insensitive to temperature changes.
+  </p>
+  {hasData ? (
+    <Chart option={chartOption} height="420px" />
+  ) : (
+    <div class="text-center text-muted py-12 border border-muted/20 rounded-lg">
+      Temperature sweep data not yet available.
+    </div>
+  )}
+</section>

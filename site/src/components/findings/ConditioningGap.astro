@@ -1,0 +1,128 @@
+---
+import Chart from "@/components/shared/Chart.astro";
+import type { LeaderboardData } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+const conditioning = leaderboard.findings.conditioning_results ?? [];
+
+const attributeColors: Record<string, string> = {
+  POLPARTY: "#6366f1",
+  INCOME: "#0891b2",
+  EDUCATION: "#d946ef",
+};
+
+// Order groups by attribute, then by p_cond descending within attribute
+const sorted = [...conditioning].sort((a, b) => {
+  if (a.attribute !== b.attribute) return a.attribute.localeCompare(b.attribute);
+  return b.p_cond - a.p_cond;
+});
+
+const groupLabels = sorted.map((d) => d.group);
+const pCondValues = sorted.map((d) => ({
+  value: d.p_cond,
+  itemStyle: { color: attributeColors[d.attribute] ?? "#6366f1" },
+}));
+
+// Compute Republican vs Democrat ratio for annotation
+const repEntry = conditioning.find((c) => c.group === "Republican");
+const demEntry = conditioning.find((c) => c.group === "Democrat");
+const ratio =
+  repEntry && demEntry && demEntry.p_cond > 0
+    ? (repEntry.p_cond / demEntry.p_cond).toFixed(1)
+    : null;
+
+const annotations = repEntry && ratio
+  ? [
+      {
+        name: `${ratio}x gap`,
+        coord: [repEntry.group, repEntry.p_cond],
+        symbolSize: 0,
+        label: {
+          show: true,
+          formatter: "{b}",
+          position: "top" as const,
+          fontSize: 12,
+          fontWeight: "bold" as const,
+          color: "#6366f1",
+          padding: [2, 6] as [number, number],
+          backgroundColor: "rgba(255,255,255,0.85)",
+          borderRadius: 3,
+        },
+      },
+    ]
+  : [];
+
+const chartOption = {
+  tooltip: {
+    trigger: "axis" as const,
+    axisPointer: { type: "shadow" as const },
+  },
+  grid: { left: 20, right: 30, top: 30, bottom: 30, containLabel: true },
+  xAxis: {
+    type: "category" as const,
+    data: groupLabels,
+    axisLabel: { rotate: groupLabels.length > 5 ? 20 : 0 },
+  },
+  yAxis: {
+    type: "value" as const,
+    name: "Conditioning Effect (p_cond)",
+    nameLocation: "middle" as const,
+    nameGap: 50,
+    min: 0,
+    axisLabel: { formatter: "{value}" },
+  },
+  series: [
+    {
+      name: "Conditioning Effect",
+      type: "bar" as const,
+      data: pCondValues,
+      barMaxWidth: 50,
+      emphasis: {
+        itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.3)" },
+      },
+      markPoint: annotations.length > 0 ? { data: annotations } : undefined,
+    },
+  ],
+  toolbox: {
+    feature: { saveAsImage: { title: "Save as PNG" } },
+    right: 10,
+    top: 0,
+  },
+};
+
+// Build legend items for attribute colors
+const attributeEntries = [...new Set(conditioning.map((c) => c.attribute))];
+
+const hasData = conditioning.length > 0;
+---
+
+<section class="w-full max-w-4xl mx-auto py-8">
+  <h2 class="text-2xl font-bold text-center mb-2">Demographic Conditioning Reveals Model Bias</h2>
+  <p class="text-center text-sm text-muted mb-6">
+    How much conditioning on a demographic group shifts model responses (p_cond).
+    Republican conditioning is {ratio ? `${ratio}x` : "significantly"} stronger
+    than Democrat — the model already leans progressive by default.
+  </p>
+  {hasData ? (
+    <>
+      <div class="flex justify-center gap-4 mb-4 text-xs text-muted">
+        {attributeEntries.map((attr) => (
+          <span class="flex items-center gap-1">
+            <span
+              class="inline-block w-3 h-3 rounded-sm"
+              style={`background:${attributeColors[attr] ?? "#6366f1"}`}
+            />
+            {attr}
+          </span>
+        ))}
+      </div>
+      <Chart option={chartOption} height="400px" />
+    </>
+  ) : (
+    <div class="text-center text-muted py-12 border border-muted/20 rounded-lg">
+      Conditioning data not yet available.
+    </div>
+  )}
+</section>
