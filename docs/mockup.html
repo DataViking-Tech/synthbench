@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SynthBench Mockup</title>
+  <style>
+    :root{
+      --bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;
+      --accent:#58a6ff;--good:#3fb950;--warn:#f0c040;--bad:#f85149;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+    .container{max-width:1150px;margin:0 auto;padding:20px}
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .links a{color:var(--accent);margin-right:10px;text-decoration:none}
+    .headline{font-size:1.6rem;font-weight:750;margin:10px 0}
+    .sub{color:var(--muted)}
+
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+    select,button,input{background:#0f141c;color:var(--text);border:1px solid var(--border);padding:7px 10px;border-radius:8px}
+    button{cursor:pointer}
+
+    .chart-wrap{margin-top:8px}
+    .legend{display:flex;gap:14px;color:var(--muted);font-size:.9rem;flex-wrap:wrap;margin-top:8px}
+    .dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;margin-right:5px}
+    .dot.raw{background:var(--accent)}
+    .dot.product{background:var(--good);border-radius:2px}
+    .dot.ensemble{background:var(--warn);transform:rotate(45deg)}
+
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab.active{border-color:var(--accent);color:var(--accent)}
+
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid var(--border);text-align:left}
+    th{color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.03em}
+    .num{text-align:right;font-variant-numeric:tabular-nums}
+    .badge{padding:2px 8px;border-radius:999px;font-size:.78rem;border:1px solid var(--border)}
+    .high{color:var(--good)} .med{color:var(--warn)} .low{color:var(--bad)}
+    .expander{color:var(--accent);cursor:pointer}
+    .details{display:none;background:#111720}
+    .details.open{display:table-row}
+
+    .split{display:grid;grid-template-columns:2.2fr 1fr;gap:12px}
+    .card{background:#0f141c;border:1px solid var(--border);border-radius:8px;padding:10px}
+
+    .footer-note{color:var(--muted);font-size:.9rem}
+
+    @media(max-width:780px){
+      .split{grid-template-columns:1fr}
+      .hide-mobile{display:none}
+      .headline{font-size:1.25rem}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel">
+      <div class="topbar">
+        <div>
+          <div style="font-size:1.3rem;font-weight:700">SynthBench — Rendered Mockup</div>
+          <div class="sub">Open benchmark for synthetic survey respondent quality</div>
+        </div>
+        <div class="links">
+          <a href="#">GitHub</a><a href="#">Methodology</a><a href="#">Submit Results</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="headline">Best model is <span style="color:var(--accent)">+23 points vs random baseline</span></div>
+      <div class="controls">
+        <select><option>Dataset: All</option><option>GlobalOpinionQA</option><option>OpinionsQA</option><option>SubPOP</option></select>
+        <select><option>Metric: SPS*</option><option>JSD</option><option>Tau</option></select>
+        <select><option>Show: Top 10</option><option>Show: Top 20</option></select>
+        <label><input type="checkbox" checked /> Include baselines</label>
+      </div>
+
+      <div class="chart-wrap">
+        <svg viewBox="0 0 950 290" width="100%" role="img" aria-label="Top models with uncertainty bars and baseline rules">
+          <rect x="0" y="0" width="950" height="290" fill="#0f141c" rx="8"/>
+          <line x1="210" y1="22" x2="210" y2="255" stroke="#f85149" stroke-dasharray="4 3"/>
+          <line x1="320" y1="22" x2="320" y2="255" stroke="#f0c040" stroke-dasharray="4 3"/>
+          <text x="210" y="16" text-anchor="middle" fill="#f85149" font-size="11">Random</text>
+          <text x="320" y="16" text-anchor="middle" fill="#f0c040" font-size="11">Majority</text>
+
+          <g font-size="12" fill="#e6edf3">
+            <text x="20" y="58">SynthPanel Ensemble</text>
+            <line x1="645" y1="54" x2="690" y2="54" stroke="#8b949e"/>
+            <circle cx="668" cy="54" r="6" fill="#f0c040"/>
+
+            <text x="20" y="96">Gemini Flash Lite (direct)</text>
+            <line x1="560" y1="92" x2="610" y2="92" stroke="#8b949e"/>
+            <circle cx="585" cy="92" r="5" fill="#58a6ff"/>
+
+            <text x="20" y="134">Claude Haiku 4.5 (direct)</text>
+            <line x1="520" y1="130" x2="575" y2="130" stroke="#8b949e"/>
+            <rect x="546" y="125" width="10" height="10" fill="#3fb950"/>
+
+            <text x="20" y="172">GPT-4o-mini</text>
+            <line x1="500" y1="168" x2="545" y2="168" stroke="#8b949e"/>
+            <circle cx="523" cy="168" r="5" fill="#58a6ff" opacity=".8"/>
+
+            <text x="20" y="210">Llama 3.3 70B</text>
+            <line x1="470" y1="206" x2="520" y2="206" stroke="#8b949e"/>
+            <circle cx="494" cy="206" r="5" fill="#58a6ff" opacity=".55"/>
+          </g>
+          <text x="740" y="270" fill="#8b949e" font-size="11">SPS* →</text>
+        </svg>
+      </div>
+      <div class="legend">
+        <span><span class="dot raw"></span>Raw LLM</span>
+        <span><span class="dot product"></span>Product</span>
+        <span><span class="dot ensemble"></span>Ensemble</span>
+        <span>Opacity = reliability</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="overview">Overview</button>
+        <button class="tab" data-tab="gqa">GlobalOpinionQA</button>
+        <button class="tab" data-tab="oqa">OpinionsQA</button>
+        <button class="tab" data-tab="subpop">SubPOP</button>
+        <button class="tab" data-tab="trends">Trends</button>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="panel" id="panel-overview">
+        <table>
+          <thead>
+            <tr>
+              <th></th><th>Model</th><th class="num hide-mobile">GQA</th><th class="num hide-mobile">OQA</th><th class="num hide-mobile">SubPOP</th><th class="num">SPS*</th><th>Reliability</th><th>Coverage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><button class="expander" data-id="d1" aria-expanded="false">▶</button></td>
+              <td>SynthPanel Ensemble (3-model)</td><td class="num hide-mobile">0.8135</td><td class="num hide-mobile">0.8767</td><td class="num hide-mobile">0.8794</td><td class="num">0.8565</td><td><span class="badge high">High</span></td><td>3/3</td>
+            </tr>
+            <tr id="d1" class="details"><td colspan="8">
+              <div class="card">P_dist 0.81 | P_rank 0.59 | P_refuse 0.99 | P_cond — | P_sub — · Runs: 3 · N: 684</div>
+            </td></tr>
+
+            <tr>
+              <td><button class="expander" data-id="d2" aria-expanded="false">▶</button></td>
+              <td>Gemini Flash Lite (direct)</td><td class="num hide-mobile">—</td><td class="num hide-mobile">0.7499</td><td class="num hide-mobile">—</td><td class="num">0.7499</td><td><span class="badge med">Medium</span></td><td>1/3</td>
+            </tr>
+            <tr id="d2" class="details"><td colspan="8">
+              <div class="card">Anomaly: partial coverage only. Interval: [0.738, 0.762]. 1 run.</div>
+            </td></tr>
+
+            <tr>
+              <td><button class="expander" data-id="d3" aria-expanded="false">▶</button></td>
+              <td>Llama 3.3 70B</td><td class="num hide-mobile">0.6536</td><td class="num hide-mobile">0.7343</td><td class="num hide-mobile">0.7055</td><td class="num">0.6978</td><td><span class="badge low">Low</span></td><td>3/3</td>
+            </tr>
+            <tr id="d3" class="details"><td colspan="8">
+              <div class="card">Warning: high variance across datasets. Compare mode recommended.</div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="card">
+          <strong>What SPS* means</strong>
+          <p class="sub">SPS* is computed from currently available metrics and may omit P_cond/P_sub when those runs are not available.</p>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <strong>Interpretation tips</strong>
+          <ul>
+            <li class="sub">Prioritize models above random baseline.</li>
+            <li class="sub">Check reliability before ranking ties.</li>
+            <li class="sub">Use decomposition to understand why scores differ.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel footer-note">
+      Accessibility mock targets: keyboard-first tab order, aria-expanded on row toggles, and non-color-only reliability cues.
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.expander').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const row = document.getElementById(id);
+        const open = row.classList.toggle('open');
+        btn.textContent = open ? '▼' : '▶';
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    });
+  </script>
+</body>
+</html>

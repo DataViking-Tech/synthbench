@@ -1,0 +1,59 @@
+name: PR Preview Deploy
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'docs/**'
+      - 'src/**'
+      - 'leaderboard-results/**'
+      - '.github/workflows/pr-preview.yml'
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Build docs output
+        run: synthbench publish --results-dir leaderboard-results --output docs/
+
+      - name: Deploy preview to gh-pages/previews/pr-<number>
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
+          destination_dir: previews/pr-${{ github.event.pull_request.number }}
+          keep_files: true
+
+      - name: Comment preview URL
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/previews/pr-${{ github.event.pull_request.number }}/
+        with:
+          script: |
+            const marker = '<!-- synthbench-pr-preview -->';
+            const body = `${marker}\n🔎 **SynthBench PR Preview**\n\n${process.env.PREVIEW_URL}`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.rest.issues.listComments({ owner, repo, issue_number });
+            const existing = comments.data.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
