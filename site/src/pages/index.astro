@@ -1,29 +1,16 @@
 ---
+import CTASection from "@/components/home/CTASection.astro";
 import HeroChart from "@/components/home/HeroChart.astro";
-import LeaderboardTable from "@/components/leaderboard/LeaderboardTable.astro";
+import HeroSection from "@/components/home/HeroSection.astro";
+import KeyFindings from "@/components/home/KeyFindings.astro";
+import SummaryLeaderboard from "@/components/home/SummaryLeaderboard.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-
-import leaderboardRaw from "@/data/leaderboard.json";
-import type { LeaderboardData } from "@/types/leaderboard";
-
-const leaderboard = leaderboardRaw as LeaderboardData;
 ---
 
-<BaseLayout title="SynthBench Leaderboard">
-  <div class="py-12 px-4 text-center">
-    <h1 class="text-4xl sm:text-5xl font-bold tracking-tight">SynthBench</h1>
-    <p class="mt-3 text-lg text-muted max-w-2xl mx-auto">
-      Open benchmark for synthetic survey respondent quality. Measuring how
-      well LLMs replicate human survey response distributions.
-    </p>
-    <p class="mt-2 text-xs text-muted">
-      v{leaderboard.synthbench_version} &middot; Generated {
-        new Date(leaderboard.generated_at).toLocaleDateString()
-      }
-    </p>
-  </div>
-
+<BaseLayout title="SynthBench — Open Benchmark for Synthetic Survey Quality">
+  <HeroSection />
   <HeroChart />
-
-  <LeaderboardTable />
+  <KeyFindings />
+  <SummaryLeaderboard />
+  <CTASection />
 </BaseLayout>

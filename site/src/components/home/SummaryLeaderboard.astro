@@ -1,0 +1,82 @@
+---
+import type { LeaderboardData, LeaderboardEntry } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+
+// Group entries by dataset, sort by SPS desc, take top 3 non-baseline
+const topEntries: { dataset: string; entries: LeaderboardEntry[] }[] = [];
+
+for (const ds of leaderboard.datasets) {
+  const dsEntries = leaderboard.entries
+    .filter((e) => e.dataset === ds && !e.is_baseline)
+    .sort((a, b) => b.sps - a.sps)
+    .slice(0, 3);
+  topEntries.push({ dataset: ds, entries: dsEntries });
+}
+---
+
+<section class="w-full max-w-5xl mx-auto py-12 px-4">
+  <h2 class="text-2xl font-bold text-center mb-2">Leaderboard Summary</h2>
+  <p class="text-center text-sm text-muted mb-8">
+    Top 3 models per dataset by Survey Parity Score
+  </p>
+
+  <div class="overflow-x-auto rounded-lg border border-muted/20">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-surface dark:bg-surface-dark border-b border-muted/20">
+          <th class="px-4 py-3 text-left font-semibold">#</th>
+          <th class="px-4 py-3 text-left font-semibold">Model</th>
+          <th class="px-4 py-3 text-left font-semibold">Dataset</th>
+          <th class="px-4 py-3 text-right font-semibold">SPS</th>
+          <th class="px-4 py-3 text-right font-semibold">p_dist</th>
+          <th class="px-4 py-3 text-right font-semibold">p_rank</th>
+        </tr>
+      </thead>
+      <tbody>
+        {topEntries.map((group) =>
+          group.entries.map((entry, i) => (
+            <tr
+              class:list={[
+                "border-b border-muted/10",
+                entry.is_ensemble && "bg-primary/5",
+                i === 0 && "font-medium",
+              ]}
+            >
+              <td class="px-4 py-2.5 text-muted">{i + 1}</td>
+              <td class="px-4 py-2.5">
+                {entry.model}
+                {entry.is_ensemble && (
+                  <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+                    ensemble
+                  </span>
+                )}
+              </td>
+              <td class="px-4 py-2.5 text-muted">{entry.dataset}</td>
+              <td class="px-4 py-2.5 text-right font-mono">
+                {entry.sps.toFixed(3)}
+              </td>
+              <td class="px-4 py-2.5 text-right font-mono">
+                {entry.p_dist.toFixed(3)}
+              </td>
+              <td class="px-4 py-2.5 text-right font-mono">
+                {entry.p_rank.toFixed(3)}
+              </td>
+            </tr>
+          )),
+        )}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="mt-4 text-center">
+    <a
+      href="/synthbench/leaderboard/"
+      class="text-sm font-semibold text-primary dark:text-primary-light hover:underline"
+    >
+      View full leaderboard &rarr;
+    </a>
+  </p>
+</section>

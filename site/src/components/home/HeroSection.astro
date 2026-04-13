@@ -1,0 +1,23 @@
+---
+import type { LeaderboardData } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+---
+
+<section class="py-16 sm:py-24 px-4 text-center max-w-3xl mx-auto">
+  <h1 class="text-5xl sm:text-6xl font-bold tracking-tight">SynthBench</h1>
+  <p class="mt-4 text-xl sm:text-2xl font-medium text-text dark:text-text-dark">
+    Not all synthetic surveys are built equal
+  </p>
+  <p class="mt-6 text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed">
+    A single LLM will almost always validate your idea&mdash;even when it
+    shouldn't. Model selection, conditioning, and sampling determine whether
+    synthetic respondents actually represent real human opinions.
+  </p>
+  <p class="mt-4 text-xs text-muted">
+    v{leaderboard.synthbench_version} &middot; Generated{" "}
+    {new Date(leaderboard.generated_at).toLocaleDateString()}
+  </p>
+</section>

@@ -1,0 +1,70 @@
+---
+import type { LeaderboardData } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+const { findings } = leaderboard;
+
+// Card 1: Ensemble Advantage
+// Compute the average improvement across datasets
+const ensembleAvgImprovement =
+  findings.ensemble_comparison.reduce((sum, e) => sum + e.improvement, 0) /
+  findings.ensemble_comparison.length;
+const ensemblePoints = `+${Math.round(ensembleAvgImprovement * 100)}-${Math.round(
+  Math.max(...findings.ensemble_comparison.map((e) => e.improvement)) * 100,
+)} SPS points`;
+
+// Card 2: Conditioning Asymmetry
+// Republican vs Democrat p_cond ratio
+const polparty = findings.conditioning_results.filter((c) => c.attribute === "POLPARTY");
+const repCond = polparty.find((c) => c.group === "Republican")?.p_cond ?? 0;
+const demCond = polparty.find((c) => c.group === "Democrat")?.p_cond ?? 0;
+const condRatio = demCond > 0 ? (repCond / demCond).toFixed(1) : "N/A";
+
+// Card 3: Temperature sensitivity
+// Gemini Flash Lite range vs Haiku range
+const haikuTemps = findings.temperature_sweep.filter((t) => t.model === "Claude Haiku 4.5");
+const geminiTemps = findings.temperature_sweep.filter((t) => t.model === "Gemini Flash Lite");
+const haikuRange =
+  Math.max(...haikuTemps.map((t) => t.sps)) - Math.min(...haikuTemps.map((t) => t.sps));
+const geminiRange =
+  Math.max(...geminiTemps.map((t) => t.sps)) - Math.min(...geminiTemps.map((t) => t.sps));
+
+const cards = [
+  {
+    title: "Ensemble Advantage",
+    stat: ensemblePoints,
+    text: "Blending 3 models beats any single model. Zero additional API cost\u2014just arithmetic on existing responses.",
+  },
+  {
+    title: "Conditioning Asymmetry",
+    stat: `${condRatio}\u00d7 gap`,
+    text: `Republican conditioning shifts responses ${condRatio}\u00d7 more than Democrat\u2014revealing the model\u2019s progressive default lean.`,
+  },
+  {
+    title: "Temperature Matters (Sometimes)",
+    stat: `+${(geminiRange * 100).toFixed(1)}% for Gemini, \u00b1${(haikuRange * 100).toFixed(1)}% for Haiku`,
+    text: "Temperature sensitivity is model-specific, not universal. One size does not fit all.",
+  },
+];
+---
+
+<section class="w-full max-w-5xl mx-auto py-12 px-4">
+  <h2 class="text-2xl font-bold text-center mb-2">Key Findings</h2>
+  <p class="text-center text-sm text-muted mb-8">
+    The most surprising results from our benchmark runs
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {cards.map((card) => (
+      <div class="rounded-lg border border-muted/20 p-6 bg-surface dark:bg-surface-dark">
+        <h3 class="text-lg font-semibold mb-2">{card.title}</h3>
+        <p class="text-2xl font-bold text-primary dark:text-primary-light mb-3 font-mono">
+          {card.stat}
+        </p>
+        <p class="text-sm text-muted leading-relaxed">{card.text}</p>
+      </div>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,50 @@
+---
+const ctas = [
+  {
+    title: "Try SynthPanel",
+    description:
+      "Run synthetic surveys with built-in best practices. pip install or clone from GitHub.",
+    href: "https://github.com/DataViking-Tech/synth-panel",
+    label: "Get SynthPanel",
+    external: true,
+  },
+  {
+    title: "Explore Methodology",
+    description: "How we score models, what SPS measures, and why distribution fidelity matters.",
+    href: "/synthbench/methodology/",
+    label: "Read methodology",
+    external: false,
+  },
+  {
+    title: "Submit Your Model",
+    description:
+      "Run the benchmark on your model and submit results. Open to any provider or framework.",
+    href: "/synthbench/submit/",
+    label: "Submit results",
+    external: false,
+  },
+];
+---
+
+<section class="w-full max-w-5xl mx-auto py-12 px-4">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {ctas.map((cta) => (
+      <div class="rounded-lg border border-muted/20 p-6 bg-surface dark:bg-surface-dark flex flex-col">
+        <h3 class="text-lg font-semibold mb-2">{cta.title}</h3>
+        <p class="text-sm text-muted leading-relaxed mb-4 flex-1">
+          {cta.description}
+        </p>
+        <a
+          href={cta.href}
+          class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-dark transition-colors"
+          {...(cta.external
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {})}
+        >
+          {cta.label}
+          {cta.external && <span class="ml-1" aria-hidden="true">&nearr;</span>}
+        </a>
+      </div>
+    ))}
+  </div>
+</section>
