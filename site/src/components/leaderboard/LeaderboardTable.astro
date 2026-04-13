@@ -21,9 +21,11 @@ const entries = leaderboard.entries;
           <th class="px-4 py-3 text-left font-semibold cursor-pointer hover:text-primary" data-sort="rank">#</th>
           <th class="px-4 py-3 text-left font-semibold">Model</th>
           <th class="px-4 py-3 text-left font-semibold">Dataset</th>
+          <th class="px-4 py-3 text-left font-semibold">Framework</th>
           <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="sps">SPS <span class="sort-indicator"></span></th>
-          <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="jsd">JSD <span class="sort-indicator"></span></th>
-          <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="tau">Tau <span class="sort-indicator"></span></th>
+          <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="p_dist">p_dist <span class="sort-indicator"></span></th>
+          <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="p_rank">p_rank <span class="sort-indicator"></span></th>
+          <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="p_refuse">p_refuse <span class="sort-indicator"></span></th>
           <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="n">N <span class="sort-indicator"></span></th>
           <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="ci">95% CI <span class="sort-indicator"></span></th>
         </tr>
@@ -47,16 +49,18 @@ const entries = leaderboard.entries;
               <span class="block text-xs text-muted">{entry.provider}</span>
             </td>
             <td class="px-4 py-3">{entry.dataset}</td>
+            <td class="px-4 py-3 text-xs text-muted">{entry.framework}</td>
             <td class="px-4 py-3 text-right font-mono">{entry.sps.toFixed(3)}</td>
-            <td class="px-4 py-3 text-right font-mono">{entry.jsd.toFixed(3)}</td>
-            <td class="px-4 py-3 text-right font-mono">{entry.tau.toFixed(3)}</td>
+            <td class="px-4 py-3 text-right font-mono">{entry.p_dist.toFixed(3)}</td>
+            <td class="px-4 py-3 text-right font-mono">{entry.p_rank.toFixed(3)}</td>
+            <td class="px-4 py-3 text-right font-mono">{entry.p_refuse.toFixed(3)}</td>
             <td class="px-4 py-3 text-right font-mono">{entry.n}</td>
             <td class="px-4 py-3 text-right font-mono text-xs">
               [{entry.ci_lower.toFixed(3)}, {entry.ci_upper.toFixed(3)}]
             </td>
           </tr>
           <tr class="detail-row hidden border-b border-muted/10">
-            <td colspan="8" class="px-4 py-4 bg-surface/50 dark:bg-surface-dark/50">
+            <td colspan="10" class="px-4 py-4 bg-surface/50 dark:bg-surface-dark/50">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 {entry.topic_scores && (
                   <div>
@@ -78,7 +82,7 @@ const entries = leaderboard.entries;
                       {entry.replicates.map((rep) => (
                         <div class="flex justify-between text-xs">
                           <span class="text-muted">Rep {rep.rep}</span>
-                          <span class="font-mono">SPS {rep.sps.toFixed(3)} / JSD {rep.jsd.toFixed(3)} / Tau {rep.tau.toFixed(3)}</span>
+                          <span class="font-mono">SPS {rep.sps.toFixed(3)} / p_dist {rep.p_dist.toFixed(3)} / p_rank {rep.p_rank.toFixed(3)}</span>
                         </div>
                       ))}
                     </div>
@@ -115,11 +119,11 @@ const entries = leaderboard.entries;
           </div>
           <span class="text-lg font-mono font-bold">{entry.sps.toFixed(3)}</span>
         </div>
-        <div class="text-xs text-muted mb-2">{entry.provider} · {entry.dataset}</div>
+        <div class="text-xs text-muted mb-2">{entry.provider} · {entry.dataset} · {entry.framework}</div>
         <div class="grid grid-cols-3 gap-2 text-xs">
-          <div><span class="text-muted">JSD</span> <span class="font-mono">{entry.jsd.toFixed(3)}</span></div>
-          <div><span class="text-muted">Tau</span> <span class="font-mono">{entry.tau.toFixed(3)}</span></div>
-          <div><span class="text-muted">CI</span> <span class="font-mono">[{entry.ci_lower.toFixed(2)}, {entry.ci_upper.toFixed(2)}]</span></div>
+          <div><span class="text-muted">p_dist</span> <span class="font-mono">{entry.p_dist.toFixed(3)}</span></div>
+          <div><span class="text-muted">p_rank</span> <span class="font-mono">{entry.p_rank.toFixed(3)}</span></div>
+          <div><span class="text-muted">p_refuse</span> <span class="font-mono">{entry.p_refuse.toFixed(3)}</span></div>
         </div>
         <div class="mobile-detail hidden mt-3 pt-3 border-t border-muted/20 text-xs space-y-2">
           {entry.topic_scores && (

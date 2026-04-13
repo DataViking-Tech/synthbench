@@ -1,18 +1,12 @@
 ---
+import Chart from "@/components/shared/Chart.astro";
 import type { LeaderboardData, LeaderboardEntry } from "@/types/leaderboard";
-import Chart from "./Chart.astro";
 
 import leaderboardRaw from "@/data/leaderboard.json";
 
 const leaderboard = leaderboardRaw as LeaderboardData;
 
-const providerColors: Record<string, string> = {
-  SynthPanel: "var(--color-provider-synthpanel)",
-  "Raw LLM": "var(--color-provider-raw-llm)",
-  "Random Baseline": "var(--color-provider-baseline)",
-};
-
-// Deduplicate models across datasets — show best SPS per model
+// Deduplicate models — show best SPS per model
 const modelMap = new Map<string, LeaderboardEntry>();
 for (const entry of leaderboard.entries) {
   const key = `${entry.provider}/${entry.model}`;
@@ -22,20 +16,30 @@ for (const entry of leaderboard.entries) {
   }
 }
 const models = [...modelMap.values()].sort((a, b) => a.sps - b.sps);
+const modelLabels = models.map((m) => `${m.model} (${m.provider})`);
+
+const providerColors: Record<string, string> = {
+  SynthPanel: "var(--color-provider-synthpanel)",
+  "Raw LLM": "var(--color-provider-raw-llm)",
+  "Random Baseline": "var(--color-provider-baseline)",
+};
 
 const chartOption = {
   tooltip: {
     trigger: "axis",
     axisPointer: { type: "shadow" },
-    formatter: (params: { name: string; data: number[]; seriesName: string }[]) => {
-      const p = params[0];
-      const entry = models.find((m) => `${m.model} (${m.provider})` === p.name);
+    formatter: (params: { data: number[] }[]) => {
+      const idx = params[0]?.data?.[1];
+      if (idx == null) return "";
+      const entry = models[idx];
       if (!entry) return "";
+      const ciRange = entry.ci_upper - entry.ci_lower;
       return `<div style="font-size:13px">
         <strong>${entry.model}</strong> (${entry.provider})<br/>
         SPS: ${entry.sps.toFixed(3)}<br/>
         95% CI: [${entry.ci_lower.toFixed(3)}, ${entry.ci_upper.toFixed(3)}]<br/>
-        <span style="color:#888">Survey Parity Score — higher is better (1.0 = perfect)</span>
+        CI Width: ${ciRange.toFixed(3)}<br/>
+        <span style="color:#888">Narrower CI = more precise estimate</span>
       </div>`;
     },
   },
@@ -51,7 +55,7 @@ const chartOption = {
   },
   yAxis: {
     type: "category",
-    data: models.map((m) => `${m.model} (${m.provider})`),
+    data: modelLabels,
     axisLabel: { width: 170, overflow: "truncate" },
   },
   series: [
@@ -70,14 +74,14 @@ const chartOption = {
         const categoryIndex = api.value(0);
         const low = api.coord([api.value(1), categoryIndex]);
         const high = api.coord([api.value(2), categoryIndex]);
-        const halfHeight = api.size([0, 1])[1] * 0.15;
+        const halfHeight = api.size([0, 1])[1] * 0.2;
         return {
           type: "group",
           children: [
             {
               type: "line",
               shape: { x1: low[0], y1: low[1], x2: high[0], y2: high[1] },
-              style: api.style({ stroke: "#999", lineWidth: 2 }),
+              style: api.style({ stroke: "#666", lineWidth: 2 }),
             },
             {
               type: "line",
@@ -87,7 +91,7 @@ const chartOption = {
                 x2: low[0],
                 y2: low[1] + halfHeight,
               },
-              style: api.style({ stroke: "#999", lineWidth: 2 }),
+              style: api.style({ stroke: "#666", lineWidth: 2 }),
             },
             {
               type: "line",
@@ -97,7 +101,7 @@ const chartOption = {
                 x2: high[0],
                 y2: high[1] + halfHeight,
               },
-              style: api.style({ stroke: "#999", lineWidth: 2 }),
+              style: api.style({ stroke: "#666", lineWidth: 2 }),
             },
           ],
         };
@@ -113,10 +117,10 @@ const chartOption = {
         value: [m.sps, i],
         itemStyle: { color: providerColors[m.provider] ?? "#6366f1" },
       })),
-      symbolSize: 14,
+      symbolSize: 16,
       emphasis: {
         focus: "self",
-        itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.3)" },
+        itemStyle: { shadowBlur: 12, shadowColor: "rgba(0,0,0,0.3)" },
       },
       z: 2,
     },
@@ -130,9 +134,9 @@ const chartOption = {
 ---
 
 <section class="w-full max-w-4xl mx-auto py-8">
-  <h2 class="text-2xl font-bold text-center mb-2">SPS by Model</h2>
+  <h2 class="text-2xl font-bold text-center mb-2">Confidence Intervals</h2>
   <p class="text-center text-sm text-muted mb-6">
-    Survey Parity Score per model with 95% confidence intervals. Higher is better.
+    95% confidence interval for each model's SPS. Center dot = point estimate, whiskers = CI bounds.
   </p>
-  <Chart option={chartOption} height="400px" />
+  <Chart option={chartOption} height="350px" />
 </section>

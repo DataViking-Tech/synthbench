@@ -113,3 +113,6 @@ export interface SynthBenchData {
   convergence: ConvergencePoint[];
   findings: FindingsData;
 }
+
+/** @deprecated Use SynthBenchData — alias kept for existing component imports */
+export type LeaderboardData = SynthBenchData;

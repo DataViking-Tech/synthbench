@@ -1,6 +1,6 @@
 ---
+import Chart from "@/components/shared/Chart.astro";
 import type { LeaderboardData, LeaderboardEntry } from "@/types/leaderboard";
-import Chart from "./Chart.astro";
 
 import leaderboardRaw from "@/data/leaderboard.json";
 
@@ -26,16 +26,22 @@ const metrics = [
     desc: "Survey Parity Score (higher is better)",
   },
   {
-    name: "JSD",
-    key: "jsd" as const,
-    color: "#dc2626",
-    desc: "Jensen-Shannon Divergence (lower is better)",
+    name: "p_dist",
+    key: "p_dist" as const,
+    color: "#059669",
+    desc: "Distribution similarity (higher is better)",
   },
   {
-    name: "Tau",
-    key: "tau" as const,
-    color: "#059669",
-    desc: "Kendall's Tau rank correlation (higher is better)",
+    name: "p_rank",
+    key: "p_rank" as const,
+    color: "#d97706",
+    desc: "Rank preservation (higher is better)",
+  },
+  {
+    name: "p_refuse",
+    key: "p_refuse" as const,
+    color: "#dc2626",
+    desc: "Non-refusal rate (higher is better)",
   },
 ];
 
@@ -89,7 +95,7 @@ const chartOption = {
 <section class="w-full max-w-4xl mx-auto py-8">
   <h2 class="text-2xl font-bold text-center mb-2">Per-Metric Breakdown</h2>
   <p class="text-center text-sm text-muted mb-6">
-    SPS, JSD, and Kendall's Tau side-by-side per model. SPS and Tau: higher is better. JSD: lower is better.
+    SPS and component metrics side-by-side per model. All metrics: higher is better.
   </p>
   <Chart option={chartOption} height="400px" />
   <div class="mt-3 flex flex-wrap justify-center gap-4 text-xs text-muted">

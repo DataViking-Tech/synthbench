@@ -1,0 +1,31 @@
+---
+import DotPlot from "@/components/leaderboard/DotPlot.astro";
+import LeaderboardTable from "@/components/leaderboard/LeaderboardTable.astro";
+import PerMetricDot from "@/components/leaderboard/PerMetricDot.astro";
+import WhiskerPlot from "@/components/leaderboard/WhiskerPlot.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Leaderboard - SynthBench">
+  <div class="py-12 text-center">
+    <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Leaderboard</h1>
+    <p class="mt-3 text-lg text-muted max-w-2xl mx-auto">
+      Full rankings across all datasets and models.
+    </p>
+  </div>
+
+  <LeaderboardTable />
+
+  <div class="mt-12 space-y-8">
+    <DotPlot />
+    <PerMetricDot />
+    <WhiskerPlot />
+  </div>
+
+  <!-- Placeholder: Dataset tabs (Slice 3) -->
+  <section class="w-full max-w-4xl mx-auto py-12">
+    <div class="text-center text-muted py-8 border border-muted/20 rounded-lg">
+      Dataset filtering coming in a future update.
+    </div>
+  </section>
+</BaseLayout>

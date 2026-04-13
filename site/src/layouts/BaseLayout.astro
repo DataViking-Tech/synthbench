@@ -1,0 +1,36 @@
+---
+import Footer from "@/components/shared/Footer.astro";
+import Nav from "@/components/shared/Nav.astro";
+import "@/styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = "SynthBench: Open benchmark for synthetic survey respondent quality",
+} = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/synthbench/favicon.svg" />
+    <meta name="description" content={description} />
+  </head>
+  <body
+    class="min-h-screen bg-surface text-text dark:bg-surface-dark dark:text-text-dark"
+  >
+    <Nav />
+
+    <main class="px-4 pb-16">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>
