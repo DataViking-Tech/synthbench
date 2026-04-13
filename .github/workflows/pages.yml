@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
@@ -26,9 +27,6 @@ jobs:
 
       - run: pip install -e .
 
-      # Generate the existing HTML leaderboard
-      - run: synthbench publish --results-dir leaderboard-results --output docs/
-
       # Export JSON data for the Astro site
       - run: synthbench publish-data --results-dir leaderboard-results --output site/src/data/leaderboard.json
 
@@ -37,6 +35,7 @@ jobs:
         working-directory: site
         run: |
           npm ci
+          npx biome format --write src/data/leaderboard.json
           npx astro check
           npm run build
 
@@ -46,11 +45,32 @@ jobs:
           rm -rf docs/next
           cp -r site/dist docs/next
 
-      - name: Commit if changed
+      - name: Create PR if changed
         run: |
-          git diff --quiet docs/ && exit 0
+          git diff --quiet docs/ && echo "No changes to docs/" && exit 0
+
+          BRANCH="auto/regenerate-pages"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
           git add docs/
           git commit -m "chore: auto-regenerate GitHub Pages leaderboard"
-          git push
+          git push -f origin "$BRANCH"
+
+          # Close any existing PR from this branch before creating a new one
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' || true)
+          if [ -n "$EXISTING_PR" ]; then
+            gh pr close "$EXISTING_PR" --delete-branch=false
+          fi
+
+          gh pr create \
+            --title "chore: auto-regenerate GitHub Pages leaderboard" \
+            --body "Automated update of \`docs/\` from the Astro build pipeline.
+
+          Triggered by a push to \`main\` that changed site sources or leaderboard results." \
+            --head "$BRANCH" \
+            --base main
+
+          gh pr merge "$BRANCH" --squash --auto
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
