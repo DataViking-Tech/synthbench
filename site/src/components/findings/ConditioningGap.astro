@@ -33,26 +33,27 @@ const ratio =
     ? (repEntry.p_cond / demEntry.p_cond).toFixed(1)
     : null;
 
-const annotations = repEntry && ratio
-  ? [
-      {
-        name: `${ratio}x gap`,
-        coord: [repEntry.group, repEntry.p_cond],
-        symbolSize: 0,
-        label: {
-          show: true,
-          formatter: "{b}",
-          position: "top" as const,
-          fontSize: 12,
-          fontWeight: "bold" as const,
-          color: "#6366f1",
-          padding: [2, 6] as [number, number],
-          backgroundColor: "rgba(255,255,255,0.85)",
-          borderRadius: 3,
+const annotations =
+  repEntry && ratio
+    ? [
+        {
+          name: `${ratio}x gap`,
+          coord: [repEntry.group, repEntry.p_cond],
+          symbolSize: 0,
+          label: {
+            show: true,
+            formatter: "{b}",
+            position: "top" as const,
+            fontSize: 12,
+            fontWeight: "bold" as const,
+            color: "#6366f1",
+            padding: [2, 6] as [number, number],
+            backgroundColor: "rgba(255,255,255,0.85)",
+            borderRadius: 3,
+          },
         },
-      },
-    ]
-  : [];
+      ]
+    : [];
 
 const chartOption = {
   tooltip: {
