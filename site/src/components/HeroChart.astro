@@ -73,7 +73,7 @@ const chartOption = {
       name: "Best Model",
       type: "bar",
       data: bestModels.map((m) => m.sps),
-      itemStyle: { color: "#4f46e5" },
+      itemStyle: { color: "var(--color-provider-synthpanel)" },
       barMaxWidth: 50,
       emphasis: {
         focus: "series",
@@ -90,7 +90,7 @@ const chartOption = {
       name: "Random Baseline",
       type: "bar",
       data: baselines.map((b) => b.sps),
-      itemStyle: { color: "#a3a3a3" },
+      itemStyle: { color: "var(--color-provider-baseline)" },
       barMaxWidth: 50,
       emphasis: {
         focus: "series",

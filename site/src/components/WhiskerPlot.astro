@@ -19,9 +19,9 @@ const models = [...modelMap.values()].sort((a, b) => a.sps - b.sps);
 const modelLabels = models.map((m) => `${m.model} (${m.provider})`);
 
 const providerColors: Record<string, string> = {
-  SynthPanel: "#4f46e5",
-  "Raw LLM": "#0891b2",
-  "Random Baseline": "#a3a3a3",
+  SynthPanel: "var(--color-provider-synthpanel)",
+  "Raw LLM": "var(--color-provider-raw-llm)",
+  "Random Baseline": "var(--color-provider-baseline)",
 };
 
 const chartOption = {
