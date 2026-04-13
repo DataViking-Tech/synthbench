@@ -6,78 +6,103 @@ import leaderboardRaw from "@/data/leaderboard.json";
 const leaderboard = leaderboardRaw as LeaderboardData;
 ---
 
-<header class="border-b border-muted/20">
-  <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-    <div class="flex items-center gap-x-3">
-      <a href="/synthbench/" class="flex items-center gap-2">
-        <svg class="h-7 w-7 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<header class="bg-surface dark:bg-surface-dark">
+  <nav aria-label="Global" class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
+    <div class="flex lg:flex-1">
+      <a href="/synthbench/" class="-m-1.5 flex items-center gap-2 p-1.5">
+        <svg class="h-8 w-auto text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M3 3v18h18" />
           <path d="M7 16l4-8 4 4 4-10" />
         </svg>
-        <span class="text-xl font-bold tracking-tight">SynthBench</span>
+        <span class="text-xl font-bold tracking-tight text-text dark:text-text-dark">SynthBench</span>
+        <span class="hidden text-xs text-muted sm:inline">v{leaderboard.synthbench_version}</span>
       </a>
-      <span class="text-xs text-muted hidden sm:inline">v{leaderboard.synthbench_version}</span>
     </div>
-
-    <!-- Desktop nav -->
-    <div class="hidden md:flex items-center gap-x-6 text-sm">
-      <a href="#leaderboard" class="text-muted hover:text-text dark:hover:text-text-dark transition-colors">Leaderboard</a>
-      <a href="#charts" class="text-muted hover:text-text dark:hover:text-text-dark transition-colors">Charts</a>
-      <a href="#about" class="text-muted hover:text-text dark:hover:text-text-dark transition-colors">About</a>
+    <div class="flex lg:hidden">
+      <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-muted" id="mobile-menu-open" aria-label="Open main menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="size-6">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    </div>
+    <div class="hidden lg:flex lg:gap-x-12">
+      <a href="#leaderboard" class="text-sm/6 font-semibold text-text dark:text-text-dark">Leaderboard</a>
+      <a href="#charts" class="text-sm/6 font-semibold text-text dark:text-text-dark">Charts</a>
+      <a href="#about" class="text-sm/6 font-semibold text-text dark:text-text-dark">About</a>
+    </div>
+    <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <a
         href="https://github.com/DataViking-Tech/synthbench"
-        class="inline-flex items-center gap-1.5 text-muted hover:text-text dark:hover:text-text-dark transition-colors"
+        class="inline-flex items-center gap-1.5 text-sm/6 font-semibold text-text dark:text-text-dark"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+        <svg class="size-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" fill-rule="evenodd" />
         </svg>
-        GitHub
+        GitHub <span aria-hidden="true">&rarr;</span>
       </a>
     </div>
-
-    <!-- Mobile hamburger -->
-    <button
-      type="button"
-      class="md:hidden -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-muted"
-      id="mobile-menu-btn"
-      aria-label="Open menu"
-    >
-      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-      </svg>
-    </button>
   </nav>
 
-  <!-- Mobile menu -->
-  <div class="hidden md:hidden" id="mobile-menu">
-    <div class="space-y-1 px-6 pb-4">
-      <a href="#leaderboard" class="block py-2 text-sm text-muted hover:text-text dark:hover:text-text-dark">Leaderboard</a>
-      <a href="#charts" class="block py-2 text-sm text-muted hover:text-text dark:hover:text-text-dark">Charts</a>
-      <a href="#about" class="block py-2 text-sm text-muted hover:text-text dark:hover:text-text-dark">About</a>
-      <a
-        href="https://github.com/DataViking-Tech/synthbench"
-        class="block py-2 text-sm text-muted hover:text-text dark:hover:text-text-dark"
-        target="_blank"
-        rel="noopener noreferrer"
-      >GitHub</a>
+  <!-- Mobile menu panel -->
+  <div class="hidden lg:hidden" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Main menu">
+    <div class="fixed inset-0 z-50 bg-surface/80 dark:bg-surface-dark/80" id="mobile-menu-backdrop"></div>
+    <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-surface p-6 sm:max-w-sm sm:ring-1 sm:ring-muted/10 dark:bg-surface-dark dark:sm:ring-muted/10" id="mobile-menu-panel">
+      <div class="flex items-center justify-between">
+        <a href="/synthbench/" class="-m-1.5 flex items-center gap-2 p-1.5">
+          <svg class="h-8 w-auto text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 3v18h18" />
+            <path d="M7 16l4-8 4 4 4-10" />
+          </svg>
+          <span class="text-xl font-bold tracking-tight text-text dark:text-text-dark">SynthBench</span>
+        </a>
+        <button type="button" class="-m-2.5 rounded-md p-2.5 text-muted" id="mobile-menu-close" aria-label="Close menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="size-6">
+            <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="mt-6 flow-root">
+        <div class="-my-6 divide-y divide-muted/10">
+          <div class="space-y-2 py-6">
+            <a href="#leaderboard" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-text hover:bg-muted/10 dark:text-text-dark dark:hover:bg-muted/10">Leaderboard</a>
+            <a href="#charts" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-text hover:bg-muted/10 dark:text-text-dark dark:hover:bg-muted/10">Charts</a>
+            <a href="#about" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-text hover:bg-muted/10 dark:text-text-dark dark:hover:bg-muted/10">About</a>
+          </div>
+          <div class="py-6">
+            <a
+              href="https://github.com/DataViking-Tech/synthbench"
+              class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-text hover:bg-muted/10 dark:text-text-dark dark:hover:bg-muted/10"
+              target="_blank"
+              rel="noopener noreferrer"
+            >GitHub</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </header>
 
 <script>
-  const btn = document.getElementById("mobile-menu-btn");
+  const openBtn = document.getElementById("mobile-menu-open");
+  const closeBtn = document.getElementById("mobile-menu-close");
   const menu = document.getElementById("mobile-menu");
-  if (btn && menu) {
-    btn.addEventListener("click", () => {
-      menu.classList.toggle("hidden");
-    });
-    // Close menu when a link is clicked
-    for (const link of menu.querySelectorAll("a")) {
-      link.addEventListener("click", () => {
-        menu.classList.add("hidden");
-      });
-    }
+  const backdrop = document.getElementById("mobile-menu-backdrop");
+
+  function openMenu() {
+    menu?.classList.remove("hidden");
+  }
+  function closeMenu() {
+    menu?.classList.add("hidden");
+  }
+
+  openBtn?.addEventListener("click", openMenu);
+  closeBtn?.addEventListener("click", closeMenu);
+  backdrop?.addEventListener("click", closeMenu);
+
+  // Close menu when a nav link is clicked
+  for (const link of menu?.querySelectorAll("a") ?? []) {
+    link.addEventListener("click", closeMenu);
   }
 </script>
