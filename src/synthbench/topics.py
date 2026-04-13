@@ -1,75 +1,256 @@
 """Topic-based question categorization for domain-specific benchmarking.
 
-Categorizes OpinionsQA questions into:
-  - political: elections, party politics, guns, abortion, immigration
-  - consumer: technology, economy, health, work, internet, science
-  - neutral: everything else (religion, institutions, demographics, society)
+10-category keyword taxonomy for classifying survey questions.
+First-match-wins priority order; deterministic keyword matching only.
 """
 
 from __future__ import annotations
 
-POLITICAL_KEYS: frozenset[str] = frozenset(
-    {
-        "biden",
-        "trump",
-        "republican",
-        "democrat",
+TAXONOMY: dict[str, list[str]] = {
+    "Politics & Governance": [
+        "elect",
+        "vote",
         "party",
+        "democrat",
+        "republican",
+        "congress",
+        "president",
         "liberal",
         "conservative",
-        "congress",
-        "election",
-        "vote",
         "political",
-        "government",
-        "abortion",
-        "gun",
-        "immigration",
-    }
-)
-
-CONSUMER_KEYS: frozenset[str] = frozenset(
-    {
+        "legislation",
+        "law ",
+        "laws ",
+        "biden",
+        "trump",
+        "obama",
+        "campaign",
+        "ballot",
+        "senate",
+        "supreme court",
+        "governor",
+        "mayor",
+        "parliament",
+        "prime minister",
+    ],
+    "International Relations & Security": [
+        "country",
+        "countries",
+        "nation",
+        "nations",
+        "foreign",
+        "ally",
+        "allies",
+        "military",
+        "war",
+        "nuclear",
+        "threat",
+        "defense",
+        "nato",
+        "united nations",
+        "diplomacy",
+        "superpower",
+        "sanctions",
+        "territory",
+        "territorial",
+        "china",
+        "russia",
+        "iran",
+        "iraq",
+        "ukraine",
+        "germany",
+        "france",
+        "britain",
+        "japan",
+        "india",
+        "pakistan",
+        "africa",
+        "europe",
+        "asia",
+        "middle east",
+        "relations with",
+        "relations between",
+        "world affairs",
+        "global",
+        "security",
+        "terror",
+        "peace",
+        "conflict",
+        "refugee",
+        "migration",
+    ],
+    "Economy & Work": [
+        "economy",
+        "economic",
+        "trade",
+        "job ",
+        "jobs",
+        "employment",
+        "unemploy",
+        "income",
+        "wage",
+        "financial",
+        "debt",
+        "tax",
+        "business",
+        "invest",
+        "inflation",
+        "recession",
+        "poverty",
+        "wealth",
+        "rich",
+        "poor",
+        "working condition",
+        "worker",
+        "salary",
+        "cost of living",
+        "afford",
+    ],
+    "Technology & Digital Life": [
         "technology",
         "internet",
-        "social media",
         "online",
-        "device",
-        "app",
+        "social media",
         "phone",
         "computer",
-        "science",
-        "work",
-        "job",
-        "financial",
-        "economy",
+        "device",
+        "app ",
+        "apps",
+        "cyber",
+        "digital",
+        "artificial intelligence",
+        "robot",
+        "automat",
+        "data",
+        "privacy",
+        "surveillance",
+        "monitor",
+        "algorithm",
+        "software",
+    ],
+    "Media & Information": [
+        "media",
+        "news",
+        "journalism",
+        "journalist",
+        "press",
+        "newspaper",
+        "television",
+        "radio",
+        "information",
+        "misinformation",
+        "fake news",
+        "censor",
+        "freedom of",
+    ],
+    "Health & Science": [
         "health",
-        "food",
+        "medical",
+        "doctor",
+        "hospital",
+        "disease",
+        "vaccine",
+        "drug",
+        "treatment",
+        "covid",
+        "pandemic",
+        "science",
+        "scientific",
+        "research",
         "environment",
-    }
-)
+        "climate",
+        "pollution",
+        "energy",
+        "food",
+        "water",
+        "clean",
+    ],
+    "Social Values & Religion": [
+        "religion",
+        "religious",
+        "god",
+        "church",
+        "mosque",
+        "muslim",
+        "christian",
+        "jewish",
+        "hindu",
+        "buddhist",
+        "spiritual",
+        "prayer",
+        "faith",
+        "moral",
+        "ethic",
+        "abortion",
+        "gun",
+        "marriage",
+        "homosex",
+        "gay",
+        "family",
+        "divorce",
+        "sex ",
+        "gender",
+    ],
+    "Identity & Demographics": [
+        "immigra",
+        "race",
+        "racial",
+        "ethnic",
+        "minority",
+        "discrimination",
+        "diversity",
+        "equal",
+        "inequal",
+        "bias",
+        "prejudice",
+        "rights",
+        "women",
+        "men ",
+        "black",
+        "white",
+        "hispanic",
+        "asian",
+    ],
+    "Trust & Wellbeing": [
+        "trust",
+        "confidence",
+        "favorable",
+        "unfavorable",
+        "approve",
+        "disapprove",
+        "opinion of",
+        "satisfied",
+        "dissatisfied",
+        "corrupt",
+        "honest",
+        "happy",
+        "life",
+        "wellbeing",
+        "well-being",
+        "quality of life",
+        "ladder",
+        "best possible",
+        "optimis",
+        "pessimis",
+        "better or worse",
+        "right direction",
+        "wrong track",
+    ],
+}
 
-# Multi-word keys that need phrase matching
-_POLITICAL_PHRASES: frozenset[str] = frozenset()
-_CONSUMER_PHRASES: frozenset[str] = frozenset({"social media"})
+CATEGORIES: list[str] = list(TAXONOMY.keys()) + ["General Attitudes"]
+
+FALLBACK_CATEGORY: str = "General Attitudes"
 
 
 def categorize_question(text: str) -> str:
-    """Categorize a question as 'political', 'consumer', or 'neutral'.
+    """Categorize a question into one of the 10 topic categories.
 
-    Uses case-insensitive keyword matching on the question text.
-    If a question matches both categories, it is classified as 'neutral'.
-    If it matches neither, it is also 'neutral'.
+    Uses case-insensitive keyword matching with first-match-wins priority.
+    Questions matching no category are assigned to 'General Attitudes'.
     """
     text_lower = text.lower()
-
-    political_match = any(kw in text_lower for kw in POLITICAL_KEYS)
-    consumer_match = any(kw in text_lower for kw in CONSUMER_KEYS)
-
-    if political_match and consumer_match:
-        return "neutral"
-    if political_match:
-        return "political"
-    if consumer_match:
-        return "consumer"
-    return "neutral"
+    for category, keywords in TAXONOMY.items():
+        if any(kw in text_lower for kw in keywords):
+            return category
+    return FALLBACK_CATEGORY

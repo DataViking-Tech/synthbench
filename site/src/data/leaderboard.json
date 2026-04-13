@@ -1,232 +1,2085 @@
 {
-  "generated_at": "2026-04-13T00:00:00Z",
+  "generated_at": "2026-04-13T13:43:08.098192+00:00",
   "synthbench_version": "0.1.0",
-  "datasets": ["SubPOP", "OpinionsQA", "GlobalQA"],
+  "datasets": ["globalopinionqa", "opinionsqa", "subpop"],
   "entries": [
     {
       "rank": 1,
-      "provider": "SynthPanel",
-      "model": "Ensemble (3-model)",
-      "dataset": "SubPOP",
-      "sps": 0.812,
-      "jsd": 0.188,
-      "tau": 0.624,
+      "provider": "SynthPanel (Sonnet 4)",
+      "model": "SynthPanel (Sonnet 4)",
+      "dataset": "globalopinionqa",
+      "framework": "product",
+      "sps": 0.796623,
+      "p_dist": 0.910137,
+      "p_rank": 0.5,
+      "p_refuse": 0.979733,
+      "jsd": 0.089863,
+      "tau": 0.0,
       "n": 100,
-      "ci_lower": 0.765,
-      "ci_upper": 0.859,
+      "ci_lower": 0.69711,
+      "ci_upper": 0.712198,
       "is_baseline": false,
-      "is_ensemble": true,
+      "is_ensemble": false,
+      "samples_per_question": 30,
       "topic_scores": {
-        "Politics": 0.835,
-        "Economics": 0.79,
-        "Social": 0.821,
-        "Health": 0.798,
-        "Technology": 0.815
-      },
-      "replicates": [
-        { "rep": 1, "sps": 0.798, "jsd": 0.202, "tau": 0.61 },
-        { "rep": 2, "sps": 0.815, "jsd": 0.185, "tau": 0.63 },
-        { "rep": 3, "sps": 0.823, "jsd": 0.177, "tau": 0.632 }
-      ]
+        "Economy & Work": 0.696482,
+        "General Attitudes": 0.724805,
+        "Health & Science": 0.690694,
+        "International Relations & Security": 0.700602,
+        "Politics & Governance": 0.717617,
+        "Technology & Digital Life": 0.692597,
+        "Trust & Wellbeing": 0.682104
+      }
     },
     {
       "rank": 2,
-      "provider": "SynthPanel",
-      "model": "Haiku 4.5",
-      "dataset": "SubPOP",
-      "sps": 0.763,
-      "jsd": 0.237,
-      "tau": 0.526,
+      "provider": "SynthPanel (GPT-4o-mini)",
+      "model": "SynthPanel (GPT-4o-mini)",
+      "dataset": "globalopinionqa",
+      "framework": "product",
+      "sps": 0.786229,
+      "p_dist": 0.689363,
+      "p_rank": 0.693591,
+      "p_refuse": 0.975733,
+      "jsd": 0.310637,
+      "tau": 0.387182,
       "n": 100,
-      "ci_lower": 0.71,
-      "ci_upper": 0.816,
+      "ci_lower": 0.646475,
+      "ci_upper": 0.729654,
       "is_baseline": false,
       "is_ensemble": false,
+      "samples_per_question": 30,
       "topic_scores": {
-        "Politics": 0.78,
-        "Economics": 0.745,
-        "Social": 0.77,
-        "Health": 0.75,
-        "Technology": 0.768
-      },
-      "replicates": [
-        { "rep": 1, "sps": 0.752, "jsd": 0.248, "tau": 0.515 },
-        { "rep": 2, "sps": 0.768, "jsd": 0.232, "tau": 0.532 },
-        { "rep": 3, "sps": 0.769, "jsd": 0.231, "tau": 0.531 }
-      ]
+        "Economy & Work": 0.620677,
+        "General Attitudes": 0.73761,
+        "Health & Science": 0.859111,
+        "International Relations & Security": 0.696611,
+        "Politics & Governance": 0.698229,
+        "Technology & Digital Life": 0.664402,
+        "Trust & Wellbeing": 0.57537
+      }
     },
     {
       "rank": 3,
-      "provider": "Raw LLM",
-      "model": "Haiku 4.5",
-      "dataset": "SubPOP",
-      "sps": 0.688,
-      "jsd": 0.312,
-      "tau": 0.376,
+      "provider": "Gemini 2.5 Flash",
+      "model": "Gemini 2.5 Flash",
+      "dataset": "globalopinionqa",
+      "framework": "raw",
+      "sps": 0.770427,
+      "p_dist": 0.687026,
+      "p_rank": 0.644521,
+      "p_refuse": 0.979733,
+      "jsd": 0.312974,
+      "tau": 0.289042,
       "n": 100,
-      "ci_lower": 0.631,
-      "ci_upper": 0.745,
+      "ci_lower": 0.614063,
+      "ci_upper": 0.707653,
       "is_baseline": false,
       "is_ensemble": false,
+      "samples_per_question": 15,
       "topic_scores": {
-        "Politics": 0.71,
-        "Economics": 0.665,
-        "Social": 0.698,
-        "Health": 0.672,
-        "Technology": 0.693
-      },
-      "replicates": [
-        { "rep": 1, "sps": 0.675, "jsd": 0.325, "tau": 0.362 },
-        { "rep": 2, "sps": 0.692, "jsd": 0.308, "tau": 0.38 },
-        { "rep": 3, "sps": 0.697, "jsd": 0.303, "tau": 0.386 }
-      ]
+        "Economy & Work": 0.826171,
+        "General Attitudes": 0.750929,
+        "Health & Science": 0.859111,
+        "International Relations & Security": 0.668434,
+        "Politics & Governance": 0.64137,
+        "Technology & Digital Life": 0.866699,
+        "Trust & Wellbeing": 0.333731
+      }
     },
     {
       "rank": 4,
-      "provider": "Random Baseline",
-      "model": "Random",
-      "dataset": "SubPOP",
-      "sps": 0.496,
-      "jsd": 0.504,
-      "tau": 0.001,
+      "provider": "Llama 3.3 70B",
+      "model": "Llama 3.3 70B",
+      "dataset": "globalopinionqa",
+      "framework": "raw",
+      "sps": 0.762329,
+      "p_dist": 0.635373,
+      "p_rank": 0.671881,
+      "p_refuse": 0.979733,
+      "jsd": 0.364627,
+      "tau": 0.343763,
       "n": 100,
-      "ci_lower": 0.443,
-      "ci_upper": 0.549,
-      "is_baseline": true,
+      "ci_lower": 0.607251,
+      "ci_upper": 0.695278,
+      "is_baseline": false,
       "is_ensemble": false,
+      "samples_per_question": 15,
       "topic_scores": {
-        "Politics": 0.502,
-        "Economics": 0.491,
-        "Social": 0.498,
-        "Health": 0.495,
-        "Technology": 0.493
-      },
-      "replicates": [
-        { "rep": 1, "sps": 0.488, "jsd": 0.512, "tau": -0.005 },
-        { "rep": 2, "sps": 0.501, "jsd": 0.499, "tau": 0.004 },
-        { "rep": 3, "sps": 0.499, "jsd": 0.501, "tau": 0.004 }
-      ]
+        "Economy & Work": 0.626426,
+        "General Attitudes": 0.644481,
+        "Health & Science": 0.859111,
+        "International Relations & Security": 0.640404,
+        "Politics & Governance": 0.698489,
+        "Technology & Digital Life": 0.852851,
+        "Trust & Wellbeing": 0.496796
+      }
     },
     {
-      "rank": 1,
-      "provider": "SynthPanel",
-      "model": "Ensemble (3-model)",
-      "dataset": "OpinionsQA",
-      "sps": 0.798,
-      "jsd": 0.202,
-      "tau": 0.596,
+      "rank": 5,
+      "provider": "SynthPanel (Gemini Flash Lite)",
+      "model": "SynthPanel (Gemini Flash Lite)",
+      "dataset": "globalopinionqa",
+      "framework": "product",
+      "sps": 0.761601,
+      "p_dist": 0.686999,
+      "p_rank": 0.624072,
+      "p_refuse": 0.973733,
+      "jsd": 0.313001,
+      "tau": 0.248145,
       "n": 100,
-      "ci_lower": 0.749,
-      "ci_upper": 0.847,
+      "ci_lower": 0.60498,
+      "ci_upper": 0.701245,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.539409,
+        "General Attitudes": 0.682255,
+        "Health & Science": 0.654089,
+        "International Relations & Security": 0.67247,
+        "Politics & Governance": 0.677133,
+        "Technology & Digital Life": 0.900638,
+        "Trust & Wellbeing": 0.403027
+      }
+    },
+    {
+      "rank": 6,
+      "provider": "GPT-4o-mini",
+      "model": "GPT-4o-mini",
+      "dataset": "globalopinionqa",
+      "framework": "raw",
+      "sps": 0.749281,
+      "p_dist": 0.633497,
+      "p_rank": 0.647946,
+      "p_refuse": 0.9664,
+      "jsd": 0.366503,
+      "tau": 0.295893,
+      "n": 100,
+      "ci_lower": 0.591151,
+      "ci_upper": 0.683351,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 15,
+      "topic_scores": {
+        "Economy & Work": 0.619562,
+        "General Attitudes": 0.670304,
+        "Health & Science": 0.859111,
+        "International Relations & Security": 0.65605,
+        "Politics & Governance": 0.629525,
+        "Technology & Digital Life": 0.792842,
+        "Trust & Wellbeing": 0.407459
+      }
+    },
+    {
+      "rank": 7,
+      "provider": "SynthPanel Ensemble (3-model)",
+      "model": "SynthPanel Ensemble (3-model)",
+      "dataset": "globalopinionqa",
+      "framework": "product",
+      "sps": 0.747314,
+      "p_dist": 0.807219,
+      "p_rank": 0.68741,
+      "p_refuse": 0,
+      "jsd": 0.192781,
+      "tau": 0.374819,
+      "n": 0,
+      "ci_lower": 0,
+      "ci_upper": 0,
       "is_baseline": false,
       "is_ensemble": true,
       "topic_scores": {
-        "Politics": 0.818,
-        "Economics": 0.782,
-        "Social": 0.805,
-        "Health": 0.791,
-        "Technology": 0.793
-      },
-      "replicates": [
-        { "rep": 1, "sps": 0.785, "jsd": 0.215, "tau": 0.582 },
-        { "rep": 2, "sps": 0.802, "jsd": 0.198, "tau": 0.601 },
-        { "rep": 3, "sps": 0.807, "jsd": 0.193, "tau": 0.605 }
-      ]
+        "Economy & Work": 0.689455,
+        "General Attitudes": 0.795661,
+        "Health & Science": 0.908908,
+        "International Relations & Security": 0.742844,
+        "Politics & Governance": 0.804461,
+        "Technology & Digital Life": 0.743427,
+        "Trust & Wellbeing": 0.52049
+      }
     },
     {
-      "rank": 2,
-      "provider": "Random Baseline",
-      "model": "Random",
-      "dataset": "OpinionsQA",
-      "sps": 0.501,
-      "jsd": 0.499,
-      "tau": 0.002,
+      "rank": 8,
+      "provider": "Claude Haiku 4.5",
+      "model": "Claude Haiku 4.5",
+      "dataset": "globalopinionqa",
+      "framework": "raw",
+      "sps": 0.725998,
+      "p_dist": 0.600587,
+      "p_rank": 0.597675,
+      "p_refuse": 0.979733,
+      "jsd": 0.399413,
+      "tau": 0.19535,
       "n": 100,
-      "ci_lower": 0.448,
-      "ci_upper": 0.554,
+      "ci_lower": 0.540416,
+      "ci_upper": 0.650051,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 15,
+      "topic_scores": {
+        "Economy & Work": 0.518141,
+        "General Attitudes": 0.704727,
+        "Health & Science": 0.859111,
+        "International Relations & Security": 0.617714,
+        "Politics & Governance": 0.558926,
+        "Technology & Digital Life": 0.828555,
+        "Trust & Wellbeing": 0.312066
+      }
+    },
+    {
+      "rank": 9,
+      "provider": "SynthPanel (Haiku 4.5)",
+      "model": "SynthPanel (Haiku 4.5)",
+      "dataset": "globalopinionqa",
+      "framework": "product",
+      "sps": 0.724855,
+      "p_dist": 0.665547,
+      "p_rank": 0.628215,
+      "p_refuse": 0.880803,
+      "jsd": 0.334453,
+      "tau": 0.25643,
+      "n": 100,
+      "ci_lower": 0.5937,
+      "ci_upper": 0.691796,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.697658,
+        "General Attitudes": 0.65609,
+        "Health & Science": 0.859111,
+        "International Relations & Security": 0.679484,
+        "Politics & Governance": 0.641458,
+        "Technology & Digital Life": 0.678827,
+        "Trust & Wellbeing": 0.305979
+      }
+    },
+    {
+      "rank": 10,
+      "provider": "Random Baseline",
+      "model": "Random Baseline",
+      "dataset": "globalopinionqa",
+      "framework": "baseline",
+      "sps": 0.709683,
+      "p_dist": 0.746806,
+      "p_rank": 0.399065,
+      "p_refuse": 0.983178,
+      "jsd": 0.253194,
+      "tau": -0.20187,
+      "n": 10,
+      "ci_lower": 0.480669,
+      "ci_upper": 0.679823,
       "is_baseline": true,
       "is_ensemble": false,
+      "samples_per_question": 5,
       "topic_scores": {
-        "Politics": 0.508,
-        "Economics": 0.495,
-        "Social": 0.503,
-        "Health": 0.499,
-        "Technology": 0.501
-      },
-      "replicates": [
-        { "rep": 1, "sps": 0.495, "jsd": 0.505, "tau": -0.002 },
-        { "rep": 2, "sps": 0.504, "jsd": 0.496, "tau": 0.005 },
-        { "rep": 3, "sps": 0.504, "jsd": 0.496, "tau": 0.003 }
-      ]
+        "General Attitudes": 0.435147,
+        "International Relations & Security": 0.615386,
+        "Politics & Governance": 0.611233,
+        "Trust & Wellbeing": 0.379427
+      }
+    },
+    {
+      "rank": 11,
+      "provider": "Majority Baseline",
+      "model": "Majority Baseline",
+      "dataset": "globalopinionqa",
+      "framework": "baseline",
+      "sps": 0.68956,
+      "p_dist": 0.53424,
+      "p_rank": 0.554706,
+      "p_refuse": 0.979733,
+      "jsd": 0.46576,
+      "tau": 0.109412,
+      "n": 100,
+      "ci_lower": 0.493017,
+      "ci_upper": 0.592393,
+      "is_baseline": true,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.32704,
+        "General Attitudes": 0.56958,
+        "Health & Science": 0.859111,
+        "International Relations & Security": 0.585473,
+        "Politics & Governance": 0.539684,
+        "Technology & Digital Life": 0.591221,
+        "Trust & Wellbeing": 0.272589
+      }
     },
     {
       "rank": 1,
-      "provider": "SynthPanel",
-      "model": "Ensemble (3-model)",
-      "dataset": "GlobalQA",
-      "sps": 0.774,
-      "jsd": 0.226,
-      "tau": 0.548,
-      "n": 100,
-      "ci_lower": 0.722,
-      "ci_upper": 0.826,
+      "provider": "SynthPanel Ensemble (3-model)",
+      "model": "SynthPanel Ensemble (3-model)",
+      "dataset": "opinionsqa",
+      "framework": "product",
+      "sps": 0.835003,
+      "p_dist": 0.833241,
+      "p_rank": 0.836765,
+      "p_refuse": 0,
+      "jsd": 0.166759,
+      "tau": 0.67353,
+      "n": 0,
+      "ci_lower": 0,
+      "ci_upper": 0,
       "is_baseline": false,
       "is_ensemble": true,
       "topic_scores": {
-        "Politics": 0.795,
-        "Economics": 0.758,
-        "Social": 0.78,
-        "Health": 0.768,
-        "Technology": 0.77
-      },
-      "replicates": [
-        { "rep": 1, "sps": 0.761, "jsd": 0.239, "tau": 0.535 },
-        { "rep": 2, "sps": 0.778, "jsd": 0.222, "tau": 0.553 },
-        { "rep": 3, "sps": 0.783, "jsd": 0.217, "tau": 0.556 }
-      ]
+        "Economy & Work": 0.832038,
+        "General Attitudes": 0.844608,
+        "Health & Science": 0.851615,
+        "Identity & Demographics": 0.809349,
+        "International Relations & Security": 0.820213,
+        "Media & Information": 0.85288,
+        "Politics & Governance": 0.810156,
+        "Social Values & Religion": 0.866315,
+        "Technology & Digital Life": 0.812016,
+        "Trust & Wellbeing": 0.839277
+      }
     },
     {
       "rank": 2,
+      "provider": "Gemini 2.5 Flash",
+      "model": "Gemini 2.5 Flash",
+      "dataset": "opinionsqa",
+      "framework": "raw",
+      "sps": 0.829212,
+      "p_dist": 0.737572,
+      "p_rank": 0.760538,
+      "p_refuse": 0.989527,
+      "jsd": 0.262428,
+      "tau": 0.521077,
+      "n": 684,
+      "ci_lower": 0.736411,
+      "ci_upper": 0.75976,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 50,
+      "topic_scores": {
+        "Economy & Work": 0.754736,
+        "General Attitudes": 0.7406,
+        "Health & Science": 0.809566,
+        "Identity & Demographics": 0.747952,
+        "International Relations & Security": 0.731418,
+        "Media & Information": 0.780323,
+        "Politics & Governance": 0.719545,
+        "Social Values & Religion": 0.757697,
+        "Technology & Digital Life": 0.742256,
+        "Trust & Wellbeing": 0.753648
+      }
+    },
+    {
+      "rank": 3,
+      "provider": "SynthPanel (Sonnet 4)",
+      "model": "SynthPanel (Sonnet 4)",
+      "dataset": "opinionsqa",
+      "framework": "product",
+      "sps": 0.828994,
+      "p_dist": 0.726347,
+      "p_rank": 0.79294,
+      "p_refuse": 0.967693,
+      "jsd": 0.273653,
+      "tau": 0.585881,
+      "n": 684,
+      "ci_lower": 0.749348,
+      "ci_upper": 0.769947,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.746357,
+        "General Attitudes": 0.771685,
+        "Health & Science": 0.772536,
+        "Identity & Demographics": 0.732215,
+        "International Relations & Security": 0.735298,
+        "Media & Information": 0.779789,
+        "Politics & Governance": 0.73616,
+        "Social Values & Religion": 0.776574,
+        "Technology & Digital Life": 0.826652,
+        "Trust & Wellbeing": 0.759988
+      }
+    },
+    {
+      "rank": 4,
+      "provider": "SynthPanel (Haiku 4.5)",
+      "model": "SynthPanel (Haiku 4.5)",
+      "dataset": "opinionsqa",
+      "framework": "product",
+      "sps": 0.828945,
+      "p_dist": 0.735935,
+      "p_rank": 0.795222,
+      "p_refuse": 0.955676,
+      "jsd": 0.264065,
+      "tau": 0.590444,
+      "n": 684,
+      "ci_lower": 0.754548,
+      "ci_upper": 0.776804,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 50,
+      "topic_scores": {
+        "Economy & Work": 0.75994,
+        "General Attitudes": 0.765708,
+        "Health & Science": 0.79119,
+        "Identity & Demographics": 0.781914,
+        "International Relations & Security": 0.734832,
+        "Media & Information": 0.785804,
+        "Politics & Governance": 0.79692,
+        "Social Values & Religion": 0.808175,
+        "Technology & Digital Life": 0.78831,
+        "Trust & Wellbeing": 0.701753
+      }
+    },
+    {
+      "rank": 5,
+      "provider": "SynthPanel (GPT-4o-mini)",
+      "model": "SynthPanel (GPT-4o-mini)",
+      "dataset": "opinionsqa",
+      "framework": "product",
+      "sps": 0.822536,
+      "p_dist": 0.707743,
+      "p_rank": 0.778018,
+      "p_refuse": 0.981846,
+      "jsd": 0.292257,
+      "tau": 0.556037,
+      "n": 684,
+      "ci_lower": 0.731961,
+      "ci_upper": 0.753452,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 50,
+      "topic_scores": {
+        "Economy & Work": 0.752134,
+        "General Attitudes": 0.74137,
+        "Health & Science": 0.786261,
+        "Identity & Demographics": 0.679281,
+        "International Relations & Security": 0.722882,
+        "Media & Information": 0.790538,
+        "Politics & Governance": 0.744189,
+        "Social Values & Religion": 0.774435,
+        "Technology & Digital Life": 0.683863,
+        "Trust & Wellbeing": 0.758541
+      }
+    },
+    {
+      "rank": 6,
+      "provider": "Llama 3.3 70B",
+      "model": "Llama 3.3 70B",
+      "dataset": "opinionsqa",
+      "framework": "raw",
+      "sps": 0.81898,
+      "p_dist": 0.69294,
+      "p_rank": 0.774474,
+      "p_refuse": 0.989527,
+      "jsd": 0.30706,
+      "tau": 0.548948,
+      "n": 684,
+      "ci_lower": 0.722952,
+      "ci_upper": 0.743424,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 50,
+      "topic_scores": {
+        "Economy & Work": 0.739673,
+        "General Attitudes": 0.726016,
+        "Health & Science": 0.793948,
+        "Identity & Demographics": 0.733951,
+        "International Relations & Security": 0.722053,
+        "Media & Information": 0.74217,
+        "Politics & Governance": 0.724096,
+        "Social Values & Religion": 0.731249,
+        "Technology & Digital Life": 0.712331,
+        "Trust & Wellbeing": 0.751661
+      }
+    },
+    {
+      "rank": 7,
+      "provider": "SynthPanel (Gemini Flash Lite)",
+      "model": "SynthPanel (Gemini Flash Lite)",
+      "dataset": "opinionsqa",
+      "framework": "product",
+      "sps": 0.816039,
+      "p_dist": 0.748961,
+      "p_rank": 0.765861,
+      "p_refuse": 0.933296,
+      "jsd": 0.251039,
+      "tau": 0.531723,
+      "n": 684,
+      "ci_lower": 0.745177,
+      "ci_upper": 0.767139,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 50,
+      "topic_scores": {
+        "Economy & Work": 0.75061,
+        "General Attitudes": 0.774235,
+        "Health & Science": 0.79697,
+        "Identity & Demographics": 0.684477,
+        "International Relations & Security": 0.760496,
+        "Media & Information": 0.7774,
+        "Politics & Governance": 0.680481,
+        "Social Values & Religion": 0.773925,
+        "Technology & Digital Life": 0.730442,
+        "Trust & Wellbeing": 0.745398
+      }
+    },
+    {
+      "rank": 8,
+      "provider": "Claude Haiku 4.5",
+      "model": "Claude Haiku 4.5",
+      "dataset": "opinionsqa",
+      "framework": "raw",
+      "sps": 0.815296,
+      "p_dist": 0.689574,
+      "p_rank": 0.766787,
+      "p_refuse": 0.989527,
+      "jsd": 0.310426,
+      "tau": 0.533574,
+      "n": 684,
+      "ci_lower": 0.716007,
+      "ci_upper": 0.739242,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 50,
+      "topic_scores": {
+        "Economy & Work": 0.734091,
+        "General Attitudes": 0.724052,
+        "Health & Science": 0.780889,
+        "Identity & Demographics": 0.68391,
+        "International Relations & Security": 0.725823,
+        "Media & Information": 0.765082,
+        "Politics & Governance": 0.668284,
+        "Social Values & Religion": 0.731056,
+        "Technology & Digital Life": 0.721434,
+        "Trust & Wellbeing": 0.733109
+      }
+    },
+    {
+      "rank": 9,
+      "provider": "GPT-4o",
+      "model": "GPT-4o",
+      "dataset": "opinionsqa",
+      "framework": "raw",
+      "sps": 0.813134,
+      "p_dist": 0.726307,
+      "p_rank": 0.720431,
+      "p_refuse": 0.992662,
+      "jsd": 0.273693,
+      "tau": 0.440862,
+      "n": 200,
+      "ci_lower": 0.698294,
+      "ci_upper": 0.745901,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 50,
+      "topic_scores": {
+        "Economy & Work": 0.73882,
+        "General Attitudes": 0.717188,
+        "Health & Science": 0.828446,
+        "Identity & Demographics": 0.672419,
+        "International Relations & Security": 0.684696,
+        "Media & Information": 0.700956,
+        "Politics & Governance": 0.824484,
+        "Social Values & Religion": 0.690722,
+        "Technology & Digital Life": 0.792024,
+        "Trust & Wellbeing": 0.66958
+      }
+    },
+    {
+      "rank": 10,
+      "provider": "GPT-4o-mini",
+      "model": "GPT-4o-mini",
+      "dataset": "opinionsqa",
+      "framework": "raw",
+      "sps": 0.812518,
+      "p_dist": 0.686116,
+      "p_rank": 0.76191,
+      "p_refuse": 0.989527,
+      "jsd": 0.313884,
+      "tau": 0.523819,
+      "n": 684,
+      "ci_lower": 0.711522,
+      "ci_upper": 0.73505,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 50,
+      "topic_scores": {
+        "Economy & Work": 0.737991,
+        "General Attitudes": 0.708131,
+        "Health & Science": 0.777204,
+        "Identity & Demographics": 0.711758,
+        "International Relations & Security": 0.703127,
+        "Media & Information": 0.759826,
+        "Politics & Governance": 0.751486,
+        "Social Values & Religion": 0.712703,
+        "Technology & Digital Life": 0.705445,
+        "Trust & Wellbeing": 0.752137
+      }
+    },
+    {
+      "rank": 11,
+      "provider": "Claude Sonnet 4",
+      "model": "Claude Sonnet 4",
+      "dataset": "opinionsqa",
+      "framework": "raw",
+      "sps": 0.782456,
+      "p_dist": 0.648247,
+      "p_rank": 0.709592,
+      "p_refuse": 0.989527,
+      "jsd": 0.351753,
+      "tau": 0.419185,
+      "n": 684,
+      "ci_lower": 0.662625,
+      "ci_upper": 0.694086,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 50,
+      "topic_scores": {
+        "Economy & Work": 0.616553,
+        "General Attitudes": 0.689824,
+        "Health & Science": 0.711565,
+        "Identity & Demographics": 0.641569,
+        "International Relations & Security": 0.688858,
+        "Media & Information": 0.777605,
+        "Politics & Governance": 0.626659,
+        "Social Values & Religion": 0.569164,
+        "Technology & Digital Life": 0.728625,
+        "Trust & Wellbeing": 0.649029
+      }
+    },
+    {
+      "rank": 12,
       "provider": "Random Baseline",
-      "model": "Random",
-      "dataset": "GlobalQA",
-      "sps": 0.487,
-      "jsd": 0.513,
-      "tau": -0.003,
-      "n": 100,
-      "ci_lower": 0.434,
-      "ci_upper": 0.54,
+      "model": "Random Baseline",
+      "dataset": "opinionsqa",
+      "framework": "baseline",
+      "sps": 0.762852,
+      "p_dist": 0.805999,
+      "p_rank": 0.49303,
+      "p_refuse": 0.989527,
+      "jsd": 0.194001,
+      "tau": -0.01394,
+      "n": 684,
+      "ci_lower": 0.637578,
+      "ci_upper": 0.661036,
       "is_baseline": true,
       "is_ensemble": false,
+      "samples_per_question": 30,
       "topic_scores": {
-        "Politics": 0.492,
-        "Economics": 0.483,
-        "Social": 0.49,
-        "Health": 0.486,
-        "Technology": 0.484
+        "Economy & Work": 0.645759,
+        "General Attitudes": 0.635076,
+        "Health & Science": 0.667831,
+        "Identity & Demographics": 0.625835,
+        "International Relations & Security": 0.659696,
+        "Media & Information": 0.671985,
+        "Politics & Governance": 0.658529,
+        "Social Values & Religion": 0.650374,
+        "Technology & Digital Life": 0.660403,
+        "Trust & Wellbeing": 0.627637
+      }
+    },
+    {
+      "rank": 13,
+      "provider": "Majority Baseline",
+      "model": "Majority Baseline",
+      "dataset": "opinionsqa",
+      "framework": "baseline",
+      "sps": 0.704504,
+      "p_dist": 0.508148,
+      "p_rank": 0.615837,
+      "p_refuse": 0.989527,
+      "jsd": 0.491852,
+      "tau": 0.231674,
+      "n": 684,
+      "ci_lower": 0.54635,
+      "ci_upper": 0.577354,
+      "is_baseline": true,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.541087,
+        "General Attitudes": 0.578304,
+        "Health & Science": 0.651608,
+        "Identity & Demographics": 0.582434,
+        "International Relations & Security": 0.521504,
+        "Media & Information": 0.628286,
+        "Politics & Governance": 0.538986,
+        "Social Values & Religion": 0.547032,
+        "Technology & Digital Life": 0.471897,
+        "Trust & Wellbeing": 0.521415
+      }
+    },
+    {
+      "rank": 14,
+      "provider": "Claude Haiku 4.5 (direct)",
+      "model": "Claude Haiku 4.5 (direct)",
+      "dataset": "opinionsqa",
+      "framework": "raw",
+      "sps": 0,
+      "p_dist": 0,
+      "p_rank": 0,
+      "p_refuse": 0,
+      "jsd": 0.308075,
+      "tau": 0.511418,
+      "n": 100,
+      "ci_lower": 0,
+      "ci_upper": 0,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.733297,
+        "General Attitudes": 0.713631,
+        "Health & Science": 0.80584,
+        "International Relations & Security": 0.731087,
+        "Media & Information": 0.85146,
+        "Politics & Governance": 0.334319,
+        "Social Values & Religion": 0.716309,
+        "Technology & Digital Life": 0.779849
+      }
+    },
+    {
+      "rank": 15,
+      "provider": "Gemini Flash Lite (direct)",
+      "model": "Gemini Flash Lite (direct)",
+      "dataset": "opinionsqa",
+      "framework": "raw",
+      "sps": 0,
+      "p_dist": 0,
+      "p_rank": 0,
+      "p_refuse": 0,
+      "jsd": 0.265271,
+      "tau": 0.481894,
+      "n": 100,
+      "ci_lower": 0,
+      "ci_upper": 0,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.765408,
+        "General Attitudes": 0.736044,
+        "Health & Science": 0.768253,
+        "International Relations & Security": 0.659767,
+        "Media & Information": 0.700836,
+        "Politics & Governance": 0.763278,
+        "Social Values & Religion": 0.798768,
+        "Technology & Digital Life": 0.763929
+      }
+    },
+    {
+      "rank": 1,
+      "provider": "SynthPanel Ensemble (3-model)",
+      "model": "SynthPanel Ensemble (3-model)",
+      "dataset": "subpop",
+      "framework": "product",
+      "sps": 0.833087,
+      "p_dist": 0.870876,
+      "p_rank": 0.795297,
+      "p_refuse": 0,
+      "jsd": 0.129124,
+      "tau": 0.590595,
+      "n": 0,
+      "ci_lower": 0,
+      "ci_upper": 0,
+      "is_baseline": false,
+      "is_ensemble": true,
+      "topic_scores": {
+        "Economy & Work": 0.830438,
+        "General Attitudes": 0.845328,
+        "Health & Science": 0.8312,
+        "Identity & Demographics": 0.911455,
+        "International Relations & Security": 0.857015,
+        "Politics & Governance": 0.807351,
+        "Social Values & Religion": 0.867658,
+        "Technology & Digital Life": 0.790035,
+        "Trust & Wellbeing": 0.872348
+      }
+    },
+    {
+      "rank": 2,
+      "provider": "SynthPanel (Gemini Flash Lite)",
+      "model": "SynthPanel (Gemini Flash Lite)",
+      "dataset": "subpop",
+      "framework": "product",
+      "sps": 0.820993,
+      "p_dist": 0.70706,
+      "p_rank": 0.780386,
+      "p_refuse": 0.975532,
+      "jsd": 0.29294,
+      "tau": 0.560772,
+      "n": 200,
+      "ci_lower": 0.724414,
+      "ci_upper": 0.763371,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.751091,
+        "General Attitudes": 0.7825,
+        "Health & Science": 0.828025,
+        "Identity & Demographics": 0.845662,
+        "International Relations & Security": 0.740791,
+        "Politics & Governance": 0.701071,
+        "Social Values & Religion": 0.749675,
+        "Technology & Digital Life": 0.709148,
+        "Trust & Wellbeing": 0.924913
+      }
+    },
+    {
+      "rank": 3,
+      "provider": "Llama 3.3 70B",
+      "model": "Llama 3.3 70B",
+      "dataset": "subpop",
+      "framework": "raw",
+      "sps": 0.795507,
+      "p_dist": 0.6551,
+      "p_rank": 0.755888,
+      "p_refuse": 0.975532,
+      "jsd": 0.3449,
+      "tau": 0.511777,
+      "n": 200,
+      "ci_lower": 0.683107,
+      "ci_upper": 0.725643,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.717211,
+        "General Attitudes": 0.70399,
+        "Health & Science": 0.806688,
+        "Identity & Demographics": 0.630652,
+        "International Relations & Security": 0.711454,
+        "Politics & Governance": 0.703718,
+        "Social Values & Religion": 0.715449,
+        "Technology & Digital Life": 0.675084,
+        "Trust & Wellbeing": 0.874807
+      }
+    },
+    {
+      "rank": 4,
+      "provider": "SynthPanel (GPT-4o-mini)",
+      "model": "SynthPanel (GPT-4o-mini)",
+      "dataset": "subpop",
+      "framework": "product",
+      "sps": 0.786779,
+      "p_dist": 0.65172,
+      "p_rank": 0.733086,
+      "p_refuse": 0.975532,
+      "jsd": 0.34828,
+      "tau": 0.466172,
+      "n": 200,
+      "ci_lower": 0.670917,
+      "ci_upper": 0.713113,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.653807,
+        "General Attitudes": 0.71223,
+        "Health & Science": 0.687577,
+        "Identity & Demographics": 0.505814,
+        "International Relations & Security": 0.732399,
+        "Politics & Governance": 0.717032,
+        "Social Values & Religion": 0.725218,
+        "Technology & Digital Life": 0.625384,
+        "Trust & Wellbeing": 0.812457
+      }
+    },
+    {
+      "rank": 5,
+      "provider": "Gemini 2.5 Flash",
+      "model": "Gemini 2.5 Flash",
+      "dataset": "subpop",
+      "framework": "raw",
+      "sps": 0.782569,
+      "p_dist": 0.669404,
+      "p_rank": 0.698371,
+      "p_refuse": 0.979931,
+      "jsd": 0.330596,
+      "tau": 0.396743,
+      "n": 100,
+      "ci_lower": 0.642997,
+      "ci_upper": 0.717897,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 15,
+      "topic_scores": {
+        "Economy & Work": 0.771141,
+        "General Attitudes": 0.744894,
+        "Health & Science": 0.79815,
+        "Identity & Demographics": 0.845662,
+        "International Relations & Security": 0.633682,
+        "Politics & Governance": 0.833952,
+        "Social Values & Religion": 0.573939,
+        "Technology & Digital Life": 0.698443
+      }
+    },
+    {
+      "rank": 6,
+      "provider": "SynthPanel (Haiku 4.5)",
+      "model": "SynthPanel (Haiku 4.5)",
+      "dataset": "subpop",
+      "framework": "product",
+      "sps": 0.773219,
+      "p_dist": 0.804177,
+      "p_rank": 0.551277,
+      "p_refuse": 0.964202,
+      "jsd": 0.195823,
+      "tau": 0.102554,
+      "n": 200,
+      "ci_lower": 0.6658,
+      "ci_upper": 0.689325,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.677063,
+        "General Attitudes": 0.66361,
+        "Health & Science": 0.658783,
+        "Identity & Demographics": 0.636525,
+        "International Relations & Security": 0.72114,
+        "Politics & Governance": 0.658781,
+        "Social Values & Religion": 0.672878,
+        "Technology & Digital Life": 0.674733,
+        "Trust & Wellbeing": 0.662224
       },
-      "replicates": [
-        { "rep": 1, "sps": 0.48, "jsd": 0.52, "tau": -0.008 },
-        { "rep": 2, "sps": 0.491, "jsd": 0.509, "tau": 0.001 },
-        { "rep": 3, "sps": 0.49, "jsd": 0.51, "tau": -0.002 }
+      "demographic_scores": [
+        {
+          "attribute": "POLPARTY",
+          "group": "Democrat",
+          "p_dist": 0.645286,
+          "p_cond": 0.033446,
+          "n_questions": 100
+        },
+        {
+          "attribute": "POLPARTY",
+          "group": "Republican",
+          "p_dist": 0.660841,
+          "p_cond": 0.071917,
+          "n_questions": 100
+        },
+        {
+          "attribute": "INCOME",
+          "group": "$100,000 or more",
+          "p_dist": 0.671439,
+          "p_cond": 0.034041,
+          "n_questions": 100
+        },
+        {
+          "attribute": "INCOME",
+          "group": "Less than $30,000",
+          "p_dist": 0.60553,
+          "p_cond": 0.023,
+          "n_questions": 100
+        }
       ]
+    },
+    {
+      "rank": 7,
+      "provider": "GPT-4o-mini",
+      "model": "GPT-4o-mini",
+      "dataset": "subpop",
+      "framework": "raw",
+      "sps": 0.770135,
+      "p_dist": 0.628358,
+      "p_rank": 0.702118,
+      "p_refuse": 0.979931,
+      "jsd": 0.371642,
+      "tau": 0.404236,
+      "n": 100,
+      "ci_lower": 0.627727,
+      "ci_upper": 0.696669,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 15,
+      "topic_scores": {
+        "Economy & Work": 0.637984,
+        "General Attitudes": 0.650164,
+        "Health & Science": 0.75095,
+        "Identity & Demographics": 0.505814,
+        "International Relations & Security": 0.739793,
+        "Politics & Governance": 0.751338,
+        "Social Values & Religion": 0.671286,
+        "Technology & Digital Life": 0.624765
+      }
+    },
+    {
+      "rank": 8,
+      "provider": "SynthPanel (Sonnet 4)",
+      "model": "SynthPanel (Sonnet 4)",
+      "dataset": "subpop",
+      "framework": "product",
+      "sps": 0.770027,
+      "p_dist": 0.834549,
+      "p_rank": 0.5,
+      "p_refuse": 0.975532,
+      "jsd": 0.165451,
+      "tau": 0.0,
+      "n": 200,
+      "ci_lower": 0.663229,
+      "ci_upper": 0.67112,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.677063,
+        "General Attitudes": 0.658204,
+        "Health & Science": 0.658783,
+        "Identity & Demographics": 0.636525,
+        "International Relations & Security": 0.661694,
+        "Politics & Governance": 0.681687,
+        "Social Values & Religion": 0.676699,
+        "Technology & Digital Life": 0.662423,
+        "Trust & Wellbeing": 0.66638
+      }
+    },
+    {
+      "rank": 9,
+      "provider": "Claude Haiku 4.5",
+      "model": "Claude Haiku 4.5",
+      "dataset": "subpop",
+      "framework": "raw",
+      "sps": 0.76832,
+      "p_dist": 0.616186,
+      "p_rank": 0.713243,
+      "p_refuse": 0.975532,
+      "jsd": 0.383814,
+      "tau": 0.426486,
+      "n": 200,
+      "ci_lower": 0.638043,
+      "ci_upper": 0.690418,
+      "is_baseline": false,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.654794,
+        "General Attitudes": 0.662439,
+        "Health & Science": 0.816694,
+        "Identity & Demographics": 0.830544,
+        "International Relations & Security": 0.652097,
+        "Politics & Governance": 0.661457,
+        "Social Values & Religion": 0.632518,
+        "Technology & Digital Life": 0.685549,
+        "Trust & Wellbeing": 0.662224
+      }
+    },
+    {
+      "rank": 10,
+      "provider": "Random Baseline",
+      "model": "Random Baseline",
+      "dataset": "subpop",
+      "framework": "baseline",
+      "sps": 0.75747,
+      "p_dist": 0.816139,
+      "p_rank": 0.480737,
+      "p_refuse": 0.975532,
+      "jsd": 0.183861,
+      "tau": -0.038525,
+      "n": 200,
+      "ci_lower": 0.627406,
+      "ci_upper": 0.669385,
+      "is_baseline": true,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.68879,
+        "General Attitudes": 0.644367,
+        "Health & Science": 0.671718,
+        "Identity & Demographics": 0.825967,
+        "International Relations & Security": 0.639301,
+        "Politics & Governance": 0.623277,
+        "Social Values & Religion": 0.639859,
+        "Technology & Digital Life": 0.653654,
+        "Trust & Wellbeing": 0.693195
+      }
+    },
+    {
+      "rank": 11,
+      "provider": "Majority Baseline",
+      "model": "Majority Baseline",
+      "dataset": "subpop",
+      "framework": "baseline",
+      "sps": 0.672732,
+      "p_dist": 0.466513,
+      "p_rank": 0.576152,
+      "p_refuse": 0.975532,
+      "jsd": 0.533487,
+      "tau": 0.152304,
+      "n": 200,
+      "ci_lower": 0.494483,
+      "ci_upper": 0.547108,
+      "is_baseline": true,
+      "is_ensemble": false,
+      "samples_per_question": 30,
+      "topic_scores": {
+        "Economy & Work": 0.519985,
+        "General Attitudes": 0.553876,
+        "Health & Science": 0.670485,
+        "Identity & Demographics": 0.294864,
+        "International Relations & Security": 0.546957,
+        "Politics & Governance": 0.530626,
+        "Social Values & Religion": 0.5007,
+        "Technology & Digital Life": 0.470256,
+        "Trust & Wellbeing": 0.717747
+      }
     }
   ],
   "convergence": [
-    { "model": "Ensemble (3-model)", "dataset": "SubPOP", "rep_count": 1, "sps": 0.752 },
-    { "model": "Ensemble (3-model)", "dataset": "SubPOP", "rep_count": 3, "sps": 0.785 },
-    { "model": "Ensemble (3-model)", "dataset": "SubPOP", "rep_count": 5, "sps": 0.801 },
-    { "model": "Ensemble (3-model)", "dataset": "SubPOP", "rep_count": 10, "sps": 0.81 },
-    { "model": "Ensemble (3-model)", "dataset": "SubPOP", "rep_count": 20, "sps": 0.812 },
-    { "model": "Haiku 4.5", "dataset": "SubPOP", "rep_count": 1, "sps": 0.71 },
-    { "model": "Haiku 4.5", "dataset": "SubPOP", "rep_count": 3, "sps": 0.738 },
-    { "model": "Haiku 4.5", "dataset": "SubPOP", "rep_count": 5, "sps": 0.752 },
-    { "model": "Haiku 4.5", "dataset": "SubPOP", "rep_count": 10, "sps": 0.76 },
-    { "model": "Haiku 4.5", "dataset": "SubPOP", "rep_count": 20, "sps": 0.763 },
-    { "model": "Random", "dataset": "SubPOP", "rep_count": 1, "sps": 0.488 },
-    { "model": "Random", "dataset": "SubPOP", "rep_count": 3, "sps": 0.494 },
-    { "model": "Random", "dataset": "SubPOP", "rep_count": 5, "sps": 0.495 },
-    { "model": "Random", "dataset": "SubPOP", "rep_count": 10, "sps": 0.496 },
-    { "model": "Random", "dataset": "SubPOP", "rep_count": 20, "sps": 0.496 }
-  ]
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 5,
+      "sps": 0.7467
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 5,
+      "sps": 0.7389
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 5,
+      "sps": 0.7421
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 5,
+      "sps": 0.7495
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7657
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7436
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7414
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7335
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7417
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.733
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7358
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 15,
+      "sps": 0.5991
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7432
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7452
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7496
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7472
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6647
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.748
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7368
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7112
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7329
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7279
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7282
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7272
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7242
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7268
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 100,
+      "sps": 0.7539
+    },
+    {
+      "model": "openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 100,
+      "sps": 0.7533
+    },
+    {
+      "model": "openrouter/google/gemini-2.5-flash",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7511
+    },
+    {
+      "model": "openrouter/google/gemini-2.5-flash",
+      "dataset": "opinionsqa",
+      "rep_count": 15,
+      "sps": 0.6658
+    },
+    {
+      "model": "openrouter/google/gemini-2.5-flash",
+      "dataset": "opinionsqa",
+      "rep_count": 15,
+      "sps": 0.6839
+    },
+    {
+      "model": "openrouter/google/gemini-2.5-flash",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7306
+    },
+    {
+      "model": "openrouter/google/gemini-2.5-flash",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7491
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.756
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.742
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 15,
+      "sps": 0.6536
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7055
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7512
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7502
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7278
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7337
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7263
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7279
+    },
+    {
+      "model": "openrouter/meta-llama/llama-3.3-70b-instruct",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7275
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 5,
+      "sps": 0.7424
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 5,
+      "sps": 0.7169
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.729
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7663
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.744
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7365
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 15,
+      "sps": 0.6407
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 15,
+      "sps": 0.6652
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7394
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7483
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.75
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7451
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7507
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7219
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7197
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.724
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7161
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7161
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 100,
+      "sps": 0.7573
+    },
+    {
+      "model": "openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 100,
+      "sps": 0.756
+    },
+    {
+      "model": "synthpanel/gemini-2.5-flash-lite",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7358
+    },
+    {
+      "model": "synthpanel/gemini-2.5-flash-lite",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6555
+    },
+    {
+      "model": "synthpanel/gemini-2.5-flash-lite",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7437
+    },
+    {
+      "model": "synthpanel/gemini-2.5-flash-lite",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7574
+    },
+    {
+      "model": "synthpanel/gemini-2.5-flash-lite",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7771
+    },
+    {
+      "model": "synthpanel/gemini-2.5-flash-lite",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.764
+    },
+    {
+      "model": "synthpanel/gemini-2.5-flash-lite",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7572
+    },
+    {
+      "model": "synthpanel/gemini-2.5-flash-lite",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.764
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6469
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6434
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6446
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7654
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7614
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7612
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7346
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7348
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7288
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7656
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7643
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.762
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7842
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7817
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7838
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7841
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7813
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7889
+    },
+    {
+      "model": "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.6849
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6915
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6931
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6924
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6924
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6967
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6988
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7429
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7437
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7419
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7368
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7306
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7362
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7679
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7645
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.763
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7399
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7405
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7407
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7219
+    },
+    {
+      "model": "synthpanel/openrouter/openai/gpt-4o-mini",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7085
+    },
+    {
+      "model": "openrouter/anthropic/claude-sonnet-4",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.6384
+    },
+    {
+      "model": "openrouter/anthropic/claude-sonnet-4",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.6553
+    },
+    {
+      "model": "openrouter/anthropic/claude-sonnet-4",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.6789
+    },
+    {
+      "model": "openrouter/openai/gpt-4o",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7037
+    },
+    {
+      "model": "openrouter/openai/gpt-4o",
+      "dataset": "opinionsqa",
+      "rep_count": 50,
+      "sps": 0.7234
+    },
+    {
+      "model": "raw-anthropic/claude-haiku-4-5-20251001",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7147
+    },
+    {
+      "model": "raw-anthropic/claude-haiku-4-5-20251001",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7238
+    },
+    {
+      "model": "raw-gemini/gemini-2.5-flash-lite",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7619
+    },
+    {
+      "model": "raw-gemini/gemini-2.5-flash-lite",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.7378
+    },
+    {
+      "model": "synthpanel/claude-haiku-4-5-20251001",
+      "dataset": "opinionsqa",
+      "rep_count": 3,
+      "sps": 0.5497
+    },
+    {
+      "model": "synthpanel/claude-haiku-4-5-20251001",
+      "dataset": "opinionsqa",
+      "rep_count": 10,
+      "sps": 0.7781
+    },
+    {
+      "model": "synthpanel/claude-haiku-4-5-20251001",
+      "dataset": "opinionsqa",
+      "rep_count": 30,
+      "sps": 0.6777
+    }
+  ],
+  "findings": {
+    "temperature_sweep": [
+      {
+        "model": "Claude Haiku 4.5",
+        "temperature": 0.3,
+        "sps": 0.843,
+        "std": 0.003
+      },
+      {
+        "model": "Claude Haiku 4.5",
+        "temperature": 0.5,
+        "sps": 0.845,
+        "std": 0.002
+      },
+      {
+        "model": "Claude Haiku 4.5",
+        "temperature": 0.7,
+        "sps": 0.847,
+        "std": 0.003
+      },
+      {
+        "model": "Claude Haiku 4.5",
+        "temperature": 0.85,
+        "sps": 0.849,
+        "std": 0.002
+      },
+      {
+        "model": "Claude Haiku 4.5",
+        "temperature": 1.0,
+        "sps": 0.85,
+        "std": 0.001
+      },
+      {
+        "model": "Gemini Flash Lite",
+        "temperature": 0.3,
+        "sps": 0.819,
+        "std": 0.004
+      },
+      {
+        "model": "Gemini Flash Lite",
+        "temperature": 0.5,
+        "sps": 0.831,
+        "std": 0.003
+      },
+      {
+        "model": "Gemini Flash Lite",
+        "temperature": 0.7,
+        "sps": 0.842,
+        "std": 0.003
+      },
+      {
+        "model": "Gemini Flash Lite",
+        "temperature": 0.85,
+        "sps": 0.85,
+        "std": 0.002
+      },
+      {
+        "model": "Gemini Flash Lite",
+        "temperature": 1.0,
+        "sps": 0.856,
+        "std": 0.003
+      },
+      {
+        "model": "Gemini Flash Lite",
+        "temperature": 1.2,
+        "sps": 0.856,
+        "std": 0.002
+      },
+      {
+        "model": "Gemini Flash Lite",
+        "temperature": 1.5,
+        "sps": 0.858,
+        "std": 0.003
+      },
+      {
+        "model": "Gemini Flash Lite",
+        "temperature": 1.8,
+        "sps": 0.857,
+        "std": 0.002
+      },
+      {
+        "model": "Gemini Flash Lite",
+        "temperature": 2.0,
+        "sps": 0.864,
+        "std": 0.002
+      },
+      {
+        "model": "GPT-4o-mini",
+        "temperature": 0.3,
+        "sps": 0.817,
+        "std": 0.004
+      },
+      {
+        "model": "GPT-4o-mini",
+        "temperature": 0.5,
+        "sps": 0.82,
+        "std": 0.003
+      },
+      {
+        "model": "GPT-4o-mini",
+        "temperature": 0.7,
+        "sps": 0.823,
+        "std": 0.003
+      },
+      {
+        "model": "GPT-4o-mini",
+        "temperature": 0.85,
+        "sps": 0.826,
+        "std": 0.002
+      },
+      {
+        "model": "GPT-4o-mini",
+        "temperature": 1.0,
+        "sps": 0.829,
+        "std": 0.002
+      }
+    ],
+    "ensemble_comparison": [
+      {
+        "dataset": "opinionsqa",
+        "best_single_model": "Claude Haiku 4.5",
+        "best_single_sps": 0.766,
+        "ensemble_sps": 0.836,
+        "improvement": 0.07
+      },
+      {
+        "dataset": "subpop",
+        "best_single_model": "Gemini Flash Lite",
+        "best_single_sps": 0.744,
+        "ensemble_sps": 0.796,
+        "improvement": 0.052
+      },
+      {
+        "dataset": "globalopinionqa",
+        "best_single_model": "GPT-4o-mini",
+        "best_single_sps": 0.692,
+        "ensemble_sps": 0.747,
+        "improvement": 0.056
+      }
+    ],
+    "conditioning_results": [
+      {
+        "attribute": "POLPARTY",
+        "group": "Republican",
+        "p_dist": 0.666,
+        "p_cond": 0.073,
+        "p_cond_std": 0.004,
+        "n_replications": 4
+      },
+      {
+        "attribute": "POLPARTY",
+        "group": "Democrat",
+        "p_dist": 0.644,
+        "p_cond": 0.033,
+        "p_cond_std": 0.005,
+        "n_replications": 4
+      },
+      {
+        "attribute": "INCOME",
+        "group": "$100K+",
+        "p_dist": 0.673,
+        "p_cond": 0.031,
+        "n_replications": 2
+      },
+      {
+        "attribute": "INCOME",
+        "group": "<$30K",
+        "p_dist": 0.603,
+        "p_cond": 0.02,
+        "n_replications": 2
+      },
+      {
+        "attribute": "EDUCATION",
+        "group": "College graduate",
+        "p_dist": 0.641,
+        "p_cond": 0.036,
+        "n_replications": 1
+      },
+      {
+        "attribute": "EDUCATION",
+        "group": "Less than HS",
+        "p_dist": 0.597,
+        "p_cond": 0.038,
+        "n_replications": 1
+      }
+    ],
+    "lever_hierarchy": [
+      {
+        "name": "Ensemble blending",
+        "effect_min": 5.0,
+        "effect_max": 7.0,
+        "cost": "zero",
+        "status": "done"
+      },
+      {
+        "name": "Per-model optimal temperature",
+        "effect_min": 0.0,
+        "effect_max": 4.5,
+        "cost": "low",
+        "status": "actionable"
+      },
+      {
+        "name": "Demographic conditioning",
+        "effect_min": 2.0,
+        "effect_max": 7.0,
+        "cost": "moderate",
+        "status": "scientific"
+      },
+      {
+        "name": "Persona template",
+        "effect_min": 0.0,
+        "effect_max": 0.0,
+        "cost": "zero",
+        "status": "done"
+      }
+    ]
+  }
 }

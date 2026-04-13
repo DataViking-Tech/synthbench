@@ -8,8 +8,9 @@ import pytest
 
 from synthbench.topics import (
     categorize_question,
-    POLITICAL_KEYS,
-    CONSUMER_KEYS,
+    TAXONOMY,
+    CATEGORIES,
+    FALLBACK_CATEGORY,
 )
 from synthbench.suites import (
     load_topic_suite,
@@ -21,60 +22,107 @@ from synthbench.suites import (
 class TestCategorizeQuestion:
     def test_political_question(self):
         assert (
-            categorize_question("Do you support the Republican party?") == "political"
+            categorize_question("Do you support the Republican party?")
+            == "Politics & Governance"
         )
 
-    def test_consumer_question(self):
-        assert categorize_question("How often do you use the internet?") == "consumer"
-
-    def test_neutral_question(self):
+    def test_technology_question(self):
         assert (
-            categorize_question("How important is religion in your life?") == "neutral"
+            categorize_question("How often do you use the internet?")
+            == "Technology & Digital Life"
+        )
+
+    def test_religion_question(self):
+        assert (
+            categorize_question("How important is religion in your life?")
+            == "Social Values & Religion"
         )
 
     def test_case_insensitive(self):
-        assert categorize_question("WHAT IS YOUR VIEW ON ABORTION?") == "political"
-        assert categorize_question("DO YOU USE TECHNOLOGY DAILY?") == "consumer"
-
-    def test_both_matches_returns_neutral(self):
-        # A question matching both political and consumer keywords -> neutral
         assert (
-            categorize_question(
-                "How does government technology policy affect the economy?"
-            )
-            == "neutral"
+            categorize_question("WHAT IS YOUR VIEW ON ABORTION?")
+            == "Social Values & Religion"
+        )
+        assert (
+            categorize_question("DO YOU USE TECHNOLOGY DAILY?")
+            == "Technology & Digital Life"
         )
 
-    def test_gun_is_political(self):
-        assert categorize_question("Do you own a gun?") == "political"
-
-    def test_health_is_consumer(self):
-        assert categorize_question("How would you rate your health?") == "consumer"
-
-    def test_election_is_political(self):
-        assert categorize_question("Did you vote in the last election?") == "political"
-
-    def test_no_keywords_is_neutral(self):
+    def test_first_match_wins(self):
+        # "vote" matches Politics & Governance first
         assert (
-            categorize_question("What do you think about life in general?") == "neutral"
+            categorize_question("Did you vote in the last election?")
+            == "Politics & Governance"
         )
 
-    def test_empty_string_is_neutral(self):
-        assert categorize_question("") == "neutral"
+    def test_gun_is_social_values(self):
+        assert categorize_question("Do you own a gun?") == "Social Values & Religion"
+
+    def test_health_question(self):
+        assert (
+            categorize_question("How would you rate your health?") == "Health & Science"
+        )
+
+    def test_election_is_politics(self):
+        assert (
+            categorize_question("Did you vote in the last election?")
+            == "Politics & Governance"
+        )
+
+    def test_no_keywords_is_general(self):
+        assert (
+            categorize_question("What do you think about the situation?")
+            == "General Attitudes"
+        )
+
+    def test_empty_string_is_general(self):
+        assert categorize_question("") == "General Attitudes"
+
+    def test_international_relations(self):
+        assert (
+            categorize_question("What is your view on relations with China?")
+            == "International Relations & Security"
+        )
+
+    def test_economy(self):
+        assert (
+            categorize_question("How do you feel about the economy?")
+            == "Economy & Work"
+        )
+
+    def test_trust(self):
+        assert (
+            categorize_question("Do you approve of the way things are going?")
+            == "Trust & Wellbeing"
+        )
+
+    def test_identity(self):
+        assert (
+            categorize_question("Is there racial bias in hiring?")
+            == "Identity & Demographics"
+        )
 
 
-class TestKeywordSets:
-    def test_political_keys_are_frozen(self):
-        assert isinstance(POLITICAL_KEYS, frozenset)
+class TestTaxonomyStructure:
+    def test_taxonomy_has_nine_categories(self):
+        assert len(TAXONOMY) == 9
 
-    def test_consumer_keys_are_frozen(self):
-        assert isinstance(CONSUMER_KEYS, frozenset)
+    def test_categories_has_ten_entries(self):
+        assert len(CATEGORIES) == 10
+        assert "General Attitudes" in CATEGORIES
 
-    def test_no_overlap_between_single_word_keys(self):
-        # Single-word keys shouldn't overlap
-        single_political = {k for k in POLITICAL_KEYS if " " not in k}
-        single_consumer = {k for k in CONSUMER_KEYS if " " not in k}
-        assert not single_political & single_consumer
+    def test_fallback_is_general_attitudes(self):
+        assert FALLBACK_CATEGORY == "General Attitudes"
+
+    def test_all_keywords_are_strings(self):
+        for category, keywords in TAXONOMY.items():
+            for kw in keywords:
+                assert isinstance(kw, str), f"Non-string keyword in {category}: {kw}"
+
+    def test_all_keywords_are_lowercase(self):
+        for category, keywords in TAXONOMY.items():
+            for kw in keywords:
+                assert kw == kw.lower(), f"Non-lowercase keyword in {category}: {kw}"
 
 
 class TestTopicSuites:
