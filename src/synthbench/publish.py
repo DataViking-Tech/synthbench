@@ -2539,4 +2539,5 @@ def publish_leaderboard_data(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(leaderboard_data, f, indent=2)
+        f.write("\n")
     return output_path
