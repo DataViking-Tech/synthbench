@@ -29,6 +29,27 @@ const chartId = `chart-${Math.random().toString(36).slice(2, 9)}`;
     return "";
   }
 
+  function resolveCssVars(obj: unknown, styles: CSSStyleDeclaration): unknown {
+    if (typeof obj === "string") {
+      const m = obj.match(/^var\((--[^)]+)\)$/);
+      if (m) {
+        return styles.getPropertyValue(m[1]).trim() || obj;
+      }
+      return obj;
+    }
+    if (Array.isArray(obj)) {
+      return obj.map((item) => resolveCssVars(item, styles));
+    }
+    if (obj !== null && typeof obj === "object") {
+      const result: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(obj)) {
+        result[key] = resolveCssVars(value, styles);
+      }
+      return result;
+    }
+    return obj;
+  }
+
   function initChart(container: HTMLElement) {
     const optionStr = container.dataset.option;
     const themeMode = container.dataset.theme ?? "auto";
@@ -39,7 +60,8 @@ const chartId = `chart-${Math.random().toString(36).slice(2, 9)}`;
     const resolvedTheme = themeMode === "auto" ? getPreferredTheme() : themeMode === "dark" ? "dark" : "";
 
     const chart = echarts.init(container, resolvedTheme, { renderer });
-    const option = JSON.parse(optionStr);
+    const styles = getComputedStyle(document.documentElement);
+    const option = resolveCssVars(JSON.parse(optionStr), styles) as Record<string, unknown>;
     chart.setOption(option);
 
     const ro = new ResizeObserver(() => {

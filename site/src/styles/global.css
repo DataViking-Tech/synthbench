@@ -12,6 +12,9 @@
   --color-muted: oklch(0.55 0.01 264);
   --color-baseline: oklch(0.65 0.05 30);
   --color-best: oklch(0.55 0.18 264);
+  --color-provider-synthpanel: #4f46e5;
+  --color-provider-raw-llm: #0891b2;
+  --color-provider-baseline: #a3a3a3;
 }
 
 html {

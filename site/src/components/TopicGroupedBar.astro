@@ -26,9 +26,9 @@ const topics = [...topicSet].sort();
 const models = [...modelMap.values()].sort((a, b) => b.sps - a.sps);
 
 const modelColors: Record<string, string> = {
-  "Ensemble (3-model)": "#4f46e5",
-  "Haiku 4.5": "#0891b2",
-  Random: "#a3a3a3",
+  "Ensemble (3-model)": "var(--color-provider-synthpanel)",
+  "Haiku 4.5": "var(--color-provider-raw-llm)",
+  Random: "var(--color-provider-baseline)",
 };
 
 const chartOption = {
