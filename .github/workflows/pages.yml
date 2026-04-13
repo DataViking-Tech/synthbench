@@ -19,11 +19,11 @@ jobs:
           python-version: '3.12'
       - run: pip install -e .
       - run: synthbench publish --results-dir leaderboard-results --output docs/
-      - name: Commit if changed
-        run: |
-          git diff --quiet docs/ && exit 0
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/
-          git commit -m "chore: auto-regenerate GitHub Pages leaderboard"
-          git push
+
+      - name: Deploy production site to gh-pages root
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
+          keep_files: true
