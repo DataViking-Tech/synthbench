@@ -1,15 +1,7 @@
 ---
-import AboutSection from "@/components/AboutSection.astro";
-import ConvergenceLine from "@/components/ConvergenceLine.astro";
-import DotPlot from "@/components/DotPlot.astro";
-import Footer from "@/components/Footer.astro";
-import Header from "@/components/Header.astro";
-import HeroChart from "@/components/HeroChart.astro";
-import LeaderboardTable from "@/components/LeaderboardTable.astro";
-import PerMetricDot from "@/components/PerMetricDot.astro";
-import TopicGroupedBar from "@/components/TopicGroupedBar.astro";
-import WhiskerPlot from "@/components/WhiskerPlot.astro";
-import "@/styles/global.css";
+import HeroChart from "@/components/home/HeroChart.astro";
+import LeaderboardTable from "@/components/leaderboard/LeaderboardTable.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
 import leaderboardRaw from "@/data/leaderboard.json";
 import type { LeaderboardData } from "@/types/leaderboard";
@@ -17,51 +9,21 @@ import type { LeaderboardData } from "@/types/leaderboard";
 const leaderboard = leaderboardRaw as LeaderboardData;
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SynthBench Leaderboard</title>
-    <link rel="icon" type="image/svg+xml" href="/synthbench/favicon.svg" />
-    <meta
-      name="description"
-      content="SynthBench: Open benchmark for synthetic survey respondent quality"
-    />
-  </head>
-  <body
-    class="min-h-screen bg-surface text-text dark:bg-surface-dark dark:text-text-dark"
-  >
-    <Header />
+<BaseLayout title="SynthBench Leaderboard">
+  <div class="py-12 px-4 text-center">
+    <h1 class="text-4xl sm:text-5xl font-bold tracking-tight">SynthBench</h1>
+    <p class="mt-3 text-lg text-muted max-w-2xl mx-auto">
+      Open benchmark for synthetic survey respondent quality. Measuring how
+      well LLMs replicate human survey response distributions.
+    </p>
+    <p class="mt-2 text-xs text-muted">
+      v{leaderboard.synthbench_version} &middot; Generated {
+        new Date(leaderboard.generated_at).toLocaleDateString()
+      }
+    </p>
+  </div>
 
-    <div class="py-12 px-4 text-center">
-      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight">SynthBench</h1>
-      <p class="mt-3 text-lg text-muted max-w-2xl mx-auto">
-        Open benchmark for synthetic survey respondent quality. Measuring how
-        well LLMs replicate human survey response distributions.
-      </p>
-      <p class="mt-2 text-xs text-muted">
-        v{leaderboard.synthbench_version} &middot; Generated {
-          new Date(leaderboard.generated_at).toLocaleDateString()
-        }
-      </p>
-    </div>
+  <HeroChart />
 
-    <main class="px-4 pb-16">
-      <HeroChart />
-
-      <LeaderboardTable />
-
-      <div id="charts">
-        <DotPlot />
-        <PerMetricDot />
-        <ConvergenceLine />
-        <TopicGroupedBar />
-        <WhiskerPlot />
-      </div>
-
-      <AboutSection />
-    </main>
-
-    <Footer />
-  </body>
-</html>
+  <LeaderboardTable />
+</BaseLayout>

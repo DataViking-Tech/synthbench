@@ -1,9 +1,25 @@
 ---
+import leaderboardRaw from "@/data/leaderboard.json";
 import type { LeaderboardData } from "@/types/leaderboard";
 
-import leaderboardRaw from "@/data/leaderboard.json";
-
 const leaderboard = leaderboardRaw as LeaderboardData;
+
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { href: "/synthbench/", label: "Home" },
+  { href: "/synthbench/leaderboard/", label: "Leaderboard" },
+  { href: "/synthbench/findings/", label: "Findings" },
+  { href: "/synthbench/methodology/", label: "Methodology" },
+  { href: "/synthbench/submit/", label: "Submit" },
+];
+
+function isActive(href: string): boolean {
+  if (href === "/synthbench/") {
+    return currentPath === "/synthbench/" || currentPath === "/synthbench";
+  }
+  return currentPath.startsWith(href);
+}
 ---
 
 <header class="bg-surface dark:bg-surface-dark">
@@ -26,9 +42,20 @@ const leaderboard = leaderboardRaw as LeaderboardData;
       </button>
     </div>
     <div class="hidden lg:flex lg:gap-x-12">
-      <a href="#leaderboard" class="text-sm/6 font-semibold text-text dark:text-text-dark">Leaderboard</a>
-      <a href="#charts" class="text-sm/6 font-semibold text-text dark:text-text-dark">Charts</a>
-      <a href="#about" class="text-sm/6 font-semibold text-text dark:text-text-dark">About</a>
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class:list={[
+            "text-sm/6 font-semibold",
+            isActive(link.href)
+              ? "text-primary dark:text-primary-light"
+              : "text-text dark:text-text-dark hover:text-primary dark:hover:text-primary-light",
+          ]}
+          aria-current={isActive(link.href) ? "page" : undefined}
+        >
+          {link.label}
+        </a>
+      ))}
     </div>
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <a
@@ -66,9 +93,20 @@ const leaderboard = leaderboardRaw as LeaderboardData;
       <div class="mt-6 flow-root">
         <div class="-my-6 divide-y divide-muted/10">
           <div class="space-y-2 py-6">
-            <a href="#leaderboard" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-text hover:bg-muted/10 dark:text-text-dark dark:hover:bg-muted/10">Leaderboard</a>
-            <a href="#charts" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-text hover:bg-muted/10 dark:text-text-dark dark:hover:bg-muted/10">Charts</a>
-            <a href="#about" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-text hover:bg-muted/10 dark:text-text-dark dark:hover:bg-muted/10">About</a>
+            {navLinks.map((link) => (
+              <a
+                href={link.href}
+                class:list={[
+                  "-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold",
+                  isActive(link.href)
+                    ? "text-primary bg-primary/5 dark:text-primary-light"
+                    : "text-text hover:bg-muted/10 dark:text-text-dark dark:hover:bg-muted/10",
+                ]}
+                aria-current={isActive(link.href) ? "page" : undefined}
+              >
+                {link.label}
+              </a>
+            ))}
           </div>
           <div class="py-6">
             <a
