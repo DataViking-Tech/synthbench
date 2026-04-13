@@ -29,9 +29,9 @@ See [`notebooks/getting_started.ipynb`](notebooks/getting_started.ipynb) for a g
 
 **[View the live leaderboard](https://dataviking-tech.github.io/synthbench/)**
 
-Regenerate from results:
+Regenerate leaderboard data for the Astro site:
 ```bash
-synthbench publish --results-dir ./leaderboard-results --output docs/
+synthbench publish-data --results-dir ./leaderboard-results --output site/src/data/leaderboard.json
 ```
 
 ## Submit Results

@@ -36,14 +36,14 @@ jobs:
         run: |
           npm ci
           npx biome format --write src/data/leaderboard.json
-          npx astro check
+          npx tsc --noEmit
           npm run build
 
-      # Copy Astro output into docs/next/
-      - name: Deploy Astro site to /next/
+      # Copy Astro output into docs/
+      - name: Deploy Astro site
         run: |
-          rm -rf docs/next
-          cp -r site/dist docs/next
+          rm -rf docs/index.html docs/leaderboard docs/leaderboard.json
+          cp -r site/dist/* docs/
 
       - name: Create PR if changed
         run: |

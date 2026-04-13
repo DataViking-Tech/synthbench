@@ -3,7 +3,7 @@ import { defineConfig } from "astro/config";
 
 export default defineConfig({
   site: "https://dataviking-tech.github.io",
-  base: "/synthbench/next",
+  base: "/synthbench",
   vite: {
     plugins: [tailwindcss()],
   },

@@ -2,7 +2,7 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
-      "url": ["/synthbench/next/"]
+      "url": ["/synthbench/"]
     },
     "assert": {
       "assertions": {

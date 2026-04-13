@@ -10,7 +10,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:4321/synthbench/next/",
+    baseURL: "http://localhost:4321/synthbench/",
     screenshot: "only-on-failure",
   },
   expect: {
