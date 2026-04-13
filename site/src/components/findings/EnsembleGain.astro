@@ -1,0 +1,103 @@
+---
+import Chart from "@/components/shared/Chart.astro";
+import type { LeaderboardData } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+const ensembleData = leaderboard.findings.ensemble_comparison ?? [];
+
+const datasets = ensembleData.map((d) => d.dataset);
+const bestSingleData = ensembleData.map((d) => d.best_single_sps);
+const ensembleSpsData = ensembleData.map((d) => d.ensemble_sps);
+
+// Pre-compute improvement labels for markPoint annotations
+const improvementAnnotations = ensembleData.map((d) => ({
+  name: `+${(d.improvement * 100).toFixed(1)} pts`,
+  coord: [d.dataset, d.ensemble_sps],
+  symbolSize: 0,
+  label: {
+    show: true,
+    formatter: "{b}",
+    position: "top" as const,
+    fontSize: 12,
+    fontWeight: "bold" as const,
+    color: "#059669",
+    padding: [2, 6] as [number, number],
+    backgroundColor: "rgba(255,255,255,0.85)",
+    borderRadius: 3,
+  },
+}));
+
+const chartOption = {
+  tooltip: {
+    trigger: "axis" as const,
+    axisPointer: { type: "shadow" as const },
+  },
+  legend: {
+    data: ["Best Single Model", "Ensemble"],
+    top: 10,
+  },
+  grid: { left: 60, right: 30, top: 60, bottom: 40, containLabel: true },
+  xAxis: {
+    type: "category" as const,
+    data: datasets,
+  },
+  yAxis: {
+    type: "value" as const,
+    name: "SPS",
+    nameLocation: "middle" as const,
+    nameGap: 45,
+    min: 0.6,
+    max: 0.9,
+    axisLabel: { formatter: "{value}" },
+  },
+  series: [
+    {
+      name: "Best Single Model",
+      type: "bar" as const,
+      data: bestSingleData,
+      itemStyle: { color: "#94a3b8" },
+      barMaxWidth: 50,
+      emphasis: {
+        itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.3)" },
+      },
+    },
+    {
+      name: "Ensemble",
+      type: "bar" as const,
+      data: ensembleSpsData,
+      itemStyle: { color: "var(--color-provider-synthpanel)" },
+      barMaxWidth: 50,
+      emphasis: {
+        itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.3)" },
+      },
+      markPoint: {
+        data: improvementAnnotations,
+      },
+    },
+  ],
+  toolbox: {
+    feature: { saveAsImage: { title: "Save as PNG" } },
+    right: 10,
+    top: 10,
+  },
+};
+
+const hasData = ensembleData.length > 0;
+---
+
+<section class="w-full max-w-4xl mx-auto py-8">
+  <h2 class="text-2xl font-bold text-center mb-2">The Biggest Lever: Ensemble Blending</h2>
+  <p class="text-center text-sm text-muted mb-6">
+    For each dataset, ensemble blending of 3 models outperforms the best single model
+    by +5.2 to +7.0 SPS points. Zero additional API cost — just arithmetic.
+  </p>
+  {hasData ? (
+    <Chart option={chartOption} height="420px" />
+  ) : (
+    <div class="text-center text-muted py-12 border border-muted/20 rounded-lg">
+      Ensemble comparison data not yet available.
+    </div>
+  )}
+</section>
