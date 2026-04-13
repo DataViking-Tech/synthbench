@@ -2433,9 +2433,7 @@ def publish_leaderboard(
     return out_path
 
 
-def publish_data(
-    results_dir: Path, output_path: Path, version: str = "0.1.0"
-) -> Path:
+def publish_data(results_dir: Path, output_path: Path, version: str = "0.1.0") -> Path:
     """Export leaderboard data as JSON conforming to the LeaderboardData TypeScript interface.
 
     Reads all result JSONs from results_dir, aggregates via build_leaderboard,
@@ -2444,7 +2442,6 @@ def publish_data(
     from synthbench.leaderboard import (
         build_leaderboard,
         display_provider_name,
-        provider_framework,
         BASELINE_PROVIDERS,
     )
 
@@ -2474,7 +2471,6 @@ def publish_data(
     for e in summary_entries:
         provider_raw = e["provider"]
         display_name = display_provider_name(provider_raw)
-        framework = provider_framework(provider_raw)
 
         # CI bounds: use per_metric_ci.sps if available in underlying results,
         # else fall back to std_sps-based estimate
@@ -2486,7 +2482,10 @@ def publish_data(
         # Check underlying results for actual bootstrap CI
         for r in results:
             cfg = r.get("config", {})
-            if cfg.get("provider") == provider_raw and cfg.get("dataset") == e["dataset"]:
+            if (
+                cfg.get("provider") == provider_raw
+                and cfg.get("dataset") == e["dataset"]
+            ):
                 ci = r.get("aggregate", {}).get("per_metric_ci", {}).get("sps")
                 if ci and len(ci) == 2:
                     ci_lower = round(ci[0], 6)
@@ -2522,15 +2521,20 @@ def publish_data(
             rep_idx = 0
             for r in results:
                 cfg = r.get("config", {})
-                if cfg.get("provider") == provider_raw and cfg.get("dataset") == e["dataset"]:
+                if (
+                    cfg.get("provider") == provider_raw
+                    and cfg.get("dataset") == e["dataset"]
+                ):
                     rep_idx += 1
                     agg = r.get("aggregate", {})
-                    replicates.append({
-                        "rep": rep_idx,
-                        "sps": round(agg.get("composite_parity", 0), 6),
-                        "jsd": round(agg.get("mean_jsd", 0), 6),
-                        "tau": round(agg.get("mean_kendall_tau", 0), 6),
-                    })
+                    replicates.append(
+                        {
+                            "rep": rep_idx,
+                            "sps": round(agg.get("composite_parity", 0), 6),
+                            "jsd": round(agg.get("mean_jsd", 0), 6),
+                            "tau": round(agg.get("mean_kendall_tau", 0), 6),
+                        }
+                    )
             if replicates:
                 entry["replicates"] = replicates
 
@@ -2542,12 +2546,14 @@ def publish_data(
         display_name = display_provider_name(provider_raw)
         for sweep in sweeps:
             for sps_val in sweep.get("runs", []):
-                convergence.append({
-                    "model": display_name,
-                    "dataset": "all",
-                    "rep_count": sweep["samples"],
-                    "sps": sps_val,
-                })
+                convergence.append(
+                    {
+                        "model": display_name,
+                        "dataset": "all",
+                        "rep_count": sweep["samples"],
+                        "sps": sps_val,
+                    }
+                )
 
     leaderboard_data = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
