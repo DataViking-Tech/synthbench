@@ -1,12 +1,17 @@
 ---
 interface Props {
-	option: Record<string, unknown>;
-	height?: string;
-	theme?: "dark" | "light" | "auto";
-	renderer?: "svg" | "canvas";
+  option: Record<string, unknown>;
+  height?: string;
+  theme?: "dark" | "light" | "auto";
+  renderer?: "svg" | "canvas";
 }
 
-const { option, height = "400px", theme = "auto", renderer = "svg" } = Astro.props;
+const {
+  option,
+  height = "400px",
+  theme = "auto",
+  renderer = "svg",
+} = Astro.props;
 const serialized = JSON.stringify(option);
 const chartId = `chart-${Math.random().toString(36).slice(2, 9)}`;
 ---
