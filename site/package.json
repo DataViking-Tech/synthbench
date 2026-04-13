@@ -1,0 +1,25 @@
+{
+  "name": "@synthbench/site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check && biome check .",
+    "lint": "biome check . && npx oxlint -c oxlint.config.json .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "astro": "^5.7.10",
+    "echarts": "^5.6.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@tailwindcss/vite": "^4.1.4",
+    "tailwindcss": "^4.1.4",
+    "oxlint": "^0.16.6",
+    "typescript": "^5.8.3"
+  }
+}

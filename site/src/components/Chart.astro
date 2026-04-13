@@ -1,0 +1,85 @@
+---
+interface Props {
+	option: Record<string, unknown>;
+	height?: string;
+	theme?: "dark" | "light" | "auto";
+	renderer?: "svg" | "canvas";
+}
+
+const { option, height = "400px", theme = "auto", renderer = "svg" } = Astro.props;
+const serialized = JSON.stringify(option);
+const chartId = `chart-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+	id={chartId}
+	class="w-full"
+	style={`height:${height}`}
+	data-chart-option={serialized}
+	data-chart-theme={theme}
+	data-chart-renderer={renderer}
+></div>
+
+<script>
+	import * as echarts from "echarts/core";
+	import { BarChart } from "echarts/charts";
+	import {
+		TitleComponent,
+		TooltipComponent,
+		GridComponent,
+		LegendComponent,
+		DataZoomComponent,
+		ToolboxComponent,
+	} from "echarts/components";
+	import { SVGRenderer, CanvasRenderer } from "echarts/renderers";
+
+	echarts.use([
+		BarChart,
+		TitleComponent,
+		TooltipComponent,
+		GridComponent,
+		LegendComponent,
+		DataZoomComponent,
+		ToolboxComponent,
+		SVGRenderer,
+		CanvasRenderer,
+	]);
+
+	function initChart(el: HTMLElement) {
+		const optionStr = el.dataset.chartOption;
+		const themePref = el.dataset.chartTheme ?? "auto";
+		const rendererPref = el.dataset.chartRenderer ?? "svg";
+
+		if (!optionStr) return;
+
+		const resolvedTheme =
+			themePref === "auto"
+				? window.matchMedia("(prefers-color-scheme: dark)").matches
+					? "dark"
+					: undefined
+				: themePref === "dark"
+					? "dark"
+					: undefined;
+
+		const chart = echarts.init(el, resolvedTheme, {
+			renderer: rendererPref as "svg" | "canvas",
+		});
+		chart.setOption(JSON.parse(optionStr));
+
+		const ro = new ResizeObserver(() => chart.resize());
+		ro.observe(el);
+
+		if (themePref === "auto") {
+			const mq = window.matchMedia("(prefers-color-scheme: dark)");
+			mq.addEventListener("change", (e) => {
+				chart.dispose();
+				const newChart = echarts.init(el, e.matches ? "dark" : undefined, {
+					renderer: rendererPref as "svg" | "canvas",
+				});
+				newChart.setOption(JSON.parse(optionStr));
+			});
+		}
+	}
+
+	document.querySelectorAll<HTMLElement>("[data-chart-option]").forEach(initChart);
+</script>

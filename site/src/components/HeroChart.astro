@@ -1,0 +1,202 @@
+---
+import Chart from "./Chart.astro";
+import type { LeaderboardEntry } from "@/types/leaderboard";
+
+interface Props {
+	entries: LeaderboardEntry[];
+}
+
+const { entries } = Astro.props;
+
+// Pick the best entry per model across all datasets (highest SPS)
+const bestByModel = new Map<string, LeaderboardEntry>();
+for (const e of entries) {
+	const existing = bestByModel.get(e.model);
+	if (!existing || e.sps > existing.sps) {
+		bestByModel.set(e.model, e);
+	}
+}
+
+// Sort descending by SPS, separate baselines
+const models = [...bestByModel.values()]
+	.filter((e) => !e.is_baseline)
+	.sort((a, b) => b.sps - a.sps);
+const baselines = [...bestByModel.values()]
+	.filter((e) => e.is_baseline)
+	.sort((a, b) => b.sps - a.sps);
+
+const allSorted = [...models, ...baselines];
+const categories = allSorted.map((e) => e.model);
+const values = allSorted.map((e) => e.sps);
+const ciLower = allSorted.map((e) => e.ci_lower);
+const ciUpper = allSorted.map((e) => e.ci_upper);
+
+const barColors = allSorted.map((e) => {
+	if (e.is_baseline) return "var(--color-text-muted, #999)";
+	if (e.is_ensemble) return "var(--color-accent-500, #4ade80)";
+	return "var(--color-brand-500, #3b59a1)";
+});
+
+const option = {
+	title: {
+		text: "Best SPS by Model",
+		subtext: "Survey Parity Score — higher is better (1.0 = perfect parity with humans)",
+		left: "center",
+	},
+	tooltip: {
+		trigger: "axis",
+		axisPointer: { type: "shadow" },
+		formatter(params: Array<{ name: string; value: number; dataIndex: number }>) {
+			const p = params[0];
+			const idx = p.dataIndex;
+			const entry = allSorted[idx];
+			if (!entry) return "";
+			const lines = [
+				`<strong>${p.name}</strong>`,
+				`SPS: <strong>${p.value.toFixed(3)}</strong>`,
+				`95% CI: [${entry.ci_lower.toFixed(3)}, ${entry.ci_upper.toFixed(3)}]`,
+				`JSD: ${entry.jsd.toFixed(3)} · τ: ${entry.tau.toFixed(3)}`,
+				`Dataset: ${entry.dataset} · n=${entry.n}`,
+			];
+			if (entry.is_baseline) lines.push("<em>Baseline</em>");
+			if (entry.is_ensemble) lines.push("<em>Ensemble</em>");
+			return lines.join("<br/>");
+		},
+	},
+	toolbox: {
+		feature: {
+			saveAsImage: { title: "Save as PNG" },
+		},
+		right: 16,
+	},
+	grid: {
+		left: 16,
+		right: 40,
+		bottom: 40,
+		containLabel: true,
+	},
+	xAxis: {
+		type: "category",
+		data: categories,
+		axisLabel: {
+			rotate: categories.length > 6 ? 30 : 0,
+			overflow: "truncate",
+			width: 100,
+		},
+	},
+	yAxis: {
+		type: "value",
+		name: "SPS",
+		min: 0,
+		max: 1,
+		splitNumber: 5,
+	},
+	dataZoom:
+		categories.length > 10
+			? [{ type: "slider", start: 0, end: 100, bottom: 4 }]
+			: [],
+	series: [
+		{
+			type: "bar",
+			data: values.map((v, i) => ({
+				value: v,
+				itemStyle: { color: barColors[i] },
+			})),
+			barMaxWidth: 48,
+			emphasis: {
+				focus: "self",
+				itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.3)" },
+			},
+			markLine: {
+				silent: true,
+				symbol: "none",
+				lineStyle: { type: "dashed", color: "#999" },
+				data: baselines.length
+					? [{ yAxis: baselines[0].sps, label: { formatter: "Random Baseline" } }]
+					: [],
+			},
+		},
+	],
+};
+
+// Serialize for allSorted reference in tooltip (pass as data attribute)
+const allSortedJson = JSON.stringify(
+	allSorted.map((e) => ({
+		ci_lower: e.ci_lower,
+		ci_upper: e.ci_upper,
+		jsd: e.jsd,
+		tau: e.tau,
+		dataset: e.dataset,
+		n: e.n,
+		is_baseline: e.is_baseline,
+		is_ensemble: e.is_ensemble,
+	})),
+);
+
+// Build option with tooltip as a string reference
+const heroOption = {
+	...option,
+	tooltip: {
+		trigger: "axis" as const,
+		axisPointer: { type: "shadow" as const },
+	},
+};
+---
+
+<div class="hero-chart-wrap" data-entries={allSortedJson}>
+	<Chart option={heroOption} height="420px" />
+</div>
+
+<script>
+	// Enhance tooltip after chart init
+	import * as echarts from "echarts/core";
+
+	document.querySelectorAll<HTMLElement>(".hero-chart-wrap").forEach((wrap) => {
+		const entriesJson = wrap.dataset.entries;
+		if (!entriesJson) return;
+		const entries: Array<{
+			ci_lower: number;
+			ci_upper: number;
+			jsd: number;
+			tau: number;
+			dataset: string;
+			n: number;
+			is_baseline: boolean;
+			is_ensemble: boolean;
+		}> = JSON.parse(entriesJson);
+
+		const chartEl = wrap.querySelector<HTMLElement>("[data-chart-option]");
+		if (!chartEl) return;
+
+		// Wait for chart to be initialized, then override tooltip
+		requestAnimationFrame(() => {
+			const chart = echarts.getInstanceByDom(chartEl);
+			if (!chart) return;
+			chart.setOption({
+				tooltip: {
+					trigger: "axis",
+					axisPointer: { type: "shadow" },
+					formatter(
+						params:
+							| { name: string; value: number; dataIndex: number }
+							| Array<{ name: string; value: number; dataIndex: number }>,
+					) {
+						const p = Array.isArray(params) ? params[0] : params;
+						const entry = entries[p.dataIndex];
+						if (!entry) return `${p.name}: ${p.value}`;
+						const lines = [
+							`<strong>${p.name}</strong>`,
+							`SPS: <strong>${Number(p.value).toFixed(3)}</strong>`,
+							`95% CI: [${entry.ci_lower.toFixed(3)}, ${entry.ci_upper.toFixed(3)}]`,
+							`JSD: ${entry.jsd.toFixed(3)} · τ: ${entry.tau.toFixed(3)}`,
+							`Dataset: ${entry.dataset} · n=${entry.n}`,
+						];
+						if (entry.is_baseline) lines.push("<em>Baseline</em>");
+						if (entry.is_ensemble) lines.push("<em>Ensemble</em>");
+						return lines.join("<br/>");
+					},
+				},
+			});
+		});
+	});
+</script>
