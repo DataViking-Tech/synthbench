@@ -1,0 +1,81 @@
+---
+import HeroChart from "@/components/HeroChart.astro";
+import type { LeaderboardData } from "@/types/leaderboard";
+
+// Load leaderboard data at build time
+let data: LeaderboardData;
+try {
+	const raw = await import("@/data/leaderboard.json");
+	data = raw.default as LeaderboardData;
+} catch {
+	data = {
+		generated_at: new Date().toISOString(),
+		synthbench_version: "0.1.0",
+		datasets: [],
+		entries: [],
+	};
+}
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/synthbench/next/favicon.svg" />
+		<title>SynthBench Leaderboard (Next)</title>
+		<meta
+			name="description"
+			content="Interactive leaderboard for SynthBench — benchmarking synthetic survey respondents against real human opinion data."
+		/>
+		<style>
+			@import "../styles/global.css";
+		</style>
+	</head>
+	<body class="min-h-screen bg-surface text-text">
+		<header class="border-b border-brand-200 px-6 py-4">
+			<div class="mx-auto max-w-5xl">
+				<h1 class="text-2xl font-bold text-brand-700">
+					SynthBench Leaderboard
+					<span class="ml-2 rounded bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-600">
+						next
+					</span>
+				</h1>
+				<p class="mt-1 text-sm text-text-muted">
+					How well do AI models replicate human survey opinion distributions?
+				</p>
+			</div>
+		</header>
+
+		<main class="mx-auto max-w-5xl px-6 py-8">
+			{
+				data.entries.length > 0 ? (
+					<section>
+						<HeroChart entries={data.entries} />
+						<p class="mt-4 text-center text-xs text-text-muted">
+							Data generated {new Date(data.generated_at).toLocaleDateString()} ·
+							SynthBench v{data.synthbench_version} ·
+							{data.datasets.length} dataset{data.datasets.length !== 1 ? "s" : ""} ·
+							{data.entries.length} entries
+						</p>
+					</section>
+				) : (
+					<div class="rounded-lg border border-brand-200 bg-surface-alt p-8 text-center">
+						<p class="text-text-muted">
+							No leaderboard data available. Run{" "}
+							<code class="rounded bg-brand-100 px-1.5 py-0.5 text-sm">
+								synthbench publish-data
+							</code>{" "}
+							to generate data.
+						</p>
+					</div>
+				)
+			}
+		</main>
+
+		<footer class="border-t border-brand-200 px-6 py-4">
+			<div class="mx-auto max-w-5xl text-center text-xs text-text-muted">
+				SynthBench — Open benchmark for synthetic survey respondents
+			</div>
+		</footer>
+	</body>
+</html>

@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/synthbench/publish.py'
       - 'leaderboard-results/**'
+      - 'site/**'
 
 jobs:
   regenerate:
@@ -17,8 +18,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - run: pip install -e .
+
+      # Regenerate legacy HTML leaderboard
       - run: synthbench publish --results-dir leaderboard-results --output docs/
+
+      # Export JSON data for Astro site
+      - run: synthbench publish-data --results-dir leaderboard-results --output site/src/data/leaderboard.json
+
+      # Build Astro site
+      - run: cd site && npm ci && npm run build
+
+      # Copy Astro output into docs/next/ alongside legacy site
+      - run: |
+          rm -rf docs/next
+          cp -r site/dist docs/next
+
       - name: Commit if changed
         run: |
           git diff --quiet docs/ && exit 0

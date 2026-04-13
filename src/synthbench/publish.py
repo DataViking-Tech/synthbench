@@ -2431,3 +2431,134 @@ def publish_leaderboard(
     out_path = output_dir / "index.html"
     out_path.write_text(html)
     return out_path
+
+
+def publish_data(
+    results_dir: Path, output_path: Path, version: str = "0.1.0"
+) -> Path:
+    """Export leaderboard data as JSON conforming to the LeaderboardData TypeScript interface.
+
+    Reads all result JSONs from results_dir, aggregates via build_leaderboard,
+    and writes a single leaderboard.json for consumption by the Astro site.
+    """
+    from synthbench.leaderboard import (
+        build_leaderboard,
+        display_provider_name,
+        provider_framework,
+        BASELINE_PROVIDERS,
+    )
+
+    json_files = sorted(results_dir.glob("*.json"))
+    results = []
+    for jf in json_files:
+        try:
+            with open(jf) as f:
+                data = json.load(f)
+            if data.get("benchmark") == "synthbench":
+                results.append(data)
+        except (json.JSONDecodeError, KeyError):
+            continue
+
+    if not results:
+        raise ValueError(f"No valid SynthBench result files found in {results_dir}")
+
+    _md, lb_json = build_leaderboard(results)
+    summary_entries = lb_json.get("summary", [])
+    convergence_raw = lb_json.get("convergence", {})
+
+    # Collect all datasets present
+    datasets = sorted({e["dataset"] for e in summary_entries})
+
+    # Build LeaderboardEntry objects
+    entries = []
+    for e in summary_entries:
+        provider_raw = e["provider"]
+        display_name = display_provider_name(provider_raw)
+        framework = provider_framework(provider_raw)
+
+        # CI bounds: use per_metric_ci.sps if available in underlying results,
+        # else fall back to std_sps-based estimate
+        sps = e.get("sps", e.get("composite_parity", 0))
+        std_sps = e.get("std_sps", 0)
+        ci_lower = round(max(0, sps - 1.96 * std_sps), 6) if std_sps else sps
+        ci_upper = round(min(1, sps + 1.96 * std_sps), 6) if std_sps else sps
+
+        # Check underlying results for actual bootstrap CI
+        for r in results:
+            cfg = r.get("config", {})
+            if cfg.get("provider") == provider_raw and cfg.get("dataset") == e["dataset"]:
+                ci = r.get("aggregate", {}).get("per_metric_ci", {}).get("sps")
+                if ci and len(ci) == 2:
+                    ci_lower = round(ci[0], 6)
+                    ci_upper = round(ci[1], 6)
+                break
+
+        entry = {
+            "rank": e["rank"],
+            "provider": display_name,
+            "model": display_name,
+            "dataset": e["dataset"],
+            "sps": round(sps, 6),
+            "jsd": round(e.get("mean_jsd", 0), 6),
+            "tau": round(e.get("mean_kendall_tau", 0), 6),
+            "n": e.get("n", 0),
+            "ci_lower": ci_lower,
+            "ci_upper": ci_upper,
+            "is_baseline": provider_raw in BASELINE_PROVIDERS,
+            "is_ensemble": provider_raw.startswith("ensemble/"),
+        }
+
+        if e.get("temperature") is not None:
+            entry["temperature"] = e["temperature"]
+        if e.get("template") is not None:
+            entry["template"] = e["template"]
+        if e.get("topic_scores"):
+            entry["topic_scores"] = e["topic_scores"]
+
+        # Replicates from detail entries
+        n_runs = e.get("n_runs", 1)
+        if n_runs > 1:
+            replicates = []
+            rep_idx = 0
+            for r in results:
+                cfg = r.get("config", {})
+                if cfg.get("provider") == provider_raw and cfg.get("dataset") == e["dataset"]:
+                    rep_idx += 1
+                    agg = r.get("aggregate", {})
+                    replicates.append({
+                        "rep": rep_idx,
+                        "sps": round(agg.get("composite_parity", 0), 6),
+                        "jsd": round(agg.get("mean_jsd", 0), 6),
+                        "tau": round(agg.get("mean_kendall_tau", 0), 6),
+                    })
+            if replicates:
+                entry["replicates"] = replicates
+
+        entries.append(entry)
+
+    # Build convergence points
+    convergence = []
+    for provider_raw, sweeps in convergence_raw.items():
+        display_name = display_provider_name(provider_raw)
+        for sweep in sweeps:
+            for sps_val in sweep.get("runs", []):
+                convergence.append({
+                    "model": display_name,
+                    "dataset": "all",
+                    "rep_count": sweep["samples"],
+                    "sps": sps_val,
+                })
+
+    leaderboard_data = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "synthbench_version": version,
+        "datasets": datasets,
+        "entries": entries,
+    }
+    if convergence:
+        leaderboard_data["convergence"] = convergence
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w") as f:
+        json.dump(leaderboard_data, f, indent=2)
+    return output_path
