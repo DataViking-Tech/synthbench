@@ -58,6 +58,18 @@ jobs:
       - name: Build site
         working-directory: site
         run: npm run build
+      - name: Verify deployment artifact
+        working-directory: site
+        run: |
+          echo "Checking site/dist/ matches expected deployment structure..."
+          test -d dist || { echo "FAIL: site/dist/ directory missing"; exit 1; }
+          test -f dist/index.html || { echo "FAIL: dist/index.html missing"; exit 1; }
+          test -d dist/_astro || { echo "FAIL: dist/_astro/ directory missing"; exit 1; }
+          test -f dist/favicon.svg || { echo "FAIL: dist/favicon.svg missing"; exit 1; }
+          echo "Deployment artifact verified:"
+          ls -la dist/
+          echo "---"
+          ls dist/_astro/ | head -5
 
   merge-ready:
     if: always()
