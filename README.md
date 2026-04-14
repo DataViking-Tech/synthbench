@@ -34,6 +34,20 @@ Regenerate leaderboard data for the Astro site:
 synthbench publish-data --results-dir ./leaderboard-results --output site/src/data/leaderboard.json
 ```
 
+## Development
+
+After cloning, enable the repo-tracked git hooks so pushes that would fail CI's
+`ruff format --check` are caught locally:
+
+```bash
+./scripts/install-hooks.sh   # one-time: wires .githooks/ via core.hooksPath
+```
+
+The `pre-push` hook only checks Python files changed in the commits being
+pushed, so already-formatted branches add no meaningful overhead. Run
+`./scripts/format-check.sh` anytime to mirror the full CI lint job. Emergency
+bypass: `git push --no-verify`.
+
 ## Submit Results
 
 Want to add your provider to the leaderboard? Here's how:
