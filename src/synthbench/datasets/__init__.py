@@ -1,6 +1,7 @@
 from synthbench.datasets.base import Dataset, Question
 from synthbench.datasets.eurobarometer import EurobarometerConsumerDataset
 from synthbench.datasets.globalopinionqa import GlobalOpinionQADataset
+from synthbench.datasets.ntia import NTIADataset
 from synthbench.datasets.opinionsqa import OpinionsQADataset
 from synthbench.datasets.pewtech import PewTechDataset
 from synthbench.datasets.subpop import SubPOPDataset
@@ -11,6 +12,7 @@ DATASETS: dict[str, type[Dataset]] = {
     "subpop": SubPOPDataset,
     "pewtech": PewTechDataset,
     "eurobarometer": EurobarometerConsumerDataset,
+    "ntia": NTIADataset,
 }
 
 __all__ = [
@@ -21,5 +23,6 @@ __all__ = [
     "SubPOPDataset",
     "PewTechDataset",
     "EurobarometerConsumerDataset",
+    "NTIADataset",
     "DATASETS",
 ]
