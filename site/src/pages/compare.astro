@@ -1,0 +1,862 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const base = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
+const leaderboardUrl = `${base}/leaderboard`;
+const exploreUrl = `${base}/explore`;
+---
+
+<BaseLayout title="Compare - SynthBench">
+  <div class="mx-auto w-full max-w-6xl px-4 py-8" id="compare-root" data-base={base}>
+    <!-- Breadcrumb -->
+    <nav class="mb-4 text-sm text-muted">
+      <a class="hover:underline" href={leaderboardUrl}>Leaderboard</a>
+      <span class="mx-2">/</span>
+      <a class="hover:underline" href={exploreUrl}>Explore</a>
+      <span class="mx-2">/</span>
+      <span>Compare</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="mb-6">
+      <div class="flex flex-wrap items-baseline gap-3">
+        <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Compare</h1>
+        <span
+          id="compare-mode-badge"
+          class="rounded bg-primary/10 px-2 py-0.5 text-xs uppercase tracking-wide text-primary"
+          >config</span
+        >
+      </div>
+      <p class="mt-1 text-sm text-muted">
+        Side-by-side diff of two subjects. The hero view is <strong>flipped
+          questions</strong> — the places where A and B disagreed most.
+      </p>
+    </header>
+
+    <!-- Subject chips (A / B) -->
+    <section class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2" id="subject-chips">
+      <div
+        class="rounded-lg border border-muted/20 bg-surface/60 dark:bg-surface-dark/60 p-3 text-sm"
+      >
+        <div class="mb-1 text-xs uppercase tracking-wide text-muted">Subject A</div>
+        <div class="font-semibold break-words" data-a="title">—</div>
+        <div class="mt-0.5 font-mono text-xs text-muted break-all" data-a="id">—</div>
+        <a class="mt-1 inline-block text-xs text-primary hover:underline" data-a="link" href="#"
+          >Open detail →</a
+        >
+      </div>
+      <div
+        class="rounded-lg border border-muted/20 bg-surface/60 dark:bg-surface-dark/60 p-3 text-sm"
+      >
+        <div class="mb-1 text-xs uppercase tracking-wide text-muted">Subject B</div>
+        <div class="font-semibold break-words" data-b="title">—</div>
+        <div class="mt-0.5 font-mono text-xs text-muted break-all" data-b="id">—</div>
+        <a class="mt-1 inline-block text-xs text-primary hover:underline" data-b="link" href="#"
+          >Open detail →</a
+        >
+      </div>
+    </section>
+
+    <!-- Error box -->
+    <div
+      id="compare-error"
+      class="mb-6 hidden rounded-lg border border-baseline/40 bg-baseline/5 p-4 text-sm"
+    >
+      <strong>Could not load comparison.</strong>
+      <span id="compare-error-detail" class="ml-2 text-muted"></span>
+    </div>
+
+    <!-- Empty state -->
+    <div
+      id="compare-empty"
+      class="mb-6 hidden rounded-lg border border-muted/20 p-6 text-center text-sm"
+    >
+      <p class="mb-2">
+        Need both <code class="font-mono">a</code> and <code class="font-mono">b</code> query
+        params to compare.
+      </p>
+      <a class="text-primary hover:underline" href={exploreUrl}>Pick subjects in Explore →</a>
+    </div>
+
+    <!-- Section 1: metric tiles -->
+    <section id="compare-metrics-wrap" class="mb-8 hidden">
+      <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">Metrics</h2>
+      <p class="mb-3 text-xs text-muted">
+        Solid border = confidence intervals disjoint (meaningful gap). Dashed = CIs overlap
+        (noise). Missing border = CI unavailable for this subject.
+      </p>
+      <div id="compare-metrics" class="grid grid-cols-1 gap-3 sm:grid-cols-3"></div>
+    </section>
+
+    <!-- Section 2: flipped questions table -->
+    <section id="compare-flipped-wrap" class="mb-8 hidden">
+      <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">
+          Flipped questions
+        </h2>
+        <div class="flex items-center gap-3 text-xs text-muted">
+          <span id="flipped-count"></span>
+          <label class="flex items-center gap-1">
+            <input id="flipped-only" type="checkbox" class="accent-primary" />
+            Flipped only
+          </label>
+        </div>
+      </div>
+
+      <div
+        id="flipped-note"
+        class="mb-3 hidden rounded border border-muted/20 bg-surface/40 dark:bg-surface-dark/40 p-2 text-xs text-muted"
+      >
+      </div>
+
+      <div class="overflow-x-auto rounded-lg border border-muted/20">
+        <table class="w-full text-sm" id="flipped-table">
+          <thead>
+            <tr class="border-b border-muted/20 bg-surface dark:bg-surface-dark">
+              <th class="px-3 py-2 text-left font-semibold" data-sort="question">Question</th>
+              <th class="px-3 py-2 text-left font-semibold" data-sort="topic">Topic</th>
+              <th class="px-3 py-2 text-left font-semibold" data-sort="a_modal">A modal</th>
+              <th class="px-3 py-2 text-left font-semibold" data-sort="b_modal">B modal</th>
+              <th class="px-3 py-2 text-right font-semibold" data-sort="delta_jsd">
+                ΔJSD <span class="sort-arrow" aria-hidden="true">▼</span>
+              </th>
+              <th class="px-3 py-2 text-center font-semibold" data-sort="flip">Flip</th>
+            </tr>
+          </thead>
+          <tbody id="flipped-tbody">
+            <tr>
+              <td colspan="6" class="px-3 py-8 text-center text-muted">Loading comparison…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import type {
+    ConfigRollup,
+    PerQuestionRow,
+    ReplicateRecord,
+    RunDetail,
+  } from "@/types/runs";
+
+  type Mode = "config" | "run";
+
+  interface CiRange {
+    low: number;
+    high: number;
+  }
+
+  interface MetricValue {
+    value: number | null;
+    ci: CiRange | null;
+  }
+
+  interface SubjectMetrics {
+    sps: MetricValue;
+    jsd: MetricValue;
+    tau: MetricValue;
+  }
+
+  interface Subject {
+    id: string;
+    title: string;
+    detailUrl: string;
+    metrics: SubjectMetrics;
+    perQuestion: PerQuestionRow[];
+    representativeRunId: string | null;
+  }
+
+  interface FlippedRow {
+    key: string;
+    topic: string;
+    text: string;
+    options: string[];
+    a: {
+      modal: string;
+      jsd: number | null;
+      dist: Record<string, number>;
+    };
+    b: {
+      modal: string;
+      jsd: number | null;
+      dist: Record<string, number>;
+    };
+    humanDist: Record<string, number>;
+    deltaJsd: number | null;
+    flip: boolean;
+  }
+
+  type SortKey = "question" | "topic" | "a_modal" | "b_modal" | "delta_jsd" | "flip";
+  type SortDir = "asc" | "desc";
+
+  const fmt = (n: number | null | undefined, places = 3): string =>
+    n == null || Number.isNaN(n) ? "—" : n.toFixed(places);
+
+  const fmtSigned = (n: number | null | undefined, places = 3): string => {
+    if (n == null || Number.isNaN(n)) return "—";
+    if (n > 0) return `+${n.toFixed(places)}`;
+    return n.toFixed(places);
+  };
+
+  function escapeHtml(s: string): string {
+    return s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function truncate(s: string, max: number): string {
+    if (!s) return "";
+    return s.length > max ? `${s.slice(0, max)}…` : s;
+  }
+
+  function modalKey(dist: Record<string, number> | undefined): string {
+    if (!dist) return "—";
+    let best: string | null = null;
+    let bestVal = -Infinity;
+    for (const [k, v] of Object.entries(dist)) {
+      if (v > bestVal) {
+        bestVal = v;
+        best = k;
+      }
+    }
+    return best ?? "—";
+  }
+
+  /** Confidence-interval derivation from mean/std/n_replicates. Returns null when
+   *  we don't have enough data to draw an honest interval (single replicate or
+   *  missing std). We use a normal-approx half-width of 1.96·SE, where
+   *  SE = std / sqrt(n). This is a visual cue, not a formal test. */
+  function deriveCi(
+    mean: number | null | undefined,
+    std: number | null | undefined,
+    n: number | null | undefined,
+  ): CiRange | null {
+    if (mean == null || std == null || n == null) return null;
+    if (n < 2 || std <= 0) return null;
+    const half = 1.96 * (std / Math.sqrt(n));
+    return { low: mean - half, high: mean + half };
+  }
+
+  function ciFromPair(range: [number, number] | undefined | null): CiRange | null {
+    if (!range) return null;
+    const [low, high] = range;
+    if (low == null || high == null || Number.isNaN(low) || Number.isNaN(high)) return null;
+    return { low, high };
+  }
+
+  function ciOverlap(a: CiRange | null, b: CiRange | null): "overlap" | "disjoint" | "unknown" {
+    if (!a || !b) return "unknown";
+    // Overlap if the max of the lows is <= the min of the highs.
+    const lo = Math.max(a.low, b.low);
+    const hi = Math.min(a.high, b.high);
+    return lo <= hi ? "overlap" : "disjoint";
+  }
+
+  /** Distribution bar palette (keyed by index, cycles on reuse).
+   *  Matches the run detail page so colors are consistent across views. */
+  const BAR_COLORS = [
+    "var(--color-primary)",
+    "var(--color-accent)",
+    "var(--color-provider-raw-llm)",
+    "var(--color-baseline)",
+    "var(--color-provider-synthpanel)",
+    "var(--color-muted)",
+  ];
+
+  function renderStackedBar(
+    label: string,
+    dist: Record<string, number> | undefined,
+    options: string[],
+  ): string {
+    if (!dist) return "";
+    const keys = options.length ? options : Object.keys(dist);
+    const segments = keys
+      .map((k, i) => {
+        const v = dist[k] ?? 0;
+        const pct = Math.max(0, Math.min(1, v)) * 100;
+        const color = BAR_COLORS[i % BAR_COLORS.length];
+        const title = `${escapeHtml(k)}: ${(v * 100).toFixed(1)}%`;
+        return `<span class="dist-seg" title="${title}" style="width:${pct}%;background:${color}"></span>`;
+      })
+      .join("");
+    return `
+      <div class="dist-row">
+        <span class="dist-label">${escapeHtml(label)}</span>
+        <span class="dist-bar">${segments}</span>
+      </div>
+    `;
+  }
+
+  function renderLegend(options: string[], dist: Record<string, number> | undefined): string {
+    if (!dist) return "";
+    const keys = options.length ? options : Object.keys(dist);
+    return keys
+      .map((k, i) => {
+        const color = BAR_COLORS[i % BAR_COLORS.length];
+        return `<span class="dist-chip"><span class="dist-swatch" style="background:${color}"></span>${escapeHtml(k)}</span>`;
+      })
+      .join("");
+  }
+
+  /** State, mutated in place as the user toggles sort / filter. */
+  const state = {
+    base: "/",
+    mode: "config" as Mode,
+    aId: "",
+    bId: "",
+    rows: [] as FlippedRow[],
+    sortKey: "delta_jsd" as SortKey,
+    sortDir: "desc" as SortDir,
+    flippedOnly: false,
+  };
+
+  function showError(msg: string): void {
+    const box = document.getElementById("compare-error");
+    const detail = document.getElementById("compare-error-detail");
+    if (box) box.classList.remove("hidden");
+    if (detail) detail.textContent = msg;
+    const tbody = document.getElementById("flipped-tbody");
+    if (tbody) tbody.innerHTML = "";
+  }
+
+  function showEmpty(): void {
+    document.getElementById("compare-empty")?.classList.remove("hidden");
+  }
+
+  async function fetchJson<T>(url: string, label: string): Promise<T> {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`${label}: HTTP ${res.status} ${url}`);
+    }
+    return (await res.json()) as T;
+  }
+
+  async function loadConfigSubject(id: string, label: string): Promise<Subject> {
+    const configUrl = `${state.base}/data/config/${encodeURIComponent(id)}.json`;
+    const cfg = await fetchJson<ConfigRollup>(configUrl, `Config ${label}`);
+    const n = cfg.n_replicates ?? cfg.variance_summary?.n_replicates ?? cfg.replicates?.length ?? 0;
+    const metrics: SubjectMetrics = {
+      sps: {
+        value: cfg.aggregate?.sps?.mean ?? null,
+        ci: deriveCi(cfg.aggregate?.sps?.mean, cfg.aggregate?.sps?.std, n),
+      },
+      jsd: {
+        value: cfg.aggregate?.jsd?.mean ?? null,
+        ci: deriveCi(cfg.aggregate?.jsd?.mean, cfg.aggregate?.jsd?.std, n),
+      },
+      tau: {
+        value: cfg.aggregate?.tau?.mean ?? null,
+        ci: deriveCi(cfg.aggregate?.tau?.mean, cfg.aggregate?.tau?.std, n),
+      },
+    };
+
+    // Per-question detail is only available at the run level. Pick the first
+    // replicate as a representative run; warn the user in a note.
+    let perQuestion: PerQuestionRow[] = [];
+    let representativeRunId: string | null = null;
+    const reps = (cfg.replicates ?? []) as ReplicateRecord[];
+    if (reps.length > 0) {
+      const rep = reps[0];
+      representativeRunId = rep.run_id;
+      const runUrl = `${state.base}/data/run/${encodeURIComponent(rep.run_id)}.json`;
+      try {
+        const run = await fetchJson<RunDetail>(runUrl, `Representative run for ${label}`);
+        perQuestion = run.per_question ?? [];
+      } catch (err) {
+        // Soft-fail — we still have metric tiles from the config rollup.
+        console.warn(`Could not load representative run for ${label}:`, err);
+      }
+    }
+
+    return {
+      id,
+      title: cfg.display_name || cfg.model || id,
+      detailUrl: `${state.base}/config/${encodeURIComponent(id)}`,
+      metrics,
+      perQuestion,
+      representativeRunId,
+    };
+  }
+
+  async function loadRunSubject(id: string, label: string): Promise<Subject> {
+    const runUrl = `${state.base}/data/run/${encodeURIComponent(id)}.json`;
+    const run = await fetchJson<RunDetail>(runUrl, `Run ${label}`);
+    const ci = run.aggregate?.per_metric_ci ?? null;
+    const metrics: SubjectMetrics = {
+      sps: {
+        value: run.scores?.sps ?? null,
+        ci: ciFromPair(ci?.sps),
+      },
+      jsd: {
+        value: run.aggregate?.mean_jsd ?? null,
+        ci: ciFromPair(ci?.jsd ?? ci?.mean_jsd),
+      },
+      tau: {
+        value: run.aggregate?.mean_kendall_tau ?? null,
+        ci: ciFromPair(ci?.tau ?? ci?.mean_kendall_tau ?? ci?.kendall_tau),
+      },
+    };
+    return {
+      id,
+      title: run.display_name || run.model || id,
+      detailUrl: `${state.base}/run/${encodeURIComponent(id)}`,
+      metrics,
+      perQuestion: run.per_question ?? [],
+      representativeRunId: id,
+    };
+  }
+
+  function renderSubjectChip(
+    side: "a" | "b",
+    subject: Subject,
+    mode: Mode,
+    warnNote?: string,
+  ): void {
+    const root = document.getElementById("subject-chips");
+    if (!root) return;
+    const titleEl = root.querySelector<HTMLElement>(`[data-${side}="title"]`);
+    const idEl = root.querySelector<HTMLElement>(`[data-${side}="id"]`);
+    const linkEl = root.querySelector<HTMLAnchorElement>(`[data-${side}="link"]`);
+    if (titleEl) titleEl.textContent = subject.title;
+    if (idEl) idEl.textContent = `${mode}: ${subject.id}`;
+    if (linkEl) linkEl.href = subject.detailUrl;
+    if (warnNote) {
+      const note = document.getElementById("flipped-note");
+      if (note) {
+        note.textContent = warnNote;
+        note.classList.remove("hidden");
+      }
+    }
+  }
+
+  function renderMetrics(a: Subject, b: Subject): void {
+    const container = document.getElementById("compare-metrics");
+    const wrap = document.getElementById("compare-metrics-wrap");
+    if (!container || !wrap) return;
+
+    const metrics: Array<{ key: keyof SubjectMetrics; label: string }> = [
+      { key: "sps", label: "SPS" },
+      { key: "jsd", label: "Mean JSD" },
+      { key: "tau", label: "Kendall τ" },
+    ];
+
+    container.innerHTML = metrics
+      .map(({ key, label }) => {
+        const aVal = a.metrics[key].value;
+        const bVal = b.metrics[key].value;
+        const delta = aVal != null && bVal != null ? aVal - bVal : null;
+        const overlap = ciOverlap(a.metrics[key].ci, b.metrics[key].ci);
+        const borderClass =
+          overlap === "disjoint"
+            ? "metric-tile--disjoint"
+            : overlap === "overlap"
+              ? "metric-tile--overlap"
+              : "metric-tile--unknown";
+        const sigLabel =
+          overlap === "disjoint"
+            ? "CIs disjoint"
+            : overlap === "overlap"
+              ? "CIs overlap"
+              : "CI n/a";
+        const aCi = a.metrics[key].ci;
+        const bCi = b.metrics[key].ci;
+        const ciLineA = aCi
+          ? `<span class="metric-ci">[${fmt(aCi.low)}, ${fmt(aCi.high)}]</span>`
+          : "";
+        const ciLineB = bCi
+          ? `<span class="metric-ci">[${fmt(bCi.low)}, ${fmt(bCi.high)}]</span>`
+          : "";
+        return `
+          <div class="metric-tile ${borderClass}" data-metric="${key}">
+            <div class="flex items-baseline justify-between">
+              <div class="metric-label">${escapeHtml(label)}</div>
+              <div class="metric-sig" title="${escapeHtml(sigLabel)}">${escapeHtml(sigLabel)}</div>
+            </div>
+            <div class="mt-2 grid grid-cols-2 gap-2">
+              <div>
+                <div class="metric-side">A</div>
+                <div class="metric-val">${escapeHtml(fmt(aVal))}</div>
+                ${ciLineA}
+              </div>
+              <div>
+                <div class="metric-side">B</div>
+                <div class="metric-val">${escapeHtml(fmt(bVal))}</div>
+                ${ciLineB}
+              </div>
+            </div>
+            <div class="metric-delta">Δ (A − B): <span class="font-mono">${escapeHtml(fmtSigned(delta))}</span></div>
+          </div>
+        `;
+      })
+      .join("");
+    wrap.classList.remove("hidden");
+  }
+
+  /** Build a list of paired rows joined by question key. */
+  function buildFlippedRows(a: Subject, b: Subject): FlippedRow[] {
+    const bByKey = new Map<string, PerQuestionRow>();
+    for (const r of b.perQuestion) bByKey.set(r.key, r);
+
+    const rows: FlippedRow[] = [];
+    for (const ra of a.perQuestion) {
+      const rb = bByKey.get(ra.key);
+      if (!rb) continue;
+      const aModal = modalKey(ra.model_distribution);
+      const bModal = modalKey(rb.model_distribution);
+      const aJsd = typeof ra.jsd === "number" ? ra.jsd : null;
+      const bJsd = typeof rb.jsd === "number" ? rb.jsd : null;
+      const delta = aJsd != null && bJsd != null ? aJsd - bJsd : null;
+      rows.push({
+        key: ra.key,
+        text: ra.text ?? "",
+        topic: typeof ra.topic === "string" ? ra.topic : "—",
+        options: ra.options ?? rb.options ?? [],
+        a: { modal: aModal, jsd: aJsd, dist: ra.model_distribution ?? {} },
+        b: { modal: bModal, jsd: bJsd, dist: rb.model_distribution ?? {} },
+        humanDist: ra.human_distribution ?? rb.human_distribution ?? {},
+        deltaJsd: delta,
+        flip: aModal !== bModal,
+      });
+    }
+    return rows;
+  }
+
+  function sortRows(rows: FlippedRow[], key: SortKey, dir: SortDir): FlippedRow[] {
+    const mult = dir === "asc" ? 1 : -1;
+    const sorted = rows.slice();
+    sorted.sort((x, y) => {
+      const xv = sortValue(x, key);
+      const yv = sortValue(y, key);
+      if (xv == null && yv == null) return 0;
+      if (xv == null) return 1;
+      if (yv == null) return -1;
+      if (typeof xv === "number" && typeof yv === "number") return (xv - yv) * mult;
+      return String(xv).localeCompare(String(yv)) * mult;
+    });
+    return sorted;
+  }
+
+  function sortValue(row: FlippedRow, key: SortKey): string | number | null {
+    switch (key) {
+      case "question":
+        return row.text;
+      case "topic":
+        return row.topic;
+      case "a_modal":
+        return row.a.modal;
+      case "b_modal":
+        return row.b.modal;
+      case "delta_jsd":
+        return row.deltaJsd == null ? null : Math.abs(row.deltaJsd);
+      case "flip":
+        return row.flip ? 1 : 0;
+      default:
+        return null;
+    }
+  }
+
+  function renderTable(): void {
+    const tbody = document.getElementById("flipped-tbody");
+    const wrap = document.getElementById("compare-flipped-wrap");
+    const count = document.getElementById("flipped-count");
+    if (!tbody || !wrap) return;
+
+    wrap.classList.remove("hidden");
+
+    const visible = state.flippedOnly ? state.rows.filter((r) => r.flip) : state.rows;
+    const sorted = sortRows(visible, state.sortKey, state.sortDir);
+
+    if (count) {
+      const total = state.rows.length;
+      const flipped = state.rows.filter((r) => r.flip).length;
+      count.textContent = state.flippedOnly
+        ? `${sorted.length} flipped of ${total}`
+        : `${total} shared (${flipped} flipped)`;
+    }
+
+    if (!sorted.length) {
+      tbody.innerHTML = `<tr><td colspan="6" class="px-3 py-8 text-center text-muted">
+        ${state.rows.length === 0
+          ? "No shared questions between A and B."
+          : "No rows match the current filter."}
+      </td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = sorted
+      .map((row, i) => {
+        const deltaStr = fmtSigned(row.deltaJsd);
+        const deltaClass =
+          row.deltaJsd == null
+            ? ""
+            : row.deltaJsd > 0
+              ? "text-baseline"
+              : "text-primary";
+        const flipCell = row.flip
+          ? '<span class="rounded bg-baseline/15 px-1.5 py-0.5 text-xs text-baseline">yes</span>'
+          : '<span class="text-muted">—</span>';
+        return `
+          <tr class="fq-row cursor-pointer border-b border-muted/10 hover:bg-primary/5"
+              data-index="${i}"
+              data-key="${escapeHtml(row.key)}">
+            <td class="px-3 py-2">
+              <span class="font-mono text-xs text-muted">${escapeHtml(row.key)}</span>
+              <span class="block max-w-xl text-xs text-muted">${escapeHtml(truncate(row.text, 110))}</span>
+            </td>
+            <td class="px-3 py-2 text-xs">${escapeHtml(row.topic)}</td>
+            <td class="px-3 py-2 text-xs">${escapeHtml(row.a.modal)}</td>
+            <td class="px-3 py-2 text-xs">${escapeHtml(row.b.modal)}</td>
+            <td class="px-3 py-2 text-right font-mono ${deltaClass}">${escapeHtml(deltaStr)}</td>
+            <td class="px-3 py-2 text-center">${flipCell}</td>
+          </tr>
+          <tr class="fq-detail hidden border-b border-muted/10 bg-surface/50 dark:bg-surface-dark/50"
+              data-detail-for="${i}">
+            <td colspan="6" class="px-4 py-4">
+              <div class="mb-3 text-sm">
+                <strong>Question:</strong>
+                <span class="ml-1">${escapeHtml(row.text)}</span>
+              </div>
+              <div class="mb-2 text-xs text-muted">
+                JSD A: <span class="font-mono">${fmt(row.a.jsd)}</span>
+                · JSD B: <span class="font-mono">${fmt(row.b.jsd)}</span>
+                · Δ|JSD|: <span class="font-mono">${fmtSigned(row.deltaJsd)}</span>
+                · topic: <span>${escapeHtml(row.topic)}</span>
+              </div>
+              <div class="dist-legend">${renderLegend(row.options, row.humanDist)}</div>
+              <div class="dist-stack">
+                ${renderStackedBar("Human", row.humanDist, row.options)}
+                ${renderStackedBar("A", row.a.dist, row.options)}
+                ${renderStackedBar("B", row.b.dist, row.options)}
+              </div>
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+  }
+
+  function wireInteractions(): void {
+    // Sortable headers
+    document.querySelectorAll<HTMLElement>("#flipped-table thead th[data-sort]").forEach((th) => {
+      th.addEventListener("click", () => {
+        const key = th.dataset.sort as SortKey | undefined;
+        if (!key) return;
+        if (state.sortKey === key) {
+          state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
+        } else {
+          state.sortKey = key;
+          // Default direction per column: numeric → desc, text → asc
+          state.sortDir = key === "delta_jsd" || key === "flip" ? "desc" : "asc";
+        }
+        renderSortIndicators();
+        renderTable();
+      });
+    });
+
+    // Flipped-only toggle
+    const flippedOnly = document.getElementById("flipped-only") as HTMLInputElement | null;
+    if (flippedOnly) {
+      flippedOnly.addEventListener("change", () => {
+        state.flippedOnly = flippedOnly.checked;
+        renderTable();
+      });
+    }
+
+    // Row expansion (delegated)
+    const tbody = document.getElementById("flipped-tbody");
+    if (tbody) {
+      tbody.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement | null;
+        const row = target?.closest("tr.fq-row") as HTMLElement | null;
+        if (!row) return;
+        const idx = row.dataset.index;
+        if (!idx) return;
+        const detail = tbody.querySelector<HTMLElement>(
+          `tr.fq-detail[data-detail-for="${idx}"]`,
+        );
+        if (detail) detail.classList.toggle("hidden");
+      });
+    }
+  }
+
+  function renderSortIndicators(): void {
+    const ths = document.querySelectorAll<HTMLElement>("#flipped-table thead th[data-sort]");
+    ths.forEach((th) => {
+      const arrow = th.querySelector<HTMLElement>(".sort-arrow");
+      if (arrow) arrow.remove();
+      if (th.dataset.sort === state.sortKey) {
+        const span = document.createElement("span");
+        span.className = "sort-arrow";
+        span.setAttribute("aria-hidden", "true");
+        span.textContent = state.sortDir === "asc" ? "▲" : "▼";
+        span.style.marginLeft = "0.25rem";
+        th.appendChild(span);
+      }
+    });
+  }
+
+  function parseParams(): { mode: Mode; a: string; b: string } | null {
+    const qs = new URLSearchParams(window.location.search);
+    const a = qs.get("a") ?? "";
+    const b = qs.get("b") ?? "";
+    const rawMode = (qs.get("mode") ?? "config").toLowerCase();
+    const mode: Mode = rawMode === "run" ? "run" : "config";
+    if (!a || !b) return null;
+    return { mode, a, b };
+  }
+
+  async function main(): Promise<void> {
+    const root = document.getElementById("compare-root");
+    state.base = root?.dataset.base ?? "/";
+
+    const params = parseParams();
+    if (!params) {
+      showEmpty();
+      return;
+    }
+    state.mode = params.mode;
+    state.aId = params.a;
+    state.bId = params.b;
+
+    // Update mode badge
+    const badge = document.getElementById("compare-mode-badge");
+    if (badge) badge.textContent = state.mode;
+
+    try {
+      const loader = state.mode === "config" ? loadConfigSubject : loadRunSubject;
+      const [a, b] = await Promise.all([loader(state.aId, "A"), loader(state.bId, "B")]);
+
+      let warnA: string | undefined;
+      if (state.mode === "config") {
+        const note =
+          "Per-question detail is only published at the run level — the flipped-questions table compares the first replicate of each config.";
+        warnA = note;
+      }
+
+      renderSubjectChip("a", a, state.mode, warnA);
+      renderSubjectChip("b", b, state.mode);
+      renderMetrics(a, b);
+
+      state.rows = buildFlippedRows(a, b);
+      renderSortIndicators();
+      renderTable();
+      wireInteractions();
+    } catch (err) {
+      showError(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  main();
+</script>
+
+<style>
+  .metric-tile {
+    padding: 0.85rem;
+    border-radius: 0.5rem;
+    background: color-mix(in oklch, var(--color-surface) 60%, transparent);
+  }
+  .metric-tile--disjoint {
+    border: 2px solid color-mix(in oklch, var(--color-primary) 55%, transparent);
+  }
+  .metric-tile--overlap {
+    border: 2px dashed color-mix(in oklch, var(--color-muted) 45%, transparent);
+  }
+  .metric-tile--unknown {
+    border: 1px solid color-mix(in oklch, var(--color-muted) 25%, transparent);
+  }
+  .metric-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted);
+  }
+  .metric-sig {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+  }
+  .metric-side {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted);
+  }
+  .metric-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .metric-ci {
+    display: block;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    margin-top: 0.15rem;
+  }
+  .metric-delta {
+    margin-top: 0.6rem;
+    font-size: 0.8rem;
+    color: var(--color-muted);
+  }
+  .dist-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+  .dist-row {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .dist-label {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+  .dist-bar {
+    display: flex;
+    width: 100%;
+    height: 1rem;
+    overflow: hidden;
+    border-radius: 0.25rem;
+    background: color-mix(in oklch, var(--color-muted) 15%, transparent);
+  }
+  .dist-seg {
+    display: block;
+    height: 100%;
+  }
+  .dist-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    margin-bottom: 0.35rem;
+  }
+  .dist-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .dist-swatch {
+    display: inline-block;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 0.125rem;
+  }
+  #flipped-table thead th[data-sort] {
+    cursor: pointer;
+    user-select: none;
+  }
+  #flipped-table thead th[data-sort]:hover {
+    background: color-mix(in oklch, var(--color-primary) 8%, transparent);
+  }
+</style>
