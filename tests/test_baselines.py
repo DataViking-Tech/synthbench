@@ -18,6 +18,7 @@ from synthbench.baselines import (
     compute_ceiling,
     compute_ceiling_jsd,
     compute_ceiling_tau,
+    compute_opinionsqa_subgroup_ceilings,
     compute_temporal_drift,
     ensemble_bootstrap_ci,
 )
@@ -333,6 +334,219 @@ def test_temporal_drift_reproducible():
 # ---------------------------------------------------------------------------
 # Integration: JSD between half-samples is small but non-zero
 # ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# compute_opinionsqa_subgroup_ceilings
+# ---------------------------------------------------------------------------
+
+
+def _write_synthetic_wave(
+    base,
+    wave: int,
+    attribute: str,
+    *,
+    groups: dict[str, int],
+    mc_options: list[str],
+    n_questions: int = 3,
+) -> None:
+    """Write a synthetic Pew ATP wave fixture with a single attribute file.
+
+    ``groups`` maps group label -> total n per question. Option counts are
+    split roughly evenly across ``mc_options``.
+    """
+    import json
+
+    wave_dir = base / f"American_Trends_Panel_W{wave}"
+    wave_dir.mkdir(parents=True, exist_ok=True)
+    payload: dict = {}
+    for q in range(n_questions):
+        key = f"TESTQ{q}_W{wave}"
+        entry: dict = {
+            "MC_options": mc_options,
+            "question_text": f"Test question {q}",
+        }
+        for group, n in groups.items():
+            k = len(mc_options)
+            base_count = n // k
+            remainder = n - base_count * k
+            counts = {opt: float(base_count) for opt in mc_options}
+            # Put the remainder on the first option so the total matches n.
+            counts[mc_options[0]] += float(remainder)
+            entry[group] = counts
+        payload[key] = entry
+
+    with open(wave_dir / f"{attribute}_data.json", "w") as f:
+        json.dump(payload, f)
+
+
+def test_subgroup_ceilings_returns_none_when_missing(tmp_path):
+    # No human_resp directory — returns None.
+    assert compute_opinionsqa_subgroup_ceilings(data_dir=str(tmp_path)) is None
+
+
+def test_subgroup_ceilings_computes_per_wave_attribute_group(tmp_path, monkeypatch):
+    """Synthetic fixture: two waves × one attribute × two groups each."""
+    human_resp = tmp_path / "raw" / "human_resp"
+    human_resp.mkdir(parents=True)
+
+    mc = ["Agree", "Disagree", "Refused"]
+    _write_synthetic_wave(
+        human_resp,
+        wave=26,
+        attribute="EDUCATION",
+        groups={"College graduate": 800, "High school graduate": 450},
+        mc_options=mc,
+    )
+    _write_synthetic_wave(
+        human_resp,
+        wave=32,
+        attribute="EDUCATION",
+        groups={"College graduate": 600, "High school graduate": 100},
+        mc_options=mc,
+    )
+
+    # Restrict PEW_WAVES so the function only visits our fixture waves.
+    monkeypatch.setattr("synthbench.datasets.opinionsqa.PEW_WAVES", [26, 32])
+
+    out = compute_opinionsqa_subgroup_ceilings(data_dir=str(tmp_path), n_bootstrap=100)
+    assert out is not None
+    assert out["granularity"] == "wave_attribute_group"
+    assert out["n_subgroups"] == 4  # 2 waves × 2 groups
+    # Every row has wave/attribute/group identifiers.
+    rows = out["per_subgroup"]
+    keys = {(r["wave"], r["attribute"], r["group"]) for r in rows}
+    assert ("ATP W26", "EDUCATION", "College graduate") in keys
+    assert ("ATP W32", "EDUCATION", "High school graduate") in keys
+    # Distribution keys are emitted.
+    for k in ("min", "p25", "median", "p75", "max"):
+        assert k in out["distribution"]
+    assert 0.0 <= out["distribution"]["min"] <= out["distribution"]["max"] <= 1.0
+    # Median also surfaced as the reference ceiling for P_sub.
+    assert out["subgroup_ceiling_for_psub"] == out["distribution"]["median"]
+
+
+def test_subgroup_ceilings_worst_5_are_lowest(tmp_path, monkeypatch):
+    human_resp = tmp_path / "raw" / "human_resp"
+    human_resp.mkdir(parents=True)
+
+    mc = ["A", "B", "C"]
+    # Six groups with varying n. Smaller n -> lower ceiling.
+    _write_synthetic_wave(
+        human_resp,
+        wave=26,
+        attribute="EDUCATION",
+        groups={
+            "G1_big": 5000,
+            "G2_big": 4500,
+            "G3_mid": 800,
+            "G4_mid": 700,
+            "G5_small": 90,
+            "G6_small": 60,
+        },
+        mc_options=mc,
+    )
+    monkeypatch.setattr("synthbench.datasets.opinionsqa.PEW_WAVES", [26])
+
+    out = compute_opinionsqa_subgroup_ceilings(data_dir=str(tmp_path), n_bootstrap=100)
+    assert out is not None
+    assert len(out["worst_5_subgroups"]) == 5
+    worst_means = [r["ceiling"]["mean"] for r in out["worst_5_subgroups"]]
+    # Worst-5 list is sorted ascending by ceiling mean.
+    assert worst_means == sorted(worst_means)
+    # The 5 smallest-n groups dominate the worst list (G6_small is worst).
+    assert out["worst_5_subgroups"][0]["group"] == "G6_small"
+
+
+def test_subgroup_ceilings_quality_flag_downgrade_for_small_n(tmp_path, monkeypatch):
+    """Groups with n<200 (Cochran) must still be emitted but flagged 'low'."""
+    human_resp = tmp_path / "raw" / "human_resp"
+    human_resp.mkdir(parents=True)
+
+    mc = ["Yes", "No"]
+    _write_synthetic_wave(
+        human_resp,
+        wave=26,
+        attribute="RACE",
+        groups={"Big": 800, "Small": 80},  # small < 200 -> low flag
+        mc_options=mc,
+    )
+    monkeypatch.setattr("synthbench.datasets.opinionsqa.PEW_WAVES", [26])
+
+    out = compute_opinionsqa_subgroup_ceilings(data_dir=str(tmp_path), n_bootstrap=100)
+    assert out is not None
+
+    flags = {
+        (r["attribute"], r["group"]): r["ceiling"]["quality_flag"]
+        for r in out["per_subgroup"]
+    }
+    assert flags[("RACE", "Big")] == "high"
+    assert flags[("RACE", "Small")] == "low"
+    # Quality breakdown totals equal n_subgroups.
+    total = sum(out["quality_breakdown"].values())
+    assert total == out["n_subgroups"]
+
+
+def test_subgroup_ceilings_handles_cross_cut_nested_files(tmp_path, monkeypatch):
+    """Cross-cut files like POLPARTY_SEX nest one level deeper; labels flatten."""
+    import json
+
+    human_resp = tmp_path / "raw" / "human_resp"
+    wave_dir = human_resp / "American_Trends_Panel_W26"
+    wave_dir.mkdir(parents=True)
+
+    mc = ["Yes", "No"]
+    payload = {
+        "Q_W26": {
+            "MC_options": mc,
+            "question_text": "Cross-cut test",
+            "Democrat": {
+                "Female": {"Yes": 200.0, "No": 300.0},
+                "Male": {"Yes": 180.0, "No": 260.0},
+            },
+            "Republican": {
+                "Female": {"Yes": 150.0, "No": 260.0},
+                "Male": {"Yes": 140.0, "No": 240.0},
+            },
+        }
+    }
+    with open(wave_dir / "POLPARTY_SEX_data.json", "w") as f:
+        json.dump(payload, f)
+    monkeypatch.setattr("synthbench.datasets.opinionsqa.PEW_WAVES", [26])
+
+    out = compute_opinionsqa_subgroup_ceilings(data_dir=str(tmp_path), n_bootstrap=50)
+    assert out is not None
+    groups = {r["group"] for r in out["per_subgroup"]}
+    # Compound labels flatten to "<outer> × <inner>".
+    assert "Democrat × Female" in groups
+    assert "Republican × Male" in groups
+    # All four cross-cut cells emitted.
+    assert len(groups) == 4
+
+
+def test_subgroup_ceilings_skips_aggregate_none_data(tmp_path, monkeypatch):
+    """NONE_data.json is the wave-aggregate and must NOT be included."""
+    human_resp = tmp_path / "raw" / "human_resp"
+    wave_dir = human_resp / "American_Trends_Panel_W26"
+    wave_dir.mkdir(parents=True)
+
+    import json
+
+    mc = ["Yes", "No"]
+    # Only NONE_data.json present -> no per-subgroup files -> no rows.
+    payload = {
+        "Q_W26": {
+            "MC_options": mc,
+            "question_text": "Q",
+            "Democrat": {"Yes": 400.0, "No": 400.0},
+        }
+    }
+    with open(wave_dir / "NONE_data.json", "w") as f:
+        json.dump(payload, f)
+    monkeypatch.setattr("synthbench.datasets.opinionsqa.PEW_WAVES", [26])
+
+    out = compute_opinionsqa_subgroup_ceilings(data_dir=str(tmp_path), n_bootstrap=50)
+    assert out is None
 
 
 def test_multinomial_half_sample_jsd_shape():

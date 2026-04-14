@@ -1,4 +1,6 @@
 ---
+import leaderboardRaw from "@/data/leaderboard.json";
+
 interface Baseline {
   name: string;
   description: string;
@@ -9,6 +11,58 @@ interface Baseline {
     sections: { heading: string; body: string }[];
     statusNote?: string;
   };
+}
+
+// Pull the subgroup ceiling distribution out of leaderboard.json so the
+// methodology page shows the same numbers that the leaderboard uses when
+// scoring P_sub. Fall back to null if the publish step hasn't emitted the
+// subgroup block yet — the extra section is skipped silently in that case.
+type CeilingDict = { mean?: number };
+type SubgroupDistribution = {
+  min: number;
+  p25: number;
+  median: number;
+  p75: number;
+  max: number;
+};
+type WorstSubgroup = {
+  wave: string;
+  attribute: string;
+  group: string;
+  ceiling: CeilingDict;
+};
+type OpinionsQASubgroupBlock = {
+  distribution?: SubgroupDistribution;
+  subgroup_ceiling_for_psub?: number;
+  worst_5_subgroups?: WorstSubgroup[];
+  quality_breakdown?: Record<string, number>;
+  n_subgroups?: number;
+};
+type OpinionsQACeilingBlock = {
+  overall?: CeilingDict;
+  per_subgroup?: OpinionsQASubgroupBlock;
+};
+type BaselinesBlock = {
+  ceiling?: { opinionsqa?: OpinionsQACeilingBlock };
+};
+type RawLeaderboard = { baselines?: BaselinesBlock };
+
+const rawBaselines = (leaderboardRaw as RawLeaderboard).baselines ?? {};
+const oqaCeiling: OpinionsQACeilingBlock = rawBaselines.ceiling?.opinionsqa ?? {};
+const oqaAggregateMean: number | null = oqaCeiling.overall?.mean ?? null;
+const oqaSubgroup: OpinionsQASubgroupBlock | null = oqaCeiling.per_subgroup ?? null;
+const oqaSubgroupDist: SubgroupDistribution | null = oqaSubgroup?.distribution ?? null;
+const oqaSubgroupMedian: number | null =
+  oqaSubgroup?.subgroup_ceiling_for_psub ?? oqaSubgroupDist?.median ?? null;
+const oqaWorst: WorstSubgroup[] = Array.isArray(oqaSubgroup?.worst_5_subgroups)
+  ? oqaSubgroup.worst_5_subgroups.slice(0, 5)
+  : [];
+const oqaQualityBreakdown: Record<string, number> | null = oqaSubgroup?.quality_breakdown ?? null;
+const oqaNSubgroups: number | null = oqaSubgroup?.n_subgroups ?? null;
+
+function fmt(x: number | null | undefined, digits = 4): string {
+  if (x == null || Number.isNaN(x)) return "—";
+  return x.toFixed(digits);
 }
 
 const baselines: Baseline[] = [
@@ -68,6 +122,10 @@ const baselines: Baseline[] = [
         {
           heading: "Per-dataset protocol",
           body: "OpinionsQA: computed within-wave (never cross-wave — that measures drift, not reliability), aggregated weighted by n_questions per wave. SubPOP: per-subpop (22 subpopulations) + weighted aggregate. GlobalOpinionQA: per-country + regional aggregates, weighted by actual (country, question) coverage to avoid over-weighting US data.",
+        },
+        {
+          heading: "Two granularities: aggregate vs subgroup",
+          body: "P_dist is measured at wave granularity (~4.5k respondents/wave), so it compares against the wave-aggregate ceiling (~0.9995). P_sub is measured at (wave × attribute × group) granularity — typical n is 50-500, not 4,500 — so the aggregate ceiling materially overstates achievable headroom. OpinionsQA now emits a per-subgroup ceiling distribution and uses the median as the reference for P_sub; the wave-aggregate is kept for P_dist. A model at P_sub = 0.88 is not sitting 0.12 below a true ceiling of 0.9995 — its real headroom is the gap to the subgroup median, which is meaningfully smaller and shrinks further on low-n groups where the ceiling itself drops to ~0.95.",
         },
         {
           heading: "Measured values (v0.1)",
@@ -214,6 +272,137 @@ const baselines: Baseline[] = [
       </div>
     </div>
   </div>
+
+  {
+    oqaSubgroupDist && (
+      <div
+        class="rounded-lg border border-muted/20 bg-surface p-5 mb-6 dark:bg-surface-dark"
+        id="opinionsqa-subgroup-ceiling"
+      >
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
+          <h3 class="text-base font-semibold text-text dark:text-text-dark">
+            OpinionsQA: subgroup ceiling distribution
+          </h3>
+          <span class="text-sm font-mono text-primary dark:text-primary-light">
+            median {fmt(oqaSubgroupMedian)}
+          </span>
+        </div>
+        <p class="text-sm text-muted mb-4">
+          Per-(wave, attribute, group) ceilings across {oqaNSubgroups ?? "—"}{" "}
+          subgroups from 15 Pew ATP waves. The wave-aggregate ceiling (
+          {fmt(oqaAggregateMean)}, used for P_dist) is a different quantity
+          and does not bound P_sub.
+        </p>
+
+        {/* Min / p25 / median / p75 / max callout */}
+        <div class="grid grid-cols-5 gap-2 text-center mb-4">
+          {(["min", "p25", "median", "p75", "max"] as const).map((k) => (
+            <div class="rounded border border-muted/20 py-2">
+              <div class="text-[10px] uppercase tracking-wide text-muted">
+                {k}
+              </div>
+              <div class="text-sm font-mono font-semibold text-text dark:text-text-dark">
+                {fmt(oqaSubgroupDist[k])}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Range visualization with median marker */}
+        {(() => {
+          const min = oqaSubgroupDist.min;
+          const max = oqaSubgroupDist.max;
+          const p25 = oqaSubgroupDist.p25;
+          const p75 = oqaSubgroupDist.p75;
+          const median = oqaSubgroupDist.median;
+          const span = Math.max(max - min, 1e-9);
+          const pct = (v: number) => ((v - min) / span) * 100;
+          return (
+            <div class="relative h-6 bg-muted/10 rounded-full mb-6">
+              {/* IQR band */}
+              <div
+                class="absolute inset-y-0 rounded-full bg-primary/20"
+                style={`left: ${pct(p25)}%; right: ${100 - pct(p75)}%;`}
+              />
+              {/* Whiskers (min..p25, p75..max) via endpoint ticks */}
+              <div
+                class="absolute inset-y-1 w-0.5 bg-muted/60"
+                style={`left: ${pct(min)}%;`}
+              />
+              <div
+                class="absolute inset-y-1 w-0.5 bg-muted/60"
+                style={`left: ${pct(max)}%;`}
+              />
+              {/* Median tick */}
+              <div
+                class="absolute -inset-y-1 w-0.5 bg-primary dark:bg-primary-light"
+                style={`left: ${pct(median)}%;`}
+              />
+              <div
+                class="absolute -bottom-5 text-[10px] font-mono text-muted -translate-x-1/2"
+                style={`left: ${pct(min)}%;`}
+              >
+                {fmt(min, 3)}
+              </div>
+              <div
+                class="absolute -bottom-5 text-[10px] font-mono text-muted -translate-x-1/2"
+                style={`left: ${pct(max)}%;`}
+              >
+                {fmt(max, 3)}
+              </div>
+            </div>
+          );
+        })()}
+
+        {oqaWorst.length > 0 && (
+          <div class="mt-2">
+            <h4 class="text-xs font-semibold uppercase tracking-wide text-muted mb-1">
+              Lowest-ceiling subgroups
+            </h4>
+            <ul class="space-y-1">
+              {oqaWorst.map((w) => (
+                <li class="flex justify-between text-sm">
+                  <span class="truncate">
+                    <span class="text-muted">{w.wave}</span>
+                    <span class="mx-1">·</span>
+                    <span class="font-medium">{w.attribute}</span>
+                    <span class="mx-1">·</span>
+                    <span>{w.group}</span>
+                  </span>
+                  <span class="font-mono text-text/80 dark:text-text-dark/80 pl-2">
+                    {fmt(w.ceiling?.mean)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {oqaQualityBreakdown && (
+          <p class="mt-3 text-xs text-muted">
+            Quality flags (Cochran 1977):{" "}
+            <span class="font-mono">
+              {oqaQualityBreakdown.high ?? 0} high
+            </span>
+            {" · "}
+            <span class="font-mono">
+              {oqaQualityBreakdown.medium ?? 0} medium
+            </span>
+            {" · "}
+            <span class="font-mono">
+              {oqaQualityBreakdown.low ?? 0} low
+            </span>
+            {" — low-n subgroups are retained but flagged so low reliability is not conflated with poor model fit."}
+          </p>
+        )}
+
+        <p class="mt-3 text-xs italic text-muted border-l-2 border-muted/40 pl-3">
+          Used by the leaderboard when scoring P_sub; compare P_dist against the
+          wave-aggregate ceiling instead.
+        </p>
+      </div>
+    )
+  }
 
   <!-- Baseline cards -->
   <div class="space-y-4">

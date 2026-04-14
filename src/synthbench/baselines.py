@@ -511,6 +511,170 @@ def compute_opinionsqa_ceiling(
     }
 
 
+def compute_opinionsqa_subgroup_ceilings(
+    data_dir: str | None = None, n_bootstrap: int = 1000
+) -> dict | None:
+    """Compute per-(wave, attribute, group) ceilings for OpinionsQA.
+
+    The aggregate ceiling from compute_opinionsqa_ceiling() is wave-level (n
+    ~= 4000-5000 per wave) and overstates the achievable ceiling for P_sub,
+    which is measured at (wave × attribute × group) granularity where
+    subgroup sizes are 50-500. This function computes the ceiling at the
+    same granularity as the metric it bounds.
+
+    Aggregates per-question ceilings into one ceiling per (wave, attribute,
+    group), then emits the distribution (min/p25/median/p75/max) plus the
+    five worst subgroups by name.
+
+    Quality flags follow Cochran (1977): high n≥400, medium 200≤n<400,
+    low n<200. Small subgroups are retained but flagged so callers can
+    filter if needed.
+
+    Returns None if raw data is not on disk.
+    """
+    from pathlib import Path
+
+    from synthbench.datasets.opinionsqa import (
+        PEW_WAVES,
+        WAVE_YEAR_MAP,
+        _default_cache_dir,
+    )
+
+    data_path = Path(data_dir) if data_dir else _default_cache_dir()
+    human_resp = data_path / "raw" / "human_resp"
+    if not human_resp.is_dir():
+        return None
+
+    import json
+
+    # Per-subgroup files shipped by Pew ATP. NONE_data.json is excluded
+    # because it is the wave-aggregate (not a subgroup).
+    ATTRIBUTE_FILES = [
+        "EDUCATION",
+        "POLPARTY",
+        "POLIDEOLOGY",
+        "RACE",
+        "SEX",
+        "INCOME",
+        "AGE",
+        "CREGION",
+        "POLPARTY_SEX",
+        "POLPARTY_RACE",
+        "RACE_SEX",
+    ]
+
+    per_subgroup_rows: list[dict] = []
+
+    for wave in PEW_WAVES:
+        wave_dir = human_resp / f"American_Trends_Panel_W{wave}"
+        if not wave_dir.is_dir():
+            continue
+        year = WAVE_YEAR_MAP.get(wave, 0)
+        wave_label = f"ATP W{wave}"
+
+        for attr in ATTRIBUTE_FILES:
+            path = wave_dir / f"{attr}_data.json"
+            if not path.exists():
+                continue
+
+            with open(path) as f:
+                data = json.load(f)
+
+            # Bucket per-question ceilings by subgroup key. Cross-cut files
+            # (e.g. POLPARTY_SEX) ship one level of nesting — leaves are the
+            # option-count dicts we care about; branches become compound
+            # group labels like "Democrat × Female".
+            def _iter_subgroups(obj, prefix: str = ""):
+                for sub_key, sub_val in obj.items():
+                    if sub_key in ("MC_options", "question_text"):
+                        continue
+                    if not isinstance(sub_val, dict):
+                        continue
+                    inner_vals = list(sub_val.values())
+                    if inner_vals and all(isinstance(v, dict) for v in inner_vals):
+                        # Nested cross-cut: recurse one level.
+                        label = f"{prefix}{sub_key} × "
+                        yield from _iter_subgroups(sub_val, prefix=label)
+                    else:
+                        yield f"{prefix}{sub_key}", sub_val
+
+            group_ceilings: dict[str, list[CeilingResult]] = {}
+            for _qkey, entry in data.items():
+                if not isinstance(entry, dict):
+                    continue
+                for group_label, counts in _iter_subgroups(entry):
+                    int_counts: dict[str, int] = {}
+                    for k, v in counts.items():
+                        try:
+                            fv = float(v)
+                        except (TypeError, ValueError):
+                            continue
+                        if fv > 0:
+                            int_counts[k] = int(round(fv))
+                    if sum(int_counts.values()) < 10:
+                        continue
+                    try:
+                        r = compute_ceiling_jsd(int_counts, n_bootstrap=n_bootstrap)
+                    except ValueError:
+                        continue
+                    group_ceilings.setdefault(group_label, []).append(r)
+
+            for group, results in sorted(group_ceilings.items()):
+                agg = aggregate_ceilings(results)
+                if agg is None:
+                    continue
+                per_subgroup_rows.append(
+                    {
+                        "wave": wave_label,
+                        "year": year,
+                        "attribute": attr,
+                        "group": group,
+                        "n_questions": len(results),
+                        "ceiling": agg.to_dict(),
+                    }
+                )
+
+    if not per_subgroup_rows:
+        return None
+
+    values = np.array(
+        [row["ceiling"]["mean"] for row in per_subgroup_rows], dtype=np.float64
+    )
+    distribution = {
+        "min": round(float(values.min()), 6),
+        "p25": round(float(np.percentile(values, 25)), 6),
+        "median": round(float(np.percentile(values, 50)), 6),
+        "p75": round(float(np.percentile(values, 75)), 6),
+        "max": round(float(values.max()), 6),
+    }
+
+    worst_5 = sorted(per_subgroup_rows, key=lambda r: r["ceiling"]["mean"])[:5]
+
+    quality_breakdown: dict[str, int] = {"high": 0, "medium": 0, "low": 0}
+    for row in per_subgroup_rows:
+        flag = row["ceiling"]["quality_flag"]
+        quality_breakdown[flag] = quality_breakdown.get(flag, 0) + 1
+
+    return {
+        "dataset": "opinionsqa",
+        "granularity": "wave_attribute_group",
+        "distribution": distribution,
+        "subgroup_ceiling_for_psub": distribution["median"],
+        "worst_5_subgroups": worst_5,
+        "quality_breakdown": quality_breakdown,
+        "n_subgroups": len(per_subgroup_rows),
+        "per_subgroup": per_subgroup_rows,
+        "protocol": "per_subgroup_split_half_multinomial_bootstrap",
+        "n_bootstrap": n_bootstrap,
+        "note": (
+            "P_sub is a per-(wave, attribute, group) metric; the wave-aggregate "
+            "ceiling overstates achievable headroom at subgroup granularity. "
+            "Use the median subgroup ceiling (subgroup_ceiling_for_psub) as the "
+            "reference for P_sub, and the distribution to characterize spread."
+        ),
+    }
+
+
 def compute_subpop_ceiling(
     data_dir: str | None = None,
     n_per_subpop: int = 500,

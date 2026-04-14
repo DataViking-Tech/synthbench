@@ -411,6 +411,7 @@ def _build_baselines(results: list[dict], datasets: list[str]) -> dict:
     from synthbench.baselines import (
         compute_globalopinionqa_ceiling,
         compute_opinionsqa_ceiling,
+        compute_opinionsqa_subgroup_ceilings,
         compute_subpop_ceiling,
         compute_temporal_drift,
     )
@@ -456,8 +457,12 @@ def _build_baselines(results: list[dict], datasets: list[str]) -> dict:
     }
 
     if "opinionsqa" in datasets:
-        oqa = compute_opinionsqa_ceiling()
+        # B=1000 for published numbers (per datasci review, Finding A).
+        oqa = compute_opinionsqa_ceiling(n_bootstrap=1000)
         if oqa is not None:
+            sub = compute_opinionsqa_subgroup_ceilings(n_bootstrap=1000)
+            if sub is not None:
+                oqa["per_subgroup"] = sub
             out["ceiling"]["opinionsqa"] = oqa
 
         # Temporal drift floor (OpinionsQA only) — computed from the full
