@@ -131,7 +131,178 @@ def _compute_topic_metrics(per_question: list[dict]) -> dict[str, dict[str, floa
     return metrics
 
 
-def _build_entry(r: dict, rank: int) -> dict:
+_COST_FIELD_KEYS = (
+    "cost_usd",
+    "cost_per_100q",
+    "cost_per_sps_point",
+    "is_cost_estimated",
+)
+
+_NULL_COST_FIELDS: dict = {k: None for k in _COST_FIELD_KEYS}
+
+
+def _compute_cost_fields(aggregate: dict, config: dict, entry: dict) -> dict:
+    """Derive cost_usd, cost_per_100q, cost_per_sps_point, is_cost_estimated.
+
+    Returns a dict with all four keys; values are ``None`` whenever token usage
+    or pricing is unavailable. ``cost_per_sps_point`` is also ``None`` when SPS
+    is below 0.01 (avoid divide-by-near-zero amplification).
+
+    Self-hosted (``ollama/*``) and unknown-provider rows produce nulls.
+    Rows whose token_usage records zero tokens emit ``$0.00`` even when the
+    provider has no priced equivalent (baselines): zero × any rate is zero,
+    so we report measured-zero rather than missing-data.
+    """
+    token_usage = (aggregate or {}).get("token_usage")
+    if not isinstance(token_usage, dict):
+        return dict(_NULL_COST_FIELDS)
+
+    input_tokens = int(token_usage.get("input_tokens") or 0)
+    output_tokens = int(token_usage.get("output_tokens") or 0)
+
+    n = entry.get("n") or aggregate.get("n_questions") or 0
+    sps = entry.get("sps") or 0
+
+    if input_tokens == 0 and output_tokens == 0:
+        cost_usd = 0.0
+    else:
+        provider = (config or {}).get("provider")
+        if not provider:
+            return dict(_NULL_COST_FIELDS)
+        try:
+            from synth_panel.cost import lookup_pricing_by_provider
+        except ImportError:
+            return dict(_NULL_COST_FIELDS)
+        pricing, _is_estimated = lookup_pricing_by_provider(provider)
+        if pricing is None:
+            return dict(_NULL_COST_FIELDS)
+        cost_usd = (
+            input_tokens * pricing.input_cost_per_million
+            + output_tokens * pricing.output_cost_per_million
+        ) / 1_000_000
+
+    cost_per_100q = (cost_usd / n * 100) if n > 0 else None
+    cost_per_sps_point = (cost_usd / sps) if sps >= 0.01 else None
+
+    return {
+        "cost_usd": round(cost_usd, 6),
+        "cost_per_100q": round(cost_per_100q, 6) if cost_per_100q is not None else None,
+        "cost_per_sps_point": (
+            round(cost_per_sps_point, 6) if cost_per_sps_point is not None else None
+        ),
+        "is_cost_estimated": False,
+    }
+
+
+def _compute_ensemble_cost(
+    config: dict,
+    results_by_provider_ds: dict[tuple[str, str], dict],
+) -> float | None:
+    """Sum cost_usd across constituent runs listed in ``config.ensemble_sources``.
+
+    Returns ``None`` if any constituent has no token_usage or unresolved pricing.
+    """
+    sources = (config or {}).get("ensemble_sources")
+    if not sources:
+        return None
+
+    try:
+        from synth_panel.cost import lookup_pricing_by_provider
+    except ImportError:
+        return None
+
+    dataset = (config or {}).get("dataset", "unknown")
+    total = 0.0
+    for src in sources:
+        provider = src.get("provider")
+        if not provider:
+            return None
+        constituent = results_by_provider_ds.get((provider, dataset))
+        if constituent is None:
+            return None
+        usage = constituent.get("aggregate", {}).get("token_usage")
+        if not isinstance(usage, dict):
+            return None
+        pricing, _ = lookup_pricing_by_provider(provider)
+        if pricing is None:
+            return None
+        in_tok = int(usage.get("input_tokens") or 0)
+        out_tok = int(usage.get("output_tokens") or 0)
+        total += (
+            in_tok * pricing.input_cost_per_million
+            + out_tok * pricing.output_cost_per_million
+        ) / 1_000_000
+    return round(total, 6)
+
+
+def _build_pricing_snapshot() -> dict:
+    """Emit the rates table used for this publish run.
+
+    Reads the named pricing constants from ``synth_panel.cost`` plus the
+    ``# pricing snapshot_date: YYYY-MM-DD`` anchor comment, and stamps the
+    installed synthpanel version. Designed to be lossless under ``json.dump``.
+    """
+    rates: dict[str, dict] = {}
+    snapshot_date: str | None = None
+    synth_panel_version: str | None = None
+
+    try:
+        from synth_panel import cost as _spc
+    except ImportError:
+        _spc = None  # type: ignore[assignment]
+
+    if _spc is not None:
+        named_constants = (
+            ("haiku", "HAIKU_PRICING"),
+            ("sonnet", "SONNET_PRICING"),
+            ("opus", "OPUS_PRICING"),
+            ("gemini-2.5-pro", "GEMINI_PRO_PRICING"),
+            ("gemini-flash", "GEMINI_FLASH_PRICING"),
+        )
+        for label, attr in named_constants:
+            pricing = getattr(_spc, attr, None)
+            if pricing is None:
+                continue
+            rates[label] = {
+                "input_cost_per_million": pricing.input_cost_per_million,
+                "output_cost_per_million": pricing.output_cost_per_million,
+                "cache_creation_cost_per_million": pricing.cache_creation_cost_per_million,
+                "cache_read_cost_per_million": pricing.cache_read_cost_per_million,
+            }
+
+        try:
+            import inspect
+
+            source = inspect.getsource(_spc)
+            m = re.search(r"pricing snapshot_date:\s*(\d{4}-\d{2}-\d{2})", source)
+            if m:
+                snapshot_date = m.group(1)
+        except (OSError, TypeError):
+            snapshot_date = None
+
+    try:
+        from importlib.metadata import PackageNotFoundError, version
+
+        try:
+            synth_panel_version = version("synthpanel")
+        except PackageNotFoundError:
+            synth_panel_version = None
+    except ImportError:
+        synth_panel_version = None
+
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "synth_panel_version": synth_panel_version,
+        "snapshot_date": snapshot_date,
+        "rates": rates,
+    }
+
+
+def _build_entry(
+    r: dict,
+    rank: int,
+    results_by_provider_ds: dict[tuple[str, str], dict] | None = None,
+) -> dict:
     """Build a leaderboard entry from a result dict."""
     from synthbench.config_id import build_config_id
     from synthbench.leaderboard import display_provider_name, provider_framework
@@ -239,6 +410,22 @@ def _build_entry(r: dict, rank: int) -> dict:
                     )
         if flat_demographics:
             entry["demographic_scores"] = flat_demographics
+
+    cost_fields = _compute_cost_fields(agg, cfg, entry)
+    if is_ensemble:
+        ens_cost = _compute_ensemble_cost(cfg, results_by_provider_ds or {})
+        if ens_cost is None:
+            cost_fields = dict(_NULL_COST_FIELDS)
+        else:
+            n = entry.get("n") or 0
+            sps = entry.get("sps") or 0
+            cost_fields = {
+                "cost_usd": round(ens_cost, 6),
+                "cost_per_100q": round(ens_cost / n * 100, 6) if n > 0 else None,
+                "cost_per_sps_point": round(ens_cost / sps, 6) if sps >= 0.01 else None,
+                "is_cost_estimated": False,
+            }
+    entry.update(cost_fields)
 
     return entry
 
@@ -710,6 +897,16 @@ def publish_leaderboard_data(
 
     deduped = _dedup_results(results)
 
+    # Index by (provider_string, dataset) so ensemble cost can resolve its
+    # constituent runs. Built off the deduped pool — ensemble_sources reference
+    # canonical provider strings (e.g., "synthpanel/claude-haiku-4-5-...") that
+    # match the constituent runs surviving dedup.
+    results_by_provider_ds: dict[tuple[str, str], dict] = {}
+    for r in deduped:
+        cfg_r = r.get("config", {})
+        key = (cfg_r.get("provider", ""), cfg_r.get("dataset", "unknown"))
+        results_by_provider_ds[key] = r
+
     # Collect all datasets
     datasets_set: set[str] = set()
     for r in deduped:
@@ -725,7 +922,7 @@ def publish_leaderboard_data(
         ]
         ds_results.sort(key=lambda r: r.get("scores", {}).get("sps", 0), reverse=True)
         for rank, r in enumerate(ds_results, 1):
-            entries.append(_build_entry(r, rank))
+            entries.append(_build_entry(r, rank, results_by_provider_ds))
 
     # Build convergence data
     from synthbench.leaderboard import build_convergence_data
@@ -756,6 +953,7 @@ def publish_leaderboard_data(
         "convergence": convergence,
         "findings": _build_findings(),
         "baselines": baselines,
+        "pricing_snapshot": _build_pricing_snapshot(),
     }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
