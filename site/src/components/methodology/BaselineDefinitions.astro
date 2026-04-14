@@ -10,6 +10,7 @@ interface Baseline {
   extended?: {
     sections: { heading: string; body: string }[];
     statusNote?: string;
+    seeAlso?: { href: string; label: string };
   };
 }
 
@@ -169,6 +170,10 @@ const baselines: Baseline[] = [
           body: "Computed for OpinionsQA only (requires same-wording repeated questions, which Pew ATP uniquely ships). Not applicable to SubPOP or GlobalOpinionQA snapshots. Values emitted to leaderboard.json under baselines.temporal_drift.",
         },
       ],
+      seeAlso: {
+        href: "/findings/#temporal-drift-floor",
+        label: "See drift-by-year-gap visualization on the Findings page",
+      },
     },
   },
 ];
@@ -472,6 +477,17 @@ const baselines: Baseline[] = [
               {b.extended.statusNote && (
                 <p class="text-xs italic text-muted border-l-2 border-muted/40 pl-3">
                   {b.extended.statusNote}
+                </p>
+              )}
+              {b.extended.seeAlso && (
+                <p class="text-sm">
+                  <span class="font-medium">See also:</span>{" "}
+                  <a
+                    href={b.extended.seeAlso.href}
+                    class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
+                  >
+                    {b.extended.seeAlso.label}
+                  </a>
                 </p>
               )}
             </div>

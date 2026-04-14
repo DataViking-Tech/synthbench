@@ -117,6 +117,25 @@ export interface ConvergencePoint {
   sps: number;
 }
 
+export interface TemporalDriftByYearGap {
+  mean_jsd: number;
+  n_pairs: number;
+}
+
+export interface TemporalDriftFloor {
+  mean_drift: number;
+  ci_low: number;
+  ci_high: number;
+  n_pairs: number;
+  n_stems: number;
+  by_year_gap: Record<string, TemporalDriftByYearGap>;
+  method?: string;
+}
+
+export interface Baselines {
+  temporal_drift?: TemporalDriftFloor;
+}
+
 export interface SynthBenchData {
   generated_at: string;
   synthbench_version: string;
@@ -124,6 +143,7 @@ export interface SynthBenchData {
   entries: LeaderboardEntry[];
   convergence: ConvergencePoint[];
   findings: FindingsData;
+  baselines?: Baselines;
 }
 
 /** @deprecated Use SynthBenchData — alias kept for existing component imports */

@@ -1,0 +1,137 @@
+---
+import Chart from "@/components/shared/Chart.astro";
+import type { LeaderboardData } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+const drift = leaderboard.baselines?.temporal_drift;
+
+const gapEntries = drift
+  ? Object.entries(drift.by_year_gap)
+      .map(([gap, v]) => ({
+        gap: Number(gap),
+        mean_jsd: v.mean_jsd,
+        n_pairs: v.n_pairs,
+      }))
+      .sort((a, b) => a.gap - b.gap)
+  : [];
+
+const categories = gapEntries.map((e) => (e.gap === 1 ? "1 year" : `${e.gap} years`));
+const values = gapEntries.map((e) => e.mean_jsd);
+const nPairs = gapEntries.map((e) => e.n_pairs);
+
+const barColor = "#7c3aed";
+const overallColor = "#64748b";
+
+const chartOption = drift
+  ? {
+      tooltip: {
+        trigger: "axis" as const,
+        formatter: (
+          params: { dataIndex: number; value: number; marker: string; seriesName: string }[],
+        ) => {
+          const p = params[0];
+          if (!p) return "";
+          const entry = gapEntries[p.dataIndex];
+          return `<div style="font-size:13px"><strong>${categories[p.dataIndex]} gap</strong><br/>${p.marker} Mean JSD: ${entry.mean_jsd.toFixed(5)}<br/>n_pairs: ${entry.n_pairs}</div>`;
+        },
+      },
+      grid: { left: 60, right: 40, top: 40, bottom: 50, containLabel: true },
+      xAxis: {
+        type: "category" as const,
+        data: categories,
+        name: "Year gap between Pew waves",
+        nameLocation: "middle" as const,
+        nameGap: 30,
+      },
+      yAxis: {
+        type: "value" as const,
+        name: "Mean JSD",
+        nameLocation: "middle" as const,
+        nameGap: 55,
+        min: 0,
+        axisLabel: {
+          formatter: (v: number) => v.toFixed(4),
+        },
+      },
+      series: [
+        {
+          name: "Mean JSD by gap",
+          type: "bar" as const,
+          data: values,
+          itemStyle: {
+            color: barColor,
+            borderRadius: [4, 4, 0, 0] as [number, number, number, number],
+          },
+          label: {
+            show: true,
+            position: "top" as const,
+            fontSize: 11,
+            formatter: (p: { dataIndex: number }) => `n=${nPairs[p.dataIndex]}`,
+            color: "var(--color-muted, #64748b)",
+          },
+          markLine: {
+            symbol: ["none", "none"] as [string, string],
+            silent: true,
+            animation: false,
+            lineStyle: { color: overallColor, width: 1.5, type: "dashed" as const },
+            label: {
+              show: true,
+              position: "insideEndTop" as const,
+              formatter: `overall mean ${drift.mean_drift.toFixed(5)}`,
+              fontSize: 11,
+              color: overallColor,
+            },
+            data: [{ yAxis: drift.mean_drift }],
+          },
+          markArea: {
+            silent: true,
+            itemStyle: { color: overallColor, opacity: 0.08 },
+            data: [[{ yAxis: drift.ci_low }, { yAxis: drift.ci_high }]],
+          },
+        },
+      ],
+      toolbox: {
+        feature: { saveAsImage: { title: "Save as PNG" } },
+        right: 10,
+        top: 10,
+      },
+    }
+  : null;
+
+const hasData = !!drift && gapEntries.length > 0;
+---
+
+<section class="w-full max-w-4xl mx-auto py-8" id="temporal-drift-floor">
+  <h2 class="text-2xl font-bold text-center mb-2">Temporal Drift Floor</h2>
+  <p class="text-center text-sm text-muted mb-6 max-w-2xl mx-auto">
+    Mean Jensen-Shannon divergence between the same Pew ATP question stems across
+    different waves, grouped by year gap. A separate baseline from the Human
+    Ceiling — drift measures how much real-world opinions shift, not sampling
+    noise.
+  </p>
+  {hasData && chartOption ? (
+    <>
+      <Chart option={chartOption} height="360px" />
+      <p class="mt-4 text-xs text-muted max-w-2xl mx-auto text-center italic">
+        A model frozen at time T cannot improve beyond the temporal drift floor
+        when evaluated against later waves. Shaded band = bootstrap 95% CI on the
+        overall mean ({drift!.ci_low.toFixed(5)}–{drift!.ci_high.toFixed(5)},
+        n_pairs={drift!.n_pairs}, n_stems={drift!.n_stems}). See the{" "}
+        <a
+          href="/methodology/#baselines"
+          class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
+        >
+          Temporal Drift Floor definition
+        </a>{" "}
+        on the methodology page.
+      </p>
+    </>
+  ) : (
+    <div class="text-center text-muted py-12 border border-muted/20 rounded-lg">
+      Temporal drift data not yet available. Requires repeated Pew ATP question
+      stems across waves (OpinionsQA only).
+    </div>
+  )}
+</section>
