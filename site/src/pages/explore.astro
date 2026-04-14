@@ -1,0 +1,720 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Explore Runs - SynthBench">
+  <div class="mx-auto max-w-7xl px-4 py-10 space-y-6">
+    <header class="space-y-2">
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Explore Runs</h1>
+      <p class="text-muted max-w-3xl leading-relaxed">
+        Browse every benchmark run. Grouped by framework and base model. Pick two
+        configs or runs to open them side-by-side in Compare.
+      </p>
+      <p id="explore-summary" class="text-sm text-muted" aria-live="polite"></p>
+    </header>
+
+    <section
+      aria-label="Filters"
+      class="rounded-lg border border-muted/20 bg-surface dark:bg-surface-dark p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
+      <div class="flex flex-col gap-1">
+        <label for="filter-search" class="text-xs font-semibold uppercase tracking-wide text-muted"
+          >Search model</label
+        >
+        <input
+          id="filter-search"
+          type="search"
+          placeholder="e.g. claude, gpt-4o, llama"
+          class="rounded-md border border-muted/30 bg-surface dark:bg-surface-dark px-3 py-1.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="filter-dataset" class="text-xs font-semibold uppercase tracking-wide text-muted"
+          >Dataset</label
+        >
+        <select
+          id="filter-dataset"
+          class="rounded-md border border-muted/30 bg-surface dark:bg-surface-dark px-3 py-1.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        >
+          <option value="">All datasets</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label
+          for="filter-framework"
+          class="text-xs font-semibold uppercase tracking-wide text-muted">Framework</label
+        >
+        <select
+          id="filter-framework"
+          class="rounded-md border border-muted/30 bg-surface dark:bg-surface-dark px-3 py-1.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        >
+          <option value="">All frameworks</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <span class="text-xs font-semibold uppercase tracking-wide text-muted"
+          >Temperature <span id="filter-temp-label" class="text-text/70 dark:text-text-dark/70"
+            >any</span
+          ></span
+        >
+        <div class="flex items-center gap-2">
+          <input
+            id="filter-temp-min"
+            type="range"
+            min="0"
+            max="2"
+            step="0.05"
+            value="0"
+            aria-label="Minimum temperature"
+            class="w-full accent-primary"
+          />
+          <input
+            id="filter-temp-max"
+            type="range"
+            min="0"
+            max="2"
+            step="0.05"
+            value="2"
+            aria-label="Maximum temperature"
+            class="w-full accent-primary"
+          />
+        </div>
+        <label class="mt-1 inline-flex items-center gap-2 text-xs text-muted">
+          <input id="filter-temp-include-null" type="checkbox" checked class="accent-primary" />
+          Include runs with no temperature (baselines, ensembles)
+        </label>
+      </div>
+
+      <div class="flex flex-col gap-2 lg:col-span-2">
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input id="filter-baselines" type="checkbox" checked class="accent-primary" />
+          Show baselines
+        </label>
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input id="filter-collapse" type="checkbox" checked class="accent-primary" />
+          Collapse replicates into parent config
+        </label>
+      </div>
+
+      <div class="flex items-end gap-2 lg:col-span-2 lg:justify-end">
+        <button
+          id="filter-reset"
+          type="button"
+          class="rounded-md border border-muted/30 px-3 py-1.5 text-sm font-medium hover:bg-muted/10"
+        >Reset filters</button>
+        <button
+          id="expand-all"
+          type="button"
+          class="rounded-md border border-muted/30 px-3 py-1.5 text-sm font-medium hover:bg-muted/10"
+        >Expand all</button>
+        <button
+          id="collapse-all"
+          type="button"
+          class="rounded-md border border-muted/30 px-3 py-1.5 text-sm font-medium hover:bg-muted/10"
+        >Collapse all</button>
+      </div>
+    </section>
+
+    <div
+      id="explore-tree"
+      role="tree"
+      aria-label="Runs hierarchy"
+      class="space-y-2 min-h-[240px]"
+    >
+      <p class="text-muted text-sm">Loading runs…</p>
+    </div>
+
+    <div
+      id="compare-tray"
+      role="region"
+      aria-label="Compare selection"
+      hidden
+      class="sticky bottom-4 z-30 mx-auto max-w-4xl rounded-lg border border-primary/40 bg-surface dark:bg-surface-dark shadow-lg p-4 flex flex-col sm:flex-row sm:items-center gap-3"
+    >
+      <div class="flex-1 flex flex-wrap items-center gap-2">
+        <span class="text-sm font-semibold">Compare:</span>
+        <span id="compare-chips" class="flex flex-wrap gap-2"></span>
+        <span id="compare-hint" class="text-xs text-muted"
+          >Pick another to enable compare</span
+        >
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          id="compare-clear"
+          type="button"
+          class="rounded-md border border-muted/30 px-3 py-1.5 text-sm font-medium hover:bg-muted/10"
+        >Clear</button>
+        <a
+          id="compare-go"
+          href="#"
+          class="rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-white hover:bg-primary-dark disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50"
+          aria-disabled="true"
+        >Compare &rarr;</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import type { RunIndex, RunIndexEntry } from "@/types/runs";
+
+  type SelectionMode = "config" | "run";
+  interface Selection {
+    id: string;
+    label: string;
+    mode: SelectionMode;
+  }
+
+  interface ConfigGroup {
+    config_id: string;
+    framework: string;
+    base_provider: string | null;
+    model: string;
+    display_name: string;
+    dataset: string;
+    temperature: number | null;
+    template: string | null;
+    is_baseline: boolean;
+    is_ensemble: boolean;
+    replicates: RunIndexEntry[];
+    agg_sps: number | null;
+    agg_jsd: number | null;
+    agg_tau: number | null;
+  }
+
+  const BASE = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
+
+  const state = {
+    runs: [] as RunIndexEntry[],
+    search: "",
+    dataset: "",
+    framework: "",
+    tempMin: 0,
+    tempMax: 2,
+    tempIncludeNull: true,
+    showBaselines: true,
+    collapseReplicates: true,
+    selection: [] as Selection[],
+    // Tracks which Framework/BaseModel keys are collapsed (default expanded).
+    collapsedGroups: new Set<string>(),
+  };
+
+  function fmtScore(value: number | null | undefined): string {
+    return value == null ? "—" : value.toFixed(3);
+  }
+
+  function meanOf(values: (number | null)[]): number | null {
+    const nums = values.filter((v): v is number => typeof v === "number" && !Number.isNaN(v));
+    if (nums.length === 0) return null;
+    return nums.reduce((a, b) => a + b, 0) / nums.length;
+  }
+
+  function buildConfigGroups(runs: RunIndexEntry[]): ConfigGroup[] {
+    const byConfig = new Map<string, RunIndexEntry[]>();
+    for (const r of runs) {
+      const list = byConfig.get(r.config_id);
+      if (list) list.push(r);
+      else byConfig.set(r.config_id, [r]);
+    }
+    const groups: ConfigGroup[] = [];
+    for (const [config_id, replicates] of byConfig) {
+      const head = replicates[0];
+      groups.push({
+        config_id,
+        framework: head.framework,
+        base_provider: head.base_provider,
+        model: head.model,
+        display_name: head.display_name,
+        dataset: head.dataset,
+        temperature: head.temperature,
+        template: head.template,
+        is_baseline: head.is_baseline,
+        is_ensemble: head.is_ensemble,
+        replicates,
+        agg_sps: meanOf(replicates.map((r) => r.sps)),
+        agg_jsd: meanOf(replicates.map((r) => r.jsd)),
+        agg_tau: meanOf(replicates.map((r) => r.tau)),
+      });
+    }
+    return groups;
+  }
+
+  function matchesFilters(r: RunIndexEntry): boolean {
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      const hay = `${r.model} ${r.display_name} ${r.base_provider ?? ""}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (state.dataset && r.dataset !== state.dataset) return false;
+    if (state.framework && r.framework !== state.framework) return false;
+    if (!state.showBaselines && r.is_baseline) return false;
+    if (r.temperature == null) {
+      if (!state.tempIncludeNull) return false;
+    } else {
+      if (r.temperature < state.tempMin || r.temperature > state.tempMax) return false;
+    }
+    return true;
+  }
+
+  function populateSelects(runs: RunIndexEntry[]): void {
+    const datasetSel = document.getElementById("filter-dataset") as HTMLSelectElement | null;
+    const frameworkSel = document.getElementById("filter-framework") as HTMLSelectElement | null;
+    if (!datasetSel || !frameworkSel) return;
+
+    const datasets = Array.from(new Set(runs.map((r) => r.dataset))).sort();
+    for (const d of datasets) {
+      const opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d;
+      datasetSel.appendChild(opt);
+    }
+    const frameworks = Array.from(new Set(runs.map((r) => r.framework))).sort();
+    for (const f of frameworks) {
+      const opt = document.createElement("option");
+      opt.value = f;
+      opt.textContent = f;
+      frameworkSel.appendChild(opt);
+    }
+  }
+
+  function groupKey(framework: string, baseModel: string): string {
+    return `${framework}::${baseModel}`;
+  }
+
+  function baseModelLabel(group: ConfigGroup): string {
+    if (group.is_baseline) return "Baselines";
+    if (group.is_ensemble) return "Ensembles";
+    const bp = group.base_provider ?? "(unknown)";
+    return `${bp} / ${group.model}`;
+  }
+
+  function selectionContainsId(id: string): boolean {
+    return state.selection.some((s) => s.id === id);
+  }
+
+  function modeOfSelection(): SelectionMode | null {
+    if (state.selection.length === 0) return null;
+    return state.selection[0].mode;
+  }
+
+  function toggleSelection(sel: Selection): void {
+    const idx = state.selection.findIndex((s) => s.id === sel.id);
+    if (idx >= 0) {
+      state.selection.splice(idx, 1);
+    } else {
+      // Enforce same mode across the picker. Clear if switching modes.
+      if (state.selection.length > 0 && state.selection[0].mode !== sel.mode) {
+        state.selection = [];
+      }
+      state.selection.push(sel);
+      // Cap at 2: drop oldest to make room.
+      if (state.selection.length > 2) state.selection.shift();
+    }
+    renderCompareTray();
+    render();
+  }
+
+  function renderCompareTray(): void {
+    const tray = document.getElementById("compare-tray") as HTMLElement | null;
+    const chips = document.getElementById("compare-chips");
+    const hint = document.getElementById("compare-hint");
+    const go = document.getElementById("compare-go") as HTMLAnchorElement | null;
+    if (!tray || !chips || !hint || !go) return;
+
+    if (state.selection.length === 0) {
+      tray.hidden = true;
+      return;
+    }
+    tray.hidden = false;
+    chips.innerHTML = "";
+    for (const s of state.selection) {
+      const chip = document.createElement("span");
+      chip.className =
+        "inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary px-2 py-0.5 text-xs font-medium";
+      chip.textContent = `${s.mode}: ${s.label}`;
+      const close = document.createElement("button");
+      close.type = "button";
+      close.setAttribute("aria-label", `Remove ${s.label}`);
+      close.className = "text-primary/70 hover:text-primary";
+      close.textContent = "×";
+      close.addEventListener("click", () =>
+        toggleSelection({ id: s.id, label: s.label, mode: s.mode }),
+      );
+      chip.appendChild(close);
+      chips.appendChild(chip);
+    }
+
+    const mode = modeOfSelection();
+    if (state.selection.length === 2 && mode) {
+      const [a, b] = state.selection;
+      const url = `${BASE}/compare/?a=${encodeURIComponent(a.id)}&b=${encodeURIComponent(b.id)}&mode=${mode}`;
+      go.setAttribute("href", url);
+      go.setAttribute("aria-disabled", "false");
+      hint.textContent = `Ready to compare ${mode}s`;
+    } else {
+      go.setAttribute("href", "#");
+      go.setAttribute("aria-disabled", "true");
+      hint.textContent =
+        state.selection.length === 1
+          ? `Pick one more ${mode ?? "item"} to enable compare`
+          : "Pick another to enable compare";
+    }
+  }
+
+  function render(): void {
+    const tree = document.getElementById("explore-tree");
+    const summary = document.getElementById("explore-summary");
+    if (!tree || !summary) return;
+
+    const filtered = state.runs.filter(matchesFilters);
+    const nRuns = filtered.length;
+    const nConfigs = new Set(filtered.map((r) => r.config_id)).size;
+    summary.textContent = state.collapseReplicates
+      ? `${nConfigs} configs · ${nRuns} runs (replicates collapsed)`
+      : `${nRuns} runs across ${nConfigs} configs`;
+
+    tree.innerHTML = "";
+    if (nRuns === 0) {
+      tree.innerHTML = `<p class="text-sm text-muted">No runs match the current filters.</p>`;
+      return;
+    }
+
+    // Group by framework → base model.
+    const frameworkMap = new Map<string, Map<string, ConfigGroup[]>>();
+
+    if (state.collapseReplicates) {
+      const groups = buildConfigGroups(filtered);
+      for (const g of groups) {
+        const bm = baseModelLabel(g);
+        const byModel = frameworkMap.get(g.framework) ?? new Map();
+        byModel.set(bm, [...(byModel.get(bm) ?? []), g]);
+        frameworkMap.set(g.framework, byModel);
+      }
+    } else {
+      // Each run is its own "group of 1 replicate" so the rendering loop stays uniform.
+      for (const r of filtered) {
+        const g: ConfigGroup = {
+          config_id: r.config_id,
+          framework: r.framework,
+          base_provider: r.base_provider,
+          model: r.model,
+          display_name: r.display_name,
+          dataset: r.dataset,
+          temperature: r.temperature,
+          template: r.template,
+          is_baseline: r.is_baseline,
+          is_ensemble: r.is_ensemble,
+          replicates: [r],
+          agg_sps: r.sps,
+          agg_jsd: r.jsd,
+          agg_tau: r.tau,
+        };
+        const bm = baseModelLabel(g);
+        const byModel = frameworkMap.get(g.framework) ?? new Map();
+        byModel.set(bm, [...(byModel.get(bm) ?? []), g]);
+        frameworkMap.set(g.framework, byModel);
+      }
+    }
+
+    const frameworks = Array.from(frameworkMap.keys()).sort();
+    for (const framework of frameworks) {
+      const byModel = frameworkMap.get(framework);
+      if (!byModel) continue;
+
+      const fwBlock = document.createElement("section");
+      fwBlock.className =
+        "rounded-lg border border-muted/20 bg-surface dark:bg-surface-dark overflow-hidden";
+
+      const fwHeader = document.createElement("button");
+      fwHeader.type = "button";
+      fwHeader.className =
+        "w-full flex items-center justify-between gap-2 px-4 py-2 text-left font-semibold hover:bg-muted/5";
+      const nGroups = Array.from(byModel.values()).reduce((n, gs) => n + gs.length, 0);
+      const nReps = Array.from(byModel.values()).reduce(
+        (n, gs) => n + gs.reduce((m, g) => m + g.replicates.length, 0),
+        0,
+      );
+      fwHeader.innerHTML = `
+        <span class="flex items-center gap-2">
+          <span aria-hidden="true" class="text-muted">▸</span>
+          <span>${framework}</span>
+          <span class="text-xs text-muted">· ${nGroups} ${state.collapseReplicates ? "configs" : "runs"} · ${nReps} run${nReps === 1 ? "" : "s"}</span>
+        </span>
+      `;
+      fwBlock.appendChild(fwHeader);
+
+      const fwBody = document.createElement("div");
+      fwBody.className = "divide-y divide-muted/10";
+
+      const fwKey = `fw::${framework}`;
+      const fwCollapsed = state.collapsedGroups.has(fwKey);
+      fwBody.hidden = fwCollapsed;
+      const fwCaret = fwHeader.querySelector("span[aria-hidden]");
+      if (fwCaret) fwCaret.textContent = fwCollapsed ? "▸" : "▾";
+      fwHeader.setAttribute("aria-expanded", String(!fwCollapsed));
+      fwHeader.addEventListener("click", () => {
+        if (state.collapsedGroups.has(fwKey)) state.collapsedGroups.delete(fwKey);
+        else state.collapsedGroups.add(fwKey);
+        render();
+      });
+
+      const baseModels = Array.from(byModel.keys()).sort();
+      for (const baseModel of baseModels) {
+        const groups = byModel.get(baseModel) ?? [];
+        const bmBlock = document.createElement("div");
+        bmBlock.className = "px-2";
+
+        const bmHeader = document.createElement("button");
+        bmHeader.type = "button";
+        bmHeader.className =
+          "w-full flex items-center justify-between gap-2 px-2 py-2 text-left text-sm font-medium hover:bg-muted/5";
+        const bmKey = groupKey(framework, baseModel);
+        const bmCollapsed = state.collapsedGroups.has(bmKey);
+        bmHeader.setAttribute("aria-expanded", String(!bmCollapsed));
+        bmHeader.innerHTML = `
+          <span class="flex items-center gap-2">
+            <span aria-hidden="true" class="text-muted">${bmCollapsed ? "▸" : "▾"}</span>
+            <span>${baseModel}</span>
+            <span class="text-xs text-muted">· ${groups.length} config${groups.length === 1 ? "" : "s"}</span>
+          </span>
+        `;
+        bmHeader.addEventListener("click", () => {
+          if (state.collapsedGroups.has(bmKey)) state.collapsedGroups.delete(bmKey);
+          else state.collapsedGroups.add(bmKey);
+          render();
+        });
+        bmBlock.appendChild(bmHeader);
+
+        const rowsWrap = document.createElement("div");
+        rowsWrap.className = "pb-2";
+        rowsWrap.hidden = bmCollapsed;
+
+        // Sort by aggregate SPS desc (nulls last).
+        groups.sort((a, b) => (b.agg_sps ?? -Infinity) - (a.agg_sps ?? -Infinity));
+
+        for (const g of groups) {
+          const isRunRow = !state.collapseReplicates;
+          const mode: SelectionMode = isRunRow ? "run" : "config";
+          const rowId = isRunRow ? g.replicates[0].run_id : g.config_id;
+          const detailHref = isRunRow
+            ? `${BASE}/run/${encodeURIComponent(rowId)}/`
+            : `${BASE}/config/${encodeURIComponent(rowId)}/`;
+
+          const row = document.createElement("div");
+          row.className =
+            "flex flex-wrap items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-muted/5";
+
+          const checkboxId = `pick-${rowId}`.replace(/[^a-zA-Z0-9_-]/g, "_");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.id = checkboxId;
+          checkbox.className = "accent-primary";
+          checkbox.checked = selectionContainsId(rowId);
+          checkbox.setAttribute("aria-label", `Select for compare: ${g.display_name}`);
+          checkbox.addEventListener("change", () =>
+            toggleSelection({ id: rowId, label: g.display_name, mode }),
+          );
+          row.appendChild(checkbox);
+
+          const tags = document.createElement("div");
+          tags.className = "flex flex-wrap items-center gap-1.5";
+
+          const dsTag = document.createElement("span");
+          dsTag.className =
+            "rounded bg-muted/10 text-xs text-muted px-1.5 py-0.5 font-mono";
+          dsTag.textContent = g.dataset;
+          tags.appendChild(dsTag);
+
+          if (g.temperature != null) {
+            const tTag = document.createElement("span");
+            tTag.className = "rounded bg-muted/10 text-xs text-muted px-1.5 py-0.5 font-mono";
+            tTag.textContent = `t=${g.temperature}`;
+            tags.appendChild(tTag);
+          }
+          if (g.template) {
+            const tplTag = document.createElement("span");
+            tplTag.className =
+              "rounded bg-muted/10 text-xs text-muted px-1.5 py-0.5 font-mono";
+            tplTag.textContent = `tpl=${g.template}`;
+            tags.appendChild(tplTag);
+          }
+          if (g.is_baseline) {
+            const bTag = document.createElement("span");
+            bTag.className =
+              "rounded bg-baseline/20 text-xs text-baseline px-1.5 py-0.5 font-medium";
+            bTag.textContent = "baseline";
+            tags.appendChild(bTag);
+          }
+          if (g.is_ensemble) {
+            const eTag = document.createElement("span");
+            eTag.className =
+              "rounded bg-accent/20 text-xs text-accent px-1.5 py-0.5 font-medium";
+            eTag.textContent = "ensemble";
+            tags.appendChild(eTag);
+          }
+          if (state.collapseReplicates && g.replicates.length > 1) {
+            const rTag = document.createElement("span");
+            rTag.className =
+              "rounded bg-primary/10 text-xs text-primary px-1.5 py-0.5 font-medium";
+            rTag.textContent = `${g.replicates.length} replicates`;
+            tags.appendChild(rTag);
+          }
+
+          const nameLink = document.createElement("a");
+          nameLink.href = detailHref;
+          nameLink.className =
+            "flex-1 min-w-[12rem] font-medium text-text dark:text-text-dark hover:text-primary dark:hover:text-primary-light";
+          nameLink.textContent = g.display_name;
+
+          const scores = document.createElement("div");
+          scores.className =
+            "flex items-center gap-4 font-mono text-xs text-muted ml-auto whitespace-nowrap";
+          scores.innerHTML = `
+            <span>SPS <span class="text-text dark:text-text-dark font-semibold">${fmtScore(g.agg_sps)}</span></span>
+            <span>JSD <span class="text-text dark:text-text-dark">${fmtScore(g.agg_jsd)}</span></span>
+            <span>τ <span class="text-text dark:text-text-dark">${fmtScore(g.agg_tau)}</span></span>
+          `;
+
+          row.appendChild(nameLink);
+          row.appendChild(tags);
+          row.appendChild(scores);
+          rowsWrap.appendChild(row);
+        }
+
+        bmBlock.appendChild(rowsWrap);
+        fwBody.appendChild(bmBlock);
+      }
+
+      fwBlock.appendChild(fwBody);
+      tree.appendChild(fwBlock);
+    }
+  }
+
+  function wireFilters(): void {
+    const byId = <T extends HTMLElement>(id: string): T | null =>
+      document.getElementById(id) as T | null;
+
+    const search = byId<HTMLInputElement>("filter-search");
+    const dataset = byId<HTMLSelectElement>("filter-dataset");
+    const framework = byId<HTMLSelectElement>("filter-framework");
+    const tMin = byId<HTMLInputElement>("filter-temp-min");
+    const tMax = byId<HTMLInputElement>("filter-temp-max");
+    const tLabel = byId<HTMLSpanElement>("filter-temp-label");
+    const tNull = byId<HTMLInputElement>("filter-temp-include-null");
+    const baselines = byId<HTMLInputElement>("filter-baselines");
+    const collapse = byId<HTMLInputElement>("filter-collapse");
+    const reset = byId<HTMLButtonElement>("filter-reset");
+    const expandAll = byId<HTMLButtonElement>("expand-all");
+    const collapseAll = byId<HTMLButtonElement>("collapse-all");
+    const clear = byId<HTMLButtonElement>("compare-clear");
+
+    function updateTempLabel(): void {
+      if (!tLabel || !tMin || !tMax) return;
+      const a = Number.parseFloat(tMin.value);
+      const b = Number.parseFloat(tMax.value);
+      const lo = Math.min(a, b);
+      const hi = Math.max(a, b);
+      state.tempMin = lo;
+      state.tempMax = hi;
+      tLabel.textContent = lo === 0 && hi === 2 ? "any" : `${lo.toFixed(2)} – ${hi.toFixed(2)}`;
+    }
+
+    search?.addEventListener("input", () => {
+      state.search = search.value.trim();
+      render();
+    });
+    dataset?.addEventListener("change", () => {
+      state.dataset = dataset.value;
+      render();
+    });
+    framework?.addEventListener("change", () => {
+      state.framework = framework.value;
+      render();
+    });
+    tMin?.addEventListener("input", () => {
+      updateTempLabel();
+      render();
+    });
+    tMax?.addEventListener("input", () => {
+      updateTempLabel();
+      render();
+    });
+    tNull?.addEventListener("change", () => {
+      state.tempIncludeNull = tNull.checked;
+      render();
+    });
+    baselines?.addEventListener("change", () => {
+      state.showBaselines = baselines.checked;
+      render();
+    });
+    collapse?.addEventListener("change", () => {
+      state.collapseReplicates = collapse.checked;
+      // Switching mode invalidates any selection whose mode no longer matches.
+      const needed: SelectionMode = state.collapseReplicates ? "config" : "run";
+      state.selection = state.selection.filter((s) => s.mode === needed);
+      renderCompareTray();
+      render();
+    });
+    reset?.addEventListener("click", () => {
+      if (search) search.value = "";
+      if (dataset) dataset.value = "";
+      if (framework) framework.value = "";
+      if (tMin) tMin.value = "0";
+      if (tMax) tMax.value = "2";
+      if (tNull) tNull.checked = true;
+      if (baselines) baselines.checked = true;
+      if (collapse) collapse.checked = true;
+      state.search = "";
+      state.dataset = "";
+      state.framework = "";
+      state.tempMin = 0;
+      state.tempMax = 2;
+      state.tempIncludeNull = true;
+      state.showBaselines = true;
+      state.collapseReplicates = true;
+      state.collapsedGroups.clear();
+      updateTempLabel();
+      render();
+    });
+    expandAll?.addEventListener("click", () => {
+      state.collapsedGroups.clear();
+      render();
+    });
+    collapseAll?.addEventListener("click", () => {
+      // Mark every rendered group key as collapsed by walking the data once.
+      state.collapsedGroups.clear();
+      const frameworks = new Set(state.runs.map((r) => r.framework));
+      for (const fw of frameworks) state.collapsedGroups.add(`fw::${fw}`);
+      render();
+    });
+    clear?.addEventListener("click", () => {
+      state.selection = [];
+      renderCompareTray();
+      render();
+    });
+
+    updateTempLabel();
+  }
+
+  async function init(): Promise<void> {
+    wireFilters();
+    try {
+      const resp = await fetch(`${BASE}/data/runs-index.json`, { cache: "force-cache" });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const payload = (await resp.json()) as RunIndex;
+      state.runs = payload.runs;
+      populateSelects(state.runs);
+      render();
+    } catch (err) {
+      const tree = document.getElementById("explore-tree");
+      if (tree) {
+        tree.innerHTML = `<p class="text-sm text-red-500">Failed to load runs index: ${(err as Error).message}. Make sure <code>synthbench publish-runs</code> has been run.</p>`;
+      }
+    }
+  }
+
+  init();
+</script>
