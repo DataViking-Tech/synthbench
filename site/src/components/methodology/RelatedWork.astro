@@ -1,0 +1,97 @@
+---
+interface Reference {
+  title: string;
+  authors: string;
+  venue: string;
+  arxiv: string;
+  positioning: string;
+}
+
+const references: Reference[] = [
+  {
+    title:
+      "Language Model Fine-Tuning on Scaled Survey Data for Predicting Distributions of Public Opinions",
+    authors: "Suh, Jahanparast, Moon, Kang, Chang",
+    venue: "ACL 2025",
+    arxiv: "2502.16761",
+    positioning:
+      "SubPOP — the source of our 22-subpopulation dataset. Fine-tunes language models on scaled survey data to predict population-distribution responses. We use the shipped question-subpop distributions as ground truth for P_dist and P_sub on demographic slices.",
+  },
+  {
+    title: "Assessing the Reliability of Persona-Conditioned LLMs as Synthetic Survey Respondents",
+    authors: "Persona-reliability evaluation",
+    venue: "arXiv 2026",
+    arxiv: "2602.18462",
+    positioning:
+      "Contemporary methodological antecedent: evaluates 2 models across 70K WVS respondent-item pairs and finds that persona prompting does not uniformly improve alignment. SynthBench's P_cond sub-metric is designed to quantify exactly when conditioning helps versus hurts — surfacing the per-group cases their paper reports in aggregate.",
+  },
+  {
+    title:
+      "SocioVerse: A World Model for Social Simulation Powered by LLM Agents and A Pool of 10 Million Real-World Users",
+    authors: "Zhang, Lin, Wei, et al. (Fudan DISC)",
+    venue: "arXiv 2025",
+    arxiv: "2504.10157",
+    positioning:
+      "SocioVerse focuses on population-scale simulation dynamics via a 10M-user pool; SynthBench measures the per-question distributional parity layer that any system like SocioVerse depends on. Orthogonal and complementary — a population-simulator's downstream fidelity is bounded by the per-item parity its respondent models achieve.",
+  },
+  {
+    title: "From Individual to Society: A Survey on Social Simulation Driven by LLM-based Agents",
+    authors: "Survey",
+    venue: "arXiv 2024",
+    arxiv: "2412.03563",
+    positioning:
+      "One-stop survey of LLM-driven social simulation spanning individual-level persona modeling through society-scale multi-agent dynamics. Useful entry point for readers placing SynthBench's per-question parity focus within the broader simulation landscape.",
+  },
+];
+
+function arxivUrl(id: string): string {
+  return `https://arxiv.org/abs/${id}`;
+}
+---
+
+<section class="w-full max-w-4xl mx-auto py-12" id="related-work">
+  <h2
+    class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    Related Work
+  </h2>
+  <p class="text-muted mb-8 max-w-2xl">
+    SynthBench builds on a growing body of work on LLM-based synthetic survey
+    respondents and social simulation. The following references anchor our
+    methodological choices and locate SynthBench within the broader field.
+  </p>
+
+  <ol class="space-y-5">
+    {
+      references.map((r) => (
+        <li class="rounded-lg border border-muted/20 bg-surface p-5 dark:bg-surface-dark">
+          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
+            <h3 class="text-base font-semibold text-text dark:text-text-dark">
+              {r.title}
+            </h3>
+            <span class="text-xs font-medium text-primary dark:text-primary-light">
+              {r.venue}
+            </span>
+          </div>
+          <p class="text-sm text-muted mb-2">
+            <span class="font-medium text-text/80 dark:text-text-dark/80">
+              {r.authors}
+            </span>
+            {" · "}
+            <a
+              href={arxivUrl(r.arxiv)}
+              class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              arXiv:{r.arxiv}
+            </a>
+          </p>
+          <p class="text-sm text-text/80 dark:text-text-dark/80">
+            {r.positioning}
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
