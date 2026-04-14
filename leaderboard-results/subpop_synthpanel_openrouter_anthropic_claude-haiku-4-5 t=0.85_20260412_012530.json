@@ -153,7 +153,7 @@
         "Refused": 0.0232
       },
       "model_distribution": {
-        "That some states are making it too DIFFICULT for people to be able to get an abortion": 0.9333,
+        "That some states are making it too DIFFICULT for people to be able to get an abortion": 1.0,
         "That some states are making it too EASY for people to be able to get an abortion": 0.0,
         "Refused": 0.0
       },
@@ -671,9 +671,9 @@
         "Refused": 0.008
       },
       "model_distribution": {
-        "Legal": 0.6667,
+        "Legal": 0.8334,
         "Illegal": 0.0,
-        "Not sure": 0.1333,
+        "Not sure": 0.1666,
         "Refused": 0.0
       },
       "jsd": 0.131921,
@@ -700,7 +700,7 @@
       },
       "model_distribution": {
         "Should face penalties": 0.0,
-        "Should not face penalties": 0.9333,
+        "Should not face penalties": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.294449,
@@ -726,9 +726,9 @@
         "Refused": 0.0205
       },
       "model_distribution": {
-        "Should face penalties": 0.4667,
+        "Should face penalties": 0.5385,
         "Should not face penalties": 0.0,
-        "Refused": 0.4
+        "Refused": 0.4615
       },
       "jsd": 0.391908,
       "kendall_tau": 0.333333,
@@ -754,8 +754,8 @@
       },
       "model_distribution": {
         "Should face penalties": 0.0,
-        "Should not face penalties": 0.4667,
-        "Refused": 0.4
+        "Should not face penalties": 0.5385,
+        "Refused": 0.4615
       },
       "jsd": 0.380458,
       "kendall_tau": 0.333333,
@@ -781,8 +781,8 @@
       },
       "model_distribution": {
         "Should face penalties": 0.0,
-        "Should not face penalties": 0.8,
-        "Refused": 0.0667
+        "Should not face penalties": 0.923,
+        "Refused": 0.077
       },
       "jsd": 0.24868,
       "kendall_tau": 0.333333,
@@ -811,8 +811,8 @@
       "model_distribution": {
         "Serve jail time": 0.0,
         "Pay a fine or do community service": 0.0,
-        "Not sure": 0.8,
-        "Refused": 0.0667
+        "Not sure": 0.923,
+        "Refused": 0.077
       },
       "jsd": 0.464901,
       "kendall_tau": -0.182574,
@@ -840,9 +840,9 @@
       },
       "model_distribution": {
         "Serve jail time": 0.0,
-        "Pay a fine or do community service": 0.4667,
-        "Not sure": 0.2,
-        "Refused": 0.2
+        "Pay a fine or do community service": 0.5385,
+        "Not sure": 0.2308,
+        "Refused": 0.2308
       },
       "jsd": 0.327562,
       "kendall_tau": -0.182574,
@@ -869,9 +869,9 @@
         "Refused": 0.0023
       },
       "model_distribution": {
-        "Lose their medical license": 0.1333,
-        "Not lose their medical license": 0.0667,
-        "Not sure": 0.6667,
+        "Lose their medical license": 0.1538,
+        "Not lose their medical license": 0.077,
+        "Not sure": 0.7692,
         "Refused": 0.0
       },
       "jsd": 0.147212,
@@ -903,8 +903,8 @@
         "Refused": 0.0127
       },
       "model_distribution": {
-        "Women should have a LOT more say than men": 0.5333,
-        "Women should have a LITTLE more say than men": 0.3333,
+        "Women should have a LOT more say than men": 0.6154,
+        "Women should have a LITTLE more say than men": 0.3846,
         "Women and men should have equal say": 0.0,
         "Men should have a LITTLE more say than women": 0.0,
         "Men should have a LOT more say than women": 0.0,
@@ -939,8 +939,8 @@
       "model_distribution": {
         "Strongly approve": 0.0,
         "Somewhat approve": 0.0,
-        "Somewhat disapprove": 0.0667,
-        "Strongly disapprove": 0.8,
+        "Somewhat disapprove": 0.077,
+        "Strongly disapprove": 0.923,
         "Refused": 0.0
       },
       "jsd": 0.263944,
@@ -1435,7 +1435,7 @@
       },
       "model_distribution": {
         "It\u2019s best for the future of our country to be active in world affairs": 0.0,
-        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.8667,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.309625,
@@ -1462,7 +1462,7 @@
       },
       "model_distribution": {
         "It\u2019s best for the future of our country to be active in world affairs": 0.0,
-        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.4667,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.290924,
@@ -1597,7 +1597,7 @@
       },
       "model_distribution": {
         "Biden\u2019s character and leadership skills": 0.0,
-        "Biden\u2019s policy positions and agenda": 0.0667,
+        "Biden\u2019s policy positions and agenda": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.160049,

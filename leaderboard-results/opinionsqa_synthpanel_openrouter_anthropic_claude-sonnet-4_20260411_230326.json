@@ -1831,7 +1831,7 @@
       },
       "model_distribution": {
         "If businesses can receive better work at lower cost by replacing humans with robots and computers, they are justified": 0.0,
-        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 0.9667,
+        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.32807,
@@ -5283,7 +5283,7 @@
         "Refused": 0.0118
       },
       "model_distribution": {
-        "Government investment in research is essential for scientific progress": 0.1667,
+        "Government investment in research is essential for scientific progress": 1.0,
         "Private investment will ensure that enough scientific progress is made, even without government investment": 0.0,
         "Refused": 0.0
       },
@@ -6627,8 +6627,8 @@
         "Taking technology too far": 0.6761
       },
       "model_distribution": {
-        "An appropriate use of technology": 0.6333,
-        "Taking technology too far": 0.3333,
+        "An appropriate use of technology": 0.6552,
+        "Taking technology too far": 0.3448,
         "Refused": 0.0
       },
       "jsd": 0.089318,
@@ -6654,7 +6654,7 @@
         "Taking technology too far": 0.2596
       },
       "model_distribution": {
-        "An appropriate use of technology": 0.8667,
+        "An appropriate use of technology": 1.0,
         "Taking technology too far": 0.0,
         "Refused": 0.0
       },
@@ -6681,7 +6681,7 @@
         "Taking technology too far": 0.4071
       },
       "model_distribution": {
-        "An appropriate use of technology": 0.5,
+        "An appropriate use of technology": 1.0,
         "Taking technology too far": 0.0,
         "Refused": 0.0
       },
@@ -6708,8 +6708,8 @@
         "Taking technology too far": 0.7937
       },
       "model_distribution": {
-        "An appropriate use of technology": 0.3,
-        "Taking technology too far": 0.3,
+        "An appropriate use of technology": 0.5,
+        "Taking technology too far": 0.5,
         "Refused": 0.0
       },
       "jsd": 0.079628,
@@ -6737,7 +6737,7 @@
         "Refused": 0.0055
       },
       "model_distribution": {
-        "Humans have evolved over time due to processes such as natural selection": 0.3333,
+        "Humans have evolved over time due to processes such as natural selection": 1.0,
         "Humans have existed in their present form since the beginning of time": 0.0,
         "Not sure": 0.0,
         "Refused": 0.0
@@ -7040,7 +7040,7 @@
       },
       "model_distribution": {
         "Very good": 0.0,
-        "Somewhat good": 0.9,
+        "Somewhat good": 1.0,
         "Somewhat bad": 0.0,
         "Very bad": 0.0,
         "Refused": 0.0
@@ -7267,7 +7267,7 @@
       },
       "model_distribution": {
         "The U.S. will be more important in the world": 0.0,
-        "The U.S. will be less important in the world": 0.8,
+        "The U.S. will be less important in the world": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.23606,
@@ -7293,8 +7293,8 @@
         "The gap between the rich and the poor will grow": 0.735
       },
       "model_distribution": {
-        "The gap between the rich and the poor will grow": 0.3333,
-        "The gap between the rich and the poor will get smaller": 0.1333,
+        "The gap between the rich and the poor will grow": 0.7143,
+        "The gap between the rich and the poor will get smaller": 0.2857,
         "Refused": 0.0
       },
       "jsd": 0.043276,
@@ -7320,8 +7320,8 @@
         "The public education system will improve": 0.3899
       },
       "model_distribution": {
-        "The public education system will improve": 0.1333,
-        "The public education system will get worse": 0.1667,
+        "The public education system will improve": 0.4443,
+        "The public education system will get worse": 0.5557,
         "Refused": 0.0
       },
       "jsd": 0.047147,
@@ -7374,7 +7374,7 @@
         "The country will be more politically divided": 0.6454
       },
       "model_distribution": {
-        "The country will be more politically divided": 0.9,
+        "The country will be more politically divided": 1.0,
         "The country will be less politically divided": 0.0,
         "Refused": 0.0
       },
@@ -7505,8 +7505,8 @@
       },
       "model_distribution": {
         "Will definitely happen": 0.0,
-        "Will probably happen": 0.6667,
-        "Will probably not happen": 0.2333,
+        "Will probably happen": 0.7408,
+        "Will probably not happen": 0.2592,
         "Will definitely not happen": 0.0,
         "Refused": 0.0
       },
@@ -7537,7 +7537,7 @@
         "Refused": 0.0048
       },
       "model_distribution": {
-        "Will definitely happen": 0.8333,
+        "Will definitely happen": 1.0,
         "Will probably happen": 0.0,
         "Will probably not happen": 0.0,
         "Will definitely not happen": 0.0,
@@ -7571,7 +7571,7 @@
       },
       "model_distribution": {
         "Will definitely happen": 0.0,
-        "Will probably happen": 0.4,
+        "Will probably happen": 1.0,
         "Will probably not happen": 0.0,
         "Will definitely not happen": 0.0,
         "Refused": 0.0
@@ -7603,8 +7603,8 @@
         "Will probably not happen": 0.1218
       },
       "model_distribution": {
-        "Will definitely happen": 0.1333,
-        "Will probably happen": 0.3667,
+        "Will definitely happen": 0.2666,
+        "Will probably happen": 0.7334,
         "Will probably not happen": 0.0,
         "Will definitely not happen": 0.0,
         "Refused": 0.0
@@ -7636,8 +7636,8 @@
         "Will probably not happen": 0.5208
       },
       "model_distribution": {
-        "Will definitely happen": 0.0333,
-        "Will probably happen": 0.3667,
+        "Will definitely happen": 0.0833,
+        "Will probably happen": 0.9168,
         "Will probably not happen": 0.0,
         "Will definitely not happen": 0.0,
         "Refused": 0.0
@@ -7828,10 +7828,10 @@
         "Very worried": 0.5046
       },
       "model_distribution": {
-        "Very worried": 0.7,
+        "Very worried": 0.913,
         "Fairly worried": 0.0,
         "Not too worried": 0.0,
-        "Not at all worried": 0.0667,
+        "Not at all worried": 0.087,
         "Refused": 0.0
       },
       "jsd": 0.302894,
@@ -7861,7 +7861,7 @@
         "Very worried": 0.4851
       },
       "model_distribution": {
-        "Very worried": 0.5333,
+        "Very worried": 1.0,
         "Fairly worried": 0.0,
         "Not too worried": 0.0,
         "Not at all worried": 0.0,
@@ -7894,8 +7894,8 @@
         "Refused": 0.0012
       },
       "model_distribution": {
-        "Very worried": 0.1667,
-        "Fairly worried": 0.2667,
+        "Very worried": 0.3846,
+        "Fairly worried": 0.6154,
         "Not too worried": 0.0,
         "Not at all worried": 0.0,
         "Refused": 0.0
@@ -7927,8 +7927,8 @@
         "Very worried": 0.4153
       },
       "model_distribution": {
-        "Very worried": 0.4,
-        "Fairly worried": 0.0333,
+        "Very worried": 0.9231,
+        "Fairly worried": 0.0769,
         "Not too worried": 0.0,
         "Not at all worried": 0.0,
         "Refused": 0.0
@@ -7957,7 +7957,7 @@
       },
       "model_distribution": {
         "better prepared financially for retirement than older adults are today": 0.0,
-        "less prepared financially for retirement than older adults today": 0.1,
+        "less prepared financially for retirement than older adults today": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.148862,
@@ -8086,8 +8086,8 @@
         "Should not be done": 0.0226
       },
       "model_distribution": {
-        "A top priority": 0.5333,
-        "An important, but not a top priority": 0.3667,
+        "A top priority": 0.5926,
+        "An important, but not a top priority": 0.4074,
         "A lower priority": 0.0,
         "Should not be done": 0.0,
         "Refused": 0.0
@@ -8119,8 +8119,8 @@
         "Refused": 0.006
       },
       "model_distribution": {
-        "A top priority": 0.6,
-        "An important, but not a top priority": 0.1333,
+        "A top priority": 0.8182,
+        "An important, but not a top priority": 0.1818,
         "A lower priority": 0.0,
         "Should not be done": 0.0,
         "Refused": 0.0
@@ -8150,8 +8150,8 @@
         "Refused": 0.0087
       },
       "model_distribution": {
-        "More job security": 0.0667,
-        "Less job security": 0.3667,
+        "More job security": 0.1539,
+        "Less job security": 0.8461,
         "About the same": 0.0,
         "Refused": 0.0
       },
@@ -8181,7 +8181,7 @@
       },
       "model_distribution": {
         "Better than they are now": 0.0,
-        "Not as good as they are now": 0.2667,
+        "Not as good as they are now": 1.0,
         "About the same as they are now": 0.0,
         "Refused": 0.0
       },
@@ -8211,7 +8211,7 @@
       },
       "model_distribution": {
         "Mostly helped American workers": 0.0,
-        "Mostly hurt American workers": 0.2,
+        "Mostly hurt American workers": 1.0,
         "Neither helped nor hurt": 0.0,
         "Refused": 0.0
       },
@@ -8243,7 +8243,7 @@
       },
       "model_distribution": {
         "Definitely happen": 0.0,
-        "Probably happen": 0.2667,
+        "Probably happen": 1.0,
         "Probably not happen": 0.0,
         "Definitely not happen": 0.0,
         "Refused": 0.0
@@ -8271,8 +8271,8 @@
         "Yes, likely": 0.7513
       },
       "model_distribution": {
-        "Yes, likely": 0.2333,
-        "No, not likely": 0.1,
+        "Yes, likely": 0.7,
+        "No, not likely": 0.3,
         "Refused": 0.0
       },
       "jsd": 0.009997,
@@ -8417,7 +8417,7 @@
         "Stay about the same": 0.2003
       },
       "model_distribution": {
-        "Increase": 0.8333,
+        "Increase": 1.0,
         "Decrease": 0.0,
         "Stay about the same": 0.0,
         "Refused": 0.0
@@ -8445,9 +8445,9 @@
         "Yes": 0.5335
       },
       "model_distribution": {
-        "Yes": 0.1,
+        "Yes": 0.1765,
         "No": 0.0,
-        "Refused": 0.4667
+        "Refused": 0.8235
       },
       "jsd": 0.690214,
       "kendall_tau": -0.333333,
@@ -8478,12 +8478,12 @@
         "Refused": 0.0079
       },
       "model_distribution": {
-        "A very good thing": 0.0667,
-        "A somewhat good thing": 0.0333,
-        "A somewhat bad thing": 0.0333,
+        "A very good thing": 0.1429,
+        "A somewhat good thing": 0.0714,
+        "A somewhat bad thing": 0.0714,
         "A very bad thing": 0.0,
-        "Neither a good nor bad thing": 0.2667,
-        "Refused": 0.0667
+        "Neither a good nor bad thing": 0.5715,
+        "Refused": 0.1429
       },
       "jsd": 0.12492,
       "kendall_tau": 0.50128,
@@ -8516,10 +8516,10 @@
       "model_distribution": {
         "A very good thing": 0.0,
         "A somewhat good thing": 0.0,
-        "A somewhat bad thing": 0.2333,
-        "A very bad thing": 0.0333,
+        "A somewhat bad thing": 0.6364,
+        "A very bad thing": 0.0908,
         "Neither a good nor bad thing": 0.0,
-        "Refused": 0.1
+        "Refused": 0.2728
       },
       "jsd": 0.354643,
       "kendall_tau": 0.0,
@@ -8551,11 +8551,11 @@
       },
       "model_distribution": {
         "A very good thing": 0.0,
-        "A somewhat good thing": 0.0333,
-        "A somewhat bad thing": 0.1333,
+        "A somewhat good thing": 0.0999,
+        "A somewhat bad thing": 0.3999,
         "A very bad thing": 0.0,
-        "Neither a good nor bad thing": 0.1,
-        "Refused": 0.0667
+        "Neither a good nor bad thing": 0.3,
+        "Refused": 0.2001
       },
       "jsd": 0.349207,
       "kendall_tau": 0.0,
@@ -8580,8 +8580,8 @@
         "Some reductions in benefits for future retirees will need to be made": 0.2451
       },
       "model_distribution": {
-        "Some reductions in benefits for future retirees will need to be made": 0.2667,
-        "Social Security benefits should not be reduced in any way": 0.0333,
+        "Some reductions in benefits for future retirees will need to be made": 0.889,
+        "Social Security benefits should not be reduced in any way": 0.111,
         "Refused": 0.0
       },
       "jsd": 0.334381,

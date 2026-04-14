@@ -1677,7 +1677,7 @@
         "Yes, likely": 0.4126
       },
       "model_distribution": {
-        "Yes, likely": 0.9667,
+        "Yes, likely": 1.0,
         "No, not likely": 0.0,
         "Refused": 0.0
       },

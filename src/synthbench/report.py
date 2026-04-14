@@ -5,9 +5,32 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Mapping
 
 from synthbench import __version__
 from synthbench.runner import BenchmarkResult
+
+
+def normalize_distribution(
+    dist: Mapping[str, float], *, decimals: int = 4
+) -> dict[str, float]:
+    """Renormalize a probability distribution so values sum to 1.0.
+
+    Parse failures and refusals leave unselected mass unaccounted for in
+    the raw ``model_distribution`` — options-only sums like 0.47 or 0.91.
+    Normalizing at publish time restores the sum=1.0 invariant the
+    validator and leaderboard expect, without changing JSD/τ (which
+    renormalize internally). If every value is 0 (e.g., total refusal),
+    falls back to a uniform distribution so downstream math stays defined.
+    """
+    clamped = {k: max(float(v), 0.0) for k, v in dist.items()}
+    total = sum(clamped.values())
+    if total > 0:
+        return {k: round(v / total, decimals) for k, v in clamped.items()}
+    n = len(clamped)
+    if n == 0:
+        return {}
+    return {k: round(1.0 / n, decimals) for k in clamped}
 
 
 def to_json(result: BenchmarkResult) -> dict:
@@ -91,9 +114,7 @@ def to_json(result: BenchmarkResult) -> dict:
                 "human_distribution": {
                     k: round(v, 4) for k, v in q.human_distribution.items()
                 },
-                "model_distribution": {
-                    k: round(v, 4) for k, v in q.model_distribution.items()
-                },
+                "model_distribution": normalize_distribution(q.model_distribution),
                 "jsd": round(q.jsd, 6),
                 "kendall_tau": round(q.kendall_tau, 6),
                 "parity": round(q.parity, 6),

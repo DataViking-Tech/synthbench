@@ -465,8 +465,8 @@
       },
       "model_distribution": {
         "All of the time": 0.0,
-        "More than half of the time": 0.64,
-        "About half of the time": 0.34,
+        "More than half of the time": 0.6531,
+        "About half of the time": 0.3469,
         "Less than half of the time": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -1297,7 +1297,7 @@
       },
       "model_distribution": {
         "Live comfortably": 0.0,
-        "Meet your basic expenses with a little left over for extras": 0.86,
+        "Meet your basic expenses with a little left over for extras": 1.0,
         "Just meet your basic expenses": 0.0,
         "Don't even have enough to meet basic expenses": 0.0,
         "Refused": 0.0
@@ -1586,8 +1586,8 @@
         "Refused": 0.0159
       },
       "model_distribution": {
-        "Recovering from the effects of the coronavirus outbreak in ways that show the strengths of its economic system": 0.92,
-        "Failing to recover from the effects of the coronavirus outbreak in ways that show the weaknesses of its economic system": 0.02,
+        "Recovering from the effects of the coronavirus outbreak in ways that show the strengths of its economic system": 0.9787,
+        "Failing to recover from the effects of the coronavirus outbreak in ways that show the weaknesses of its economic system": 0.0213,
         "Refused": 0.0
       },
       "jsd": 0.356222,
@@ -2571,7 +2571,7 @@
       },
       "model_distribution": {
         "The public education system will improve": 0.0,
-        "The public education system will get worse": 0.84,
+        "The public education system will get worse": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.296207,
@@ -2771,9 +2771,9 @@
         "Yes": 0.5335
       },
       "model_distribution": {
-        "Yes": 0.02,
-        "No": 0.92,
-        "Refused": 0.04
+        "Yes": 0.0204,
+        "No": 0.9388,
+        "Refused": 0.0408
       },
       "jsd": 0.285184,
       "kendall_tau": -0.333333,
@@ -2987,8 +2987,8 @@
       },
       "model_distribution": {
         "Get better": 0.0,
-        "Get worse": 0.34,
-        "Stay about the same": 0.64,
+        "Get worse": 0.3469,
+        "Stay about the same": 0.6531,
         "Refused": 0.0
       },
       "jsd": 0.193575,
@@ -5075,8 +5075,8 @@
         "Yes, use this": 0.2768
       },
       "model_distribution": {
-        "Yes, use this": 0.12,
-        "No, do not use this": 0.24,
+        "Yes, use this": 0.3333,
+        "No, do not use this": 0.6667,
         "Refused": 0.0
       },
       "jsd": 0.009838,

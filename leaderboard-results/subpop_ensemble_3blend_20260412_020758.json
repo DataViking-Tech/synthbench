@@ -5267,11 +5267,11 @@
         "Refused": 0.0051
       },
       "model_distribution": {
-        "Often": 0.9667,
+        "Often": 0.9776,
         "Never": 0.0,
         "Rarely": 0.0,
         "Refused": 0.0,
-        "Sometimes": 0.0222
+        "Sometimes": 0.0224
       },
       "jsd": 0.184838,
       "kendall_tau": 0.83666,
@@ -5300,11 +5300,11 @@
         "Refused": 0.0029
       },
       "model_distribution": {
-        "Often": 0.4444,
+        "Often": 0.4598,
         "Never": 0.0,
         "Rarely": 0.0,
         "Refused": 0.0,
-        "Sometimes": 0.5222
+        "Sometimes": 0.5402
       },
       "jsd": 0.04672,
       "kendall_tau": 0.83666,
@@ -5958,8 +5958,8 @@
         "Donald Trump": 0.0,
         "George W. Bush": 0.0,
         "Ronald Reagan": 0.0,
-        "Barack Obama": 0.8889,
-        "Bill Clinton": 0.1,
+        "Barack Obama": 0.8989,
+        "Bill Clinton": 0.1011,
         "Joe Biden": 0.0,
         "Refused": 0.0
       },
@@ -6220,9 +6220,9 @@
       },
       "model_distribution": {
         "Refused": 0.0,
-        "Too little attention": 0.2889,
-        "Right amount of attention": 0.6222,
-        "Too much attention": 0.0667
+        "Too little attention": 0.2955,
+        "Right amount of attention": 0.6363,
+        "Too much attention": 0.0682
       },
       "jsd": 0.067098,
       "kendall_tau": 0.666667,
@@ -6250,9 +6250,9 @@
       },
       "model_distribution": {
         "Refused": 0.0,
-        "Too little attention": 0.1333,
-        "Right amount of attention": 0.5667,
-        "Too much attention": 0.1555
+        "Too little attention": 0.1558,
+        "Right amount of attention": 0.6624,
+        "Too much attention": 0.1818
       },
       "jsd": 0.063128,
       "kendall_tau": 0.666667,
@@ -6280,9 +6280,9 @@
       },
       "model_distribution": {
         "Refused": 0.0,
-        "Too little attention": 0.4667,
+        "Too little attention": 0.6177,
         "Right amount of attention": 0.0,
-        "Too much attention": 0.2889
+        "Too much attention": 0.3823
       },
       "jsd": 0.245159,
       "kendall_tau": 0.547723,
@@ -6310,8 +6310,8 @@
       },
       "model_distribution": {
         "Refused": 0.0,
-        "Too little attention": 0.5667,
-        "Right amount of attention": 0.1,
+        "Too little attention": 0.85,
+        "Right amount of attention": 0.15,
         "Too much attention": 0.0
       },
       "jsd": 0.196658,

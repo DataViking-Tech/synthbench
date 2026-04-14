@@ -1301,6 +1301,7 @@ def ensemble(files, output, weights):
     from synthbench.metrics.distributional import jensen_shannon_divergence
     from synthbench.metrics.ranking import kendall_tau_b
     from synthbench.metrics.composite import parity_score
+    from synthbench.report import normalize_distribution
 
     if len(files) < 2:
         click.echo("Error: need at least 2 result files to ensemble.", err=True)
@@ -1379,7 +1380,7 @@ def ensemble(files, output, weights):
                 "text": ref_q.get("text", ""),
                 "options": ref_q.get("options", []),
                 "human_distribution": {k: round(v, 4) for k, v in human_dist.items()},
-                "model_distribution": {k: round(v, 4) for k, v in blended.items()},
+                "model_distribution": normalize_distribution(blended),
                 "jsd": round(jsd, 6),
                 "kendall_tau": round(tau, 6),
                 "parity": round(parity, 6),

@@ -628,7 +628,7 @@
         "Too much power and influence": 0.8378
       },
       "model_distribution": {
-        "Too much power and influence": 0.98,
+        "Too much power and influence": 1.0,
         "Not enough power and influence": 0.0,
         "About the right amount": 0.0,
         "Refused": 0.0
@@ -693,7 +693,7 @@
         "Refused": 0.006
       },
       "model_distribution": {
-        "A great deal": 0.96,
+        "A great deal": 1.0,
         "A fair amount": 0.0,
         "Not too much": 0.0,
         "Not at all": 0.0,
@@ -953,8 +953,8 @@
         "less prepared financially for retirement than older adults today": 0.7322
       },
       "model_distribution": {
-        "better prepared financially for retirement than older adults are today": 0.06,
-        "less prepared financially for retirement than older adults today": 0.9,
+        "better prepared financially for retirement than older adults are today": 0.0625,
+        "less prepared financially for retirement than older adults today": 0.9375,
         "Refused": 0.0
       },
       "jsd": 0.059771,
@@ -3074,7 +3074,7 @@
         "Yes, have done this": 0.5337
       },
       "model_distribution": {
-        "Yes, have done this": 0.98,
+        "Yes, have done this": 1.0,
         "No, have not done this": 0.0,
         "Refused": 0.0
       },
@@ -3133,7 +3133,7 @@
         "Refused": 0.0051
       },
       "model_distribution": {
-        "A big problem": 0.98,
+        "A big problem": 1.0,
         "A small problem": 0.0,
         "Not a problem": 0.0,
         "Refused": 0.0

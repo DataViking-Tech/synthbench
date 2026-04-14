@@ -264,7 +264,7 @@
         "Very favorable": 0.0,
         "Somewhat favorable": 0.0,
         "Somewhat unfavorable": 0.0,
-        "Very unfavorable": 0.5333
+        "Very unfavorable": 1.0
       },
       "jsd": 0.324187,
       "kendall_tau": 0.707107,
@@ -954,10 +954,10 @@
         "Very unfavorable": 0.2714
       },
       "model_distribution": {
-        "Very favorable": 0.1333,
-        "Somewhat favorable": 0.1667,
-        "Somewhat unfavorable": 0.5667,
-        "Very unfavorable": 0.0667
+        "Very favorable": 0.1428,
+        "Somewhat favorable": 0.1786,
+        "Somewhat unfavorable": 0.6071,
+        "Very unfavorable": 0.0715
       },
       "jsd": 0.144584,
       "kendall_tau": -0.333333,
@@ -1325,8 +1325,8 @@
         "Bad": 0.4104
       },
       "model_distribution": {
-        "Good": 0.5,
-        "Bad": 0.4667
+        "Good": 0.5172,
+        "Bad": 0.4828
       },
       "jsd": 0.003825,
       "kendall_tau": 1.0,
@@ -1822,7 +1822,7 @@
         "None of the above (VOL)": 0.0053
       },
       "model_distribution": {
-        "World War II and the Holocaust": 0.9667,
+        "World War II and the Holocaust": 1.0,
         "The Marshall Plan": 0.0,
         "The fall of the Berlin Wall": 0.0,
         "U.S.-German disagreements over the Iraq War": 0.0,

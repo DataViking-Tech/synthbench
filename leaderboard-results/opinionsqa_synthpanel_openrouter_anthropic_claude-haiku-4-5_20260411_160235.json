@@ -65,9 +65,9 @@
         "legal in all or most cases": 0.5486
       },
       "model_distribution": {
-        "legal in all or most cases": 0.48,
+        "legal in all or most cases": 0.6486,
         "illegal in all or most cases": 0.0,
-        "Refused": 0.26
+        "Refused": 0.3514
       },
       "jsd": 0.340371,
       "kendall_tau": 0.333333,
@@ -92,9 +92,9 @@
         "Yes, have received in the past 12 months": 0.1811
       },
       "model_distribution": {
-        "Yes, have received in the past 12 months": 0.14,
-        "No, have not received in the past 12 months": 0.8,
-        "Refused": 0.02
+        "Yes, have received in the past 12 months": 0.1458,
+        "No, have not received in the past 12 months": 0.8333,
+        "Refused": 0.0208
       },
       "jsd": 0.002897,
       "kendall_tau": 1.0,
@@ -119,9 +119,9 @@
         "Yes, have received in the past 12 months": 0.0406
       },
       "model_distribution": {
-        "Yes, have received in the past 12 months": 0.02,
-        "No, have not received in the past 12 months": 0.94,
-        "Refused": 0.02
+        "Yes, have received in the past 12 months": 0.0204,
+        "No, have not received in the past 12 months": 0.9592,
+        "Refused": 0.0204
       },
       "jsd": 0.004204,
       "kendall_tau": 0.816497,
@@ -151,8 +151,8 @@
       },
       "model_distribution": {
         "Very important": 0.0,
-        "Somewhat important": 0.96,
-        "Not too important": 0.02,
+        "Somewhat important": 0.9796,
+        "Not too important": 0.0204,
         "Not at all important": 0.0,
         "Refused": 0.0
       },
@@ -185,8 +185,8 @@
       "model_distribution": {
         "Very good": 0.0,
         "Somewhat good": 0.0,
-        "Somewhat bad": 0.02,
-        "Very bad": 0.96,
+        "Somewhat bad": 0.0204,
+        "Very bad": 0.9796,
         "Refused": 0.0
       },
       "jsd": 0.534992,
@@ -274,7 +274,7 @@
         "Refused": 0.0037
       },
       "model_distribution": {
-        "A great deal of difference in what they stand for": 0.98,
+        "A great deal of difference in what they stand for": 1.0,
         "A fair amount of difference in what they stand for": 0.0,
         "Hardly any difference at all in what they stand for": 0.0,
         "Refused": 0.0
@@ -1325,8 +1325,8 @@
         "Yes, a responsibility of the federal government to provide for all Americans": 0.4781
       },
       "model_distribution": {
-        "Yes, a responsibility of the federal government to provide for all Americans": 0.04,
-        "No, not the responsibility of the federal government to provide": 0.66,
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.0571,
+        "No, not the responsibility of the federal government to provide": 0.9429,
         "Refused": 0.0
       },
       "jsd": 0.186714,
@@ -1352,7 +1352,7 @@
         "Yes, a responsibility of the federal government to provide for all Americans": 0.7994
       },
       "model_distribution": {
-        "Yes, a responsibility of the federal government to provide for all Americans": 0.7,
+        "Yes, a responsibility of the federal government to provide for all Americans": 1.0,
         "No, not the responsibility of the federal government to provide": 0.0,
         "Refused": 0.0
       },
@@ -1380,7 +1380,7 @@
       },
       "model_distribution": {
         "Yes, a responsibility of the federal government to provide for all Americans": 0.0,
-        "No, not the responsibility of the federal government to provide": 0.72,
+        "No, not the responsibility of the federal government to provide": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.188028,
@@ -1406,7 +1406,7 @@
         "Yes, a responsibility of the federal government to provide for all Americans": 0.5553
       },
       "model_distribution": {
-        "Yes, a responsibility of the federal government to provide for all Americans": 0.7,
+        "Yes, a responsibility of the federal government to provide for all Americans": 1.0,
         "No, not the responsibility of the federal government to provide": 0.0,
         "Refused": 0.0
       },
@@ -1435,8 +1435,8 @@
         "Yes, there were guns in my household": 0.5156
       },
       "model_distribution": {
-        "Yes, there were guns in my household": 0.28,
-        "No, there were no guns in my household": 0.6,
+        "Yes, there were guns in my household": 0.3182,
+        "No, there were no guns in my household": 0.6818,
         "I am not sure if there were guns in my household": 0.0,
         "Refused": 0.0
       },
@@ -2019,7 +2019,7 @@
       },
       "model_distribution": {
         "Give direct assistance to people who are poor in the form of cash payments or tax credits": 0.0,
-        "Invest in education and job training programs for people who are poor": 0.02,
+        "Invest in education and job training programs for people who are poor": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.080269,
@@ -2249,8 +2249,8 @@
       },
       "model_distribution": {
         "Should provide more assistance": 0.0,
-        "Should provide less assistance": 0.06,
-        "Is providing about the right amount of assistance": 0.5,
+        "Should provide less assistance": 0.1071,
+        "Is providing about the right amount of assistance": 0.8929,
         "Refused": 0.0
       },
       "jsd": 0.347775,

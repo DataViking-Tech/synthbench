@@ -172,7 +172,7 @@
         "Refused": 0.0232
       },
       "model_distribution": {
-        "That some states are making it too DIFFICULT for people to be able to get an abortion": 0.9,
+        "That some states are making it too DIFFICULT for people to be able to get an abortion": 1.0,
         "That some states are making it too EASY for people to be able to get an abortion": 0.0,
         "Refused": 0.0
       },
@@ -690,9 +690,9 @@
         "Refused": 0.008
       },
       "model_distribution": {
-        "Legal": 0.8,
+        "Legal": 0.8276,
         "Illegal": 0.0,
-        "Not sure": 0.1667,
+        "Not sure": 0.1724,
         "Refused": 0.0
       },
       "jsd": 0.130517,
@@ -1454,7 +1454,7 @@
       },
       "model_distribution": {
         "It\u2019s best for the future of our country to be active in world affairs": 0.0,
-        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.8667,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.309625,
@@ -1481,7 +1481,7 @@
       },
       "model_distribution": {
         "It\u2019s best for the future of our country to be active in world affairs": 0.0,
-        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.4,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.290924,
@@ -1616,7 +1616,7 @@
       },
       "model_distribution": {
         "Biden\u2019s character and leadership skills": 0.0,
-        "Biden\u2019s policy positions and agenda": 0.0333,
+        "Biden\u2019s policy positions and agenda": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.160049,
@@ -2581,7 +2581,7 @@
         "Refused": 0.0052
       },
       "model_distribution": {
-        "Wearable fitness trackers that analyze exercise and sleeping patterns": 0.9333,
+        "Wearable fitness trackers that analyze exercise and sleeping patterns": 1.0,
         "Thermometers that are placed under someone\u2019s tongue to detect a fever": 0.0,
         "At-home COVID-19 tests": 0.0,
         "Pulse oximeters that measure a person\u2019s oxygen level of the blood": 0.0,

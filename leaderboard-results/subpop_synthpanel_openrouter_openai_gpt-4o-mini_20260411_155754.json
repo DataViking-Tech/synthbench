@@ -1435,7 +1435,7 @@
         "Refused": 0.0104
       },
       "model_distribution": {
-        "It\u2019s best for the future of our country to be active in world affairs": 0.9667,
+        "It\u2019s best for the future of our country to be active in world affairs": 1.0,
         "We should pay less attention to problems overseas and concentrate on problems here at home": 0.0,
         "Refused": 0.0
       },
@@ -1462,7 +1462,7 @@
         "Refused": 0.0084
       },
       "model_distribution": {
-        "It\u2019s best for the future of our country to be active in world affairs": 0.9667,
+        "It\u2019s best for the future of our country to be active in world affairs": 1.0,
         "We should pay less attention to problems overseas and concentrate on problems here at home": 0.0,
         "Refused": 0.0
       },
@@ -6130,8 +6130,8 @@
       "model_distribution": {
         "A great deal": 0.0,
         "Some": 0.0,
-        "Not much": 0.8667,
-        "None at all": 0.1,
+        "Not much": 0.8966,
+        "None at all": 0.1034,
         "Refused": 0.0
       },
       "jsd": 0.488216,

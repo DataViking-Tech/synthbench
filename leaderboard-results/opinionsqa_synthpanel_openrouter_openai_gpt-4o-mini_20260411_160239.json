@@ -5284,7 +5284,7 @@
         "Refused": 0.0118
       },
       "model_distribution": {
-        "Government investment in research is essential for scientific progress": 0.96,
+        "Government investment in research is essential for scientific progress": 1.0,
         "Private investment will ensure that enough scientific progress is made, even without government investment": 0.0,
         "Refused": 0.0
       },
@@ -5553,7 +5553,7 @@
       },
       "model_distribution": {
         "Not selected": 0.0,
-        "None of these": 0.82
+        "None of these": 1.0
       },
       "jsd": 0.620279,
       "kendall_tau": -1.0,
@@ -5774,7 +5774,7 @@
       },
       "model_distribution": {
         "The average person is exposed to additives in the food they eat every day, which pose a serious risk to their health": 0.0,
-        "The average person is exposed to additives in the food they eat every day but they eat such a small amount that this doe": 0.8,
+        "The average person is exposed to additives in the food they eat every day but they eat such a small amount that this doe": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.32279,
