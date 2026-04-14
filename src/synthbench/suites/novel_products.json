@@ -1,0 +1,429 @@
+{
+  "suite": "novel_products",
+  "version": "0.1.0",
+  "description": "30 fictional consumer products constructed by combining features from multiple real products. Used for contamination-free reasoning tests: since the products do not exist, a model cannot recall memorized human opinions about them and must reason about the feature bundle. Each item lists the real source products whose features were combined, the feature bundle, a synthesized product description, and an opinion-style question with multiple-choice options. Intentionally contains no human_distribution field — responses cannot be compared against real survey data.",
+  "n_items": 30,
+  "options_legend": "Likert-style purchase-intent / preference scales drawn from the same option space as standard consumer-preference survey questions.",
+  "items": [
+    {
+      "key": "NP01",
+      "category": "smartphone",
+      "product_name": "LumenX Fold Pro",
+      "source_products": ["Samsung Galaxy Z Fold", "Google Pixel 8 Pro", "Fairphone 5"],
+      "features": [
+        {"text": "a 7.6-inch foldable inner OLED display that unfolds into a tablet", "source": "Samsung Galaxy Z Fold"},
+        {"text": "an on-device neural image processor for AI photo editing and call screening", "source": "Google Pixel 8 Pro"},
+        {"text": "a user-replaceable battery and fully modular repair design with 8-year OS support", "source": "Fairphone 5"}
+      ],
+      "description": "The LumenX Fold Pro is a new smartphone with a 7.6-inch foldable inner OLED display that unfolds into a tablet, an on-device neural image processor for AI photo editing and call screening, and a user-replaceable battery with a fully modular repair design and 8-year OS support.",
+      "prompt": "Based on this description, how likely would you be to buy the LumenX Fold Pro as your next smartphone?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP02",
+      "category": "smartphone",
+      "product_name": "Kestrel Outdoor",
+      "source_products": ["CAT S62 Pro", "Garmin inReach", "iPhone 15"],
+      "features": [
+        {"text": "a MIL-STD-810H rugged chassis with an integrated FLIR thermal camera", "source": "CAT S62 Pro"},
+        {"text": "two-way satellite messaging and SOS that works off-grid", "source": "Garmin inReach"},
+        {"text": "the standard iOS app ecosystem and App Store", "source": "iPhone 15"}
+      ],
+      "description": "The Kestrel Outdoor is a smartphone with a MIL-STD-810H rugged chassis and integrated FLIR thermal camera, two-way satellite messaging and SOS that works off-grid, and the standard iOS app ecosystem and App Store.",
+      "prompt": "If the Kestrel Outdoor were priced like a flagship smartphone, how interested would you be in buying one?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    },
+    {
+      "key": "NP03",
+      "category": "smartphone",
+      "product_name": "Nimbus Minima",
+      "source_products": ["Light Phone II", "Punkt MP02", "iPhone SE"],
+      "features": [
+        {"text": "an e-ink display with no social media, web browser, or app store", "source": "Light Phone II"},
+        {"text": "a tactile T9 numeric keypad for text messaging", "source": "Punkt MP02"},
+        {"text": "full iMessage and FaceTime compatibility on a low-power A-series chip", "source": "iPhone SE"}
+      ],
+      "description": "The Nimbus Minima is a phone with an e-ink display and no social media, web browser, or app store; a tactile T9 numeric keypad for text messaging; and full iMessage and FaceTime compatibility running on a low-power A-series chip.",
+      "prompt": "How appealing do you find the Nimbus Minima as a second 'focus phone' for weekends?",
+      "options": ["Very appealing", "Somewhat appealing", "Not too appealing", "Not at all appealing", "Refused"]
+    },
+    {
+      "key": "NP04",
+      "category": "smartphone",
+      "product_name": "Verdant Pulse",
+      "source_products": ["Nothing Phone 2", "ASUS ROG Phone", "Google Pixel"],
+      "features": [
+        {"text": "a transparent back panel with programmable 'glyph' LED notifications", "source": "Nothing Phone 2"},
+        {"text": "a 165 Hz gaming display and shoulder trigger buttons", "source": "ASUS ROG Phone"},
+        {"text": "seven years of guaranteed Android security updates", "source": "Google Pixel"}
+      ],
+      "description": "The Verdant Pulse is a smartphone with a transparent back panel and programmable 'glyph' LED notifications, a 165 Hz gaming display with shoulder trigger buttons, and seven years of guaranteed Android security updates.",
+      "prompt": "How likely would you be to recommend the Verdant Pulse to a friend who plays mobile games?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP05",
+      "category": "laptop",
+      "product_name": "Ardent Studio 14",
+      "source_products": ["Apple MacBook Pro 14", "Framework Laptop 13", "Microsoft Surface Studio"],
+      "features": [
+        {"text": "an Apple-silicon-class ARM processor and mini-LED display", "source": "Apple MacBook Pro 14"},
+        {"text": "fully modular, user-replaceable mainboard, memory, and ports", "source": "Framework Laptop 13"},
+        {"text": "a hinge that folds the screen flat for pen-and-touch drawing", "source": "Microsoft Surface Studio"}
+      ],
+      "description": "The Ardent Studio 14 is a laptop with an Apple-silicon-class ARM processor and mini-LED display, a fully modular and user-replaceable mainboard, memory and ports, and a hinge that folds the screen flat for pen-and-touch drawing.",
+      "prompt": "Based on this description, how interested would you be in replacing your current laptop with the Ardent Studio 14?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    },
+    {
+      "key": "NP06",
+      "category": "laptop",
+      "product_name": "Ironclad ThinkBook",
+      "source_products": ["Lenovo ThinkPad X1 Carbon", "Panasonic Toughbook", "Dell Latitude Rugged"],
+      "features": [
+        {"text": "a carbon-fiber chassis under two pounds with a TrackPoint pointing stick", "source": "Lenovo ThinkPad X1 Carbon"},
+        {"text": "MIL-STD-810H certification and an IP65-sealed keyboard", "source": "Panasonic Toughbook"},
+        {"text": "hot-swappable dual batteries with a combined 30-hour runtime", "source": "Dell Latitude Rugged"}
+      ],
+      "description": "The Ironclad ThinkBook is a laptop with a carbon-fiber chassis under two pounds and a TrackPoint pointing stick, MIL-STD-810H certification with an IP65-sealed keyboard, and hot-swappable dual batteries with a combined 30-hour runtime.",
+      "prompt": "If your employer offered to issue you an Ironclad ThinkBook as a work laptop, would you accept?",
+      "options": ["Yes, definitely", "Probably yes", "Probably no", "No, definitely not", "Refused"]
+    },
+    {
+      "key": "NP07",
+      "category": "laptop",
+      "product_name": "Origami Flip",
+      "source_products": ["Lenovo ThinkPad X1 Fold", "ASUS ZenBook Duo", "Samsung Galaxy Book"],
+      "features": [
+        {"text": "a single folding 17-inch OLED display that becomes two 12-inch screens", "source": "Lenovo ThinkPad X1 Fold"},
+        {"text": "an included detachable wireless keyboard that magnetically docks on either screen", "source": "ASUS ZenBook Duo"},
+        {"text": "tight integration with Android phone notifications and file transfer", "source": "Samsung Galaxy Book"}
+      ],
+      "description": "The Origami Flip is a laptop with a single folding 17-inch OLED display that becomes two 12-inch screens, an included detachable wireless keyboard that magnetically docks on either screen, and tight integration with Android phone notifications and file transfer.",
+      "prompt": "How likely would you be to buy an Origami Flip instead of a traditional laptop?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP08",
+      "category": "electric_vehicle",
+      "product_name": "Meridian Overland EV",
+      "source_products": ["Rivian R1S", "Toyota Land Cruiser", "Tesla Model Y"],
+      "features": [
+        {"text": "a 400-mile all-electric range and four-motor torque-vectoring drivetrain", "source": "Rivian R1S"},
+        {"text": "a body-on-frame chassis with a 6,000-pound towing capacity and low-range gearing", "source": "Toyota Land Cruiser"},
+        {"text": "access to the Tesla Supercharger network via a native NACS port", "source": "Tesla Model Y"}
+      ],
+      "description": "The Meridian Overland EV is an electric SUV with a 400-mile all-electric range and four-motor torque-vectoring drivetrain, a body-on-frame chassis with a 6,000-pound towing capacity and low-range gearing, and access to the Tesla Supercharger network via a native NACS port.",
+      "prompt": "If the Meridian Overland EV were priced at $75,000, how likely would you be to consider buying one?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP09",
+      "category": "electric_vehicle",
+      "product_name": "Helix Compact",
+      "source_products": ["Chevrolet Bolt", "Mini Cooper SE", "Nissan Leaf"],
+      "features": [
+        {"text": "a 259-mile range and a sub-$28,000 starting price", "source": "Chevrolet Bolt"},
+        {"text": "a go-kart-handling chassis with adaptive dampers", "source": "Mini Cooper SE"},
+        {"text": "bidirectional vehicle-to-home power export that can run a house in a blackout", "source": "Nissan Leaf"}
+      ],
+      "description": "The Helix Compact is an electric hatchback with a 259-mile range and a sub-$28,000 starting price, a go-kart-handling chassis with adaptive dampers, and bidirectional vehicle-to-home power export that can run a house in a blackout.",
+      "prompt": "How interested would you be in buying the Helix Compact as your next car?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    },
+    {
+      "key": "NP10",
+      "category": "hybrid_truck",
+      "product_name": "Forge Pioneer Hybrid",
+      "source_products": ["Ford F-150 Lightning", "Toyota Tacoma Hybrid", "Jeep Gladiator"],
+      "features": [
+        {"text": "an onboard Pro Power generator that outputs 9.6 kW of AC power at a jobsite", "source": "Ford F-150 Lightning"},
+        {"text": "a fuel-sipping hybrid drivetrain rated at 32 mpg combined", "source": "Toyota Tacoma Hybrid"},
+        {"text": "a removable hardtop and fold-down windshield for open-air driving", "source": "Jeep Gladiator"}
+      ],
+      "description": "The Forge Pioneer Hybrid is a pickup truck with an onboard Pro Power generator outputting 9.6 kW of AC power at a jobsite, a fuel-sipping hybrid drivetrain rated at 32 mpg combined, and a removable hardtop and fold-down windshield for open-air driving.",
+      "prompt": "How likely would you be to buy the Forge Pioneer Hybrid over a traditional gas-powered pickup truck?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP11",
+      "category": "headphones",
+      "product_name": "Auralis Hush Max",
+      "source_products": ["Bose QuietComfort Ultra", "Sony WH-1000XM5", "AirPods Max"],
+      "features": [
+        {"text": "the most aggressive adaptive noise cancellation, tuned for aircraft cabins", "source": "Bose QuietComfort Ultra"},
+        {"text": "Sony's LDAC high-bitrate Bluetooth codec and multi-point pairing", "source": "Sony WH-1000XM5"},
+        {"text": "an aluminum chassis with spatial audio head-tracking for Apple devices", "source": "AirPods Max"}
+      ],
+      "description": "The Auralis Hush Max is an over-ear headphone with aggressive adaptive noise cancellation tuned for aircraft cabins, Sony's LDAC high-bitrate Bluetooth codec and multi-point pairing, and an aluminum chassis with spatial audio head-tracking for Apple devices.",
+      "prompt": "If the Auralis Hush Max were priced at $499, how interested would you be in buying a pair?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    },
+    {
+      "key": "NP12",
+      "category": "earbuds",
+      "product_name": "Echo Buds Trail",
+      "source_products": ["Shokz OpenRun", "Jabra Elite Active", "AirPods Pro"],
+      "features": [
+        {"text": "open-ear bone-conduction drivers that leave the ear canal unobstructed", "source": "Shokz OpenRun"},
+        {"text": "an IP68 sweat-and-waterproof rating with a secure ear-hook fit for running", "source": "Jabra Elite Active"},
+        {"text": "transparency mode with live conversation-boost for hearing accessibility", "source": "AirPods Pro"}
+      ],
+      "description": "The Echo Buds Trail are wireless earbuds with open-ear bone-conduction drivers that leave the ear canal unobstructed, an IP68 sweat-and-waterproof rating with a secure ear-hook fit for running, and transparency mode with live conversation-boost for hearing accessibility.",
+      "prompt": "Based on this description, how likely would you be to buy the Echo Buds Trail for outdoor workouts?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP13",
+      "category": "studio_headphones",
+      "product_name": "Beacon Reference 88",
+      "source_products": ["Sennheiser HD 600", "AKG K371", "Audio-Technica ATH-M50x"],
+      "features": [
+        {"text": "a flat neutral frequency response preferred by classical mixing engineers", "source": "Sennheiser HD 600"},
+        {"text": "a closed-back design that matches the Harman target curve", "source": "AKG K371"},
+        {"text": "the durable folding hinge popular with DJs and podcasters", "source": "Audio-Technica ATH-M50x"}
+      ],
+      "description": "The Beacon Reference 88 is a studio headphone with a flat neutral frequency response preferred by classical mixing engineers, a closed-back design that matches the Harman target curve, and a durable folding hinge popular with DJs and podcasters.",
+      "prompt": "If you were buying a pair of studio headphones today, how likely would you be to choose the Beacon Reference 88?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP14",
+      "category": "smartwatch",
+      "product_name": "Corvidae Summit Watch",
+      "source_products": ["Garmin Fenix 7", "Apple Watch Ultra", "Suunto Vertical Solar"],
+      "features": [
+        {"text": "a 21-day battery life with multi-band GPS and topographic maps", "source": "Garmin Fenix 7"},
+        {"text": "an 86-decibel siren and cellular connectivity for emergency calls", "source": "Apple Watch Ultra"},
+        {"text": "a solar-charging bezel that indefinitely extends battery life in sunlight", "source": "Suunto Vertical Solar"}
+      ],
+      "description": "The Corvidae Summit Watch is a smartwatch with a 21-day battery life, multi-band GPS and topographic maps, an 86-decibel siren with cellular connectivity for emergency calls, and a solar-charging bezel that indefinitely extends battery life in sunlight.",
+      "prompt": "How interested would you be in buying the Corvidae Summit Watch if you hike or backpack regularly?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    },
+    {
+      "key": "NP15",
+      "category": "fitness_tracker",
+      "product_name": "Orbita Health Band",
+      "source_products": ["Whoop 4.0", "Oura Ring", "Fitbit Charge"],
+      "features": [
+        {"text": "a subscription-only model that ships free hardware upgrades every 18 months", "source": "Whoop 4.0"},
+        {"text": "continuous core-body-temperature tracking and menstrual-cycle prediction", "source": "Oura Ring"},
+        {"text": "a small always-on OLED screen that displays text notifications", "source": "Fitbit Charge"}
+      ],
+      "description": "The Orbita Health Band is a wearable with a subscription-only model that ships free hardware upgrades every 18 months, continuous core-body-temperature tracking with menstrual-cycle prediction, and a small always-on OLED screen that displays text notifications.",
+      "prompt": "How interested would you be in a subscription-based fitness tracker like the Orbita Health Band?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    },
+    {
+      "key": "NP16",
+      "category": "streaming_video",
+      "product_name": "Lantern+ Classics",
+      "source_products": ["The Criterion Channel", "Netflix", "TCM"],
+      "features": [
+        {"text": "a curated library of restored international art-house films with scholar commentaries", "source": "The Criterion Channel"},
+        {"text": "offline downloads and a recommendation algorithm tuned to viewing history", "source": "Netflix"},
+        {"text": "24/7 linear programming blocks hosted by film historians", "source": "TCM"}
+      ],
+      "description": "Lantern+ Classics is a streaming video service with a curated library of restored international art-house films with scholar commentaries, offline downloads and a recommendation algorithm tuned to viewing history, and 24/7 linear programming blocks hosted by film historians.",
+      "prompt": "If Lantern+ Classics cost $9.99 per month, how likely would you be to subscribe?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP17",
+      "category": "streaming_music",
+      "product_name": "Pulse Lossless",
+      "source_products": ["Tidal HiFi Plus", "Spotify", "Bandcamp"],
+      "features": [
+        {"text": "master-quality FLAC and Dolby Atmos streams with per-stream artist royalty reports", "source": "Tidal HiFi Plus"},
+        {"text": "algorithmic weekly discovery playlists and a social sharing feed", "source": "Spotify"},
+        {"text": "direct-to-artist album purchases and 'name your price' downloads", "source": "Bandcamp"}
+      ],
+      "description": "Pulse Lossless is a streaming music service with master-quality FLAC and Dolby Atmos streams and per-stream artist royalty reports, algorithmic weekly discovery playlists with a social sharing feed, and direct-to-artist album purchases with 'name your price' downloads.",
+      "prompt": "If Pulse Lossless cost $14.99 per month, how likely would you be to switch from your current music service?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP18",
+      "category": "ebooks",
+      "product_name": "Codex Open",
+      "source_products": ["Amazon Kindle Unlimited", "Libby", "Kobo"],
+      "features": [
+        {"text": "an all-you-can-read subscription covering two million books", "source": "Amazon Kindle Unlimited"},
+        {"text": "seamless public-library card integration for free loans of bestsellers", "source": "Libby"},
+        {"text": "native ePub support with no proprietary DRM lock-in", "source": "Kobo"}
+      ],
+      "description": "Codex Open is an ebook service with an all-you-can-read subscription covering two million books, seamless public-library card integration for free loans of bestsellers, and native ePub support with no proprietary DRM lock-in.",
+      "prompt": "If Codex Open cost $11.99 per month, how likely would you be to subscribe?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP19",
+      "category": "coffee_maker",
+      "product_name": "Ember Barista One",
+      "source_products": ["Breville Barista Express", "Nespresso Vertuo", "Chemex"],
+      "features": [
+        {"text": "a built-in conical burr grinder with 18 grind settings and manual-portafilter espresso", "source": "Breville Barista Express"},
+        {"text": "single-serve capsule-based Americanos that brew in under 30 seconds", "source": "Nespresso Vertuo"},
+        {"text": "a dedicated pour-over mode using the classic hourglass-glass geometry", "source": "Chemex"}
+      ],
+      "description": "The Ember Barista One is a home coffee maker with a built-in conical burr grinder with 18 grind settings and manual-portafilter espresso, single-serve capsule-based Americanos that brew in under 30 seconds, and a dedicated pour-over mode using the classic hourglass-glass geometry.",
+      "prompt": "If the Ember Barista One cost $699, how interested would you be in buying one for your kitchen?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    },
+    {
+      "key": "NP20",
+      "category": "vacuum",
+      "product_name": "Gust Hybrid Vac",
+      "source_products": ["Dyson V15 Detect", "iRobot Roomba j7+", "Shark NV356E"],
+      "features": [
+        {"text": "a laser-illuminated cleaner head that visualizes micro-dust on hard floors", "source": "Dyson V15 Detect"},
+        {"text": "an autonomous robot base that returns to empty itself and avoids pet waste", "source": "iRobot Roomba j7+"},
+        {"text": "a lift-away canister that converts to a handheld for stairs and upholstery", "source": "Shark NV356E"}
+      ],
+      "description": "The Gust Hybrid Vac is a vacuum system with a laser-illuminated cleaner head that visualizes micro-dust on hard floors, an autonomous robot base that returns to empty itself and avoids pet waste, and a lift-away canister that converts to a handheld for stairs and upholstery.",
+      "prompt": "If the Gust Hybrid Vac cost $899, how likely would you be to buy one to replace your current vacuum?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP21",
+      "category": "smart_fridge",
+      "product_name": "Larder Vision 30",
+      "source_products": ["Samsung Family Hub", "LG InstaView", "Sub-Zero"],
+      "features": [
+        {"text": "a 32-inch touchscreen door that mirrors a phone and streams recipe videos", "source": "Samsung Family Hub"},
+        {"text": "a glass panel that lights up on a double-knock to reveal interior contents", "source": "LG InstaView"},
+        {"text": "dual-compressor food preservation rated to keep produce fresh 40% longer", "source": "Sub-Zero"}
+      ],
+      "description": "The Larder Vision 30 is a refrigerator with a 32-inch touchscreen door that mirrors a phone and streams recipe videos, a glass panel that lights up on a double-knock to reveal interior contents, and dual-compressor food preservation rated to keep produce fresh 40% longer.",
+      "prompt": "If you were buying a new refrigerator, how likely would you be to choose the Larder Vision 30 over a standard model?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP22",
+      "category": "kitchen_gadget",
+      "product_name": "Tempest Kitchen Blender",
+      "source_products": ["Vitamix 5200", "Instant Pot Duo", "Breville Sous Chef"],
+      "features": [
+        {"text": "a two-horsepower motor that pulverizes fibrous ingredients in under a minute", "source": "Vitamix 5200"},
+        {"text": "a pressure-cook setting that transforms the blender jar into a sealed pressure cooker", "source": "Instant Pot Duo"},
+        {"text": "interchangeable food-processor discs for slicing and shredding", "source": "Breville Sous Chef"}
+      ],
+      "description": "The Tempest Kitchen Blender is a countertop kitchen appliance with a two-horsepower motor that pulverizes fibrous ingredients in under a minute, a pressure-cook setting that transforms the blender jar into a sealed pressure cooker, and interchangeable food-processor discs for slicing and shredding.",
+      "prompt": "If the Tempest Kitchen Blender cost $549, how interested would you be in buying one?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    },
+    {
+      "key": "NP23",
+      "category": "gaming_console",
+      "product_name": "Glyph Handheld",
+      "source_products": ["Steam Deck OLED", "Nintendo Switch", "Analogue Pocket"],
+      "features": [
+        {"text": "a Linux-based handheld that runs existing PC game libraries natively", "source": "Steam Deck OLED"},
+        {"text": "detachable motion-sensing side controllers and a dock that outputs to a TV", "source": "Nintendo Switch"},
+        {"text": "a cartridge slot that plays original Game Boy, Game Boy Color, and Game Gear games", "source": "Analogue Pocket"}
+      ],
+      "description": "The Glyph Handheld is a portable gaming console that is Linux-based and runs existing PC game libraries natively, has detachable motion-sensing side controllers with a dock that outputs to a TV, and a cartridge slot that plays original Game Boy, Game Boy Color, and Game Gear games.",
+      "prompt": "If the Glyph Handheld cost $549, how likely would you be to buy one as your primary portable gaming console?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP24",
+      "category": "cloud_gaming",
+      "product_name": "Aether Stream Box",
+      "source_products": ["NVIDIA GeForce Now", "Xbox Cloud Gaming", "Apple TV 4K"],
+      "features": [
+        {"text": "cloud rendering of ray-traced PC games streamed at 4K 120 fps", "source": "NVIDIA GeForce Now"},
+        {"text": "a flat-rate subscription that includes hundreds of day-one first-party titles", "source": "Xbox Cloud Gaming"},
+        {"text": "an A-series-class SoC that also doubles as a premium home theater streamer", "source": "Apple TV 4K"}
+      ],
+      "description": "The Aether Stream Box is a cloud-gaming set-top box with cloud rendering of ray-traced PC games streamed at 4K 120 fps, a flat-rate subscription that includes hundreds of day-one first-party titles, and an A-series-class SoC that also doubles as a premium home theater streamer.",
+      "prompt": "If the Aether Stream Box cost $249 with a $19.99 per month subscription, how interested would you be in buying one?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    },
+    {
+      "key": "NP25",
+      "category": "ebike",
+      "product_name": "Talon Commuter Bike",
+      "source_products": ["Rad Power RadCity", "Specialized Turbo Vado SL", "Brompton Electric"],
+      "features": [
+        {"text": "a 750-watt motor with a 45-mile range and an integrated rear cargo rack", "source": "Rad Power RadCity"},
+        {"text": "a lightweight 33-pound carbon-belted frame with no chain maintenance", "source": "Specialized Turbo Vado SL"},
+        {"text": "a three-second fold that collapses to carry-on luggage size", "source": "Brompton Electric"}
+      ],
+      "description": "The Talon Commuter Bike is an electric bicycle with a 750-watt motor delivering a 45-mile range and an integrated rear cargo rack, a lightweight 33-pound carbon-belted frame with no chain maintenance, and a three-second fold that collapses to carry-on luggage size.",
+      "prompt": "If the Talon Commuter Bike cost $2,799, how likely would you be to buy one for daily city commuting?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP26",
+      "category": "smart_speaker",
+      "product_name": "Parlor Sonic Hub",
+      "source_products": ["Sonos Era 300", "Amazon Echo", "Apple HomePod"],
+      "features": [
+        {"text": "six Dolby Atmos drivers tuned to map to the room acoustics automatically", "source": "Sonos Era 300"},
+        {"text": "open Alexa voice assistant with third-party skill support", "source": "Amazon Echo"},
+        {"text": "on-device voice processing that never transmits raw audio to the cloud", "source": "Apple HomePod"}
+      ],
+      "description": "The Parlor Sonic Hub is a smart speaker with six Dolby Atmos drivers tuned to map to the room acoustics automatically, open Alexa voice assistant with third-party skill support, and on-device voice processing that never transmits raw audio to the cloud.",
+      "prompt": "If the Parlor Sonic Hub cost $399, how interested would you be in buying one for your home?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    },
+    {
+      "key": "NP27",
+      "category": "xr_glasses",
+      "product_name": "Mirage Daily AR",
+      "source_products": ["Meta Quest 3", "Apple Vision Pro", "Ray-Ban Meta Smart Glasses"],
+      "features": [
+        {"text": "passthrough mixed reality with hand-tracking and full 6 degrees-of-freedom", "source": "Meta Quest 3"},
+        {"text": "eye-tracking foveated rendering and a micro-OLED display per eye", "source": "Apple Vision Pro"},
+        {"text": "a regular-eyeglasses form factor with an open-ear speaker and camera", "source": "Ray-Ban Meta Smart Glasses"}
+      ],
+      "description": "The Mirage Daily AR is a pair of mixed-reality glasses with passthrough mixed reality, hand-tracking and full 6-degrees-of-freedom, eye-tracking foveated rendering with a micro-OLED display per eye, and a regular-eyeglasses form factor with an open-ear speaker and camera.",
+      "prompt": "If the Mirage Daily AR cost $1,499, how likely would you be to buy a pair to wear as everyday glasses?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP28",
+      "category": "tablet",
+      "product_name": "Slate Reader Max",
+      "source_products": ["Apple iPad Pro", "reMarkable 2", "Amazon Kindle Scribe"],
+      "features": [
+        {"text": "an M-series chip with full iPadOS and Apple Pencil pressure sensitivity", "source": "Apple iPad Pro"},
+        {"text": "a paper-textured E Ink display with low-latency handwriting", "source": "reMarkable 2"},
+        {"text": "direct integration with a large ebook store and annotation sync", "source": "Amazon Kindle Scribe"}
+      ],
+      "description": "The Slate Reader Max is a tablet with an M-series chip running full iPadOS and Apple Pencil pressure sensitivity, a paper-textured E Ink display with low-latency handwriting, and direct integration with a large ebook store and annotation sync.",
+      "prompt": "If the Slate Reader Max cost $999, how likely would you be to buy one instead of a traditional tablet?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP29",
+      "category": "sedan",
+      "product_name": "Aurora Luxury Hybrid",
+      "source_products": ["Lexus ES Hybrid", "Tesla Model S", "Volvo S90"],
+      "features": [
+        {"text": "a 44-mpg combined gas-hybrid drivetrain with a 700-mile range", "source": "Lexus ES Hybrid"},
+        {"text": "a 17-inch central touchscreen and over-the-air software updates", "source": "Tesla Model S"},
+        {"text": "hands-on Pilot Assist lane-keeping and a Scandinavian-minimalist cabin", "source": "Volvo S90"}
+      ],
+      "description": "The Aurora Luxury Hybrid is a sedan with a 44-mpg combined gas-hybrid drivetrain and 700-mile range, a 17-inch central touchscreen with over-the-air software updates, and hands-on Pilot Assist lane-keeping with a Scandinavian-minimalist cabin.",
+      "prompt": "If the Aurora Luxury Hybrid cost $52,000, how likely would you be to consider buying one?",
+      "options": ["Very likely", "Somewhat likely", "Not too likely", "Not at all likely", "Refused"]
+    },
+    {
+      "key": "NP30",
+      "category": "drone",
+      "product_name": "Cygnus Mapping Drone",
+      "source_products": ["DJI Mavic 3 Pro", "Skydio 2+", "Parrot Anafi USA"],
+      "features": [
+        {"text": "a 4/3 CMOS Hasselblad camera with a variable aperture for cinematic video", "source": "DJI Mavic 3 Pro"},
+        {"text": "fully autonomous obstacle-avoiding subject tracking through dense forests", "source": "Skydio 2+"},
+        {"text": "NDAA-compliant US-made electronics that meet federal procurement rules", "source": "Parrot Anafi USA"}
+      ],
+      "description": "The Cygnus Mapping Drone is a consumer drone with a 4/3 CMOS Hasselblad camera with a variable aperture for cinematic video, fully autonomous obstacle-avoiding subject tracking through dense forests, and NDAA-compliant US-made electronics that meet federal procurement rules.",
+      "prompt": "If the Cygnus Mapping Drone cost $2,499, how interested would you be in buying one?",
+      "options": ["Very interested", "Somewhat interested", "Not too interested", "Not at all interested", "Refused"]
+    }
+  ]
+}
