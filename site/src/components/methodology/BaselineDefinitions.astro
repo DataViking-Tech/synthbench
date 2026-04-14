@@ -318,19 +318,39 @@ const baselines: Baseline[] = [
 
   {
     oqaSubgroupDist && (
-      <div
-        class="rounded-lg border border-muted/20 bg-surface p-5 mb-6 dark:bg-surface-dark"
+      <details
+        class="group rounded-lg border border-muted/20 bg-surface p-5 mb-6 dark:bg-surface-dark"
         id="opinionsqa-subgroup-ceiling"
       >
-        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
-          <h3 class="text-base font-semibold text-text dark:text-text-dark">
-            OpinionsQA: subgroup ceiling distribution
-          </h3>
-          <span class="text-sm font-mono text-primary dark:text-primary-light">
-            median {fmt(oqaSubgroupMedian)}
-          </span>
-        </div>
-        <p class="text-sm text-muted mb-4">
+        <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+          <div class="relative flex flex-wrap items-baseline gap-x-3 gap-y-1 pr-8">
+            <h3 class="text-base font-semibold text-text dark:text-text-dark">
+              OpinionsQA: subgroup ceiling distribution
+            </h3>
+            <span class="text-sm font-mono text-primary dark:text-primary-light">
+              median {fmt(oqaSubgroupMedian)}
+            </span>
+            <svg
+              class="absolute right-0 top-1 size-5 shrink-0 text-muted transition-transform group-open:rotate-180"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+              />
+            </svg>
+          </div>
+          <p class="mt-1 text-xs text-muted">
+            Expand for per-subgroup distribution, lowest-ceiling subgroups, and
+            sample-size quality flags.
+          </p>
+        </summary>
+        <p class="mt-4 text-sm text-muted mb-4">
           Per-(wave, attribute, group) ceilings across {oqaNSubgroups ?? "—"}{" "}
           subgroups from 15 Pew ATP waves. The wave-aggregate ceiling (
           {fmt(oqaAggregateMean)}, used for P_dist) is a different quantity
@@ -443,7 +463,7 @@ const baselines: Baseline[] = [
           Used by the leaderboard when scoring P_sub; compare P_dist against the
           wave-aggregate ceiling instead.
         </p>
-      </div>
+      </details>
     )
   }
 
@@ -465,32 +485,51 @@ const baselines: Baseline[] = [
             <span class="font-medium">What it tests:</span> {b.tests}
           </p>
           {b.extended && (
-            <div class="mt-4 pt-4 border-t border-muted/20 space-y-3">
-              {b.extended.sections.map((s) => (
-                <div>
-                  <h4 class="text-sm font-semibold text-text dark:text-text-dark mb-1">
-                    {s.heading}
-                  </h4>
-                  <p class="text-sm text-muted">{s.body}</p>
-                </div>
-              ))}
-              {b.extended.statusNote && (
-                <p class="text-xs italic text-muted border-l-2 border-muted/40 pl-3">
-                  {b.extended.statusNote}
-                </p>
-              )}
-              {b.extended.seeAlso && (
-                <p class="text-sm">
-                  <span class="font-medium">See also:</span>{" "}
-                  <a
-                    href={b.extended.seeAlso.href}
-                    class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
-                  >
-                    {b.extended.seeAlso.label}
-                  </a>
-                </p>
-              )}
-            </div>
+            <details class="group mt-4 pt-4 border-t border-muted/20">
+              <summary class="flex cursor-pointer items-center justify-between gap-3 list-none [&::-webkit-details-marker]:hidden text-sm font-medium text-text dark:text-text-dark hover:text-primary dark:hover:text-primary-light">
+                <span>Methodology details (for researchers)</span>
+                <svg
+                  class="size-4 shrink-0 text-muted transition-transform group-open:rotate-180"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                  />
+                </svg>
+              </summary>
+              <div class="mt-3 space-y-3">
+                {b.extended.sections.map((s) => (
+                  <div>
+                    <h4 class="text-sm font-semibold text-text dark:text-text-dark mb-1">
+                      {s.heading}
+                    </h4>
+                    <p class="text-sm text-muted">{s.body}</p>
+                  </div>
+                ))}
+                {b.extended.statusNote && (
+                  <p class="text-xs italic text-muted border-l-2 border-muted/40 pl-3">
+                    {b.extended.statusNote}
+                  </p>
+                )}
+                {b.extended.seeAlso && (
+                  <p class="text-sm">
+                    <span class="font-medium">See also:</span>{" "}
+                    <a
+                      href={b.extended.seeAlso.href}
+                      class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
+                    >
+                      {b.extended.seeAlso.label}
+                    </a>
+                  </p>
+                )}
+              </div>
+            </details>
           )}
         </div>
       ))
