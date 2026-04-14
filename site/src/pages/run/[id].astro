@@ -1,0 +1,605 @@
+---
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import type { RunIndex, RunIndexEntry } from "@/types/runs";
+
+export async function getStaticPaths() {
+  const indexPath = resolve("public/data/runs-index.json");
+  if (!existsSync(indexPath)) {
+    return [];
+  }
+  const index = JSON.parse(readFileSync(indexPath, "utf-8")) as RunIndex;
+  return index.runs.map((entry) => ({
+    params: { id: entry.run_id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: RunIndexEntry;
+}
+
+const { entry } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+// Encode path segments for URLs — space and a few reserved chars only.
+// Static hosts (and Astro preview) match filenames literally, so we must
+// leave characters like `=` unescaped.
+const encodePathSegment = (s: string): string =>
+  s.replace(/ /g, "%20").replace(/#/g, "%23").replace(/\?/g, "%3F");
+
+const dataUrl = `${base}/data/run/${encodePathSegment(entry.run_id)}.json`;
+const configUrl = `${base}/config/${encodePathSegment(entry.config_id)}`;
+const leaderboardUrl = `${base}/leaderboard`;
+---
+
+<BaseLayout title={`Run ${entry.run_id} - SynthBench`}>
+  <div
+    class="run-detail mx-auto w-full max-w-6xl px-4 py-8"
+    data-run-id={entry.run_id}
+    data-data-url={dataUrl}
+  >
+    <!-- Breadcrumb -->
+    <nav class="mb-6 text-sm text-muted">
+      <a href={leaderboardUrl} class="hover:text-primary">Leaderboard</a>
+      <span class="mx-2">/</span>
+      <a href={configUrl} class="hover:text-primary">Config</a>
+      <span class="mx-2">/</span>
+      <span class="text-text dark:text-text-dark">Run</span>
+    </nav>
+
+    <!-- Header (server-rendered from index entry) -->
+    <header class="mb-8">
+      <div class="flex flex-wrap items-baseline gap-2">
+        <h1 class="text-2xl font-bold sm:text-3xl">{entry.display_name}</h1>
+        {
+          entry.is_ensemble && (
+            <span class="rounded bg-primary/10 px-2 py-0.5 text-xs text-primary">
+              ensemble
+            </span>
+          )
+        }
+        {
+          entry.is_baseline && (
+            <span class="rounded bg-muted/20 px-2 py-0.5 text-xs text-muted">
+              baseline
+            </span>
+          )
+        }
+      </div>
+      <p class="mt-1 break-all font-mono text-xs text-muted">{entry.run_id}</p>
+    </header>
+
+    <!-- 1. Config metadata -->
+    <section class="mb-8 rounded-lg border border-muted/20 p-5">
+      <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+        Configuration
+      </h2>
+      <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3 md:grid-cols-4">
+        <div>
+          <dt class="text-xs text-muted">Framework</dt>
+          <dd class="font-mono">{entry.framework}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Base provider</dt>
+          <dd class="font-mono">{entry.base_provider ?? "—"}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Model</dt>
+          <dd class="font-mono">{entry.model}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Dataset</dt>
+          <dd class="font-mono">{entry.dataset}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Temperature</dt>
+          <dd class="font-mono">{entry.temperature ?? "default"}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Template</dt>
+          <dd class="font-mono">{entry.template ?? "current"}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Samples/question</dt>
+          <dd class="font-mono">{entry.samples_per_question ?? "—"}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Timestamp</dt>
+          <dd class="font-mono text-xs">{entry.timestamp ?? "—"}</dd>
+        </div>
+      </dl>
+      <div class="mt-4 text-sm">
+        <a href={configUrl} class="text-primary hover:underline"
+          >View all replicates for this config →</a
+        >
+      </div>
+    </section>
+
+    <!-- 2. Aggregate scores -->
+    <section class="mb-8">
+      <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+        Aggregate scores
+      </h2>
+      <div
+        id="run-scores"
+        class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"
+      >
+        <p class="col-span-full text-sm text-muted">Loading scores…</p>
+      </div>
+    </section>
+
+    <!-- 3. Per-question table -->
+    <section class="mb-8">
+      <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">
+          Per-question detail
+        </h2>
+        <div class="flex items-center gap-2 text-sm">
+          <label for="topic-filter" class="text-muted">Topic:</label>
+          <select
+            id="topic-filter"
+            class="rounded border border-muted/30 bg-surface px-2 py-1 text-sm dark:bg-surface-dark"
+          >
+            <option value="all">All</option>
+          </select>
+          <span id="row-count" class="text-xs text-muted"></span>
+        </div>
+      </div>
+
+      <!-- Demographic breakdown (SubPOP only, rendered when present) -->
+      <div id="run-demographic" class="mb-4 hidden"></div>
+
+      <div class="overflow-x-auto rounded-lg border border-muted/20">
+        <table class="w-full text-sm" id="per-question-table">
+          <thead>
+            <tr class="bg-surface dark:bg-surface-dark border-b border-muted/20">
+              <th class="px-3 py-2 text-left font-semibold">Question</th>
+              <th class="px-3 py-2 text-left font-semibold">Topic</th>
+              <th class="px-3 py-2 text-left font-semibold">Model modal</th>
+              <th class="px-3 py-2 text-left font-semibold">Human modal</th>
+              <th class="year-col hidden px-3 py-2 text-right font-semibold">
+                Year
+              </th>
+              <th class="px-3 py-2 text-right font-semibold">JSD</th>
+            </tr>
+          </thead>
+          <tbody id="per-question-tbody">
+            <tr>
+              <td colspan="6" class="px-3 py-8 text-center text-muted"
+                >Loading per-question detail…</td
+              >
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div
+      id="run-error"
+      class="hidden rounded-lg border border-baseline/40 bg-baseline/5 p-4 text-sm"
+    >
+      <strong>Could not load run data.</strong>
+      <span id="run-error-detail" class="ml-2 text-muted"></span>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import type {
+    PerQuestionRow,
+    RunAggregate,
+    RunDetail,
+    RunScores,
+  } from "@/types/runs";
+
+  type DemographicEntry = {
+    attribute: string;
+    group: string;
+    p_dist: number;
+    p_cond: number;
+    n_questions: number;
+  };
+
+  const fmt = (n: number | null | undefined, places = 3): string =>
+    n == null || Number.isNaN(n) ? "—" : n.toFixed(places);
+
+  function modalKey(dist: Record<string, number> | undefined): string {
+    if (!dist) return "—";
+    let best: string | null = null;
+    let bestVal = -Infinity;
+    for (const [k, v] of Object.entries(dist)) {
+      if (v > bestVal) {
+        bestVal = v;
+        best = k;
+      }
+    }
+    return best ?? "—";
+  }
+
+  function truncate(s: string, max: number): string {
+    if (!s) return "";
+    return s.length > max ? `${s.slice(0, max)}…` : s;
+  }
+
+  function escapeHtml(s: string): string {
+    return s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  /** Distribution bar palette (keyed by index, cycles on reuse). */
+  const BAR_COLORS = [
+    "var(--color-primary)",
+    "var(--color-accent)",
+    "var(--color-provider-raw-llm)",
+    "var(--color-baseline)",
+    "var(--color-provider-synthpanel)",
+    "var(--color-muted)",
+  ];
+
+  function renderStackedBar(
+    label: string,
+    dist: Record<string, number> | undefined,
+    options: string[],
+  ): string {
+    if (!dist) return "";
+    // Preserve option order; fall back to dist key order if options is empty.
+    const keys = options.length ? options : Object.keys(dist);
+    const segments = keys
+      .map((k, i) => {
+        const v = dist[k] ?? 0;
+        const pct = Math.max(0, Math.min(1, v)) * 100;
+        const color = BAR_COLORS[i % BAR_COLORS.length];
+        const title = `${escapeHtml(k)}: ${(v * 100).toFixed(1)}%`;
+        return `<span class="dist-seg" title="${title}" style="width:${pct}%;background:${color}"></span>`;
+      })
+      .join("");
+    return `
+      <div class="dist-row">
+        <span class="dist-label">${escapeHtml(label)}</span>
+        <span class="dist-bar">${segments}</span>
+      </div>
+    `;
+  }
+
+  function renderLegend(
+    options: string[],
+    dist: Record<string, number> | undefined,
+  ): string {
+    if (!dist) return "";
+    const keys = options.length ? options : Object.keys(dist);
+    return keys
+      .map((k, i) => {
+        const color = BAR_COLORS[i % BAR_COLORS.length];
+        return `<span class="dist-chip"><span class="dist-swatch" style="background:${color}"></span>${escapeHtml(k)}</span>`;
+      })
+      .join("");
+  }
+
+  function renderScores(scores: RunScores, agg: RunAggregate): string {
+    const tiles: Array<[string, string]> = [
+      ["SPS", fmt(scores.sps)],
+      ["p_dist", fmt(scores.p_dist)],
+      ["p_rank", fmt(scores.p_rank)],
+      ["p_refuse", fmt(scores.p_refuse)],
+      ["mean JSD", fmt(agg.mean_jsd)],
+      ["Kendall τ", fmt(agg.mean_kendall_tau)],
+    ];
+    if (scores.p_cond != null) tiles.push(["p_cond", fmt(scores.p_cond)]);
+    if (scores.p_sub != null) tiles.push(["p_sub", fmt(scores.p_sub)]);
+
+    const ci = agg.per_metric_ci ?? {};
+    return tiles
+      .map(([label, value]) => {
+        const ciKey = label.toLowerCase().replace("mean ", "").replace("kendall τ", "tau");
+        const ciRange = ci[ciKey];
+        const ciText =
+          ciRange && ciRange[0] != null && ciRange[1] != null
+            ? `<div class="score-ci">[${fmt(ciRange[0])}, ${fmt(ciRange[1])}]</div>`
+            : "";
+        return `
+          <div class="score-tile">
+            <div class="score-label">${escapeHtml(label)}</div>
+            <div class="score-value">${escapeHtml(value)}</div>
+            ${ciText}
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  function renderDemographic(
+    breakdown: Record<string, DemographicEntry[]>,
+  ): string {
+    const attrs = Object.keys(breakdown);
+    if (!attrs.length) return "";
+    const sections = attrs
+      .map((attr) => {
+        const rows = breakdown[attr]
+          .map(
+            (row) => `
+              <tr>
+                <td class="px-3 py-1.5">${escapeHtml(row.group)}</td>
+                <td class="px-3 py-1.5 text-right font-mono">${fmt(row.p_dist)}</td>
+                <td class="px-3 py-1.5 text-right font-mono">${fmt(row.p_cond)}</td>
+                <td class="px-3 py-1.5 text-right font-mono text-xs text-muted">${row.n_questions}</td>
+              </tr>
+            `,
+          )
+          .join("");
+        return `
+          <div class="mb-3">
+            <h4 class="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">${escapeHtml(attr)}</h4>
+            <div class="overflow-x-auto rounded border border-muted/20">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-muted/20 bg-surface text-xs dark:bg-surface-dark">
+                    <th class="px-3 py-1.5 text-left font-semibold">Group</th>
+                    <th class="px-3 py-1.5 text-right font-semibold">p_dist</th>
+                    <th class="px-3 py-1.5 text-right font-semibold">p_cond</th>
+                    <th class="px-3 py-1.5 text-right font-semibold">N</th>
+                  </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+    return `
+      <details class="rounded-lg border border-muted/20 p-4" open>
+        <summary class="cursor-pointer text-sm font-semibold">Demographic breakdown</summary>
+        <div class="mt-3">${sections}</div>
+      </details>
+    `;
+  }
+
+  function renderPerQuestion(
+    rows: PerQuestionRow[],
+    showYearColumn: boolean,
+  ): string {
+    if (!rows.length) {
+      return `<tr><td colspan="6" class="px-3 py-8 text-center text-muted">No per-question data available.</td></tr>`;
+    }
+    return rows
+      .map((row, i) => {
+        const topic = typeof row.topic === "string" ? row.topic : "—";
+        const modelModal = modalKey(row.model_distribution);
+        const humanModal = modalKey(row.human_distribution);
+        const yearCell = showYearColumn
+          ? `<td class="px-3 py-2 text-right font-mono text-xs">${
+              row.temporal_year ? String(row.temporal_year) : "—"
+            }</td>`
+          : "";
+        return `
+          <tr class="pq-row cursor-pointer border-b border-muted/10 hover:bg-primary/5" data-index="${i}" data-topic="${escapeHtml(topic)}">
+            <td class="px-3 py-2">
+              <span class="pq-key font-mono text-xs text-muted">${escapeHtml(row.key)}</span>
+              <span class="pq-text block max-w-xl text-xs text-muted">${escapeHtml(truncate(row.text ?? "", 110))}</span>
+            </td>
+            <td class="px-3 py-2 text-xs">${escapeHtml(topic)}</td>
+            <td class="px-3 py-2 text-xs">${escapeHtml(modelModal)}</td>
+            <td class="px-3 py-2 text-xs">${escapeHtml(humanModal)}</td>
+            ${yearCell}
+            <td class="px-3 py-2 text-right font-mono">${fmt(row.jsd)}</td>
+          </tr>
+          <tr class="pq-detail hidden border-b border-muted/10 bg-surface/50 dark:bg-surface-dark/50" data-detail-for="${i}" data-topic="${escapeHtml(topic)}">
+            <td colspan="6" class="px-4 py-4">
+              <div class="mb-3 text-sm">
+                <strong>Question:</strong>
+                <span class="ml-1">${escapeHtml(row.text ?? "")}</span>
+              </div>
+              <div class="mb-2 text-xs text-muted">
+                N samples: <span class="font-mono">${row.n_samples ?? "—"}</span>
+                · JSD: <span class="font-mono">${fmt(row.jsd)}</span>
+                · τ: <span class="font-mono">${fmt(row.kendall_tau)}</span>
+                · parity: <span class="font-mono">${fmt(row.parity)}</span>
+                ${row.temporal_year ? `· year: <span class="font-mono">${row.temporal_year}</span>` : ""}
+              </div>
+              <div class="dist-legend">${renderLegend(row.options ?? [], row.human_distribution)}</div>
+              <div class="dist-stack">
+                ${renderStackedBar("Human", row.human_distribution, row.options ?? [])}
+                ${renderStackedBar("Model", row.model_distribution, row.options ?? [])}
+              </div>
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+  }
+
+  function populateTopicFilter(rows: PerQuestionRow[]): void {
+    const select = document.getElementById("topic-filter") as HTMLSelectElement | null;
+    if (!select) return;
+    const topics = new Set<string>();
+    for (const r of rows) {
+      if (typeof r.topic === "string" && r.topic) topics.add(r.topic);
+    }
+    for (const t of [...topics].sort()) {
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = t;
+      select.appendChild(opt);
+    }
+    select.addEventListener("change", () => applyTopicFilter(select.value));
+  }
+
+  function applyTopicFilter(topic: string): void {
+    const rows = document.querySelectorAll<HTMLElement>(
+      "#per-question-tbody tr.pq-row, #per-question-tbody tr.pq-detail",
+    );
+    let shown = 0;
+    for (const row of rows) {
+      const matches = topic === "all" || row.dataset.topic === topic;
+      row.classList.toggle("hidden", !matches);
+      // Collapse any open detail rows for hidden parents.
+      if (!matches && row.classList.contains("pq-detail")) {
+        row.classList.add("hidden");
+      }
+      if (matches && row.classList.contains("pq-row")) shown += 1;
+    }
+    const counter = document.getElementById("row-count");
+    if (counter) counter.textContent = `${shown} row${shown === 1 ? "" : "s"}`;
+  }
+
+  function wireRowExpansion(): void {
+    const tbody = document.getElementById("per-question-tbody");
+    if (!tbody) return;
+    tbody.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement | null;
+      const row = target?.closest("tr.pq-row") as HTMLElement | null;
+      if (!row) return;
+      const idx = row.dataset.index;
+      if (!idx) return;
+      const detail = tbody.querySelector<HTMLElement>(
+        `tr.pq-detail[data-detail-for="${idx}"]`,
+      );
+      if (detail) detail.classList.toggle("hidden");
+    });
+  }
+
+  function showError(message: string): void {
+    const loading = document.getElementById("run-scores");
+    if (loading) loading.innerHTML = "";
+    const tbody = document.getElementById("per-question-tbody");
+    if (tbody) tbody.innerHTML = "";
+    const box = document.getElementById("run-error");
+    const detail = document.getElementById("run-error-detail");
+    if (box) box.classList.remove("hidden");
+    if (detail) detail.textContent = message;
+  }
+
+  async function loadRun(): Promise<void> {
+    const root = document.querySelector<HTMLElement>(".run-detail");
+    if (!root) return;
+    const url = root.dataset.dataUrl;
+    if (!url) {
+      showError("Missing data URL.");
+      return;
+    }
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        showError(`HTTP ${res.status} loading ${url}`);
+        return;
+      }
+      const detail = (await res.json()) as RunDetail;
+
+      // Scores
+      const scoresEl = document.getElementById("run-scores");
+      if (scoresEl) scoresEl.innerHTML = renderScores(detail.scores, detail.aggregate);
+
+      // Demographic breakdown (SubPOP) — conditional
+      if (detail.demographic_breakdown && Object.keys(detail.demographic_breakdown).length) {
+        const demo = document.getElementById("run-demographic");
+        if (demo) {
+          demo.innerHTML = renderDemographic(detail.demographic_breakdown);
+          demo.classList.remove("hidden");
+        }
+      }
+
+      // Year column — conditional (shown if any row has a non-zero temporal_year)
+      const rows = detail.per_question ?? [];
+      const showYear = rows.some(
+        (r) => r.temporal_year != null && r.temporal_year !== 0,
+      );
+      if (showYear) {
+        for (const th of document.querySelectorAll<HTMLElement>(".year-col")) {
+          th.classList.remove("hidden");
+        }
+      }
+
+      // Per-question rows
+      const tbody = document.getElementById("per-question-tbody");
+      if (tbody) tbody.innerHTML = renderPerQuestion(rows, showYear);
+
+      populateTopicFilter(rows);
+      wireRowExpansion();
+      applyTopicFilter("all");
+    } catch (err) {
+      showError(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  loadRun();
+</script>
+
+<style>
+  .score-tile {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid color-mix(in oklch, var(--color-muted) 25%, transparent);
+    background: color-mix(in oklch, var(--color-surface) 60%, transparent);
+  }
+  .score-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted);
+  }
+  .score-value {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-top: 0.15rem;
+  }
+  .score-ci {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    margin-top: 0.25rem;
+  }
+  .dist-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+  .dist-row {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .dist-label {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+  .dist-bar {
+    display: flex;
+    width: 100%;
+    height: 1rem;
+    overflow: hidden;
+    border-radius: 0.25rem;
+    background: color-mix(in oklch, var(--color-muted) 15%, transparent);
+  }
+  .dist-seg {
+    display: block;
+    height: 100%;
+  }
+  .dist-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    margin-bottom: 0.35rem;
+  }
+  .dist-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .dist-swatch {
+    display: inline-block;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 0.125rem;
+  }
+</style>
