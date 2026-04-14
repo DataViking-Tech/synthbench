@@ -1,8 +1,10 @@
-"""Tests for cross-model convergence contamination detection."""
+"""Tests for contamination detection (convergence + paraphrase sensitivity)."""
 
 from __future__ import annotations
 
+import asyncio
 import json
+from pathlib import Path
 
 import pytest
 
@@ -11,7 +13,10 @@ from synthbench.contamination import (
     convergence_to_json,
     format_convergence_report,
     load_result_distributions,
+    result_to_json,
+    run_contamination_test,
 )
+from synthbench.providers.base import Distribution, PersonaSpec, Provider, Response
 
 
 def _write_result(tmp_path, name: str, provider: str, per_question: list[dict]) -> str:
@@ -196,3 +201,234 @@ class TestFormatAndSerialize:
         assert "contamination_risk" in data["per_question"][0]
         # Verify it's JSON-serializable
         json.dumps(data)
+
+
+# ---------------------------------------------------------------------------
+# Paraphrase sensitivity
+# ---------------------------------------------------------------------------
+
+
+class _StaticDistributionProvider(Provider):
+    """Provider that returns caller-controlled distributions per prompt.
+
+    ``distributions_by_text`` maps prompt text to a list of probabilities in
+    option order. Unknown prompts return uniform.
+    """
+
+    def __init__(self, distributions_by_text: dict[str, list[float]]):
+        self._by_text = distributions_by_text
+
+    @property
+    def name(self) -> str:
+        return "stub/paraphrase"
+
+    @property
+    def supports_distribution(self) -> bool:
+        return True
+
+    async def respond(
+        self,
+        question: str,
+        options: list[str],
+        *,
+        persona: PersonaSpec | None = None,
+    ) -> Response:  # pragma: no cover - not used by the test path
+        return Response(selected_option=options[0])
+
+    async def get_distribution(
+        self,
+        question: str,
+        options: list[str],
+        *,
+        persona: PersonaSpec | None = None,
+        n_samples: int | None = None,
+    ) -> Distribution:
+        probs = self._by_text.get(question)
+        if probs is None:
+            probs = [1.0 / len(options)] * len(options)
+        return Distribution(
+            probabilities=list(probs),
+            method="stub",
+            n_samples=n_samples or 1,
+        )
+
+
+def _write_paraphrase_suite(tmp_path: Path, items: list[dict]) -> Path:
+    suite = {
+        "suite": "paraphrase_test",
+        "version": "test",
+        "n_originals": len(items),
+        "n_paraphrases_per": len(items[0]["paraphrases"]) if items else 0,
+        "n_total": sum(1 + len(it["paraphrases"]) for it in items),
+        "items": items,
+    }
+    path = tmp_path / "paraphrase_test.json"
+    path.write_text(json.dumps(suite))
+    return path
+
+
+class TestRunContaminationTest:
+    def test_identical_paraphrase_distributions_zero_sensitivity(self, tmp_path):
+        """When paraphrase distributions match the original, sensitivity = 0."""
+        options = ["Yes", "No"]
+        human = {"Yes": 0.6, "No": 0.4}
+        item = {
+            "key": "Q1",
+            "original_text": "Are you happy?",
+            "paraphrases": ["Do you feel happy?", "Would you say you are happy?"],
+            "options": options,
+            "human_distribution": human,
+        }
+        suite_path = _write_paraphrase_suite(tmp_path, [item])
+
+        # Every prompt returns [0.6, 0.4] — same as the human dist.
+        same = [0.6, 0.4]
+        provider = _StaticDistributionProvider(
+            {
+                "Are you happy?": same,
+                "Do you feel happy?": same,
+                "Would you say you are happy?": same,
+            }
+        )
+
+        result = asyncio.run(
+            run_contamination_test(
+                provider=provider,
+                samples_per_question=1,
+                concurrency=4,
+                suite_path=suite_path,
+            )
+        )
+
+        assert result.n_originals == 1
+        assert result.n_paraphrases_per == 2
+        assert len(result.per_question) == 1
+        q = result.per_question[0]
+        assert q.original_parity == pytest.approx(q.mean_paraphrase_parity)
+        assert q.delta == pytest.approx(0.0)
+        assert q.sensitivity_pct == pytest.approx(0.0)
+        assert result.sensitivity_pct == pytest.approx(0.0)
+        # Original and adjusted SPS agree when everything is identical.
+        assert result.original_sps == pytest.approx(result.adjusted_sps)
+
+    def test_paraphrase_degrades_parity_positive_sensitivity(self, tmp_path):
+        """When paraphrases degrade parity, sensitivity_pct is positive."""
+        options = ["A", "B"]
+        human = {"A": 1.0, "B": 0.0}
+        item = {
+            "key": "Q1",
+            "original_text": "original",
+            "paraphrases": ["p1", "p2", "p3"],
+            "options": options,
+            "human_distribution": human,
+        }
+        suite_path = _write_paraphrase_suite(tmp_path, [item])
+
+        provider = _StaticDistributionProvider(
+            {
+                "original": [1.0, 0.0],  # perfect match
+                "p1": [0.5, 0.5],
+                "p2": [0.5, 0.5],
+                "p3": [0.5, 0.5],
+            }
+        )
+
+        result = asyncio.run(
+            run_contamination_test(
+                provider=provider,
+                samples_per_question=1,
+                concurrency=4,
+                suite_path=suite_path,
+            )
+        )
+
+        q = result.per_question[0]
+        assert q.original_parity > q.mean_paraphrase_parity
+        assert q.delta > 0
+        assert q.sensitivity_pct > 0
+        assert result.sensitivity_pct == pytest.approx(q.sensitivity_pct)
+
+    def test_result_to_json_structure(self, tmp_path):
+        options = ["A", "B"]
+        human = {"A": 0.5, "B": 0.5}
+        item = {
+            "key": "Q1",
+            "original_text": "text",
+            "paraphrases": ["p1"],
+            "options": options,
+            "human_distribution": human,
+        }
+        suite_path = _write_paraphrase_suite(tmp_path, [item])
+
+        provider = _StaticDistributionProvider({})
+        result = asyncio.run(
+            run_contamination_test(
+                provider=provider,
+                samples_per_question=1,
+                concurrency=2,
+                suite_path=suite_path,
+            )
+        )
+
+        data = result_to_json(result)
+
+        assert data["benchmark"] == "synthbench"
+        assert data["type"] == "contamination_paraphrase"
+        assert data["provider"] == "stub/paraphrase"
+        assert data["config"]["n_originals"] == 1
+        assert data["config"]["n_paraphrases_per"] == 1
+        assert "contamination_sensitivity" in data["aggregate"]
+        assert "original_sps" in data["aggregate"]
+        assert "adjusted_sps" in data["aggregate"]
+        assert len(data["per_question"]) == 1
+        pq = data["per_question"][0]
+        assert pq["key"] == "Q1"
+        assert pq["paraphrases"] == ["p1"]
+        # Result must be JSON-serializable end-to-end.
+        json.dumps(data)
+
+    def test_empty_suite_raises(self, tmp_path):
+        suite_path = _write_paraphrase_suite(tmp_path, [])
+        provider = _StaticDistributionProvider({})
+        with pytest.raises(ValueError, match="empty"):
+            asyncio.run(
+                run_contamination_test(
+                    provider=provider,
+                    samples_per_question=1,
+                    concurrency=2,
+                    suite_path=suite_path,
+                )
+            )
+
+    def test_handles_zero_original_parity(self, tmp_path):
+        """Guard against division-by-zero in the sensitivity ratio."""
+        options = ["A", "B"]
+        # Human says A=1.0, model says B=1.0 → parity = 0 (worst case).
+        human = {"A": 1.0, "B": 0.0}
+        item = {
+            "key": "Q1",
+            "original_text": "original",
+            "paraphrases": ["p1"],
+            "options": options,
+            "human_distribution": human,
+        }
+        suite_path = _write_paraphrase_suite(tmp_path, [item])
+
+        provider = _StaticDistributionProvider(
+            {"original": [0.0, 1.0], "p1": [0.0, 1.0]}
+        )
+
+        result = asyncio.run(
+            run_contamination_test(
+                provider=provider,
+                samples_per_question=1,
+                concurrency=2,
+                suite_path=suite_path,
+            )
+        )
+
+        q = result.per_question[0]
+        # With parity=0, sensitivity_pct must be 0 (not NaN/inf).
+        assert q.original_parity == pytest.approx(0.0)
+        assert q.sensitivity_pct == 0.0
+        assert result.sensitivity_pct == 0.0

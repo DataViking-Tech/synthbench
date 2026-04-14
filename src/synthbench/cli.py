@@ -952,13 +952,7 @@ def suite(
     click.echo(format_summary(summaries, resolved_provider))
 
 
-@main.group()
-def contamination():
-    """Contamination detection tools for benchmark results."""
-    pass
-
-
-@contamination.command("convergence")
+@main.command("convergence")
 @click.option(
     "--results-dir",
     "-d",
@@ -1002,10 +996,10 @@ def contamination_convergence(
     models recall the same memorized data). High variance = genuine reasoning.
 
     Example:
-        synthbench contamination convergence
-        synthbench contamination convergence --results-dir ./results
-        synthbench contamination convergence --dataset opinionsqa --min-models 3
-        synthbench contamination convergence --json
+        synthbench convergence
+        synthbench convergence --results-dir ./results
+        synthbench convergence --dataset opinionsqa --min-models 3
+        synthbench convergence --json
     """
     from synthbench.contamination import (
         convergence_analysis,
