@@ -163,7 +163,7 @@ jobs:
         working-directory: site
         env:
           CI: "true"
-        run: npx playwright test --config=e2e/playwright.config.ts --update-snapshots smoke.visual
+        run: npx playwright test --config=e2e/playwright.config.ts --update-snapshots=all smoke.visual
       - name: Commit updated baselines
         if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'vrt-baseline-update')
         run: |
