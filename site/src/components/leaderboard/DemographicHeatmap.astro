@@ -1,0 +1,356 @@
+---
+import type { LeaderboardData, LeaderboardEntry } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+
+interface HeatmapRow {
+  key: string;
+  label: string;
+  provider: string;
+}
+
+interface HeatmapCell {
+  row: number;
+  col: number;
+  p_dist: number;
+  p_cond: number;
+  n_questions: number;
+}
+
+interface AttributeHeatmap {
+  attribute: string;
+  rows: HeatmapRow[];
+  cols: string[];
+  cells: HeatmapCell[];
+}
+
+const entriesWithDemographics = leaderboard.entries.filter(
+  (
+    e,
+  ): e is LeaderboardEntry & {
+    demographic_scores: NonNullable<LeaderboardEntry["demographic_scores"]>;
+  } => Array.isArray(e.demographic_scores) && e.demographic_scores.length > 0,
+);
+
+const attributeGroupOrder = new Map<string, string[]>();
+const attributeRowOrder = new Map<
+  string,
+  { key: string; label: string; provider: string; sps: number }[]
+>();
+const attributeCells = new Map<string, Map<string, HeatmapCell>>();
+
+function entryKey(e: LeaderboardEntry): string {
+  return e.config_id ?? `${e.provider}/${e.model}/${e.framework}/${e.dataset}`;
+}
+
+function getOrInit<K, V>(map: Map<K, V>, key: K, init: () => V): V {
+  let value = map.get(key);
+  if (value === undefined) {
+    value = init();
+    map.set(key, value);
+  }
+  return value;
+}
+
+for (const entry of entriesWithDemographics) {
+  const rowKey = entryKey(entry);
+  const rowLabel = entry.model;
+  for (const score of entry.demographic_scores) {
+    const attr = score.attribute;
+
+    const groups = getOrInit(attributeGroupOrder, attr, () => []);
+    if (!groups.includes(score.group)) groups.push(score.group);
+
+    const rows = getOrInit(attributeRowOrder, attr, () => []);
+    if (!rows.find((r) => r.key === rowKey)) {
+      rows.push({ key: rowKey, label: rowLabel, provider: entry.provider, sps: entry.sps });
+    }
+
+    const cellMap = getOrInit(attributeCells, attr, () => new Map<string, HeatmapCell>());
+    cellMap.set(`${rowKey}|${score.group}`, {
+      row: -1,
+      col: -1,
+      p_dist: score.p_dist,
+      p_cond: score.p_cond,
+      n_questions: score.n_questions,
+    });
+  }
+}
+
+const heatmaps: AttributeHeatmap[] = [];
+for (const [attr, groups] of attributeGroupOrder) {
+  const rawRows = attributeRowOrder.get(attr) ?? [];
+  const sortedRows = [...rawRows].sort((a, b) => b.sps - a.sps);
+  const rowIndex = new Map(sortedRows.map((r, i) => [r.key, i]));
+  const colIndex = new Map(groups.map((g, i) => [g, i]));
+
+  const cellMap = attributeCells.get(attr) ?? new Map();
+  const cells: HeatmapCell[] = [];
+  for (const [combined, cell] of cellMap) {
+    const [rowKey, group] = combined.split("|");
+    const r = rowIndex.get(rowKey);
+    const c = colIndex.get(group);
+    if (r === undefined || c === undefined) continue;
+    cells.push({
+      row: r,
+      col: c,
+      p_dist: cell.p_dist,
+      p_cond: cell.p_cond,
+      n_questions: cell.n_questions,
+    });
+  }
+
+  heatmaps.push({
+    attribute: attr,
+    rows: sortedRows.map((r) => ({ key: r.key, label: r.label, provider: r.provider })),
+    cols: groups,
+    cells,
+  });
+}
+
+heatmaps.sort((a, b) => a.attribute.localeCompare(b.attribute));
+
+const hasAnyData = heatmaps.length > 0;
+const defaultAttribute = heatmaps[0]?.attribute ?? "";
+---
+
+<section class="w-full max-w-5xl mx-auto py-8 px-4">
+  <h2 class="text-2xl font-bold text-center mb-2">Demographic Parity Heatmap</h2>
+  <p class="text-center text-sm text-muted mb-6 max-w-3xl mx-auto">
+    Models × demographic groups, colored by <code class="text-xs">p_dist</code> (distribution
+    similarity — higher = closer match to the conditioned subpopulation). Use the selector to
+    drill into a specific attribute.
+  </p>
+
+  {hasAnyData ? (
+    <>
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <label for="demographic-heatmap-attribute" class="text-sm font-medium">
+          Attribute:
+        </label>
+        <select
+          id="demographic-heatmap-attribute"
+          class="px-3 py-1.5 rounded border border-default bg-surface text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent"
+          aria-label="Select demographic attribute"
+        >
+          {heatmaps.map((h) => (
+            <option value={h.attribute} selected={h.attribute === defaultAttribute}>
+              {h.attribute} ({h.rows.length} model{h.rows.length === 1 ? "" : "s"} × {h.cols.length} group{h.cols.length === 1 ? "" : "s"})
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div
+        id="demographic-heatmap"
+        class="echarts-container w-full"
+        style="height: 480px; min-height: 240px;"
+        role="img"
+        aria-label="Demographic parity heatmap"
+        tabindex="0"
+        data-heatmaps={JSON.stringify(heatmaps)}
+        data-default-attribute={defaultAttribute}
+      ></div>
+
+      <p class="mt-3 text-xs text-muted text-center">
+        Coverage flag derived from <code>n_questions</code>:
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 align-middle ml-2 mr-1"></span>high (≥100)
+        <span class="inline-block w-2 h-2 rounded-full bg-amber-500 align-middle ml-3 mr-1"></span>medium (50–99)
+        <span class="inline-block w-2 h-2 rounded-full bg-rose-500 align-middle ml-3 mr-1"></span>low (&lt;50)
+      </p>
+    </>
+  ) : (
+    <div class="rounded-lg border border-default bg-surface p-8 text-center text-sm text-muted">
+      <p class="mb-1 font-medium">No demographic conditioning data available yet.</p>
+      <p>
+        Once conditioned runs land, this heatmap will show how closely each model matches
+        demographic subpopulations (e.g., Democrat vs. Republican, income brackets, etc.).
+      </p>
+    </div>
+  )}
+</section>
+
+<script>
+  import * as echarts from "echarts";
+
+  interface HeatmapRow {
+    key: string;
+    label: string;
+    provider: string;
+  }
+
+  interface HeatmapCell {
+    row: number;
+    col: number;
+    p_dist: number;
+    p_cond: number;
+    n_questions: number;
+  }
+
+  interface AttributeHeatmap {
+    attribute: string;
+    rows: HeatmapRow[];
+    cols: string[];
+    cells: HeatmapCell[];
+  }
+
+  function coverageLabel(n: number): { text: string; color: string } {
+    if (n >= 100) return { text: "high", color: "#10b981" };
+    if (n >= 50) return { text: "medium", color: "#f59e0b" };
+    return { text: "low", color: "#f43f5e" };
+  }
+
+  function buildOption(heatmap: AttributeHeatmap, isDark: boolean) {
+    const data = heatmap.cells.map((c) => [c.col, c.row, Number(c.p_dist.toFixed(4))]);
+    const extra = new Map<string, HeatmapCell>();
+    for (const c of heatmap.cells) extra.set(`${c.row}|${c.col}`, c);
+
+    return {
+      tooltip: {
+        position: "top",
+        formatter: (params: { value: [number, number, number] }) => {
+          const [col, row, p_dist] = params.value;
+          const cell = extra.get(`${row}|${col}`);
+          const rowLabel = heatmap.rows[row]?.label ?? "?";
+          const provider = heatmap.rows[row]?.provider ?? "";
+          const groupLabel = heatmap.cols[col] ?? "?";
+          if (!cell) return `${rowLabel} — ${groupLabel}`;
+          const cov = coverageLabel(cell.n_questions);
+          const escape = (s: string) =>
+            s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          return [
+            `<div style="font-size:13px">`,
+            `<strong>${escape(rowLabel)}</strong> <span style="opacity:0.7">(${escape(provider)})</span><br/>`,
+            `Group: <strong>${escape(groupLabel)}</strong><br/>`,
+            `p_dist: <strong>${p_dist.toFixed(3)}</strong><br/>`,
+            `p_cond: ${cell.p_cond.toFixed(3)}<br/>`,
+            `n_questions: ${cell.n_questions} `,
+            `<span style="color:${cov.color}">●</span> ${cov.text}`,
+            `</div>`,
+          ].join("");
+        },
+      },
+      grid: { left: 160, right: 40, top: 40, bottom: 90, containLabel: false },
+      xAxis: {
+        type: "category",
+        data: heatmap.cols,
+        splitArea: { show: true },
+        axisLabel: {
+          interval: 0,
+          rotate: heatmap.cols.length > 4 ? 30 : 0,
+          fontSize: 11,
+          width: 120,
+          overflow: "truncate",
+          color: isDark ? "#e5e7eb" : "#374151",
+        },
+        name: heatmap.attribute,
+        nameLocation: "middle",
+        nameGap: 60,
+        nameTextStyle: { fontSize: 12, fontWeight: "bold" },
+      },
+      yAxis: {
+        type: "category",
+        data: heatmap.rows.map((r) => r.label),
+        splitArea: { show: true },
+        axisLabel: {
+          fontSize: 11,
+          width: 150,
+          overflow: "truncate",
+          color: isDark ? "#e5e7eb" : "#374151",
+        },
+      },
+      visualMap: {
+        min: 0,
+        max: 1,
+        calculable: true,
+        orient: "horizontal",
+        left: "center",
+        bottom: 5,
+        inRange: {
+          color: ["#dc2626", "#f59e0b", "#eab308", "#84cc16", "#10b981"],
+        },
+        textStyle: { color: isDark ? "#e5e7eb" : "#374151", fontSize: 11 },
+        text: ["high parity", "low parity"],
+      },
+      series: [
+        {
+          name: "p_dist",
+          type: "heatmap",
+          data,
+          label: {
+            show: true,
+            formatter: (p: { value: [number, number, number] }) => p.value[2].toFixed(2),
+            fontSize: 11,
+            color: "#111827",
+          },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+            },
+          },
+        },
+      ],
+      toolbox: {
+        feature: { saveAsImage: { title: "Save as PNG" } },
+        right: 10,
+        top: 10,
+      },
+    };
+  }
+
+  function preferredTheme(): "" | "dark" {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "";
+  }
+
+  function initDemographicHeatmap() {
+    const container = document.getElementById("demographic-heatmap");
+    const select = document.getElementById(
+      "demographic-heatmap-attribute",
+    ) as HTMLSelectElement | null;
+    if (!container || !select) return;
+
+    const raw = container.dataset.heatmaps;
+    if (!raw) return;
+
+    let heatmaps: AttributeHeatmap[];
+    try {
+      heatmaps = JSON.parse(raw) as AttributeHeatmap[];
+    } catch {
+      return;
+    }
+    if (!heatmaps.length) return;
+
+    const byAttribute = new Map(heatmaps.map((h) => [h.attribute, h]));
+    let theme: "" | "dark" = preferredTheme();
+    let chart = echarts.init(container, theme, { renderer: "svg" });
+
+    const render = () => {
+      const attr = select.value || heatmaps[0].attribute;
+      const data = byAttribute.get(attr) ?? heatmaps[0];
+      chart.setOption(buildOption(data, theme === "dark"), true);
+    };
+
+    render();
+
+    select.addEventListener("change", render);
+
+    const ro = new ResizeObserver(() => chart.resize());
+    ro.observe(container);
+
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+      theme = e.matches ? "dark" : "";
+      chart.dispose();
+      chart = echarts.init(container, theme, { renderer: "svg" });
+      render();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDemographicHeatmap);
+  } else {
+    initDemographicHeatmap();
+  }
+</script>
