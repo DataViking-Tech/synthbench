@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+# Pre-push hook: run `ruff format --check` on Python files changed in the
+# commits being pushed. Mirrors the CI `lint` job so format violations are
+# caught locally instead of costing a CI round-trip.
+#
+# Enable once per clone:
+#   git config core.hooksPath .githooks
+# or run: scripts/install-hooks.sh
+#
+# Bypass (emergency only): git push --no-verify
+#
+# Input (stdin, one line per ref): <local-ref> <local-sha> <remote-ref> <remote-sha>
+#
+# Portability: macOS still ships bash 3.2, so no `mapfile`, no associative
+# arrays. Keep this boring.
+set -eu
+
+ZERO=0000000000000000000000000000000000000000
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+# Resolve a ruff invocation. Prefer `ruff` on PATH; fall back to `python -m ruff`.
+if command -v ruff >/dev/null 2>&1; then
+    RUFF_CMD="ruff"
+elif command -v python3 >/dev/null 2>&1 && python3 -m ruff --version >/dev/null 2>&1; then
+    RUFF_CMD="python3 -m ruff"
+elif command -v python >/dev/null 2>&1 && python -m ruff --version >/dev/null 2>&1; then
+    RUFF_CMD="python -m ruff"
+else
+    echo "pre-push: ruff not found on PATH and not importable as a module." >&2
+    echo "pre-push: install it (e.g. 'pip install ruff') or bypass with 'git push --no-verify'." >&2
+    exit 1
+fi
+
+# Collect the set of .py files changed across all refs being pushed into a
+# newline-separated buffer, then dedupe at the end.
+changed_buf=""
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+    [ -z "${local_sha:-}" ] && continue
+    # Deleting a remote branch: nothing to check.
+    if [ "$local_sha" = "$ZERO" ]; then
+        continue
+    fi
+
+    if [ "$remote_sha" = "$ZERO" ]; then
+        # New branch on remote; diff against the nearest existing remote ref.
+        base=""
+        for ref in $(git for-each-ref --format='%(refname)' refs/remotes/ 2>/dev/null | head -n 20); do
+            candidate="$(git merge-base "$local_sha" "$ref" 2>/dev/null || true)"
+            if [ -n "$candidate" ]; then
+                base="$candidate"
+                break
+            fi
+        done
+        if [ -n "$base" ]; then
+            range_diff="$(git diff --name-only --diff-filter=ACMR "$base" "$local_sha" -- '*.py' 2>/dev/null || true)"
+        else
+            # No merge base: just check the tip commit.
+            range_diff="$(git diff --name-only --diff-filter=ACMR "${local_sha}~1" "$local_sha" -- '*.py' 2>/dev/null || true)"
+        fi
+    else
+        range_diff="$(git diff --name-only --diff-filter=ACMR "$remote_sha" "$local_sha" -- '*.py' 2>/dev/null || true)"
+    fi
+
+    if [ -n "$range_diff" ]; then
+        if [ -n "$changed_buf" ]; then
+            changed_buf="$changed_buf
+$range_diff"
+        else
+            changed_buf="$range_diff"
+        fi
+    fi
+done
+
+# Dedupe and drop files that were deleted locally.
+unique_files="$(printf '%s\n' "$changed_buf" | awk 'NF' | sort -u)"
+
+# Filter to files that still exist in the working tree (renames + deletions).
+check_list=""
+while IFS= read -r f; do
+    [ -z "$f" ] && continue
+    if [ -f "$f" ]; then
+        if [ -n "$check_list" ]; then
+            check_list="$check_list
+$f"
+        else
+            check_list="$f"
+        fi
+    fi
+done <<EOF
+$unique_files
+EOF
+
+if [ -z "$check_list" ]; then
+    # Nothing Python changed — stay out of the way.
+    exit 0
+fi
+
+file_count="$(printf '%s\n' "$check_list" | wc -l | tr -d ' ')"
+echo "pre-push: ruff format --check on ${file_count} changed Python file(s)..."
+
+# Pipe the newline-separated file list to xargs so we don't blow the argv
+# cap on a giant rename commit. xargs returns non-zero if ruff fails.
+if ! printf '%s\n' "$check_list" | xargs $RUFF_CMD format --check; then
+    echo >&2
+    echo "pre-push: ruff format --check failed. Fix with:" >&2
+    printf '           %s format %s\n' "$RUFF_CMD" "$(printf '%s ' $check_list)" >&2
+    echo "         Then re-run your push." >&2
+    echo "         (Emergency bypass: git push --no-verify)" >&2
+    exit 1
+fi
+
+exit 0
