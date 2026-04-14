@@ -431,18 +431,25 @@ const leaderboardUrl = `${base}/leaderboard`;
   }
 
   function applyTopicFilter(topic: string): void {
-    const rows = document.querySelectorAll<HTMLElement>(
-      "#per-question-tbody tr.pq-row, #per-question-tbody tr.pq-detail",
+    // Summary rows: show if the topic matches. Detail rows are controlled by
+    // the row-click handler (wireRowExpansion) — the filter only hides them
+    // when their parent is filtered out, never re-reveals them. Otherwise a
+    // filter reset would unintentionally expand every question.
+    const summaryRows = document.querySelectorAll<HTMLElement>(
+      "#per-question-tbody tr.pq-row",
+    );
+    const detailRows = document.querySelectorAll<HTMLElement>(
+      "#per-question-tbody tr.pq-detail",
     );
     let shown = 0;
-    for (const row of rows) {
+    for (const row of summaryRows) {
       const matches = topic === "all" || row.dataset.topic === topic;
       row.classList.toggle("hidden", !matches);
-      // Collapse any open detail rows for hidden parents.
-      if (!matches && row.classList.contains("pq-detail")) {
-        row.classList.add("hidden");
-      }
-      if (matches && row.classList.contains("pq-row")) shown += 1;
+      if (matches) shown += 1;
+    }
+    for (const row of detailRows) {
+      const matches = topic === "all" || row.dataset.topic === topic;
+      if (!matches) row.classList.add("hidden");
     }
     const counter = document.getElementById("row-count");
     if (counter) counter.textContent = `${shown} row${shown === 1 ? "" : "s"}`;
@@ -530,7 +537,11 @@ const leaderboardUrl = `${base}/leaderboard`;
   loadRun();
 </script>
 
-<style>
+<style is:global>
+  /* Scoped styles do not reach elements inserted via innerHTML from the client
+     script below (Astro hashes the selectors with data-astro-cid-* attributes
+     that our JS-built nodes lack). These rules must be global so the
+     per-question detail bars, score tiles, and legend render at all. */
   .score-tile {
     padding: 0.75rem;
     border-radius: 0.5rem;

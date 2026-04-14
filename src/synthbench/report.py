@@ -86,7 +86,7 @@ def to_json(result: BenchmarkResult) -> dict:
         "per_question": [
             {
                 "key": q.key,
-                "text": q.text[:120],
+                "text": q.text,
                 "options": q.options,
                 "human_distribution": {
                     k: round(v, 4) for k, v in q.human_distribution.items()

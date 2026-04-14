@@ -755,7 +755,11 @@ const exploreUrl = `${base}/explore`;
   main();
 </script>
 
-<style>
+<style is:global>
+  /* Scoped styles do not reach elements inserted via innerHTML from the client
+     script above (Astro hashes the selectors with data-astro-cid-* attributes
+     that our JS-built nodes lack). These rules must be global so the metric
+     tiles and distribution bars render at all. */
   .metric-tile {
     padding: 0.85rem;
     border-radius: 0.5rem;
