@@ -35,3 +35,6 @@ where = ["src"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+# Prepend local src/ to sys.path so the in-tree synthbench package shadows any
+# stale `pip install -e .` entries from sibling worktrees (sb-3bn).
+pythonpath = ["src"]
