@@ -382,8 +382,8 @@ synthbench run --provider generic-http --config ./my-provider.yaml --suite core
 
 ### 3.1 Question Corpus
 
-**Source**: OpinionsQA — 1,498 multiple-choice questions from 15 Pew American
-Trends Panel waves.
+**Primary source**: OpinionsQA — 1,498 multiple-choice questions from 15 Pew
+American Trends Panel waves.
 
 **Two tiers**:
 
@@ -391,6 +391,36 @@ Trends Panel waves.
 |-------|-----------|---------|-----------------|
 | **SynthBench-Full** | 1,498 | Complete evaluation, publication-grade | ~6h (logprob), ~24h (sampling@100) |
 | **SynthBench-Core** | 300 | Quick evaluation, development iteration | ~1h (logprob), ~5h (sampling@100) |
+
+**Alternative datasets** (selectable via `--dataset`):
+
+| Key | Dataset | Scope | Ground truth | Setup |
+|-----|---------|-------|--------------|-------|
+| `opinionsqa` | OpinionsQA (Santurkar et al.) | 1,498 US questions, 60 demographic groups | Pew ATP | Bundled |
+| `globalopinionqa` | GlobalOpinionQA (Durmus et al.) | 2,556 questions, 138 countries | Pew Global + WVS subset | Auto-download (HuggingFace) |
+| `subpop` | SubPOP (Suh et al., ACL 2025) | 3,362 questions, 22 US subpopulations | ATP aggregates | Auto-download (HuggingFace, gated) |
+| `pewtech` | Pew Internet & Technology | Tech adoption, privacy, AI attitudes | Pew ATP (tech waves) | Manual (free Pew account) |
+| `wvs` | World Values Survey Wave 7 | 290+ questions, 64 countries, social/political/religious values | WVS7 microdata (2017-2022) | Manual (registration at worldvaluessurvey.org) |
+| `gss` | General Social Survey (NORC) | 50+ years of US attitudes on work, gender, race, institutions | GSS cumulative file | Manual (public download from gss.norc.org) |
+
+**Suitability guidance**:
+
+- **Cross-cultural conditioning** — use `globalopinionqa` (138 countries, ready
+  out of the box) or `wvs` (64 countries, deeper political/religious coverage
+  but manual setup).
+- **US demographic parity** — use `opinionsqa` (richest group coverage) or
+  `subpop` (pre-aggregated subgroup distributions).
+- **Temporal drift** — use `gss` with a `year` filter to evaluate against
+  distributions from a specific survey year (1972-present).
+- **Tech-domain attitudes** — use `pewtech`.
+
+Both `wvs` and `gss` expect a pre-aggregated CSV in the adapter's data
+directory (`~/.synthbench/data/{wvs,gss}/raw/`) with columns
+`question_id, question_text, {country|year}, option, count`. One row per
+(question, stratum, option) tuple; the adapter sums counts to build the
+ground-truth distribution (population-weighted when no filter is active).
+The adapters raise `DatasetDownloadError` with setup instructions when the
+expected file is missing.
 
 ### 3.2 Core Subset Selection (SynthBench-Core)
 
