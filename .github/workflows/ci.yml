@@ -30,6 +30,37 @@ jobs:
       - run: pip install -e '.[dev]'
       - run: pytest tests/
 
+  validate-submissions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
+      - name: Find added / modified submissions
+        id: changed
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base_sha="${{ github.event.pull_request.base.sha }}"
+          else
+            base_sha="$(git rev-parse HEAD^ 2>/dev/null || echo '')"
+          fi
+          if [[ -z "$base_sha" ]]; then
+            changed=""
+          else
+            changed=$(git diff --name-only --diff-filter=AM "$base_sha" HEAD -- \
+              'leaderboard-results/*.json' | tr '\n' ' ')
+          fi
+          echo "files=$changed" >> "$GITHUB_OUTPUT"
+          echo "Submissions to validate: $changed"
+      - name: Validate new submissions
+        if: steps.changed.outputs.files != ''
+        run: synthbench validate ${{ steps.changed.outputs.files }}
+
   site:
     runs-on: ubuntu-latest
     steps:
@@ -75,12 +106,12 @@ jobs:
 
   merge-ready:
     if: always()
-    needs: [lint, test, site]
+    needs: [lint, test, site, validate-submissions]
     runs-on: ubuntu-latest
     steps:
       - name: Check all jobs passed
         run: |
-          if [[ "${{ needs.lint.result }}" != "success" || "${{ needs.test.result }}" != "success" || "${{ needs.site.result }}" != "success" ]]; then
+          if [[ "${{ needs.lint.result }}" != "success" || "${{ needs.test.result }}" != "success" || "${{ needs.site.result }}" != "success" || "${{ needs.validate-submissions.result }}" != "success" ]]; then
             echo "Required jobs failed"
             exit 1
           fi

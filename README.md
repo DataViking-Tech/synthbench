@@ -57,10 +57,16 @@ Want to add your provider to the leaderboard? Here's how:
    ```bash
    synthbench run --provider <your-provider> --model <your-model> --suite full --output results/
    ```
-3. **Copy** the result JSON into `leaderboard-results/`.
-4. **Open a PR** against this repo.
-5. **CI validates** the result JSON schema automatically.
-6. **Maintainers review and merge** — your results appear on the leaderboard.
+3. **Validate locally** before opening a PR:
+   ```bash
+   synthbench validate results/<your-result>.json
+   ```
+4. **Copy** the result JSON into `leaderboard-results/`.
+5. **Open a PR** against this repo.
+6. **CI validates** schema, bounds, distributions, and recomputes every metric against the per-question data. Fabricated or inconsistent submissions are rejected.
+7. **Maintainers review and merge** — your results appear on the leaderboard.
+
+See [SUBMISSIONS.md](SUBMISSIONS.md) for the full list of integrity checks and common failure modes.
 
 ## Key Research Findings
 

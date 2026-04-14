@@ -1475,5 +1475,106 @@ def ensemble(files, output, weights):
     click.echo(f"Saved: {json_path}")
 
 
+@main.command()
+@click.argument("paths", nargs=-1, required=True, type=click.Path())
+@click.option(
+    "--expected-question-hash",
+    default=None,
+    help="Canonical question_set_hash the submission must match.",
+)
+@click.option(
+    "--skip-recompute",
+    is_flag=True,
+    help="Run only tier 1 (schema + plausibility); skip recomputation.",
+)
+@click.option(
+    "--strict",
+    is_flag=True,
+    help="Treat warnings as errors (exit non-zero).",
+)
+@click.option(
+    "--json",
+    "json_output",
+    is_flag=True,
+    help="Emit a JSON summary instead of a human-readable report.",
+)
+def validate(paths, expected_question_hash, skip_recompute, strict, json_output):
+    """Validate one or more submission result JSONs against the integrity rules.
+
+    Tier 1 checks: JSON schema shape, SPS/score bounds, distribution sums,
+    question-set hash, record-count cross-checks, parse-failure plausibility.
+
+    Tier 2 checks: recompute per-question JSD + Kendall's tau from the
+    reported distributions, recompute aggregate mean/composite parity,
+    and flag mismatches.
+
+    Exits non-zero if any submission has validation errors (or warnings
+    under --strict).
+    """
+
+    from synthbench.validation import validate_file
+
+    reports = []
+    exit_code = 0
+
+    def glob_paths():
+        for p in paths:
+            pth = Path(p)
+            if pth.is_dir():
+                yield from sorted(pth.glob("*.json"))
+            else:
+                yield pth
+
+    targets = list(glob_paths())
+    if not targets:
+        click.echo("No files to validate.", err=True)
+        sys.exit(2)
+
+    for target in targets:
+        report = validate_file(
+            target,
+            expected_question_hash=expected_question_hash,
+            tier2=not skip_recompute,
+        )
+        reports.append(report)
+        has_errors = bool(report.errors)
+        has_warnings = bool(report.warnings)
+        if has_errors or (strict and has_warnings):
+            exit_code = 1
+
+    if json_output:
+        payload = [
+            {
+                "source": r.source,
+                "ok": r.ok and (not strict or not r.warnings),
+                "issues": [
+                    {
+                        "code": i.code,
+                        "severity": i.severity.value,
+                        "path": i.path,
+                        "message": i.message,
+                    }
+                    for i in r.issues
+                ],
+            }
+            for r in reports
+        ]
+        click.echo(json.dumps(payload, indent=2))
+    else:
+        total_errors = 0
+        total_warnings = 0
+        for r in reports:
+            click.echo(r.format())
+            total_errors += len(r.errors)
+            total_warnings += len(r.warnings)
+        click.echo("")
+        click.echo(
+            f"Summary: {len(reports)} file(s), "
+            f"{total_errors} error(s), {total_warnings} warning(s)."
+        )
+
+    sys.exit(exit_code)
+
+
 if __name__ == "__main__":
     main()
