@@ -22,6 +22,15 @@
     }
   },
   "files": {
-    "ignore": ["dist/**", "node_modules/**", ".astro/**", "public/data/**"]
+    "ignore": [
+      "dist/**",
+      "node_modules/**",
+      ".astro/**",
+      "public/data/**",
+      "e2e/test-results/**",
+      "e2e/test-results-*/**",
+      "e2e/visual/__screenshots__/**",
+      "playwright-report/**"
+    ]
   }
 }
