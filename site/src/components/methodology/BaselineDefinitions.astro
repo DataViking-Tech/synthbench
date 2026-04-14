@@ -113,7 +113,7 @@ const baselines: Baseline[] = [
       sections: [
         {
           heading: "What it is",
-          body: "Split-half reliability via multinomial bootstrap. Given observed counts c = [c_1, ..., c_k] with total n per question × subpop, we treat p̂ = c/n as the multinomial MLE and draw two independent half-samples of size ⌊n/2⌋ from Multinomial(n/2, p̂). We compute JSD between the two empirical distributions, repeat B=1000 times, and report Ceiling = 1 − mean(JSD).",
+          body: "Split-half reliability via multinomial bootstrap. Given observed counts c = [c_1, ..., c_k] with total n per question × subpop, we treat p̂ = c/n as the multinomial MLE and draw two independent half-samples of size ⌊n/2⌋ from Multinomial(n/2, p̂). We compute JSD between the two empirical distributions, repeat B times, and report Ceiling = 1 − mean(JSD). Published values use B=200 to keep build times tractable; the pure function supports B=1000 for standalone analysis. CIs at B=200 are ~1.5× wider than at B=1000; point estimates differ by <0.0005.",
         },
         {
           heading: "Why it matters",

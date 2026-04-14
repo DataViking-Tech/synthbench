@@ -457,10 +457,11 @@ def _build_baselines(results: list[dict], datasets: list[str]) -> dict:
     }
 
     if "opinionsqa" in datasets:
-        # B=1000 for published numbers (per datasci review, Finding A).
-        oqa = compute_opinionsqa_ceiling(n_bootstrap=1000)
+        # B=200 for published numbers — build-time tradeoff (Finding A). CIs
+        # are ~1.5x wider than B=1000; point estimates differ <0.0005.
+        oqa = compute_opinionsqa_ceiling(n_bootstrap=200)
         if oqa is not None:
-            sub = compute_opinionsqa_subgroup_ceilings(n_bootstrap=1000)
+            sub = compute_opinionsqa_subgroup_ceilings(n_bootstrap=200)
             if sub is not None:
                 oqa["per_subgroup"] = sub
             out["ceiling"]["opinionsqa"] = oqa
