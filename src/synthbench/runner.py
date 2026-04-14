@@ -24,6 +24,37 @@ from synthbench.providers.base import Distribution, PersonaSpec, Provider
 from synthbench.stats import bootstrap_ci, question_set_hash
 
 
+def _normalize_model_dist(
+    model_dist: dict[str, float], options: list[str]
+) -> dict[str, float]:
+    """Renormalize a model distribution so its mass over declared options sums to 1.
+
+    Raw model distributions are built from valid-option counts divided by
+    total samples, where "total" includes refusals and parse failures. That
+    denominator leaves the valid-option mass below 1 whenever any sample was
+    refused or unparseable. Downstream validation (tier 2 per-question
+    recompute) re-derives JSD and Kendall's tau from the stored
+    distribution, so any drift between the published distribution and the
+    published metrics trips the gate.
+
+    We renormalize the distribution over the declared options before
+    computing metrics so the two stay internally consistent. Refusal mass
+    is already captured separately via ``model_refusal_rate`` / p_refuse,
+    so it's not being silently dropped — just removed from the conditional
+    answer distribution that p_dist and p_rank operate on. If every sample
+    was refused or unparseable (total mass == 0), fall back to a uniform
+    distribution: a rare degenerate case, but the published file still
+    needs to be a valid probability vector.
+    """
+    total = sum(model_dist.get(opt, 0.0) for opt in options)
+    if total > 0:
+        return {opt: model_dist.get(opt, 0.0) / total for opt in options}
+    if options:
+        uniform = 1.0 / len(options)
+        return {opt: uniform for opt in options}
+    return {}
+
+
 @dataclass
 class QuestionResult:
     """Metrics for a single question."""
@@ -335,6 +366,7 @@ class BenchmarkRunner:
             n_samples = total
             n_parse_failures = parse_fails
 
+        model_dist = _normalize_model_dist(model_dist, question.options)
         human_refusal_rate = extract_human_refusal_rate(question.human_distribution)
 
         jsd = jensen_shannon_divergence(question.human_distribution, model_dist)
@@ -403,6 +435,7 @@ class BenchmarkRunner:
     ) -> QuestionResult:
         """Build a QuestionResult from a question and its model distribution."""
         model_dist = dict(zip(question.options, dist.probabilities))
+        model_dist = _normalize_model_dist(model_dist, question.options)
         model_refusal_rate = dist.refusal_probability
         n_samples = dist.n_samples or self.samples_per_question
 
@@ -466,14 +499,18 @@ class BenchmarkRunner:
                 persona=persona,
                 n_samples=self.samples_per_question,
             )
-            return dict(zip(question.options, dist.probabilities))
+            model_dist = dict(zip(question.options, dist.probabilities))
+        else:
+            responses, _refusals, _fails = await self._collect_samples_with_refusals(
+                question, persona=persona
+            )
+            total = len(responses) + _refusals
+            counts = Counter(responses)
+            model_dist = {
+                opt: counts.get(opt, 0) / max(total, 1) for opt in question.options
+            }
 
-        responses, _refusals, _fails = await self._collect_samples_with_refusals(
-            question, persona=persona
-        )
-        total = len(responses) + _refusals
-        counts = Counter(responses)
-        return {opt: counts.get(opt, 0) / max(total, 1) for opt in question.options}
+        return _normalize_model_dist(model_dist, question.options)
 
     async def run_with_demographics(
         self,
