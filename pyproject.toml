@@ -15,7 +15,7 @@ dependencies = [
     "numpy>=1.24",
     "pyyaml>=6.0",
     "scipy>=1.10",
-    "synthpanel>=0.2.0",
+    "synth-panel @ git+https://github.com/DataViking-Tech/synth-panel.git@main",
 ]
 
 [project.optional-dependencies]
