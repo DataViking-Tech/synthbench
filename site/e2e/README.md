@@ -88,6 +88,49 @@ Notes:
   which is why the workflow re-runs VRT inline within the same job rather
   than relying on a second push-triggered run.
 
+### When to apply the `vrt-baseline-update` label
+
+The label is the **only** sanctioned way to mutate
+`site/e2e/visual/__screenshots__/`. Apply it in exactly these cases:
+
+| Scenario | Apply label? | Reviewer expectation |
+|----------|--------------|----------------------|
+| Bootstrap — baselines directory is empty/missing | **Yes** | One reviewer verifies PR diff shows only baseline additions + README/infra |
+| Intentional visual change (copy, layout, color, new section) | **Yes** | Two reviewers: one for the feature diff, one for the baseline diff |
+| New route added to `ROUTES` in `smoke.visual.spec.ts` | **Yes** | Two reviewers; confirm new snapshot is expected |
+| New `data-vrt-mask` added to hide drift | **Yes** | Two reviewers; confirm masked region is genuinely dynamic |
+| VRT failed on a PR that did **not** touch anything visual | **No** | Investigate first — likely a flake, upstream chart lib change, or unmasked dynamic content. Fix the root cause or add a mask; don't bless the drift. |
+| VRT failed after a data regen (leaderboard rows shifted) | **No** | Check for an unmasked timestamp/version/count. Add `data-vrt-mask`; don't re-baseline. |
+
+If in doubt, **do not apply the label**. A noisy baseline bump that slips
+through review is how real regressions get hidden.
+
+### Bootstrap procedure (first-time baseline seed)
+
+When `site/e2e/visual/__screenshots__/` does not yet exist in `main` (or has
+been deleted), every PR's `visual` check fails because Playwright has
+nothing to compare against. Bootstrap once via a dedicated PR:
+
+1. Open a small PR titled something like `chore(vrt): seed smoke baselines`.
+   No code changes are required — a README touch or doc clarification is
+   enough to have a PR to hang the label on.
+2. Apply the `vrt-baseline-update` label.
+3. CI runs Playwright with `--update-snapshots`, creating and committing
+   `home-dark.png`, `leaderboard-dark.png`, and `run-detail-dark.png` under
+   `site/e2e/visual/__screenshots__/smoke.visual.spec.ts/desktop-chromium/`.
+4. Verify the `commit updated baselines` step ran and the subsequent
+   `Run visual regression tests` step passed in compare mode. If the
+   compare-mode re-run fails immediately after an update, something is
+   non-deterministic (missing mask, timing race) — fix the root cause
+   before merging.
+5. Merge the bootstrap PR. Subsequent PRs now compare against the seeded
+   baselines and only need the label when they intentionally change the
+   rendered output.
+
+Do **not** generate baselines on macOS and commit them as the bootstrap —
+font rasterization differs from Ubuntu and the next CI run will diff
+against itself.
+
 ## CI gate status
 
 VRT is currently **advisory** — the `merge-ready` job does not require the
