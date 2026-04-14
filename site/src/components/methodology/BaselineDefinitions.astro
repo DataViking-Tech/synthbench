@@ -50,28 +50,67 @@ const baselines: Baseline[] = [
   {
     name: "Human Ceiling",
     description:
-      "Agreement between independent human survey panels, measured via split-half reliability. The theoretical maximum score.",
+      "Agreement between independent halves of the human survey panel, measured via multinomial-bootstrap split-half reliability. The theoretical maximum score a model can achieve.",
     tests:
       "A provider scoring above this is overfitting or exploiting artifacts. Sets the upper bound for meaningful evaluation.",
-    spsRange: "~0.89",
+    spsRange: "~0.99",
     position: "ceiling",
     extended: {
       sections: [
         {
           heading: "What it is",
-          body: "Agreement between independent halves of the human survey panel itself. Split the respondents into two random subsamples, compute each subsample's answer distribution per question, and measure their agreement using the same SPS metric we apply to models.",
+          body: "Split-half reliability via multinomial bootstrap. Given observed counts c = [c_1, ..., c_k] with total n per question × subpop, we treat p̂ = c/n as the multinomial MLE and draw two independent half-samples of size ⌊n/2⌋ from Multinomial(n/2, p̂). We compute JSD between the two empirical distributions, repeat B=1000 times, and report Ceiling = 1 − mean(JSD).",
         },
         {
           heading: "Why it matters",
-          body: "It is the theoretical maximum for any evaluation built on this human data. Humans disagree with each other; no model can be more consistent with the survey than the survey is with itself. If split-half agreement is 0.85, then 0.85 is the real upper bound — not 1.0.",
+          body: "It is the theoretical maximum for any evaluation built on this human data. Humans disagree with each other; no model can be more consistent with the survey than the survey is with itself. Per-subpopulation ceilings genuinely differ — Spearman-Brown says reliability scales with √n — so small subpops have materially lower ceilings than large ones.",
         },
         {
-          heading: "How to interpret scores against it",
-          body: "A model at 0.90 is closer to humans-agree-with-humans than to random noise. But if Human Ceiling sits at 0.85, a 0.90 model is above the ceiling — which points to overfitting, leakage, or a measurement artifact, not genuine superiority.",
+          heading: "Per-dataset protocol",
+          body: "OpinionsQA: computed within-wave (never cross-wave — that measures drift, not reliability), aggregated weighted by n_questions per wave. SubPOP: per-subpop (22 subpopulations) + weighted aggregate. GlobalOpinionQA: per-country + regional aggregates, weighted by actual (country, question) coverage to avoid over-weighting US data.",
+        },
+        {
+          heading: "Measured values (v0.1)",
+          body: "OpinionsQA: 0.9995 (raw counts from 15 Pew ATP waves, n≈56k/wave). SubPOP: 0.9954 (22 subpops, inferred n=500 per subpop, quality flag 'medium'). GlobalOpinionQA: 0.9972 (per-country, inferred n=1000, quality flag 'medium'). All values are reproducible with bootstrap seed 42. The high ceilings reflect large within-wave sample sizes; the realistic gap between models and humans is most visible on small, contentious subpops.",
+        },
+        {
+          heading: "Sample-size quality flags (Cochran 1977)",
+          body: "High: raw subpop n ≥ 400 — use directly. Medium: 200 ≤ n < 400 — report with CI caveat. Low: n < 200 — report with warning; do not use as a gating threshold. SubPOP and GlobalOpinionQA ceilings are flagged 'medium' because sample sizes are inferred from published probabilities, not shipped as raw counts.",
+        },
+        {
+          heading: "Survey-weight caveat",
+          body: "Ceiling is computed from raw category counts. Pew applies survey weights; ignoring them could shift the ceiling by 1-3% on demographically skewed subgroups. The raw-count approach is conservative — a weighted ceiling would be slightly tighter, meaning our published ceilings are a mild upper-bound on achievable reliability.",
+        },
+        {
+          heading: "Citations",
+          body: "Methodology: Santurkar et al. 2023 (arxiv:2303.17548); Durmus et al. 2023 (arxiv:2306.16388); Geng & Liu 2024 (SubPOP); Pew Research Center Methodology. Statistical foundations: Spearman (1910) & Brown (1910) — Spearman-Brown prophecy; Efron (1979) — bootstrap; Lin (1991) — Jensen-Shannon divergence; Cochran (1977) — Sampling Techniques, for the n=400 rule-of-thumb.",
         },
       ],
-      statusNote:
-        "Status: not yet measured for SynthBench datasets. Requires computing split-half SPS on OpinionsQA, SubPOP, and GlobalOpinionQA panels. See the Phase 1.5 roadmap on this page.",
+    },
+  },
+  {
+    name: "Temporal Drift Floor",
+    description:
+      "A baseline-adjacent metric separate from Human Ceiling: JSD between the same-wording questions across different Pew ATP waves. Pew repeats ~15-20% of items across waves for trend tracking.",
+    tests:
+      "Quantifies how much real-world opinions shift year-over-year on repeated items. Useful framing for P_refuse and longitudinal claims — drift is a property of reality, not of a model.",
+    spsRange: "N/A",
+    position: "ceiling",
+    extended: {
+      sections: [
+        {
+          heading: "What it is",
+          body: "For every OpinionsQA question stem that appears in two or more waves, we compute JSD between its human distributions across waves. We report mean JSD overall, broken down by year-gap (1, 2, 3, 5 years), with bootstrap 95% CI over question pairs.",
+        },
+        {
+          heading: "Why it is separate from the Human Ceiling",
+          body: "Split-half reliability must be within-wave: cross-wave JSD conflates sampling noise with real opinion shift. Temporal Drift Floor captures only the latter. A model that perfectly predicts 2022 opinions using 2017 training data would still score imperfectly against 2017 humans — the drift floor tells you how much of that gap is unavoidable.",
+        },
+        {
+          heading: "Status",
+          body: "Computed for OpinionsQA only (requires same-wording repeated questions, which Pew ATP uniquely ships). Not applicable to SubPOP or GlobalOpinionQA snapshots. Values emitted to leaderboard.json under baselines.temporal_drift.",
+        },
+      ],
     },
   },
 ];
@@ -144,7 +183,9 @@ const baselines: Baseline[] = [
         </div>
         {/* Markers — value above, name below, alternating vertical offset to avoid overlap */}
         {
-          baselines.map((b, i) => {
+          baselines
+            .filter((b) => !Number.isNaN(parseFloat(b.spsRange.replace("~", ""))))
+            .map((b, i) => {
             const value = parseFloat(b.spsRange.replace("~", ""));
             const pct = value * 100;
             const stagger = i % 2 === 0 ? "mt-5" : "mt-10";
@@ -169,7 +210,7 @@ const baselines: Baseline[] = [
       </div>
       <div class="mt-16 text-center text-xs text-muted">
         Meaningful evaluation range: Unconditioned LLM (~0.58) to Human Ceiling
-        (~0.89)
+        (~0.99)
       </div>
     </div>
   </div>

@@ -1,7 +1,11 @@
 {
-  "generated_at": "2026-04-13T13:43:08.098192+00:00",
+  "generated_at": "2026-04-14T00:29:14.143086+00:00",
   "synthbench_version": "0.1.0",
-  "datasets": ["globalopinionqa", "opinionsqa", "subpop"],
+  "datasets": [
+    "globalopinionqa",
+    "opinionsqa",
+    "subpop"
+  ],
   "entries": [
     {
       "rank": 1,
@@ -184,8 +188,8 @@
       "jsd": 0.192781,
       "tau": 0.374819,
       "n": 0,
-      "ci_lower": 0,
-      "ci_upper": 0,
+      "ci_lower": 0.705467,
+      "ci_upper": 0.789485,
       "is_baseline": false,
       "is_ensemble": true,
       "topic_scores": {
@@ -320,8 +324,8 @@
       "jsd": 0.166759,
       "tau": 0.67353,
       "n": 0,
-      "ci_lower": 0,
-      "ci_upper": 0,
+      "ci_lower": 0.82663,
+      "ci_upper": 0.842973,
       "is_baseline": false,
       "is_ensemble": true,
       "topic_scores": {
@@ -780,8 +784,8 @@
       "jsd": 0.129124,
       "tau": 0.590595,
       "n": 0,
-      "ci_lower": 0,
-      "ci_upper": 0,
+      "ci_lower": 0.817383,
+      "ci_upper": 0.847815,
       "is_baseline": false,
       "is_ensemble": true,
       "topic_scores": {
@@ -2081,5 +2085,2099 @@
         "status": "done"
       }
     ]
+  },
+  "baselines": {
+    "ceiling": {
+      "opinionsqa": {
+        "dataset": "opinionsqa",
+        "overall": {
+          "mean": 0.999522,
+          "ci_low": 0.998561,
+          "ci_high": 0.999954,
+          "n_effective": 838236,
+          "quality_flag": "high",
+          "method": "aggregate_of_4_subpops"
+        },
+        "per_wave": [
+          {
+            "wave": "ATP W26",
+            "year": 2017,
+            "n_questions": 22,
+            "ceiling": {
+              "mean": 0.999481,
+              "ci_low": 0.998378,
+              "ci_high": 0.999958,
+              "n_effective": 91696,
+              "quality_flag": "high",
+              "method": "aggregate_of_22_subpops"
+            }
+          },
+          {
+            "wave": "ATP W27",
+            "year": 2017,
+            "n_questions": 47,
+            "ceiling": {
+              "mean": 0.999424,
+              "ci_low": 0.998263,
+              "ci_high": 0.999947,
+              "n_effective": 194345,
+              "quality_flag": "high",
+              "method": "aggregate_of_47_subpops"
+            }
+          },
+          {
+            "wave": "ATP W29",
+            "year": 2017,
+            "n_questions": 30,
+            "ceiling": {
+              "mean": 0.999517,
+              "ci_low": 0.998531,
+              "ci_high": 0.999947,
+              "n_effective": 146010,
+              "quality_flag": "high",
+              "method": "aggregate_of_30_subpops"
+            }
+          },
+          {
+            "wave": "ATP W32",
+            "year": 2018,
+            "n_questions": 65,
+            "ceiling": {
+              "mean": 0.999608,
+              "ci_low": 0.998852,
+              "ci_high": 0.999961,
+              "n_effective": 406185,
+              "quality_flag": "high",
+              "method": "aggregate_of_65_subpops"
+            }
+          }
+        ],
+        "protocol": "within_wave_split_half_multinomial_bootstrap",
+        "n_bootstrap": 200
+      },
+      "subpop": {
+        "dataset": "subpop",
+        "overall": {
+          "mean": 0.995352,
+          "ci_low": 0.986744,
+          "ci_high": 0.999505,
+          "n_effective": 34095000,
+          "quality_flag": "medium",
+          "method": "aggregate_of_22_subpops"
+        },
+        "per_subpop": [
+          {
+            "attribute": "CREGION",
+            "group": "Northeast",
+            "n_questions": 3140,
+            "ceiling": {
+              "mean": 0.995152,
+              "ci_low": 0.986322,
+              "ci_high": 0.99946,
+              "n_effective": 1570000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3140_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "CREGION",
+            "group": "South",
+            "n_questions": 3151,
+            "ceiling": {
+              "mean": 0.99511,
+              "ci_low": 0.986231,
+              "ci_high": 0.999452,
+              "n_effective": 1575500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3151_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "EDUCATION",
+            "group": "College graduate/some postgrad",
+            "n_questions": 3125,
+            "ceiling": {
+              "mean": 0.995166,
+              "ci_low": 0.986467,
+              "ci_high": 0.999476,
+              "n_effective": 1562500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3125_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "EDUCATION",
+            "group": "Less than high school",
+            "n_questions": 3119,
+            "ceiling": {
+              "mean": 0.995402,
+              "ci_low": 0.986678,
+              "ci_high": 0.999509,
+              "n_effective": 1559500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3119_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "INCOME",
+            "group": "$100,000 or more",
+            "n_questions": 3133,
+            "ceiling": {
+              "mean": 0.995292,
+              "ci_low": 0.986756,
+              "ci_high": 0.999505,
+              "n_effective": 1566500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3133_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "INCOME",
+            "group": "Less than $30,000",
+            "n_questions": 3154,
+            "ceiling": {
+              "mean": 0.995143,
+              "ci_low": 0.986249,
+              "ci_high": 0.999457,
+              "n_effective": 1577000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3154_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "POLIDEOLOGY",
+            "group": "Conservative",
+            "n_questions": 3149,
+            "ceiling": {
+              "mean": 0.995133,
+              "ci_low": 0.986331,
+              "ci_high": 0.999459,
+              "n_effective": 1574500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3149_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "POLIDEOLOGY",
+            "group": "Liberal",
+            "n_questions": 3133,
+            "ceiling": {
+              "mean": 0.995298,
+              "ci_low": 0.986754,
+              "ci_high": 0.999498,
+              "n_effective": 1566500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3133_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "POLIDEOLOGY",
+            "group": "Moderate",
+            "n_questions": 3158,
+            "ceiling": {
+              "mean": 0.995128,
+              "ci_low": 0.986319,
+              "ci_high": 0.999461,
+              "n_effective": 1579000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3158_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "POLPARTY",
+            "group": "Democrat",
+            "n_questions": 3142,
+            "ceiling": {
+              "mean": 0.995157,
+              "ci_low": 0.986517,
+              "ci_high": 0.99947,
+              "n_effective": 1571000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3142_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "POLPARTY",
+            "group": "Republican",
+            "n_questions": 3129,
+            "ceiling": {
+              "mean": 0.995158,
+              "ci_low": 0.986494,
+              "ci_high": 0.999468,
+              "n_effective": 1564500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3129_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "RACE",
+            "group": "Asian",
+            "n_questions": 3056,
+            "ceiling": {
+              "mean": 0.995601,
+              "ci_low": 0.987229,
+              "ci_high": 0.999559,
+              "n_effective": 1528000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3056_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "RACE",
+            "group": "Black",
+            "n_questions": 3113,
+            "ceiling": {
+              "mean": 0.995197,
+              "ci_low": 0.98639,
+              "ci_high": 0.999464,
+              "n_effective": 1556500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3113_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "RACE",
+            "group": "Hispanic",
+            "n_questions": 3120,
+            "ceiling": {
+              "mean": 0.995173,
+              "ci_low": 0.986296,
+              "ci_high": 0.999454,
+              "n_effective": 1560000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3120_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "RACE",
+            "group": "White",
+            "n_questions": 3141,
+            "ceiling": {
+              "mean": 0.995107,
+              "ci_low": 0.986282,
+              "ci_high": 0.999464,
+              "n_effective": 1570500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3141_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "RELIG",
+            "group": "Atheist",
+            "n_questions": 2993,
+            "ceiling": {
+              "mean": 0.995687,
+              "ci_low": 0.98749,
+              "ci_high": 0.999579,
+              "n_effective": 1496500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_2993_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "RELIG",
+            "group": "Hindu",
+            "n_questions": 2895,
+            "ceiling": {
+              "mean": 0.996353,
+              "ci_low": 0.98862,
+              "ci_high": 0.999691,
+              "n_effective": 1447500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_2895_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "RELIG",
+            "group": "Jewish",
+            "n_questions": 2979,
+            "ceiling": {
+              "mean": 0.995971,
+              "ci_low": 0.98785,
+              "ci_high": 0.999639,
+              "n_effective": 1489500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_2979_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "RELIG",
+            "group": "Muslim",
+            "n_questions": 2923,
+            "ceiling": {
+              "mean": 0.99639,
+              "ci_low": 0.98867,
+              "ci_high": 0.999706,
+              "n_effective": 1461500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_2923_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "RELIG",
+            "group": "Protestant",
+            "n_questions": 3142,
+            "ceiling": {
+              "mean": 0.995095,
+              "ci_low": 0.986218,
+              "ci_high": 0.999455,
+              "n_effective": 1571000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3142_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "SEX",
+            "group": "Female",
+            "n_questions": 3140,
+            "ceiling": {
+              "mean": 0.995077,
+              "ci_low": 0.986155,
+              "ci_high": 0.99944,
+              "n_effective": 1570000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3140_subpops_inferred_n"
+            }
+          },
+          {
+            "attribute": "SEX",
+            "group": "Male",
+            "n_questions": 3155,
+            "ceiling": {
+              "mean": 0.995167,
+              "ci_low": 0.986439,
+              "ci_high": 0.999476,
+              "n_effective": 1577500,
+              "quality_flag": "medium",
+              "method": "aggregate_of_3155_subpops_inferred_n"
+            }
+          }
+        ],
+        "protocol": "per_subpop_split_half_multinomial_bootstrap",
+        "n_bootstrap": 200,
+        "n_per_subpop_assumed": 500,
+        "note": "SubPOP ships probabilities without raw counts; counts inferred at n=500 per subpop (typical Pew ATP subgroup size). Quality flag capped at 'medium' due to inferred n."
+      },
+      "globalopinionqa": {
+        "dataset": "globalopinionqa",
+        "overall": {
+          "mean": 0.997221,
+          "ci_low": 0.9926,
+          "ci_high": 0.999517,
+          "n_effective": 45531000,
+          "quality_flag": "medium",
+          "method": "aggregate_of_137_subpops"
+        },
+        "per_country": [
+          {
+            "country": "Albania",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.994594,
+              "ci_low": 0.98835,
+              "ci_high": 0.998536,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Andorra",
+            "n_questions": 211,
+            "ceiling": {
+              "mean": 0.995207,
+              "ci_low": 0.989241,
+              "ci_high": 0.998792,
+              "n_effective": 211000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_211_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Angola",
+            "n_questions": 2,
+            "ceiling": {
+              "mean": 0.99288,
+              "ci_low": 0.98492,
+              "ci_high": 0.997489,
+              "n_effective": 2000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_2_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Angola (Non-national sample)",
+            "n_questions": 103,
+            "ceiling": {
+              "mean": 0.998269,
+              "ci_low": 0.994404,
+              "ci_high": 0.999878,
+              "n_effective": 103000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_103_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Argentina",
+            "n_questions": 745,
+            "ceiling": {
+              "mean": 0.997297,
+              "ci_low": 0.992702,
+              "ci_high": 0.999557,
+              "n_effective": 745000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_745_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Armenia",
+            "n_questions": 213,
+            "ceiling": {
+              "mean": 0.995807,
+              "ci_low": 0.990151,
+              "ci_high": 0.999066,
+              "n_effective": 213000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_213_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Australia",
+            "n_questions": 618,
+            "ceiling": {
+              "mean": 0.997152,
+              "ci_low": 0.992404,
+              "ci_high": 0.999525,
+              "n_effective": 618000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_618_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Austria",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995362,
+              "ci_low": 0.989442,
+              "ci_high": 0.998854,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Azerbaijan",
+            "n_questions": 111,
+            "ceiling": {
+              "mean": 0.996482,
+              "ci_low": 0.991355,
+              "ci_high": 0.99924,
+              "n_effective": 111000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_111_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Bangladesh",
+            "n_questions": 320,
+            "ceiling": {
+              "mean": 0.996692,
+              "ci_low": 0.991685,
+              "ci_high": 0.999349,
+              "n_effective": 320000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_320_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Bangladesh (Non-national sample)",
+            "n_questions": 175,
+            "ceiling": {
+              "mean": 0.998285,
+              "ci_low": 0.994436,
+              "ci_high": 0.999884,
+              "n_effective": 175000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_175_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Belarus",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995433,
+              "ci_low": 0.98957,
+              "ci_high": 0.998864,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Belgium",
+            "n_questions": 99,
+            "ceiling": {
+              "mean": 0.997562,
+              "ci_low": 0.993014,
+              "ci_high": 0.999742,
+              "n_effective": 99000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_99_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Bolivia",
+            "n_questions": 294,
+            "ceiling": {
+              "mean": 0.996575,
+              "ci_low": 0.991551,
+              "ci_high": 0.999294,
+              "n_effective": 294000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_294_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Bolivia (Non-national sample)",
+            "n_questions": 160,
+            "ceiling": {
+              "mean": 0.998266,
+              "ci_low": 0.994401,
+              "ci_high": 0.999883,
+              "n_effective": 160000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_160_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Bosnia Herzegovina",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995462,
+              "ci_low": 0.989732,
+              "ci_high": 0.998845,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Brazil",
+            "n_questions": 680,
+            "ceiling": {
+              "mean": 0.997166,
+              "ci_low": 0.992453,
+              "ci_high": 0.999506,
+              "n_effective": 680000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_680_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Brazil (Non-national sample)",
+            "n_questions": 234,
+            "ceiling": {
+              "mean": 0.998298,
+              "ci_low": 0.994445,
+              "ci_high": 0.999865,
+              "n_effective": 234000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_234_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Britain",
+            "n_questions": 849,
+            "ceiling": {
+              "mean": 0.998056,
+              "ci_low": 0.994042,
+              "ci_high": 0.999811,
+              "n_effective": 849000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_849_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Bulgaria",
+            "n_questions": 379,
+            "ceiling": {
+              "mean": 0.997152,
+              "ci_low": 0.992389,
+              "ci_high": 0.999498,
+              "n_effective": 379000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_379_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Burkina Faso",
+            "n_questions": 77,
+            "ceiling": {
+              "mean": 0.99784,
+              "ci_low": 0.993618,
+              "ci_high": 0.999782,
+              "n_effective": 77000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_77_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Canada",
+            "n_questions": 733,
+            "ceiling": {
+              "mean": 0.997728,
+              "ci_low": 0.993427,
+              "ci_high": 0.99971,
+              "n_effective": 733000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_733_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Chile",
+            "n_questions": 528,
+            "ceiling": {
+              "mean": 0.997111,
+              "ci_low": 0.992439,
+              "ci_high": 0.999472,
+              "n_effective": 528000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_528_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "China",
+            "n_questions": 378,
+            "ceiling": {
+              "mean": 0.99671,
+              "ci_low": 0.991769,
+              "ci_high": 0.999347,
+              "n_effective": 378000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_378_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "China (Non-national sample)",
+            "n_questions": 317,
+            "ceiling": {
+              "mean": 0.998375,
+              "ci_low": 0.994666,
+              "ci_high": 0.999879,
+              "n_effective": 317000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_317_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Colombia",
+            "n_questions": 356,
+            "ceiling": {
+              "mean": 0.997259,
+              "ci_low": 0.992668,
+              "ci_high": 0.999515,
+              "n_effective": 356000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_356_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Colombia (Non-national sample)",
+            "n_questions": 1,
+            "ceiling": {
+              "mean": 0.994609,
+              "ci_low": 0.988749,
+              "ci_high": 0.998653,
+              "n_effective": 1000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_1_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Croatia",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995393,
+              "ci_low": 0.989376,
+              "ci_high": 0.99884,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Cyprus",
+            "n_questions": 212,
+            "ceiling": {
+              "mean": 0.995564,
+              "ci_low": 0.989687,
+              "ci_high": 0.998916,
+              "n_effective": 212000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_212_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Czech Rep.",
+            "n_questions": 343,
+            "ceiling": {
+              "mean": 0.99796,
+              "ci_low": 0.993811,
+              "ci_high": 0.999805,
+              "n_effective": 343000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_343_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Czechia",
+            "n_questions": 212,
+            "ceiling": {
+              "mean": 0.99572,
+              "ci_low": 0.990028,
+              "ci_high": 0.998969,
+              "n_effective": 212000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_212_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Denmark",
+            "n_questions": 176,
+            "ceiling": {
+              "mean": 0.996264,
+              "ci_low": 0.99091,
+              "ci_high": 0.999216,
+              "n_effective": 176000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_176_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Ecuador",
+            "n_questions": 207,
+            "ceiling": {
+              "mean": 0.995883,
+              "ci_low": 0.990423,
+              "ci_high": 0.999002,
+              "n_effective": 207000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_207_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Egypt",
+            "n_questions": 697,
+            "ceiling": {
+              "mean": 0.997546,
+              "ci_low": 0.993178,
+              "ci_high": 0.999625,
+              "n_effective": 697000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_697_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Egypt (Non-national sample)",
+            "n_questions": 65,
+            "ceiling": {
+              "mean": 0.998475,
+              "ci_low": 0.994954,
+              "ci_high": 0.99991,
+              "n_effective": 65000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_65_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "El Salvador",
+            "n_questions": 180,
+            "ceiling": {
+              "mean": 0.997817,
+              "ci_low": 0.993632,
+              "ci_high": 0.999691,
+              "n_effective": 180000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_180_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Estonia",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995361,
+              "ci_low": 0.989423,
+              "ci_high": 0.99882,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Ethiopia",
+            "n_questions": 315,
+            "ceiling": {
+              "mean": 0.996219,
+              "ci_low": 0.991024,
+              "ci_high": 0.999192,
+              "n_effective": 315000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_315_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Ethiopia (Non-national sample)",
+            "n_questions": 124,
+            "ceiling": {
+              "mean": 0.9982,
+              "ci_low": 0.994306,
+              "ci_high": 0.99985,
+              "n_effective": 124000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_124_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Finland",
+            "n_questions": 115,
+            "ceiling": {
+              "mean": 0.99555,
+              "ci_low": 0.989735,
+              "ci_high": 0.998889,
+              "n_effective": 115000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_115_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "France",
+            "n_questions": 951,
+            "ceiling": {
+              "mean": 0.997853,
+              "ci_low": 0.993748,
+              "ci_high": 0.999721,
+              "n_effective": 951000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_951_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Georgia",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995424,
+              "ci_low": 0.989707,
+              "ci_high": 0.998857,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Germany",
+            "n_questions": 1111,
+            "ceiling": {
+              "mean": 0.997604,
+              "ci_low": 0.993243,
+              "ci_high": 0.999656,
+              "n_effective": 1111000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_1111_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Ghana",
+            "n_questions": 404,
+            "ceiling": {
+              "mean": 0.997898,
+              "ci_low": 0.993711,
+              "ci_high": 0.999761,
+              "n_effective": 404000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_404_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Great Britain",
+            "n_questions": 201,
+            "ceiling": {
+              "mean": 0.995131,
+              "ci_low": 0.989329,
+              "ci_high": 0.998772,
+              "n_effective": 201000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_201_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Greece",
+            "n_questions": 637,
+            "ceiling": {
+              "mean": 0.997073,
+              "ci_low": 0.992264,
+              "ci_high": 0.999502,
+              "n_effective": 637000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_637_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Guatemala",
+            "n_questions": 211,
+            "ceiling": {
+              "mean": 0.996742,
+              "ci_low": 0.99176,
+              "ci_high": 0.999314,
+              "n_effective": 211000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_211_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Guatemala (Non-national sample)",
+            "n_questions": 105,
+            "ceiling": {
+              "mean": 0.998266,
+              "ci_low": 0.994547,
+              "ci_high": 0.999877,
+              "n_effective": 105000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_105_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Honduras",
+            "n_questions": 2,
+            "ceiling": {
+              "mean": 0.993302,
+              "ci_low": 0.985607,
+              "ci_high": 0.997691,
+              "n_effective": 2000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_2_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Honduras (Non-national sample)",
+            "n_questions": 106,
+            "ceiling": {
+              "mean": 0.998344,
+              "ci_low": 0.994547,
+              "ci_high": 0.999903,
+              "n_effective": 106000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_106_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Hong Kong SAR",
+            "n_questions": 212,
+            "ceiling": {
+              "mean": 0.995894,
+              "ci_low": 0.990519,
+              "ci_high": 0.999046,
+              "n_effective": 212000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_212_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Hungary",
+            "n_questions": 464,
+            "ceiling": {
+              "mean": 0.99705,
+              "ci_low": 0.992216,
+              "ci_high": 0.999515,
+              "n_effective": 464000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_464_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Iceland",
+            "n_questions": 112,
+            "ceiling": {
+              "mean": 0.995537,
+              "ci_low": 0.989866,
+              "ci_high": 0.998902,
+              "n_effective": 112000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_112_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "India (Current national sample)",
+            "n_questions": 463,
+            "ceiling": {
+              "mean": 0.997508,
+              "ci_low": 0.992924,
+              "ci_high": 0.999674,
+              "n_effective": 463000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_463_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "India (Non-national sample)",
+            "n_questions": 332,
+            "ceiling": {
+              "mean": 0.998324,
+              "ci_low": 0.994597,
+              "ci_high": 0.999867,
+              "n_effective": 332000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_332_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "India (Old national sample)",
+            "n_questions": 120,
+            "ceiling": {
+              "mean": 0.998387,
+              "ci_low": 0.994736,
+              "ci_high": 0.999889,
+              "n_effective": 120000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_120_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Indonesia",
+            "n_questions": 859,
+            "ceiling": {
+              "mean": 0.997503,
+              "ci_low": 0.993059,
+              "ci_high": 0.999621,
+              "n_effective": 859000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_859_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Indonesia (Non-national sample)",
+            "n_questions": 146,
+            "ceiling": {
+              "mean": 0.998305,
+              "ci_low": 0.99445,
+              "ci_high": 0.9999,
+              "n_effective": 146000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_146_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Iran",
+            "n_questions": 203,
+            "ceiling": {
+              "mean": 0.99587,
+              "ci_low": 0.990425,
+              "ci_high": 0.999037,
+              "n_effective": 203000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_203_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Iraq",
+            "n_questions": 235,
+            "ceiling": {
+              "mean": 0.996279,
+              "ci_low": 0.991018,
+              "ci_high": 0.999241,
+              "n_effective": 235000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_235_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Israel",
+            "n_questions": 450,
+            "ceiling": {
+              "mean": 0.997835,
+              "ci_low": 0.993543,
+              "ci_high": 0.999772,
+              "n_effective": 450000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_450_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Italy",
+            "n_questions": 816,
+            "ceiling": {
+              "mean": 0.997532,
+              "ci_low": 0.993084,
+              "ci_high": 0.999644,
+              "n_effective": 816000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_816_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Ivory Coast",
+            "n_questions": 2,
+            "ceiling": {
+              "mean": 0.993179,
+              "ci_low": 0.98603,
+              "ci_high": 0.997762,
+              "n_effective": 2000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_2_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Ivory Coast (Non-national sample)",
+            "n_questions": 177,
+            "ceiling": {
+              "mean": 0.998283,
+              "ci_low": 0.994422,
+              "ci_high": 0.99988,
+              "n_effective": 177000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_177_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Japan",
+            "n_questions": 875,
+            "ceiling": {
+              "mean": 0.99745,
+              "ci_low": 0.992974,
+              "ci_high": 0.999612,
+              "n_effective": 875000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_875_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Jordan",
+            "n_questions": 873,
+            "ceiling": {
+              "mean": 0.997703,
+              "ci_low": 0.993459,
+              "ci_high": 0.999671,
+              "n_effective": 873000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_873_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Jordan (Non-national sample)",
+            "n_questions": 1,
+            "ceiling": {
+              "mean": 0.994571,
+              "ci_low": 0.988922,
+              "ci_high": 0.998616,
+              "n_effective": 1000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_1_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Kazakhstan",
+            "n_questions": 209,
+            "ceiling": {
+              "mean": 0.995826,
+              "ci_low": 0.990178,
+              "ci_high": 0.998978,
+              "n_effective": 209000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_209_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Kenya",
+            "n_questions": 861,
+            "ceiling": {
+              "mean": 0.997095,
+              "ci_low": 0.992342,
+              "ci_high": 0.99949,
+              "n_effective": 861000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_861_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Kuwait",
+            "n_questions": 144,
+            "ceiling": {
+              "mean": 0.998127,
+              "ci_low": 0.994199,
+              "ci_high": 0.999827,
+              "n_effective": 144000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_144_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Kyrgyzstan",
+            "n_questions": 209,
+            "ceiling": {
+              "mean": 0.995832,
+              "ci_low": 0.99025,
+              "ci_high": 0.998974,
+              "n_effective": 209000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_209_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Latvia",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995459,
+              "ci_low": 0.989611,
+              "ci_high": 0.99883,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Lebanon",
+            "n_questions": 872,
+            "ceiling": {
+              "mean": 0.99765,
+              "ci_low": 0.993339,
+              "ci_high": 0.999668,
+              "n_effective": 872000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_872_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Libya",
+            "n_questions": 212,
+            "ceiling": {
+              "mean": 0.995586,
+              "ci_low": 0.989999,
+              "ci_high": 0.998913,
+              "n_effective": 212000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_212_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Lithuania",
+            "n_questions": 313,
+            "ceiling": {
+              "mean": 0.996838,
+              "ci_low": 0.991813,
+              "ci_high": 0.999398,
+              "n_effective": 313000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_313_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Macau SAR",
+            "n_questions": 210,
+            "ceiling": {
+              "mean": 0.996342,
+              "ci_low": 0.991083,
+              "ci_high": 0.999199,
+              "n_effective": 210000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_210_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Malaysia",
+            "n_questions": 501,
+            "ceiling": {
+              "mean": 0.99756,
+              "ci_low": 0.993113,
+              "ci_high": 0.999626,
+              "n_effective": 501000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_501_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Maldives",
+            "n_questions": 212,
+            "ceiling": {
+              "mean": 0.995611,
+              "ci_low": 0.990107,
+              "ci_high": 0.998918,
+              "n_effective": 212000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_212_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Mali",
+            "n_questions": 126,
+            "ceiling": {
+              "mean": 0.998117,
+              "ci_low": 0.994175,
+              "ci_high": 0.999835,
+              "n_effective": 126000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_126_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Mali (Non-national sample)",
+            "n_questions": 117,
+            "ceiling": {
+              "mean": 0.998284,
+              "ci_low": 0.994513,
+              "ci_high": 0.999874,
+              "n_effective": 117000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_117_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Mexico",
+            "n_questions": 876,
+            "ceiling": {
+              "mean": 0.997379,
+              "ci_low": 0.99286,
+              "ci_high": 0.999594,
+              "n_effective": 876000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_876_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Mongolia",
+            "n_questions": 212,
+            "ceiling": {
+              "mean": 0.996933,
+              "ci_low": 0.992168,
+              "ci_high": 0.999375,
+              "n_effective": 212000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_212_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Montenegro",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995368,
+              "ci_low": 0.98934,
+              "ci_high": 0.998838,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Morocco",
+            "n_questions": 326,
+            "ceiling": {
+              "mean": 0.997517,
+              "ci_low": 0.993164,
+              "ci_high": 0.999598,
+              "n_effective": 326000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_326_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Morocco (Non-national sample)",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.998457,
+              "ci_low": 0.994946,
+              "ci_high": 0.999886,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Myanmar",
+            "n_questions": 203,
+            "ceiling": {
+              "mean": 0.99715,
+              "ci_low": 0.992556,
+              "ci_high": 0.999455,
+              "n_effective": 203000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_203_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Netherlands",
+            "n_questions": 577,
+            "ceiling": {
+              "mean": 0.996708,
+              "ci_low": 0.991659,
+              "ci_high": 0.999363,
+              "n_effective": 577000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_577_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "New Zealand",
+            "n_questions": 272,
+            "ceiling": {
+              "mean": 0.996332,
+              "ci_low": 0.991053,
+              "ci_high": 0.999211,
+              "n_effective": 272000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_272_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Nicaragua",
+            "n_questions": 306,
+            "ceiling": {
+              "mean": 0.997088,
+              "ci_low": 0.992371,
+              "ci_high": 0.999413,
+              "n_effective": 306000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_306_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Nigeria",
+            "n_questions": 703,
+            "ceiling": {
+              "mean": 0.997084,
+              "ci_low": 0.992328,
+              "ci_high": 0.999489,
+              "n_effective": 703000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_703_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Nigeria (Non-national sample)",
+            "n_questions": 319,
+            "ceiling": {
+              "mean": 0.998374,
+              "ci_low": 0.994693,
+              "ci_high": 0.999886,
+              "n_effective": 319000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_319_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "North Macedonia",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995422,
+              "ci_low": 0.989495,
+              "ci_high": 0.998831,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Northern Ireland",
+            "n_questions": 198,
+            "ceiling": {
+              "mean": 0.99563,
+              "ci_low": 0.99011,
+              "ci_high": 0.998972,
+              "n_effective": 198000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_198_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Norway",
+            "n_questions": 115,
+            "ceiling": {
+              "mean": 0.99571,
+              "ci_low": 0.990284,
+              "ci_high": 0.998957,
+              "n_effective": 115000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_115_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Pakistan",
+            "n_questions": 865,
+            "ceiling": {
+              "mean": 0.997639,
+              "ci_low": 0.993387,
+              "ci_high": 0.999635,
+              "n_effective": 865000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_865_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Pakistan (Non-national sample)",
+            "n_questions": 41,
+            "ceiling": {
+              "mean": 0.998492,
+              "ci_low": 0.994979,
+              "ci_high": 0.999908,
+              "n_effective": 41000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_41_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Palest. ter.",
+            "n_questions": 383,
+            "ceiling": {
+              "mean": 0.997967,
+              "ci_low": 0.99394,
+              "ci_high": 0.999751,
+              "n_effective": 383000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_383_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Peru",
+            "n_questions": 537,
+            "ceiling": {
+              "mean": 0.997028,
+              "ci_low": 0.992264,
+              "ci_high": 0.999446,
+              "n_effective": 537000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_537_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Philippines",
+            "n_questions": 653,
+            "ceiling": {
+              "mean": 0.99744,
+              "ci_low": 0.992967,
+              "ci_high": 0.999609,
+              "n_effective": 653000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_653_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Poland",
+            "n_questions": 852,
+            "ceiling": {
+              "mean": 0.997499,
+              "ci_low": 0.992989,
+              "ci_high": 0.999633,
+              "n_effective": 852000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_852_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Poland (Non-national sample)",
+            "n_questions": 10,
+            "ceiling": {
+              "mean": 0.998959,
+              "ci_low": 0.996037,
+              "ci_high": 0.99997,
+              "n_effective": 10000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_10_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Portugal",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.99556,
+              "ci_low": 0.989895,
+              "ci_high": 0.998929,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Puerto Rico",
+            "n_questions": 218,
+            "ceiling": {
+              "mean": 0.996547,
+              "ci_low": 0.991328,
+              "ci_high": 0.999267,
+              "n_effective": 218000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_218_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Romania",
+            "n_questions": 212,
+            "ceiling": {
+              "mean": 0.99568,
+              "ci_low": 0.989891,
+              "ci_high": 0.998948,
+              "n_effective": 212000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_212_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Russia",
+            "n_questions": 979,
+            "ceiling": {
+              "mean": 0.997452,
+              "ci_low": 0.992984,
+              "ci_high": 0.999586,
+              "n_effective": 979000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_979_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Russia (Non-national sample)",
+            "n_questions": 25,
+            "ceiling": {
+              "mean": 0.998518,
+              "ci_low": 0.994932,
+              "ci_high": 0.999882,
+              "n_effective": 25000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_25_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "S. Africa",
+            "n_questions": 519,
+            "ceiling": {
+              "mean": 0.997665,
+              "ci_low": 0.993295,
+              "ci_high": 0.999709,
+              "n_effective": 519000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_519_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "S. Africa (Non-national sample)",
+            "n_questions": 111,
+            "ceiling": {
+              "mean": 0.998218,
+              "ci_low": 0.994372,
+              "ci_high": 0.999875,
+              "n_effective": 111000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_111_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "S. Korea",
+            "n_questions": 555,
+            "ceiling": {
+              "mean": 0.997827,
+              "ci_low": 0.993547,
+              "ci_high": 0.999768,
+              "n_effective": 555000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_555_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Senegal",
+            "n_questions": 293,
+            "ceiling": {
+              "mean": 0.997712,
+              "ci_low": 0.993452,
+              "ci_high": 0.999701,
+              "n_effective": 293000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_293_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Senegal (Non-national sample)",
+            "n_questions": 181,
+            "ceiling": {
+              "mean": 0.99828,
+              "ci_low": 0.994486,
+              "ci_high": 0.999878,
+              "n_effective": 181000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_181_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Serbia",
+            "n_questions": 212,
+            "ceiling": {
+              "mean": 0.995348,
+              "ci_low": 0.989335,
+              "ci_high": 0.998832,
+              "n_effective": 212000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_212_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Singapore",
+            "n_questions": 270,
+            "ceiling": {
+              "mean": 0.996464,
+              "ci_low": 0.991291,
+              "ci_high": 0.99926,
+              "n_effective": 270000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_270_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Slovakia",
+            "n_questions": 474,
+            "ceiling": {
+              "mean": 0.996879,
+              "ci_low": 0.991959,
+              "ci_high": 0.999432,
+              "n_effective": 474000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_474_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Slovenia",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995458,
+              "ci_low": 0.989673,
+              "ci_high": 0.998875,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "South Korea",
+            "n_questions": 220,
+            "ceiling": {
+              "mean": 0.997097,
+              "ci_low": 0.992412,
+              "ci_high": 0.999424,
+              "n_effective": 220000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_220_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Spain",
+            "n_questions": 857,
+            "ceiling": {
+              "mean": 0.9977,
+              "ci_low": 0.993407,
+              "ci_high": 0.999687,
+              "n_effective": 857000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_857_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Sweden",
+            "n_questions": 506,
+            "ceiling": {
+              "mean": 0.9972,
+              "ci_low": 0.992514,
+              "ci_high": 0.999559,
+              "n_effective": 506000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_506_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Switzerland",
+            "n_questions": 116,
+            "ceiling": {
+              "mean": 0.995389,
+              "ci_low": 0.989318,
+              "ci_high": 0.998857,
+              "n_effective": 116000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_116_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Taiwan",
+            "n_questions": 62,
+            "ceiling": {
+              "mean": 0.997445,
+              "ci_low": 0.992796,
+              "ci_high": 0.999699,
+              "n_effective": 62000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_62_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Taiwan ROC",
+            "n_questions": 211,
+            "ceiling": {
+              "mean": 0.99677,
+              "ci_low": 0.991888,
+              "ci_high": 0.999354,
+              "n_effective": 211000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_211_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Tajikistan",
+            "n_questions": 204,
+            "ceiling": {
+              "mean": 0.99709,
+              "ci_low": 0.992402,
+              "ci_high": 0.999426,
+              "n_effective": 204000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_204_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Tanzania",
+            "n_questions": 399,
+            "ceiling": {
+              "mean": 0.997836,
+              "ci_low": 0.993673,
+              "ci_high": 0.999728,
+              "n_effective": 399000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_399_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Tanzania (Non-national sample)",
+            "n_questions": 1,
+            "ceiling": {
+              "mean": 0.996318,
+              "ci_low": 0.990075,
+              "ci_high": 0.999028,
+              "n_effective": 1000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_1_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Thailand",
+            "n_questions": 311,
+            "ceiling": {
+              "mean": 0.996451,
+              "ci_low": 0.991155,
+              "ci_high": 0.999214,
+              "n_effective": 311000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_311_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Tunisia",
+            "n_questions": 617,
+            "ceiling": {
+              "mean": 0.996831,
+              "ci_low": 0.991942,
+              "ci_high": 0.999386,
+              "n_effective": 617000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_617_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Turkey",
+            "n_questions": 942,
+            "ceiling": {
+              "mean": 0.997499,
+              "ci_low": 0.993105,
+              "ci_high": 0.999604,
+              "n_effective": 942000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_942_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Uganda",
+            "n_questions": 362,
+            "ceiling": {
+              "mean": 0.997934,
+              "ci_low": 0.993884,
+              "ci_high": 0.999748,
+              "n_effective": 362000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_362_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Ukraine",
+            "n_questions": 655,
+            "ceiling": {
+              "mean": 0.997094,
+              "ci_low": 0.992306,
+              "ci_high": 0.999481,
+              "n_effective": 655000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_655_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "United States",
+            "n_questions": 1093,
+            "ceiling": {
+              "mean": 0.997652,
+              "ci_low": 0.993359,
+              "ci_high": 0.999675,
+              "n_effective": 1093000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_1093_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Uruguay",
+            "n_questions": 211,
+            "ceiling": {
+              "mean": 0.995752,
+              "ci_low": 0.990145,
+              "ci_high": 0.998958,
+              "n_effective": 211000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_211_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Uzbekistan",
+            "n_questions": 120,
+            "ceiling": {
+              "mean": 0.998158,
+              "ci_low": 0.994227,
+              "ci_high": 0.999829,
+              "n_effective": 120000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_120_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Venezuela",
+            "n_questions": 478,
+            "ceiling": {
+              "mean": 0.997681,
+              "ci_low": 0.993291,
+              "ci_high": 0.999688,
+              "n_effective": 478000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_478_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Venezuela (Non-national sample)",
+            "n_questions": 167,
+            "ceiling": {
+              "mean": 0.998291,
+              "ci_low": 0.994464,
+              "ci_high": 0.999875,
+              "n_effective": 167000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_167_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Vietnam",
+            "n_questions": 381,
+            "ceiling": {
+              "mean": 0.997178,
+              "ci_low": 0.992477,
+              "ci_high": 0.999485,
+              "n_effective": 381000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_381_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Vietnam (Non-national sample)",
+            "n_questions": 78,
+            "ceiling": {
+              "mean": 0.998518,
+              "ci_low": 0.994968,
+              "ci_high": 0.999912,
+              "n_effective": 78000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_78_subpops_inferred_n"
+            }
+          },
+          {
+            "country": "Zimbabwe",
+            "n_questions": 252,
+            "ceiling": {
+              "mean": 0.995809,
+              "ci_low": 0.990366,
+              "ci_high": 0.999033,
+              "n_effective": 252000,
+              "quality_flag": "medium",
+              "method": "aggregate_of_252_subpops_inferred_n"
+            }
+          }
+        ],
+        "protocol": "per_country_split_half_multinomial_bootstrap",
+        "n_bootstrap": 200,
+        "n_per_country_assumed": 1000,
+        "note": "GlobalOpinionQA ships country probabilities without raw counts; counts inferred at n=1000 per country (typical Pew Global Attitudes survey size). Aggregate weighted by actual (country, question) coverage."
+      }
+    },
+    "temporal_drift": {
+      "mean_drift": 0.001111,
+      "ci_low": 0.000189,
+      "ci_high": 0.002351,
+      "n_pairs": 5,
+      "n_stems": 5,
+      "by_year_gap": {
+        "1": {
+          "mean_jsd": 0.003292,
+          "n_pairs": 1
+        },
+        "2": {
+          "mean_jsd": 0.000195,
+          "n_pairs": 3
+        },
+        "4": {
+          "mean_jsd": 0.001682,
+          "n_pairs": 1
+        }
+      },
+      "method": "cross_wave_jsd_on_repeated_stems"
+    },
+    "citations": [
+      {
+        "key": "santurkar2023",
+        "text": "Santurkar et al. 2023, OpinionsQA.",
+        "arxiv": "2303.17548"
+      },
+      {
+        "key": "durmus2023",
+        "text": "Durmus et al. 2023, GlobalOpinionQA.",
+        "arxiv": "2306.16388"
+      },
+      {
+        "key": "geng2024",
+        "text": "Geng & Liu 2024, SubPOP."
+      },
+      {
+        "key": "pew_methods",
+        "text": "Pew Research Center, Survey Methodology 101."
+      },
+      {
+        "key": "spearman1910",
+        "text": "Spearman, C. (1910); Brown, W. (1910). Spearman-Brown prophecy formula."
+      },
+      {
+        "key": "efron1979",
+        "text": "Efron, B. (1979). Bootstrap methods."
+      },
+      {
+        "key": "lin1991",
+        "text": "Lin, J. (1991). Jensen-Shannon divergence properties."
+      },
+      {
+        "key": "cochran1977",
+        "text": "Cochran, W. (1977). Sampling Techniques (n=400 rule-of-thumb)."
+      }
+    ],
+    "survey_weight_caveat": "Ceiling computed from raw category counts; ignoring survey weights could shift the ceiling by 1-3% on demographically skewed subgroups."
   }
 }
