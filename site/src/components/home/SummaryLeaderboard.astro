@@ -5,6 +5,11 @@ import leaderboardRaw from "@/data/leaderboard.json";
 
 const leaderboard = leaderboardRaw as LeaderboardData;
 
+function formatNormalized(value: number | undefined): string {
+  if (value == null || Number.isNaN(value)) return "—";
+  return `${Math.round(value * 100)}%`;
+}
+
 // Group entries by dataset, sort by SPS desc, take top 3 non-baseline
 const topEntries: { dataset: string; entries: LeaderboardEntry[] }[] = [];
 
@@ -31,6 +36,7 @@ for (const ds of leaderboard.datasets) {
           <th class="px-4 py-3 text-left font-semibold">Model</th>
           <th class="px-4 py-3 text-left font-semibold">Dataset</th>
           <th class="px-4 py-3 text-right font-semibold">SPS</th>
+          <th class="px-4 py-3 text-right font-semibold" title="Position in the meaningful evaluation range: (SPS − raw-LLM baseline) / (Human Ceiling − raw-LLM baseline)">Range %</th>
           <th class="px-4 py-3 text-right font-semibold">p_dist</th>
           <th class="px-4 py-3 text-right font-semibold">p_rank</th>
         </tr>
@@ -72,6 +78,9 @@ for (const ds of leaderboard.datasets) {
               <td class="px-4 py-2.5 text-muted">{entry.dataset}</td>
               <td class="px-4 py-2.5 text-right font-mono">
                 {entry.sps.toFixed(3)}
+              </td>
+              <td class="px-4 py-2.5 text-right font-mono text-muted" title={entry.normalized_sps != null ? "(SPS − raw-LLM baseline) / (Human Ceiling − raw-LLM baseline)" : "No raw-LLM baseline available for this row"}>
+                {formatNormalized(entry.normalized_sps)}
               </td>
               <td class="px-4 py-2.5 text-right font-mono">
                 {entry.p_dist.toFixed(3)}

@@ -6,6 +6,11 @@ import leaderboardRaw from "@/data/leaderboard.json";
 const leaderboard = leaderboardRaw as LeaderboardData;
 const entries = leaderboard.entries;
 
+function formatNormalized(value: number | undefined): string {
+  if (value == null || Number.isNaN(value)) return "—";
+  return `${Math.round(value * 100)}%`;
+}
+
 // Best-effort coverage filter for the default view.
 // A config is a (model, temperature, template) triple. The default view
 // hides variant configs (those with a temperature or template override) that
@@ -44,6 +49,7 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
           <th class="px-4 py-3 text-left font-semibold">Dataset</th>
           <th class="px-4 py-3 text-left font-semibold">Framework</th>
           <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="sps">SPS <span class="sort-indicator"></span></th>
+          <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="normalized_sps" title="Position in the meaningful evaluation range: (SPS − raw-LLM baseline) / (Human Ceiling − raw-LLM baseline). Shown only when a raw-LLM baseline is available for the underlying model.">Range % <span class="sort-indicator"></span></th>
           <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="p_dist">p_dist <span class="sort-indicator"></span></th>
           <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="p_rank">p_rank <span class="sort-indicator"></span></th>
           <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="p_refuse">p_refuse <span class="sort-indicator"></span></th>
@@ -79,6 +85,7 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
             <td class="px-4 py-3">{entry.dataset}</td>
             <td class="px-4 py-3 text-xs text-muted">{entry.framework}</td>
             <td class="px-4 py-3 text-right font-mono">{entry.sps.toFixed(3)}</td>
+            <td class="px-4 py-3 text-right font-mono text-muted" title={entry.normalized_sps != null ? "(SPS − raw-LLM baseline) / (Human Ceiling − raw-LLM baseline)" : "No raw-LLM baseline available for this row"}>{formatNormalized(entry.normalized_sps)}</td>
             <td class="px-4 py-3 text-right font-mono">{entry.p_dist.toFixed(3)}</td>
             <td class="px-4 py-3 text-right font-mono">{entry.p_rank.toFixed(3)}</td>
             <td class="px-4 py-3 text-right font-mono">{entry.p_refuse.toFixed(3)}</td>
@@ -88,7 +95,7 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
             </td>
           </tr>
           <tr class="detail-row hidden border-b border-muted/10" data-dataset={entry.dataset} data-variant={hiddenInDefaultView(entry) ? "variant" : "best"}>
-            <td colspan="10" class="px-4 py-4 bg-surface/50 dark:bg-surface-dark/50">
+            <td colspan="11" class="px-4 py-4 bg-surface/50 dark:bg-surface-dark/50">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 {entry.topic_scores && (
                   <div>
@@ -152,7 +159,12 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
             {entry.temperature != null && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent font-mono">t={entry.temperature}</span>}
             {entry.template && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent font-mono">tpl={entry.template}</span>}
           </div>
-          <span class="text-lg font-mono font-bold">{entry.sps.toFixed(3)}</span>
+          <div class="text-right">
+            <span class="text-lg font-mono font-bold">{entry.sps.toFixed(3)}</span>
+            {entry.normalized_sps != null && (
+              <span class="ml-1 text-xs font-mono text-muted" title="(SPS − raw-LLM baseline) / (Human Ceiling − raw-LLM baseline)">{formatNormalized(entry.normalized_sps)}</span>
+            )}
+          </div>
         </div>
         <div class="text-xs text-muted mb-2">{entry.provider} · {entry.dataset} · {entry.framework}</div>
         <div class="grid grid-cols-3 gap-2 text-xs">

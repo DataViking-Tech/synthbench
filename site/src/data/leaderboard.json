@@ -57,7 +57,8 @@
         "Politics & Governance": 0.698229,
         "Technology & Digital Life": 0.664402,
         "Trust & Wellbeing": 0.57537
-      }
+      },
+      "normalized_sps": 0.14902
     },
     {
       "rank": 3,
@@ -85,7 +86,8 @@
         "Politics & Governance": 0.64137,
         "Technology & Digital Life": 0.866699,
         "Trust & Wellbeing": 0.333731
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 4,
@@ -113,7 +115,8 @@
         "Politics & Governance": 0.698489,
         "Technology & Digital Life": 0.852851,
         "Trust & Wellbeing": 0.496796
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 5,
@@ -169,7 +172,8 @@
         "Politics & Governance": 0.629525,
         "Technology & Digital Life": 0.792842,
         "Trust & Wellbeing": 0.407459
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 7,
@@ -224,7 +228,8 @@
         "Politics & Governance": 0.558926,
         "Technology & Digital Life": 0.828555,
         "Trust & Wellbeing": 0.312066
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 9,
@@ -252,7 +257,8 @@
         "Politics & Governance": 0.641458,
         "Technology & Digital Life": 0.678827,
         "Trust & Wellbeing": 0.305979
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 10,
@@ -366,7 +372,8 @@
         "Social Values & Religion": 0.757697,
         "Technology & Digital Life": 0.742256,
         "Trust & Wellbeing": 0.753648
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 3,
@@ -397,7 +404,8 @@
         "Social Values & Religion": 0.776574,
         "Technology & Digital Life": 0.826652,
         "Trust & Wellbeing": 0.759988
-      }
+      },
+      "normalized_sps": 0.214396
     },
     {
       "rank": 4,
@@ -428,7 +436,8 @@
         "Social Values & Religion": 0.808175,
         "Technology & Digital Life": 0.78831,
         "Trust & Wellbeing": 0.701753
-      }
+      },
+      "normalized_sps": 0.074088
     },
     {
       "rank": 5,
@@ -459,7 +468,8 @@
         "Social Values & Religion": 0.774435,
         "Technology & Digital Life": 0.683863,
         "Trust & Wellbeing": 0.758541
-      }
+      },
+      "normalized_sps": 0.053571
     },
     {
       "rank": 6,
@@ -490,7 +500,8 @@
         "Social Values & Religion": 0.731249,
         "Technology & Digital Life": 0.712331,
         "Trust & Wellbeing": 0.751661
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 7,
@@ -552,7 +563,8 @@
         "Social Values & Religion": 0.731056,
         "Technology & Digital Life": 0.721434,
         "Trust & Wellbeing": 0.733109
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 9,
@@ -583,7 +595,8 @@
         "Social Values & Religion": 0.690722,
         "Technology & Digital Life": 0.792024,
         "Trust & Wellbeing": 0.66958
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 10,
@@ -614,7 +627,8 @@
         "Social Values & Religion": 0.712703,
         "Technology & Digital Life": 0.705445,
         "Trust & Wellbeing": 0.752137
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 11,
@@ -645,7 +659,8 @@
         "Social Values & Religion": 0.569164,
         "Technology & Digital Life": 0.728625,
         "Trust & Wellbeing": 0.649029
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 12,
@@ -854,7 +869,8 @@
         "Social Values & Religion": 0.715449,
         "Technology & Digital Life": 0.675084,
         "Trust & Wellbeing": 0.874807
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 4,
@@ -884,7 +900,8 @@
         "Social Values & Religion": 0.725218,
         "Technology & Digital Life": 0.625384,
         "Trust & Wellbeing": 0.812457
-      }
+      },
+      "normalized_sps": 0.073902
     },
     {
       "rank": 5,
@@ -913,7 +930,8 @@
         "Politics & Governance": 0.833952,
         "Social Values & Religion": 0.573939,
         "Technology & Digital Life": 0.698443
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 6,
@@ -973,7 +991,8 @@
           "p_cond": 0.023,
           "n_questions": 100
         }
-      ]
+      ],
+      "normalized_sps": 0.021578
     },
     {
       "rank": 7,
@@ -1002,7 +1021,8 @@
         "Politics & Governance": 0.751338,
         "Social Values & Religion": 0.671286,
         "Technology & Digital Life": 0.624765
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 8,
@@ -1062,7 +1082,8 @@
         "Social Values & Religion": 0.632518,
         "Technology & Digital Life": 0.685549,
         "Trust & Wellbeing": 0.662224
-      }
+      },
+      "normalized_sps": 0.0
     },
     {
       "rank": 10,

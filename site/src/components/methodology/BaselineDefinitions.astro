@@ -273,6 +273,44 @@ const baselines: Baseline[] = [
     </div>
   </div>
 
+  <!-- Normalized position (Range %) -->
+  <div
+    class="rounded-lg border border-muted/20 bg-surface p-5 mb-8 dark:bg-surface-dark"
+    id="normalized-position"
+  >
+    <h3 class="text-base font-semibold text-text dark:text-text-dark mb-2">
+      Normalized position ("Range %")
+    </h3>
+    <p class="text-sm text-muted mb-3">
+      Raw SPS values for strong models compress into a narrow band (~0.82-0.85)
+      that is visually hard to separate on a 0-1 bar. The leaderboard also
+      reports a <em>normalized position</em> — where a row sits inside the
+      meaningful evaluation range bounded below by the raw-LLM baseline and
+      above by the Human Ceiling.
+    </p>
+    <pre
+      class="rounded-md border border-muted/20 bg-muted/5 p-3 text-xs font-mono overflow-x-auto dark:bg-muted/10"
+    >Range % = (SPS − P_unconditioned) / (P_ceiling − P_unconditioned)</pre>
+    <p class="mt-3 text-sm text-text/80 dark:text-text-dark/80">
+      <span class="font-medium">P_unconditioned</span> is the SPS of the raw-LLM
+      baseline for the same underlying model on the same dataset (the "just
+      prompt the model" reference). Raw-LLM rows therefore resolve to 0% —
+      they <em>are</em> the reference. Product rows (e.g. conditioned SynthPanel
+      variants) show their lift above the corresponding raw model.
+    </p>
+    <p class="mt-2 text-sm text-text/80 dark:text-text-dark/80">
+      <span class="font-medium">P_ceiling</span> is the dataset's aggregate Human
+      Ceiling (see below). Rows without a resolvable raw-LLM baseline (statistical
+      baselines, multi-model ensembles) display "—" for Range % and should be
+      compared via raw SPS instead.
+    </p>
+    <p class="mt-2 text-xs italic text-muted">
+      Raw SPS remains the primary column for academic comparability. Range % is
+      a supplementary display that amplifies product lift — a 0.01 SPS gain on
+      a narrow range becomes a double-digit percentage of headroom closed.
+    </p>
+  </div>
+
   {
     oqaSubgroupDist && (
       <div

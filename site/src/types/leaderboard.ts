@@ -18,6 +18,13 @@ export interface LeaderboardEntry {
   framework: string;
 
   sps: number;
+  /**
+   * Position in the meaningful evaluation range: (SPS - P_unconditioned) /
+   * (P_ceiling - P_unconditioned). Expressed in [0, ~1]. Present only when a
+   * raw-LLM baseline and dataset ceiling are both available. Raw LLMs resolve
+   * to 0 (they ARE the unconditioned reference); baselines are omitted.
+   */
+  normalized_sps?: number;
 
   p_dist: number;
   p_rank: number;

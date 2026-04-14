@@ -484,6 +484,82 @@ def _build_baselines(results: list[dict], datasets: list[str]) -> dict:
     return out
 
 
+# Display-name map: product entries → underlying raw-LLM display name.
+# Used by _annotate_normalized_sps so a SynthPanel row can look up its
+# corresponding "just prompt the model" baseline SPS for the same dataset.
+# Kept as a small explicit map (rather than string parsing) because the
+# product display names omit the vendor prefix ("Haiku 4.5" vs "Claude
+# Haiku 4.5") and a typo-tolerant match would silently bind the wrong row.
+_PRODUCT_TO_RAW_DISPLAY: dict[str, str] = {
+    "SynthPanel (Haiku 4.5)": "Claude Haiku 4.5",
+    "SynthPanel (Sonnet 4)": "Claude Sonnet 4",
+    "SynthPanel (GPT-4o-mini)": "GPT-4o-mini",
+    "SynthPanel (GPT-4o)": "GPT-4o",
+    "SynthPanel (Gemini Flash Lite)": "Gemini Flash Lite",
+}
+
+
+def _annotate_normalized_sps(entries: list[dict], baselines: dict) -> None:
+    """Add normalized_sps = (SPS - P_unconditioned) / (P_ceiling - P_unconditioned).
+
+    P_unconditioned is the raw-LLM baseline SPS for the same underlying model on
+    the same dataset (the "just prompt the model" reference). Raw-LLM rows use
+    their own SPS, yielding normalized_sps == 0. Product rows look up their
+    underlying raw model via _PRODUCT_TO_RAW_DISPLAY. Baseline rows and rows
+    without a resolvable reference are left without the field, so the frontend
+    can fall back to the raw SPS for display.
+
+    P_ceiling comes from baselines.ceiling[dataset].overall.mean. If no ceiling
+    is present for a dataset (e.g., ceiling computation was skipped), no entry
+    for that dataset receives normalized_sps.
+
+    Values are clamped to [0, 1.05] — a small margin above the ceiling keeps
+    the (rare) case where SPS exceeds the bootstrap mean from producing a
+    confusing 120% display.
+    """
+    ceilings: dict[str, float] = {}
+    for ds, block in (baselines.get("ceiling") or {}).items():
+        overall = (block or {}).get("overall") or {}
+        mean = overall.get("mean")
+        if isinstance(mean, (int, float)):
+            ceilings[ds] = float(mean)
+
+    raw_sps_lookup: dict[tuple[str, str], float] = {}
+    for e in entries:
+        if e.get("framework") != "raw":
+            continue
+        sps = e.get("sps")
+        if not isinstance(sps, (int, float)) or sps <= 0:
+            continue
+        raw_sps_lookup[(e.get("dataset"), e.get("model"))] = float(sps)
+
+    for e in entries:
+        ds = e.get("dataset")
+        sps = e.get("sps")
+        if ds not in ceilings or not isinstance(sps, (int, float)):
+            continue
+        fw = e.get("framework")
+        model = e.get("model")
+        if fw == "raw":
+            p_unc: float | None = raw_sps_lookup.get((ds, model))
+        elif fw == "product":
+            raw_model = _PRODUCT_TO_RAW_DISPLAY.get(model)
+            p_unc = raw_sps_lookup.get((ds, raw_model)) if raw_model else None
+        else:
+            p_unc = None
+        if p_unc is None:
+            continue
+        p_ceiling = ceilings[ds]
+        denom = p_ceiling - p_unc
+        if denom <= 0:
+            continue
+        normalized = (float(sps) - p_unc) / denom
+        # Clamp to avoid visually confusing negative or very-out-of-range values
+        # while still surfacing entries that edge past the ceiling.
+        normalized = max(0.0, min(1.05, normalized))
+        e["normalized_sps"] = round(normalized, 6)
+
+
 def publish_leaderboard_data(
     results_dir: Path, output_path: Path, version: str = "0.1.0"
 ) -> Path:
@@ -546,6 +622,7 @@ def publish_leaderboard_data(
                 )
 
     baselines = _build_baselines(results, datasets)
+    _annotate_normalized_sps(entries, baselines)
 
     synthbench_data = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
