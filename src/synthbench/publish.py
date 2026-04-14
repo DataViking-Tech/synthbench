@@ -87,6 +87,21 @@ def _build_entry(r: dict, rank: int) -> dict:
     is_baseline = framework == "baseline"
     is_ensemble = "ensemble" in provider_raw.lower()
 
+    ci_lower = round(ci[0], 6) if len(ci) >= 2 else 0
+    ci_upper = round(ci[1], 6) if len(ci) >= 2 else 0
+
+    # Ensembles are deterministic arithmetic — the original per_metric_ci
+    # collapses to [0, 0]. Recover a real CI by bootstrapping per-question
+    # parity scores (Efron 1979).
+    if is_ensemble and ci_lower == 0 and ci_upper == 0:
+        from synthbench.baselines import ensemble_bootstrap_ci
+
+        per_question = r.get("per_question", [])
+        if per_question:
+            lo, hi = ensemble_bootstrap_ci(per_question, metric_key="parity")
+            ci_lower = round(lo, 6)
+            ci_upper = round(hi, 6)
+
     entry: dict = {
         "rank": rank,
         "provider": provider_name,
@@ -100,8 +115,8 @@ def _build_entry(r: dict, rank: int) -> dict:
         "jsd": round(agg.get("mean_jsd", 0), 6),
         "tau": round(agg.get("mean_kendall_tau", 0), 6),
         "n": cfg.get("n_evaluated", 0),
-        "ci_lower": round(ci[0], 6) if len(ci) >= 2 else 0,
-        "ci_upper": round(ci[1], 6) if len(ci) >= 2 else 0,
+        "ci_lower": ci_lower,
+        "ci_upper": ci_upper,
         "is_baseline": is_baseline,
         "is_ensemble": is_ensemble,
     }
@@ -354,6 +369,114 @@ def _build_findings() -> dict:
     }
 
 
+def _load_opinionsqa_human_distributions() -> list[dict]:
+    """Load human distributions for all OpinionsQA questions (all waves).
+
+    Used for temporal drift computation: groups by question stem across
+    waves, so we need every wave's cached distribution — not just the
+    subsets evaluated by models.
+
+    Returns an empty list if the cache is unavailable.
+    """
+    from synthbench.datasets.opinionsqa import OpinionsQADataset, wave_year
+
+    try:
+        ds = OpinionsQADataset()
+        questions = ds.load()
+    except Exception:
+        return []
+
+    out = []
+    for q in questions:
+        year = wave_year(q.survey) if q.survey else 0
+        out.append(
+            {
+                "key": q.key,
+                "human_distribution": q.human_distribution,
+                "temporal_year": year,
+                "survey": q.survey,
+            }
+        )
+    return out
+
+
+def _build_baselines(results: list[dict], datasets: list[str]) -> dict:
+    """Compute Human Ceiling (per dataset) and Temporal Drift (OpinionsQA).
+
+    Best-effort: if raw data is not available on disk, the corresponding
+    ceiling entry is omitted rather than failing the publish step.
+    """
+    from synthbench.baselines import (
+        compute_globalopinionqa_ceiling,
+        compute_opinionsqa_ceiling,
+        compute_subpop_ceiling,
+        compute_temporal_drift,
+    )
+
+    out: dict = {
+        "ceiling": {},
+        "temporal_drift": None,
+        "citations": [
+            {
+                "key": "santurkar2023",
+                "text": "Santurkar et al. 2023, OpinionsQA.",
+                "arxiv": "2303.17548",
+            },
+            {
+                "key": "durmus2023",
+                "text": "Durmus et al. 2023, GlobalOpinionQA.",
+                "arxiv": "2306.16388",
+            },
+            {"key": "geng2024", "text": "Geng & Liu 2024, SubPOP."},
+            {
+                "key": "pew_methods",
+                "text": "Pew Research Center, Survey Methodology 101.",
+            },
+            {
+                "key": "spearman1910",
+                "text": "Spearman, C. (1910); Brown, W. (1910). Spearman-Brown prophecy formula.",
+            },
+            {"key": "efron1979", "text": "Efron, B. (1979). Bootstrap methods."},
+            {
+                "key": "lin1991",
+                "text": "Lin, J. (1991). Jensen-Shannon divergence properties.",
+            },
+            {
+                "key": "cochran1977",
+                "text": "Cochran, W. (1977). Sampling Techniques (n=400 rule-of-thumb).",
+            },
+        ],
+        "survey_weight_caveat": (
+            "Ceiling computed from raw category counts; ignoring survey "
+            "weights could shift the ceiling by 1-3% on demographically "
+            "skewed subgroups."
+        ),
+    }
+
+    if "opinionsqa" in datasets:
+        oqa = compute_opinionsqa_ceiling()
+        if oqa is not None:
+            out["ceiling"]["opinionsqa"] = oqa
+
+        # Temporal drift floor (OpinionsQA only) — computed from the full
+        # dataset so coverage reflects all waves, not just evaluated subsets.
+        human_qs = _load_opinionsqa_human_distributions()
+        if human_qs:
+            out["temporal_drift"] = compute_temporal_drift(human_qs)
+
+    if "subpop" in datasets:
+        sp = compute_subpop_ceiling()
+        if sp is not None:
+            out["ceiling"]["subpop"] = sp
+
+    if "globalopinionqa" in datasets:
+        goqa = compute_globalopinionqa_ceiling()
+        if goqa is not None:
+            out["ceiling"]["globalopinionqa"] = goqa
+
+    return out
+
+
 def publish_leaderboard_data(
     results_dir: Path, output_path: Path, version: str = "0.1.0"
 ) -> Path:
@@ -415,6 +538,8 @@ def publish_leaderboard_data(
                     }
                 )
 
+    baselines = _build_baselines(results, datasets)
+
     synthbench_data = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "synthbench_version": version,
@@ -422,6 +547,7 @@ def publish_leaderboard_data(
         "entries": entries,
         "convergence": convergence,
         "findings": _build_findings(),
+        "baselines": baselines,
     }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
