@@ -51,6 +51,19 @@ export interface LeaderboardEntry {
   is_baseline: boolean;
   is_ensemble: boolean;
 
+  /**
+   * Number of raw result files aggregated into this row — replicates for
+   * this exact (model, framework, dataset, temperature, template) config.
+   * Emitted by publish.py so the default view can hide under-replicated
+   * configs without re-grouping in JS.
+   */
+  run_count?: number;
+  /**
+   * Number of distinct datasets this (model, framework, temperature, template)
+   * config has runs on. Used for the default view's coverage filter.
+   */
+  dataset_coverage_count?: number;
+
   topic_scores?: Record<TopicCategory, number>;
   topic_metrics?: Record<TopicCategory, TopicMetricBreakdown>;
   demographic_scores?: DemographicBreakdown[];

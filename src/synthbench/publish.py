@@ -634,6 +634,55 @@ def _annotate_normalized_sps(entries: list[dict], baselines: dict) -> None:
         e["normalized_sps"] = round(normalized, 6)
 
 
+def _annotate_run_counts(entries: list[dict], all_results: list[dict]) -> None:
+    """Add ``run_count`` and ``dataset_coverage_count`` to leaderboard entries.
+
+    ``run_count`` is the number of raw result files whose config matches this
+    entry's (model, framework, dataset, temperature, template) tuple — i.e.
+    replicates aggregated into the winning row.
+
+    ``dataset_coverage_count`` is the number of distinct datasets this entry's
+    (model, framework, temperature, template) config has runs on. Together
+    these let the site's default view hide under-replicated configs without
+    re-grouping in JS.
+    """
+    from synthbench.leaderboard import display_provider_name, provider_framework
+
+    run_counts: dict[tuple, int] = {}
+    datasets_per_config: dict[tuple, set[str]] = {}
+
+    for r in all_results:
+        cfg = r.get("config", {})
+        provider_raw = cfg.get("provider", "unknown")
+        name = display_provider_name(provider_raw)
+        fw = provider_framework(provider_raw)
+        dataset = cfg.get("dataset", "unknown")
+        temp = cfg.get("temperature")
+        tpl_stem = _tpl_name(cfg.get("prompt_template"))
+
+        run_key = (name, fw, dataset, temp, tpl_stem)
+        run_counts[run_key] = run_counts.get(run_key, 0) + 1
+        cov_key = (name, fw, temp, tpl_stem)
+        datasets_per_config.setdefault(cov_key, set()).add(dataset)
+
+    for e in entries:
+        run_key = (
+            e.get("model"),
+            e.get("framework"),
+            e.get("dataset"),
+            e.get("temperature"),
+            e.get("template"),
+        )
+        cov_key = (
+            e.get("model"),
+            e.get("framework"),
+            e.get("temperature"),
+            e.get("template"),
+        )
+        e["run_count"] = run_counts.get(run_key, 0)
+        e["dataset_coverage_count"] = len(datasets_per_config.get(cov_key, set()))
+
+
 def publish_leaderboard_data(
     results_dir: Path, output_path: Path, version: str = "0.1.0"
 ) -> Path:
@@ -697,6 +746,7 @@ def publish_leaderboard_data(
 
     baselines = _build_baselines(results, datasets)
     _annotate_normalized_sps(entries, baselines)
+    _annotate_run_counts(entries, results)
 
     synthbench_data = {
         "generated_at": datetime.now(timezone.utc).isoformat(),

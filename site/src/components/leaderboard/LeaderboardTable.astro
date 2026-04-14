@@ -52,25 +52,34 @@ function topicRows(entry: LeaderboardEntry): TopicRow[] {
   return [];
 }
 
-// Best-effort coverage filter for the default view.
-// A config is a (model, temperature, template) triple. The default view
-// hides variant configs (those with a temperature or template override) that
-// appear in fewer than two datasets. Proper 3+ run tracking requires
-// replicate counts from publish.py (tracked as a follow-up).
-const configCoverage = new Map<string, Set<string>>();
+// Default view hides under-replicated variant configs. A "variant" is any
+// (model, temperature, template) triple that overrides temperature or
+// template — stability matters more for these because they're easy to
+// over-fit. Hide when either:
+//   * run_count < 3      (fewer than 3 replicates for this exact row)
+//   * dataset_coverage_count < 2  (config only tested on one dataset)
+// Falls back to in-JS grouping when publish.py hasn't emitted the fields.
+const configCoverageFallback = new Map<string, Set<string>>();
 for (const entry of entries) {
   const key = `${entry.model}::t=${entry.temperature ?? ""}::tpl=${entry.template ?? ""}`;
-  const set = configCoverage.get(key) ?? new Set<string>();
+  const set = configCoverageFallback.get(key) ?? new Set<string>();
   set.add(entry.dataset);
-  configCoverage.set(key, set);
+  configCoverageFallback.set(key, set);
 }
 
 function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
   const isVariant = entry.temperature != null || entry.template != null;
   if (!isVariant) return false;
-  const key = `${entry.model}::t=${entry.temperature ?? ""}::tpl=${entry.template ?? ""}`;
-  const datasets = configCoverage.get(key);
-  return !datasets || datasets.size < 2;
+
+  const runCount = entry.run_count;
+  if (runCount != null && runCount < 3) return true;
+
+  let coverage = entry.dataset_coverage_count;
+  if (coverage == null) {
+    const key = `${entry.model}::t=${entry.temperature ?? ""}::tpl=${entry.template ?? ""}`;
+    coverage = configCoverageFallback.get(key)?.size ?? 0;
+  }
+  return coverage < 2;
 }
 ---
 
