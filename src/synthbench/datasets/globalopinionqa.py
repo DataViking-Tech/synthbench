@@ -27,6 +27,17 @@ def _question_key(text: str, index: int) -> str:
     return f"GOQA_{index}_{h}"
 
 
+def _normalize_options(options: list) -> list[str]:
+    """Coerce option values to strings.
+
+    Upstream Likert-scale questions store options as floats (e.g. ``[0.0, 1.0,
+    ..., 10.0]``). Downstream consumers (report/publish serializers, the Astro
+    run-detail page) assume option labels are strings, so normalize at the
+    dataset boundary.
+    """
+    return [str(o) for o in options]
+
+
 def _aggregate_distributions(
     selections: dict[str, list[float]],
     options: list[str],
@@ -104,9 +115,10 @@ class GlobalOpinionQADataset(Dataset):
 
         questions = []
         for q in data["questions"]:
+            options = _normalize_options(q["options"])
             dist = _aggregate_distributions(
                 q["selections"],
-                q["options"],
+                options,
                 country=self._country,
             )
             if not dist:
@@ -115,7 +127,7 @@ class GlobalOpinionQADataset(Dataset):
                 Question(
                     key=q["key"],
                     text=q["text"],
-                    options=q["options"],
+                    options=options,
                     human_distribution=dist,
                     survey=q.get("survey", ""),
                 )
@@ -170,6 +182,7 @@ class GlobalOpinionQADataset(Dataset):
                     options = ast.literal_eval(options)
                 except (ValueError, SyntaxError):
                     continue
+            options = _normalize_options(options)
             if isinstance(selections, str):
                 import ast
                 import re
