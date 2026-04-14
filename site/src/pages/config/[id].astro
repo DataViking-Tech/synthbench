@@ -275,8 +275,8 @@ const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
       const runLabel = rep.run_id;
       return `
         <tr class="border-t border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5">
-          <td class="p-2">
-            <a class="text-primary hover:underline font-mono text-xs break-all" href="${href}">
+          <td class="p-2 whitespace-nowrap">
+            <a class="text-primary hover:underline font-mono text-xs" href="${href}">
               ${escapeHtml(runLabel)}
             </a>
           </td>
@@ -291,8 +291,8 @@ const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
     tbody.innerHTML = rows.join("");
   }
 
-  function escapeHtml(s: string): string {
-    return s
+  function escapeHtml(s: unknown): string {
+    return String(s ?? "")
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
