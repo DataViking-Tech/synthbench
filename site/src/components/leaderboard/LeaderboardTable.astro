@@ -60,9 +60,9 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
         <tr class="bg-surface dark:bg-surface-dark border-b border-muted/20">
           <th class="px-2 py-3 w-8" aria-label="Expand"></th>
           <th class="px-4 py-3 text-left font-semibold cursor-pointer hover:text-primary" data-sort="rank">#</th>
-          <th class="px-4 py-3 text-left font-semibold">Model</th>
-          <th class="px-4 py-3 text-left font-semibold">Dataset</th>
-          <th class="px-4 py-3 text-left font-semibold">Framework</th>
+          <th class="px-4 py-3 text-left font-semibold cursor-pointer hover:text-primary" data-sort="model" data-sort-type="string">Model <span class="sort-indicator"></span></th>
+          <th class="px-4 py-3 text-left font-semibold cursor-pointer hover:text-primary" data-sort="dataset" data-sort-type="string">Dataset <span class="sort-indicator"></span></th>
+          <th class="px-4 py-3 text-left font-semibold cursor-pointer hover:text-primary" data-sort="framework" data-sort-type="string">Framework <span class="sort-indicator"></span></th>
           <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="sps">SPS <span class="sort-indicator"></span></th>
           <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="normalized_sps" title="Position in the meaningful evaluation range: (SPS − raw-LLM baseline) / (Human Ceiling − raw-LLM baseline). Shown only when a raw-LLM baseline is available for the underlying model.">Range % <span class="sort-indicator"></span></th>
           <th class="px-4 py-3 text-right font-semibold cursor-pointer hover:text-primary" data-sort="p_dist">p_dist <span class="sort-indicator"></span></th>
@@ -296,11 +296,13 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
     for (const header of headers) {
       header.addEventListener("click", () => {
         const sortKey = header.dataset.sort ?? "";
+        const sortType = header.dataset.sortType ?? "number";
         if (currentSort === sortKey) {
           ascending = !ascending;
         } else {
           currentSort = sortKey;
-          ascending = false;
+          // String columns default to ascending (A→Z); numeric default to descending (high→low).
+          ascending = sortType === "string";
         }
 
         for (const h of headers) {
@@ -319,6 +321,12 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
         pairs.sort((a, b) => {
           const aData = JSON.parse(a[0].dataset.entry ?? "{}");
           const bData = JSON.parse(b[0].dataset.entry ?? "{}");
+          if (sortType === "string") {
+            const aStr = String(aData[sortKey] ?? "");
+            const bStr = String(bData[sortKey] ?? "");
+            const cmp = aStr.localeCompare(bStr, undefined, { sensitivity: "base", numeric: true });
+            return ascending ? cmp : -cmp;
+          }
           let aVal: number;
           let bVal: number;
           if (sortKey === "ci") {
