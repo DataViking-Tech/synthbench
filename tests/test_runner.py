@@ -11,7 +11,11 @@ from synthbench.providers.base import (
     Response,
     build_persona_system_prompt,
 )
-from synthbench.runner import BenchmarkRunner, DemographicGroupResult
+from synthbench.runner import (
+    BenchmarkRunner,
+    DemographicGroupResult,
+    _normalize_model_dist,
+)
 
 
 @pytest.mark.asyncio
@@ -371,6 +375,124 @@ def test_build_persona_system_prompt_multi_demographics():
     result = build_persona_system_prompt(base, persona)
     assert "AGE: 18-29" in result
     assert "SEX: Female" in result
+
+
+class RefusingProvider(Provider):
+    """Provider that refuses every ``refusal_every``-th sample (and picks the
+    first option otherwise) — exercises the partial-refusal branch so the
+    runner has to renormalize to hit sum=1 distributions."""
+
+    def __init__(self, refusal_every: int = 3):
+        self._counter = 0
+        self._refusal_every = refusal_every
+
+    @property
+    def name(self) -> str:
+        return "mock/refusing"
+
+    async def respond(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
+        self._counter += 1
+        if self._counter % self._refusal_every == 0:
+            return Response(selected_option="", refusal=True)
+        return Response(selected_option=options[0])
+
+
+class AlwaysRefuseProvider(Provider):
+    """Every sample refuses — exercises the uniform-fallback branch."""
+
+    @property
+    def name(self) -> str:
+        return "mock/always-refuse"
+
+    async def respond(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
+        return Response(selected_option="", refusal=True)
+
+
+def test_normalize_model_dist_renormalizes_partial_mass():
+    """A distribution whose mass sums to <1 is rescaled to sum to 1."""
+    options = ["a", "b", "c"]
+    # Simulate "1 valid pick out of 3 samples (1 refusal), others missed":
+    # mass is 1/3 on 'a', 0 elsewhere, total mass 1/3.
+    normalized = _normalize_model_dist({"a": 1 / 3, "b": 0.0, "c": 0.0}, options)
+    assert abs(sum(normalized.values()) - 1.0) < 1e-9
+    assert normalized["a"] == pytest.approx(1.0)
+    assert normalized["b"] == 0.0 and normalized["c"] == 0.0
+
+
+def test_normalize_model_dist_preserves_ratios():
+    """Rescaling should preserve option-to-option proportions."""
+    options = ["a", "b", "c"]
+    normalized = _normalize_model_dist({"a": 0.2, "b": 0.4, "c": 0.2}, options)
+    assert abs(sum(normalized.values()) - 1.0) < 1e-9
+    # Ratios before: 1:2:1. After renormalization they must be preserved.
+    assert normalized["a"] == pytest.approx(0.25)
+    assert normalized["b"] == pytest.approx(0.5)
+    assert normalized["c"] == pytest.approx(0.25)
+
+
+def test_normalize_model_dist_uniform_fallback_on_zero_mass():
+    """All-refusal / all-parse-failure case falls back to a uniform vector."""
+    options = ["a", "b", "c", "d"]
+    normalized = _normalize_model_dist(
+        {"a": 0.0, "b": 0.0, "c": 0.0, "d": 0.0}, options
+    )
+    assert abs(sum(normalized.values()) - 1.0) < 1e-9
+    for v in normalized.values():
+        assert v == pytest.approx(0.25)
+
+
+def test_normalize_model_dist_empty_options():
+    """Empty option list produces an empty distribution without crashing."""
+    assert _normalize_model_dist({}, []) == {}
+
+
+@pytest.mark.asyncio
+async def test_runner_normalizes_distribution_on_partial_refusal(mock_dataset):
+    """Runner output distributions sum to 1 even when some samples refused."""
+    runner = BenchmarkRunner(
+        dataset=mock_dataset,
+        provider=RefusingProvider(refusal_every=3),
+        samples_per_question=9,
+        concurrency=5,
+    )
+    result = await runner.run(n=2)
+
+    # Every per-question distribution must be a valid probability vector
+    # — this is what the tier-1 DIST_SUM validator checks on serialized
+    # leaderboard entries.
+    for qr in result.questions:
+        total = sum(qr.model_distribution.values())
+        assert abs(total - 1.0) < 1e-6, (
+            f"model_distribution does not sum to 1: {qr.model_distribution} "
+            f"(sum={total})"
+        )
+        # refusal rate is still tracked separately
+        assert qr.model_refusal_rate > 0
+
+
+@pytest.mark.asyncio
+async def test_runner_normalizes_distribution_on_all_refusal(mock_dataset):
+    """Degenerate all-refusal runs produce a valid (uniform) probability vector."""
+    runner = BenchmarkRunner(
+        dataset=mock_dataset,
+        provider=AlwaysRefuseProvider(),
+        samples_per_question=5,
+        concurrency=5,
+    )
+    result = await runner.run(n=2)
+
+    for qr in result.questions:
+        total = sum(qr.model_distribution.values())
+        assert abs(total - 1.0) < 1e-6
+        # Uniform fallback: all options equally weighted
+        expected = 1.0 / len(qr.options)
+        for v in qr.model_distribution.values():
+            assert v == pytest.approx(expected)
+        assert qr.model_refusal_rate == pytest.approx(1.0)
 
 
 def test_subpop_attributes_match_raw_data():
