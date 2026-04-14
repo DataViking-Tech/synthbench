@@ -20,9 +20,11 @@ MODEL_MAP: dict[str, tuple[str, str]] = {
     "openrouter/anthropic/claude-sonnet-4": ("Claude Sonnet 4", "raw"),
     "openrouter/google/gemini-2.5-flash": ("Gemini 2.5 Flash", "raw"),
     "openrouter/google/gemini-2.5-flash-lite": ("Gemini Flash Lite", "raw"),
-    # Raw LLMs via direct API
-    "raw-anthropic/claude-haiku-4-5-20251001": ("Claude Haiku 4.5 (direct)", "raw"),
-    "raw-gemini/gemini-2.5-flash-lite": ("Gemini Flash Lite (direct)", "raw"),
+    # Raw LLMs via direct API — dedupe to the canonical model name.
+    # Direct vs OpenRouter distinction isn't surfaced unless it materially
+    # matters (pricing / SLA), which currently it does not.
+    "raw-anthropic/claude-haiku-4-5-20251001": ("Claude Haiku 4.5", "raw"),
+    "raw-gemini/gemini-2.5-flash-lite": ("Gemini Flash Lite", "raw"),
     # Products (orchestration / adapter layers)
     "synthpanel/claude-haiku-4-5-20251001": ("SynthPanel (Haiku 4.5)", "product"),
     "synthpanel/gemini-2.5-flash-lite": (

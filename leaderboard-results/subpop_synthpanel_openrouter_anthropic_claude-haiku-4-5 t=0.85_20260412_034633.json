@@ -1,0 +1,700 @@
+{
+  "benchmark": "synthbench",
+  "version": "0.1.0",
+  "timestamp": "2026-04-12T08:46:33.123874+00:00",
+  "config": {
+    "dataset": "subpop",
+    "provider": "synthpanel/openrouter/anthropic/claude-haiku-4-5 t=0.85",
+    "samples_per_question": 15,
+    "n_requested": 20,
+    "n_evaluated": 20,
+    "temperature": 0.85,
+    "question_set_hash": "8af8b654c88a6a6d7b3c09216161b0e30942c735feb1e418dd1561c5560c6cd3",
+    "parse_failure_rate": 0.0,
+    "topic_filter": null
+  },
+  "scores": {
+    "sps": 0.696775,
+    "p_dist": 0.724416,
+    "p_rank": 0.784882,
+    "p_refuse": 0.936813,
+    "p_sub": 0.95552,
+    "p_cond": 0.082244
+  },
+  "aggregate": {
+    "mean_jsd": 0.275584,
+    "median_jsd": 0.231541,
+    "mean_kendall_tau": 0.569764,
+    "composite_parity": 0.754649,
+    "n_questions": 20,
+    "elapsed_seconds": 117.2,
+    "per_metric_ci": {
+      "p_dist": [
+        0.652537,
+        0.786225
+      ],
+      "p_rank": [
+        0.687775,
+        0.832487
+      ],
+      "p_refuse": [
+        0.736302,
+        0.987419
+      ],
+      "sps": [
+        0.684491,
+        0.808004
+      ]
+    },
+    "question_set_hash": "8af8b654c88a6a6d7b3c09216161b0e30942c735feb1e418dd1561c5560c6cd3",
+    "n_parse_failures": 0
+  },
+  "demographic_breakdown": {
+    "RELIG": [
+      {
+        "attribute": "RELIG",
+        "group": "Atheist",
+        "p_dist": 0.73835,
+        "p_cond": 0.09528,
+        "n_questions": 20
+      },
+      {
+        "attribute": "RELIG",
+        "group": "Hindu",
+        "p_dist": 0.806252,
+        "p_cond": 0.129162,
+        "n_questions": 20
+      },
+      {
+        "attribute": "RELIG",
+        "group": "Jewish",
+        "p_dist": 0.773676,
+        "p_cond": 0.126971,
+        "n_questions": 20
+      },
+      {
+        "attribute": "RELIG",
+        "group": "Muslim",
+        "p_dist": 0.819781,
+        "p_cond": 0.161155,
+        "n_questions": 20
+      },
+      {
+        "attribute": "RELIG",
+        "group": "Protestant",
+        "p_dist": 0.838025,
+        "p_cond": 0.178139,
+        "n_questions": 20
+      }
+    ]
+  },
+  "per_question": [
+    {
+      "key": "AAPERSADV_W125",
+      "text": "Do you think that you have ever been at an advantage in your education, career, or job because of efforts to increase ra",
+      "options": [
+        "Yes",
+        "No",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.1247,
+        "No": 0.7034,
+        "Not sure": 0.1645,
+        "Refused": 0.0074
+      },
+      "model_distribution": {
+        "Yes": 0.0667,
+        "No": 0.2,
+        "Not sure": 0.7333,
+        "Refused": 0.0
+      },
+      "jsd": 0.257848,
+      "kendall_tau": 0.666667,
+      "parity": 0.787743,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007423,
+      "temporal_year": 0
+    },
+    {
+      "key": "AAPERSDIS_W125",
+      "text": "Do you think that you have ever been at a disadvantage in your education, career, or job because of efforts to increase ",
+      "options": [
+        "Yes",
+        "No",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.2461,
+        "No": 0.5676,
+        "Not sure": 0.1785,
+        "Refused": 0.0078
+      },
+      "model_distribution": {
+        "Yes": 0.1333,
+        "No": 0.2,
+        "Not sure": 0.6667,
+        "Refused": 0.0
+      },
+      "jsd": 0.190633,
+      "kendall_tau": 0.333333,
+      "parity": 0.738017,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.007754,
+      "temporal_year": 0
+    },
+    {
+      "key": "AAPERSSTER_W125",
+      "text": "Do you think people have ever assumed that you benefited unfairly in your education, career, or job from efforts to incr",
+      "options": [
+        "Yes",
+        "No",
+        "Not sure",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.1471,
+        "No": 0.646,
+        "Not sure": 0.2022,
+        "Refused": 0.0046
+      },
+      "model_distribution": {
+        "Yes": 0.0,
+        "No": 0.9333,
+        "Not sure": 0.0667,
+        "Refused": 0.0
+      },
+      "jsd": 0.120637,
+      "kendall_tau": 0.912871,
+      "parity": 0.917899,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004633,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABORTION2_W125",
+      "text": "Thinking about abortion policies around the country, which is your greater concern?",
+      "options": [
+        "That some states are making it too DIFFICULT for people to be able to get an abortion",
+        "That some states are making it too EASY for people to be able to get an abortion",
+        "Refused"
+      ],
+      "human_distribution": {
+        "That some states are making it too DIFFICULT for people to be able to get an abortion": 0.6452,
+        "That some states are making it too EASY for people to be able to get an abortion": 0.3317,
+        "Refused": 0.0232
+      },
+      "model_distribution": {
+        "That some states are making it too DIFFICULT for people to be able to get an abortion": 0.9333,
+        "That some states are making it too EASY for people to be able to get an abortion": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.205233,
+      "kendall_tau": 0.816497,
+      "parity": 0.851508,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.066667,
+      "human_refusal_rate": 0.023173,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABORTION3_W125",
+      "text": "Thinking about the area where you live, how easy or difficult do you think it would be for someone to obtain an abortion",
+      "options": [
+        "Very difficult",
+        "Somewhat difficult",
+        "Somewhat easy",
+        "Very easy",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Very difficult": 0.1368,
+        "Somewhat difficult": 0.2821,
+        "Somewhat easy": 0.3522,
+        "Very easy": 0.1935,
+        "Refused": 0.0353
+      },
+      "model_distribution": {
+        "Very difficult": 0.0,
+        "Somewhat difficult": 0.0667,
+        "Somewhat easy": 0.8667,
+        "Very easy": 0.0,
+        "Refused": 0.0667
+      },
+      "jsd": 0.301137,
+      "kendall_tau": 0.447214,
+      "parity": 0.711235,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.035328,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABORTION4_W125",
+      "text": "Still thinking about the area where you live, do you think that obtaining an abortion should be...",
+      "options": [
+        "Harder than it is now",
+        "Easier than it is now",
+        "About what it is now",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Harder than it is now": 0.2552,
+        "Easier than it is now": 0.3547,
+        "About what it is now": 0.3596,
+        "Refused": 0.0305
+      },
+      "model_distribution": {
+        "Harder than it is now": 0.0,
+        "Easier than it is now": 0.2667,
+        "About what it is now": 0.6667,
+        "Refused": 0.0667
+      },
+      "jsd": 0.170735,
+      "kendall_tau": 0.666667,
+      "parity": 0.831299,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.030484,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABORTION5_W104",
+      "text": "Do you personally know someone (such as a close friend, family member, or yourself) who has had an abortion?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.5557,
+        "No": 0.4364,
+        "Refused": 0.0079
+      },
+      "model_distribution": {
+        "Yes": 0.0,
+        "No": 0.9333,
+        "Refused": 0.0667
+      },
+      "jsd": 0.363488,
+      "kendall_tau": -0.333333,
+      "parity": 0.484923,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.00791,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABORTLGL_W87",
+      "text": "Do you think abortion should be...",
+      "options": [
+        "Legal in all cases",
+        "Legal in most cases",
+        "Illegal in most cases",
+        "Illegal in all cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal in all cases": 0.2766,
+        "Legal in most cases": 0.3464,
+        "Illegal in most cases": 0.2368,
+        "Illegal in all cases": 0.1254,
+        "Refused": 0.0148
+      },
+      "model_distribution": {
+        "Legal in all cases": 0.0,
+        "Legal in most cases": 1.0,
+        "Illegal in most cases": 0.0,
+        "Illegal in all cases": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.446225,
+      "kendall_tau": 0.632456,
+      "parity": 0.685002,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.014817,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL1_W104",
+      "text": "Just to confirm, do you think there are any exceptions when abortion should be against the law, or do you think abortion",
+      "options": [
+        "There are some exceptions when abortion should be against the law",
+        "Abortion should be legal in all cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "There are some exceptions when abortion should be against the law": 0.2495,
+        "Abortion should be legal in all cases": 0.7464,
+        "Refused": 0.0041
+      },
+      "model_distribution": {
+        "There are some exceptions when abortion should be against the law": 1.0,
+        "Abortion should be legal in all cases": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.549388,
+      "kendall_tau": 0.0,
+      "parity": 0.475306,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004064,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL3_a_W104",
+      "text": "Do you think abortion should be legal or illegal in the situation where the pregnancy threatens the woman\u2019s life or heal",
+      "options": [
+        "Legal",
+        "Illegal",
+        "It depends",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal": 0.7667,
+        "Illegal": 0.0548,
+        "It depends": 0.1766,
+        "Refused": 0.0019
+      },
+      "model_distribution": {
+        "Legal": 1.0,
+        "Illegal": 0.0,
+        "It depends": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.127806,
+      "kendall_tau": 0.707107,
+      "parity": 0.862874,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.001914,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL3_b_W104",
+      "text": "Do you think abortion should be legal or illegal in the situation where the pregnancy is the result of rape?",
+      "options": [
+        "Legal",
+        "Illegal",
+        "It depends",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal": 0.7106,
+        "Illegal": 0.0935,
+        "It depends": 0.1932,
+        "Refused": 0.0027
+      },
+      "model_distribution": {
+        "Legal": 1.0,
+        "Illegal": 0.0,
+        "It depends": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.162465,
+      "kendall_tau": 0.707107,
+      "parity": 0.845544,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.002672,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL3_c_W104",
+      "text": "Do you think abortion should be legal or illegal in the situation where the baby is likely to be born with severe disabi",
+      "options": [
+        "Legal",
+        "Illegal",
+        "It depends",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal": 0.516,
+        "Illegal": 0.1329,
+        "It depends": 0.3471,
+        "Refused": 0.0041
+      },
+      "model_distribution": {
+        "Legal": 0.2,
+        "Illegal": 0.0,
+        "It depends": 0.8,
+        "Refused": 0.0
+      },
+      "jsd": 0.186861,
+      "kendall_tau": 0.547723,
+      "parity": 0.7935,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.004094,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL_W104",
+      "text": "Do you think abortion should be...",
+      "options": [
+        "Legal in all cases",
+        "Legal in most cases",
+        "Illegal in most cases",
+        "Illegal in all cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal in all cases": 0.2648,
+        "Legal in most cases": 0.3631,
+        "Illegal in most cases": 0.2583,
+        "Illegal in all cases": 0.0963,
+        "Refused": 0.0174
+      },
+      "model_distribution": {
+        "Legal in all cases": 0.0,
+        "Legal in most cases": 1.0,
+        "Illegal in most cases": 0.0,
+        "Illegal in all cases": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.43008,
+      "kendall_tau": 0.632456,
+      "parity": 0.693074,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.017422,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL_W110",
+      "text": "Do you think abortion should be...",
+      "options": [
+        "Legal in all cases",
+        "Legal in most cases",
+        "Illegal in most cases",
+        "Illegal in all cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal in all cases": 0.3153,
+        "Legal in most cases": 0.3381,
+        "Illegal in most cases": 0.2544,
+        "Illegal in all cases": 0.076,
+        "Refused": 0.0162
+      },
+      "model_distribution": {
+        "Legal in all cases": 0.0,
+        "Legal in most cases": 1.0,
+        "Illegal in most cases": 0.0,
+        "Illegal in all cases": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.454379,
+      "kendall_tau": 0.632456,
+      "parity": 0.680924,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.016196,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTLGL_W125",
+      "text": "Do you think abortion should be\u2026",
+      "options": [
+        "Legal in all cases",
+        "Legal in most cases",
+        "Illegal in most cases",
+        "Illegal in all cases",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Legal in all cases": 0.2912,
+        "Legal in most cases": 0.3593,
+        "Illegal in most cases": 0.2562,
+        "Illegal in all cases": 0.0812,
+        "Refused": 0.0121
+      },
+      "model_distribution": {
+        "Legal in all cases": 0.0,
+        "Legal in most cases": 1.0,
+        "Illegal in most cases": 0.0,
+        "Illegal in all cases": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.433716,
+      "kendall_tau": 0.632456,
+      "parity": 0.691256,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.012124,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTMOR_W104",
+      "text": "Regardless of whether you think abortion should be legal or illegal, do you personally think that having an abortion is\u2026",
+      "options": [
+        "Morally acceptable in all cases",
+        "Morally acceptable in most cases",
+        "Morally wrong in most cases",
+        "Morally wrong in all cases",
+        "Not a moral issue",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Morally acceptable in all cases": 0.0891,
+        "Morally acceptable in most cases": 0.2456,
+        "Morally wrong in most cases": 0.3144,
+        "Morally wrong in all cases": 0.1174,
+        "Not a moral issue": 0.2202,
+        "Refused": 0.0133
+      },
+      "model_distribution": {
+        "Morally acceptable in all cases": 0.0,
+        "Morally acceptable in most cases": 1.0,
+        "Morally wrong in most cases": 0.0,
+        "Morally wrong in all cases": 0.0,
+        "Not a moral issue": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.553901,
+      "kendall_tau": 0.34641,
+      "parity": 0.559652,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.013281,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTMORa_W104",
+      "text": "Do you think there are situations when abortion should be legal but is also morally wrong?",
+      "options": [
+        "Yes",
+        "No",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Yes": 0.7398,
+        "No": 0.2466,
+        "Refused": 0.0136
+      },
+      "model_distribution": {
+        "Yes": 1.0,
+        "No": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.144212,
+      "kendall_tau": 0.816497,
+      "parity": 0.882018,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.013596,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTNMED_HRD_W125",
+      "text": "How much have you heard or read about medication abortion, which involves the use of a prescription pill or a series of ",
+      "options": [
+        "A lot",
+        "A little",
+        "Nothing at all",
+        "Refused"
+      ],
+      "human_distribution": {
+        "A lot": 0.2211,
+        "A little": 0.5525,
+        "Nothing at all": 0.2172,
+        "Refused": 0.0092
+      },
+      "model_distribution": {
+        "A lot": 0.0,
+        "A little": 1.0,
+        "Nothing at all": 0.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.270961,
+      "kendall_tau": 0.707107,
+      "parity": 0.791296,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.009207,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTNMED_KNOW_REFUSED_W125",
+      "text": "Did you refuse to answer the previous question?",
+      "options": [
+        "Not asked",
+        "Did not refuse",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Not asked": 0.0,
+        "Did not refuse": 0.9704,
+        "Refused": 0.0296
+      },
+      "model_distribution": {
+        "Not asked": 0.0,
+        "Did not refuse": 1.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.014938,
+      "kendall_tau": 0.816497,
+      "parity": 0.946655,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 1.0,
+      "temporal_year": 0
+    },
+    {
+      "key": "ABRTN_CHNGE_W125",
+      "text": "Have your personal views about abortion changed in any way over the past year or so?",
+      "options": [
+        "Changed a lot",
+        "Changed a little",
+        "Stayed about the same",
+        "Refused"
+      ],
+      "human_distribution": {
+        "Changed a lot": 0.0652,
+        "Changed a little": 0.1496,
+        "Stayed about the same": 0.768,
+        "Refused": 0.0173
+      },
+      "model_distribution": {
+        "Changed a lot": 0.0,
+        "Changed a little": 0.0,
+        "Stayed about the same": 1.0,
+        "Refused": 0.0
+      },
+      "jsd": 0.127039,
+      "kendall_tau": 0.707107,
+      "parity": 0.863257,
+      "n_samples": 15,
+      "n_parse_failures": 0,
+      "model_refusal_rate": 0.0,
+      "human_refusal_rate": 0.017333,
+      "temporal_year": 0
+    }
+  ],
+  "temporal_breakdown": {}
+}

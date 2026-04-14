@@ -10,14 +10,28 @@ from synthbench.config_id import (
 
 
 class TestParseProvider:
-    def test_openrouter_three_parts(self):
+    def test_openrouter_three_parts_normalizes_to_raw(self):
+        """OpenRouter is a gateway, not a framework — should collapse to raw."""
         p = parse_provider("openrouter/openai/gpt-4o-mini")
         assert p == ParsedConfig(
-            framework="openrouter",
+            framework="raw",
             base_provider="openai",
             model="gpt-4o-mini",
             knobs={},
         )
+
+    def test_openrouter_anthropic_normalizes_to_raw(self):
+        p = parse_provider("openrouter/anthropic/claude-haiku-4-5")
+        assert p.framework == "raw"
+        assert p.base_provider == "anthropic"
+        assert p.model == "claude-haiku-4-5"
+
+    def test_openrouter_meta_llama_normalizes_to_meta(self):
+        """`meta-llama` in OpenRouter paths maps to canonical `meta`."""
+        p = parse_provider("openrouter/meta-llama/llama-3.3-70b-instruct")
+        assert p.framework == "raw"
+        assert p.base_provider == "meta"
+        assert p.model == "llama-3.3-70b-instruct"
 
     def test_synthpanel_nested_four_parts(self):
         p = parse_provider("synthpanel/openrouter/anthropic/claude-haiku-4-5")
@@ -26,16 +40,30 @@ class TestParseProvider:
         assert p.model == "claude-haiku-4-5"
         assert p.knobs == {}
 
+    def test_synthpanel_direct_claude_infers_anthropic(self):
+        """`synthpanel/<model>` with no vendor segment infers from model name."""
+        p = parse_provider("synthpanel/claude-haiku-4-5-20251001")
+        assert p.framework == "synthpanel"
+        assert p.base_provider == "anthropic"
+        assert p.model == "claude-haiku-4-5-20251001"
+
+    def test_synthpanel_direct_gemini_infers_google(self):
+        p = parse_provider("synthpanel/gemini-2.5-flash-lite")
+        assert p.framework == "synthpanel"
+        assert p.base_provider == "google"
+        assert p.model == "gemini-2.5-flash-lite"
+
     def test_raw_anthropic_two_parts(self):
         p = parse_provider("raw-anthropic/claude-haiku-4-5-20251001")
         assert p.framework == "raw"
         assert p.base_provider == "anthropic"
         assert p.model == "claude-haiku-4-5-20251001"
 
-    def test_raw_gemini(self):
+    def test_raw_gemini_normalizes_to_google(self):
+        """`raw-gemini` refers to Google's Gemini — normalize the vendor name."""
         p = parse_provider("raw-gemini/gemini-2.5-flash-lite")
         assert p.framework == "raw"
-        assert p.base_provider == "gemini"
+        assert p.base_provider == "google"
         assert p.model == "gemini-2.5-flash-lite"
 
     def test_ensemble(self):
@@ -55,12 +83,6 @@ class TestParseProvider:
         assert p.framework == "baseline"
         assert p.base_provider is None
         assert p.model == "majority-baseline"
-
-    def test_synthpanel_direct(self):
-        p = parse_provider("synthpanel/claude-haiku-4-5-20251001")
-        assert p.framework == "synthpanel"
-        assert p.base_provider is None
-        assert p.model == "claude-haiku-4-5-20251001"
 
     def test_knobs_parsed(self):
         p = parse_provider(

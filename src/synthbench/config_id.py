@@ -23,6 +23,24 @@ from typing import Any
 
 BASELINE_SUFFIX = "-baseline"
 
+# Path components that name a vendor but use a non-canonical label.
+# E.g. ``raw-gemini/...`` refers to Google; ``openrouter/meta-llama/...``
+# means Meta. Normalizing here keeps the base_provider field canonical so
+# downstream dedup/grouping treats them as one vendor.
+_BASE_VENDOR_NORMALIZE: dict[str, str] = {
+    "gemini": "google",
+    "meta-llama": "meta",
+}
+
+# Model-name prefix → canonical vendor. Used to infer base_provider when the
+# path itself doesn't carry a vendor segment (e.g. ``synthpanel/claude-...``).
+_MODEL_VENDOR_PREFIXES: tuple[tuple[str, str], ...] = (
+    ("claude-", "anthropic"),
+    ("gemini-", "google"),
+    ("gpt-", "openai"),
+    ("llama-", "meta"),
+)
+
 
 @dataclass(frozen=True)
 class ParsedConfig:
@@ -69,17 +87,43 @@ def _parse_knob_tokens(tokens: list[str]) -> dict[str, str]:
     return knobs
 
 
+def _normalize_base_vendor(vendor: str | None) -> str | None:
+    """Map aliased vendor labels to their canonical name (gemini → google)."""
+    if vendor is None:
+        return None
+    return _BASE_VENDOR_NORMALIZE.get(vendor, vendor)
+
+
+def _infer_vendor_from_model(model: str) -> str | None:
+    """Guess the vendor from a model name prefix (claude-* → anthropic, …).
+
+    Returns ``None`` for names that don't match a known family (baselines,
+    ensemble blends, bespoke identifiers).
+    """
+    lower = model.lower()
+    for prefix, vendor in _MODEL_VENDOR_PREFIXES:
+        if lower.startswith(prefix):
+            return vendor
+    return None
+
+
 def _parse_path(path: str) -> tuple[str, str | None, str]:
     """Parse the slash-separated path component into (framework, base, model).
 
     Recognizes these shapes:
-        random-baseline                 → ("baseline", None, "random-baseline")
-        raw-anthropic/claude-haiku-4-5  → ("raw", "anthropic", "claude-haiku-4-5")
-        ensemble/3-model-blend          → ("ensemble", None, "3-model-blend")
-        synthpanel/gemini-flash-lite    → ("synthpanel", None, "gemini-flash-lite")
-        openrouter/openai/gpt-4o-mini   → ("openrouter", "openai", "gpt-4o-mini")
+        random-baseline                         → ("baseline", None, "random-baseline")
+        raw-anthropic/claude-haiku-4-5          → ("raw", "anthropic", "claude-haiku-4-5")
+        raw-gemini/gemini-2.5-flash-lite        → ("raw", "google", "gemini-2.5-flash-lite")
+        ensemble/3-model-blend                  → ("ensemble", None, "3-model-blend")
+        synthpanel/claude-haiku-4-5-20251001    → ("synthpanel", "anthropic", "claude-haiku-4-5-20251001")
+        synthpanel/gemini-2.5-flash-lite        → ("synthpanel", "google", "gemini-2.5-flash-lite")
+        openrouter/openai/gpt-4o-mini           → ("raw", "openai", "gpt-4o-mini")
         synthpanel/openrouter/anthropic/claude-haiku-4-5
-                                        → ("synthpanel", "anthropic", "claude-haiku-4-5")
+                                                → ("synthpanel", "anthropic", "claude-haiku-4-5")
+
+    OpenRouter is a gateway, not a framework — paths that lead with
+    ``openrouter/`` collapse to ``framework=raw`` so the same model reached
+    via the gateway vs a direct call dedupes on ``base_provider``/``model``.
     """
     path = path.strip()
     if not path:
@@ -97,17 +141,25 @@ def _parse_path(path: str) -> tuple[str, str | None, str]:
     first = parts[0]
 
     if first.startswith("raw-"):
-        return "raw", first[4:], parts[-1]
+        return "raw", _normalize_base_vendor(first[4:]), parts[-1]
+
+    if first == "openrouter":
+        if n >= 3:
+            return "raw", _normalize_base_vendor(parts[-2]), parts[-1]
+        # openrouter/<model> — no explicit vendor segment, infer from model.
+        model = parts[1]
+        return "raw", _infer_vendor_from_model(model), model
 
     if n == 2:
-        return first, None, parts[1]
+        model = parts[1]
+        return first, _infer_vendor_from_model(model), model
 
     if n == 3:
-        return first, parts[1], parts[2]
+        return first, _normalize_base_vendor(parts[1]), parts[2]
 
-    # n >= 4 — treat second segment as a sub-framework we don't surface,
+    # n >= 4 — treat middle segments as a sub-framework we don't surface,
     # take the last two as (base, model).
-    return first, parts[-2], parts[-1]
+    return first, _normalize_base_vendor(parts[-2]), parts[-1]
 
 
 def parse_provider(provider: str) -> ParsedConfig:
