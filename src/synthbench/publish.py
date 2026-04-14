@@ -469,11 +469,12 @@ def _build_baselines(results: list[dict], datasets: list[str]) -> dict:
     }
 
     if "opinionsqa" in datasets:
-        # B=200 for published numbers — build-time tradeoff (Finding A). CIs
-        # are ~1.5x wider than B=1000; point estimates differ <0.0005.
-        oqa = compute_opinionsqa_ceiling(n_bootstrap=200)
+        # B=1000 published across all ceiling wrappers. The vectorized
+        # multinomial + JSD path in compute_ceiling makes this feasible at
+        # publish time (sb-dkz); earlier Finding-A B=200 tradeoff retired.
+        oqa = compute_opinionsqa_ceiling(n_bootstrap=1000)
         if oqa is not None:
-            sub = compute_opinionsqa_subgroup_ceilings(n_bootstrap=200)
+            sub = compute_opinionsqa_subgroup_ceilings(n_bootstrap=1000)
             if sub is not None:
                 oqa["per_subgroup"] = sub
             out["ceiling"]["opinionsqa"] = oqa
