@@ -32,8 +32,17 @@ from synthbench.stats import question_set_hash
 # recompute needs to survive ~5e-3 noise. The tolerances below still catch
 # any fabrication that meaningfully inflates scores (typical threshold of
 # concern is >1% SPS drift — orders of magnitude above the tolerance).
+#
+# PER-QUESTION TAU SPECIFICALLY: 4-decimal rounding can collapse two distinct
+# probabilities to the same value, introducing a tie that wasn't in the
+# unrounded input. Kendall's tau-b adjusts for ties in the denominator
+# (sqrt((N0-T1)(N0-T2))), so a single rounding-induced tie shifts tau-b by
+# ~0.01–0.02 on small-option distributions (e.g. 3/√75 = 0.3464 vs 3/√70 =
+# 0.3586 on a 6-option question). We widen the per-question recompute
+# tolerance to absorb this artifact without weakening fabrication detection
+# — real fabrication deltas are typically >0.1.
 DISTRIBUTION_SUM_TOLERANCE = 5e-3
-METRIC_RECOMPUTE_TOLERANCE = 1e-2
+METRIC_RECOMPUTE_TOLERANCE = 3e-2
 AGGREGATE_RECOMPUTE_TOLERANCE = 1e-2
 
 

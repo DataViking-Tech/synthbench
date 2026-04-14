@@ -272,7 +272,7 @@ class TestRecomputationChecks:
     def test_fabricated_per_question_jsd_caught(self, clean_submission):
         """An attacker lies about the per-question JSD to lower it.
 
-        The delta must exceed METRIC_RECOMPUTE_TOLERANCE (1e-2); small
+        The delta must exceed METRIC_RECOMPUTE_TOLERANCE (3e-2); small
         fabrications under that threshold are noise and not worth failing
         a submission over.
         """
@@ -291,6 +291,57 @@ class TestRecomputationChecks:
         report = validate_submission(bad)
         assert not report.ok
         assert any(i.code == "PER_Q_TAU" for i in report.errors)
+
+    def test_tau_rounding_tie_artifact_tolerated(self):
+        """Serialization to 4 decimals can collapse distinct probabilities
+        into ties, shifting Kendall's tau-b by ~0.012 on small-option
+        distributions (e.g. 3/√75 = 0.3464 unrounded vs 3/√70 = 0.3586
+        after a single rounding-induced tie). The validator must absorb
+        this artifact — the value is arithmetically correct at full
+        precision, just inconsistent with the rounded public form.
+        """
+        human = {
+            "Greatly reduce": 0.2222,
+            "Slightly reduce": 0.3382,
+            "Not change": 0.3494,
+            "Slightly increase": 0.0463,
+            "Greatly increase": 0.022,
+            "Refused": 0.022,
+        }
+        model = {
+            "Greatly reduce": 0.0,
+            "Slightly reduce": 1.0,
+            "Not change": 0.0,
+            "Slightly increase": 0.0,
+            "Greatly increase": 0.0,
+            "Refused": 0.0,
+        }
+        # Reported tau computed pre-rounding (no tie between 0.022 and 0.022).
+        reported_tau = 0.34641
+        q_keys = ["Q_ROUND"]
+        submission = {
+            "benchmark": "synthbench",
+            "version": "0.1.0",
+            "config": {
+                "dataset": "subpop",
+                "provider": "test-provider",
+                "question_set_hash": question_set_hash(q_keys),
+                "parse_failure_rate": 0.0,
+            },
+            "aggregate": {
+                "mean_jsd": 0.45,
+                "mean_kendall_tau": reported_tau,
+                "composite_parity": 0.5,
+                "n_questions": 1,
+            },
+            "per_question": [
+                _pq("Q_ROUND", human, model, jsd=0.454308, tau=reported_tau),
+            ],
+        }
+        report = validate_submission(submission)
+        assert not any(i.code == "PER_Q_TAU" for i in report.errors), (
+            "serialization-induced tie must not trigger PER_Q_TAU:\n" + report.format()
+        )
 
     def test_fabricated_aggregate_parity_caught(self, clean_submission):
         """An attacker inflates composite_parity without changing per-question data."""

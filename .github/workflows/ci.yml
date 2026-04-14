@@ -32,6 +32,10 @@ jobs:
 
   validate-submissions:
     runs-on: ubuntu-latest
+    # Advisory until the validator's per-question recompute drift and the
+    # historical data-normalization follow-up land (sb-u0a). Don't block
+    # legitimate PRs on a gate that has its own known bugs + stale metrics.
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,17 +53,21 @@ jobs:
           else
             base_sha="$(git rev-parse HEAD^ 2>/dev/null || echo '')"
           fi
-          if [[ -z "$base_sha" ]]; then
-            changed=""
-          else
-            changed=$(git diff --name-only --diff-filter=AM "$base_sha" HEAD -- \
-              'leaderboard-results/*.json' | tr '\n' ' ')
+          # NUL-delimited so filenames with spaces (e.g. "... t=0.3_...json")
+          # survive argv splitting. Written to a file so xargs -0 can fan out.
+          list=/tmp/synthbench-changed-files.txt
+          : > "$list"
+          if [[ -n "$base_sha" ]]; then
+            git diff -z --name-only --diff-filter=AM "$base_sha" HEAD -- \
+              'leaderboard-results/*.json' > "$list"
           fi
-          echo "files=$changed" >> "$GITHUB_OUTPUT"
-          echo "Submissions to validate: $changed"
+          count=$(tr -cd '\0' < "$list" | wc -c | tr -d ' ')
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Submissions to validate: $count"
+          tr '\0' '\n' < "$list"
       - name: Validate new submissions
-        if: steps.changed.outputs.files != ''
-        run: synthbench validate ${{ steps.changed.outputs.files }}
+        if: steps.changed.outputs.count != '0'
+        run: xargs -0 -a /tmp/synthbench-changed-files.txt synthbench validate
 
   site:
     runs-on: ubuntu-latest
