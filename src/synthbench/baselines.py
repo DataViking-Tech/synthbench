@@ -31,9 +31,12 @@ from dataclasses import dataclass
 from typing import Callable, Literal
 
 import numpy as np
+from scipy.special import rel_entr
 
 from synthbench.metrics.distributional import jensen_shannon_divergence
 from synthbench.metrics.ranking import kendall_tau_b
+
+_LOG2 = float(np.log(2.0))
 
 QualityFlag = Literal["high", "medium", "low"]
 
@@ -125,22 +128,32 @@ def compute_ceiling(
         )
 
     rng = np.random.default_rng(seed)
-    distances = np.empty(n_bootstrap, dtype=np.float64)
 
-    for b in range(n_bootstrap):
-        # Two independent half-samples from Multinomial(n/2, p_hat)
-        draw_a = rng.multinomial(n_half, p_hat)
-        draw_b = rng.multinomial(n_half, p_hat)
+    if metric is jensen_shannon_divergence:
+        # Fast path: vectorize both the multinomial draws and the JSD metric.
+        # `size=(n_bootstrap, 2)` preserves the interleaved A/B draw order of
+        # the original per-iteration loop, so the RNG bit-stream — and thus
+        # every realized draw — is identical to calling rng.multinomial twice
+        # per step. This keeps seed=42 reproducibility bit-exact vs. the
+        # dict-based path (see sb-dkz).
+        distances = _multinomial_bootstrap_jsd(p_hat, n_half, n_bootstrap, rng)
+    else:
+        distances = np.empty(n_bootstrap, dtype=np.float64)
+        for b in range(n_bootstrap):
+            # Two independent half-samples from Multinomial(n/2, p_hat)
+            draw_a = rng.multinomial(n_half, p_hat)
+            draw_b = rng.multinomial(n_half, p_hat)
 
-        # Normalize to probabilities for the metric
-        dist_a = {keys[i]: float(draw_a[i]) / n_half for i in range(len(keys))}
-        dist_b = {keys[i]: float(draw_b[i]) / n_half for i in range(len(keys))}
+            # Normalize to probabilities for the metric
+            dist_a = {keys[i]: float(draw_a[i]) / n_half for i in range(len(keys))}
+            dist_b = {keys[i]: float(draw_b[i]) / n_half for i in range(len(keys))}
 
-        distances[b] = float(metric(dist_a, dist_b))
+            distances[b] = float(metric(dist_a, dist_b))
 
     mean_d = float(distances.mean())
-    lo = float(np.percentile(distances, 2.5))
-    hi = float(np.percentile(distances, 97.5))
+    lo_arr, hi_arr = np.percentile(distances, [2.5, 97.5])
+    lo = float(lo_arr)
+    hi = float(hi_arr)
 
     if is_distance:
         # Ceiling = 1 - mean(distance); CI flips direction
@@ -161,6 +174,31 @@ def compute_ceiling(
         quality_flag=_quality_flag(n_total),
         method=f"multinomial_bootstrap_{n_bootstrap}",
     )
+
+
+def _multinomial_bootstrap_jsd(
+    p_hat: np.ndarray,
+    n_half: int,
+    n_bootstrap: int,
+    rng: np.random.Generator,
+) -> np.ndarray:
+    """Vectorized split-half JSD bootstrap (base-2), bit-compatible with
+    the per-iteration loop using two sequential ``rng.multinomial(n_half,
+    p_hat)`` calls at the same seed.
+
+    ``size=(n_bootstrap, 2)`` materializes the draws in the same interleaved
+    A, B, A, B, ... order the original loop consumed, so the RNG state is
+    advanced identically. The returned JSD values match the dict-based
+    ``jensen_shannon_divergence(p, q)`` computation to ~1e-16 (floating-point
+    noise only), which is well under the 6-decimal rounding applied in
+    ``CeilingResult.to_dict``.
+    """
+    draws = rng.multinomial(n_half, p_hat, size=(n_bootstrap, 2))
+    p = draws[:, 0].astype(np.float64) / n_half
+    q = draws[:, 1].astype(np.float64) / n_half
+    m = 0.5 * (p + q)
+    jsd_nats = 0.5 * (rel_entr(p, m).sum(axis=-1) + rel_entr(q, m).sum(axis=-1))
+    return jsd_nats / _LOG2
 
 
 def compute_ceiling_jsd(
@@ -423,15 +461,14 @@ def _counts_from_probs(probs: dict[str, float], n: int) -> dict[str, int]:
 
 
 def compute_opinionsqa_ceiling(
-    data_dir: str | None = None, n_bootstrap: int = 200
+    data_dir: str | None = None, n_bootstrap: int = 1000
 ) -> dict | None:
     """Compute OpinionsQA ceiling from raw NONE_data.json counts (within-wave).
 
     Returns a dict suitable for emission into leaderboard.json, or None if
-    raw data is not available on disk. Uses n_bootstrap=200 by default to
-    keep publish-time overhead manageable; the pure function defaults to
-    1000 for standalone analysis. CIs at B=200 are ~1.5x wider than at
-    B=1000; point estimates differ by <0.0005.
+    raw data is not available on disk. Default n_bootstrap=1000 (the full
+    bootstrap budget); the vectorized JSD fast path in ``compute_ceiling``
+    keeps publish-time cost negligible at this B (sb-dkz).
     """
     from pathlib import Path
 
@@ -679,7 +716,7 @@ def compute_opinionsqa_subgroup_ceilings(
 def compute_subpop_ceiling(
     data_dir: str | None = None,
     n_per_subpop: int = 500,
-    n_bootstrap: int = 200,
+    n_bootstrap: int = 1000,
 ) -> dict | None:
     """Compute SubPOP ceiling per (attribute, group) subpopulation.
 
@@ -774,7 +811,7 @@ def compute_subpop_ceiling(
 def compute_globalopinionqa_ceiling(
     data_dir: str | None = None,
     n_per_country: int = 1000,
-    n_bootstrap: int = 200,
+    n_bootstrap: int = 1000,
 ) -> dict | None:
     """Compute GlobalOpinionQA ceiling per-country with regional aggregates.
 
