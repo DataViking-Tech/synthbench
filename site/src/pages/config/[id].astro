@@ -319,6 +319,10 @@ const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const chart = echarts.init(container, prefersDark ? "dark" : "", { renderer: "svg" });
 
+    const styles = getComputedStyle(document.documentElement);
+    const barColor =
+      styles.getPropertyValue("--color-provider-synthpanel").trim() || "#4f46e5";
+
     const barData = means.map((m) => (m === null ? { value: 0, itemStyle: { opacity: 0.15 } } : m));
 
     chart.setOption({
@@ -359,7 +363,7 @@ const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
           name: "Mean SPS",
           type: "bar",
           data: barData,
-          itemStyle: { color: "var(--color-provider-synthpanel)" },
+          itemStyle: { color: barColor },
         },
       ],
     });
