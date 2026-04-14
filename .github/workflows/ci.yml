@@ -105,13 +105,24 @@ jobs:
           ls dist/_astro/ | head -5
 
   visual:
-    # Runs on macOS because the committed VRT baselines under
-    # __screenshots__/darwin/ are generated from the macOS Playwright
-    # Chromium build. Cross-OS font rendering differs enough to break
-    # a 1% maxDiffPixelRatio; using a matching runner keeps VRT tight.
-    runs-on: macos-latest
+    # Smoke VRT (sb-o3b): runs in Ubuntu. Baselines live under
+    # __screenshots__/desktop-chromium/ and are generated in CI, not on
+    # dev machines. Use the `vrt-baseline-update` PR label to regenerate
+    # baselines and commit them back to the PR branch automatically.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Writable checkout so the label-triggered update step can commit
+          # new baselines back to the PR branch. Falls back to push refs for
+          # non-PR events. Cross-repo PRs from forks will skip the commit
+          # step (GITHUB_TOKEN is not writable to forks).
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -135,11 +146,29 @@ jobs:
       - name: Build site
         working-directory: site
         run: npm run build
+      - name: Update baselines (label-triggered)
+        if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'vrt-baseline-update')
+        working-directory: site
+        env:
+          CI: "true"
+        run: npx playwright test --config=e2e/playwright.config.ts --update-snapshots smoke.visual
+      - name: Commit updated baselines
+        if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'vrt-baseline-update')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add site/e2e/visual/__screenshots__/
+          if git diff --cached --quiet; then
+            echo "No baseline changes to commit."
+          else
+            git commit -m "chore(vrt): update baselines via vrt-baseline-update label"
+            git push
+          fi
       - name: Run visual regression tests
         working-directory: site
         env:
           CI: "true"
-        run: npx playwright test --config=e2e/playwright.config.ts routes.visual
+        run: npx playwright test --config=e2e/playwright.config.ts smoke.visual
       - name: Upload VRT report on failure
         if: failure()
         uses: actions/upload-artifact@v4

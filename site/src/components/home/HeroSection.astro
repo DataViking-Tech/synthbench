@@ -16,7 +16,7 @@ const leaderboard = leaderboardRaw as LeaderboardData;
     shouldn't. Model selection, conditioning, and sampling determine whether
     synthetic respondents actually represent real human opinions.
   </p>
-  <p class="mt-4 text-xs text-muted">
+  <p class="mt-4 text-xs text-muted" data-vrt-mask>
     v{leaderboard.synthbench_version} &middot; Generated{" "}
     {new Date(leaderboard.generated_at).toLocaleDateString()}
   </p>
