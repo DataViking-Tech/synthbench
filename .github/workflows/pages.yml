@@ -38,6 +38,9 @@ jobs:
       - name: Generate leaderboard data
         run: synthbench publish-data --results-dir leaderboard-results --output site/src/data/leaderboard.json
 
+      - name: Generate run explorer artifacts
+        run: synthbench publish-runs --results-dir leaderboard-results --output-dir site/public/data
+
       - name: Build Astro site
         working-directory: site
         run: |

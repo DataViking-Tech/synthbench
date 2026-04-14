@@ -43,6 +43,8 @@ jobs:
       - run: pip install -e .
       - name: Generate leaderboard data
         run: synthbench publish-data --results-dir leaderboard-results --output site/src/data/leaderboard.json
+      - name: Generate run explorer artifacts
+        run: synthbench publish-runs --results-dir leaderboard-results --output-dir site/public/data
       - name: Install site dependencies
         working-directory: site
         run: npm ci

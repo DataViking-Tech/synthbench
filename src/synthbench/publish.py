@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import math
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -555,3 +557,481 @@ def publish_leaderboard_data(
         json.dump(synthbench_data, f, indent=2)
         f.write("\n")
     return output_path
+
+
+# ---------------------------------------------------------------------------
+# Run explorer artifacts (Slice 8.1 — runs-index + per-config + per-run)
+# ---------------------------------------------------------------------------
+
+
+def _round_or_none(value: float | int | None, places: int = 6) -> float | None:
+    if value is None:
+        return None
+    try:
+        f = float(value)
+    except (TypeError, ValueError):
+        return None
+    if math.isnan(f) or math.isinf(f):
+        return None
+    return round(f, places)
+
+
+def _safe_mean(values: list[float]) -> float | None:
+    nums = [float(v) for v in values if v is not None]
+    if not nums:
+        return None
+    return sum(nums) / len(nums)
+
+
+def _safe_stddev(values: list[float]) -> float | None:
+    nums = [float(v) for v in values if v is not None]
+    n = len(nums)
+    if n < 2:
+        return 0.0 if n == 1 else None
+    mean = sum(nums) / n
+    variance = sum((x - mean) ** 2 for x in nums) / (n - 1)
+    return math.sqrt(variance)
+
+
+def _tpl_name(raw: str | None) -> str | None:
+    if not raw:
+        return None
+    return Path(raw).stem if ("/" in raw or raw.endswith(".md")) else raw
+
+
+def _parse_run_timestamp(stem: str, fallback: str | None = None) -> str | None:
+    """Extract a YYYY-MM-DDTHH:MM:SSZ timestamp from a run_id stem.
+
+    Run files end in ``_YYYYMMDD_HHMMSS``. Falls back to the result's own
+    ``timestamp`` field when the stem cannot be parsed.
+    """
+    m = re.search(r"_(\d{8})_(\d{6})$", stem)
+    if m:
+        d, t = m.group(1), m.group(2)
+        return f"{d[0:4]}-{d[4:6]}-{d[6:8]}T{t[0:2]}:{t[2:4]}:{t[4:6]}Z"
+    return fallback
+
+
+def _run_id_from_path(path: Path) -> str:
+    """Raw filename stem — stable and filesystem-greppable."""
+    return path.stem
+
+
+def _augment_per_question(per_question: list[dict]) -> list[dict]:
+    """Return per-question rows with a lightweight ``topic`` label attached."""
+    from synthbench.topics import categorize_question
+
+    out: list[dict] = []
+    for q in per_question:
+        text = q.get("text", "")
+        topic = categorize_question(text) if text else None
+        row = dict(q)
+        if topic:
+            row["topic"] = topic
+        out.append(row)
+    return out
+
+
+def _compute_variance_summary(sps_values: list[float]) -> dict:
+    nums = [float(v) for v in sps_values if v is not None]
+    if not nums:
+        return {"n_replicates": 0}
+    lo, hi = min(nums), max(nums)
+    mean = sum(nums) / len(nums)
+    std = _safe_stddev(nums) or 0.0
+    cv = (std / mean) if mean else 0.0
+    return {
+        "n_replicates": len(nums),
+        "sps_mean": _round_or_none(mean),
+        "sps_std": _round_or_none(std),
+        "sps_range": [_round_or_none(lo), _round_or_none(hi)],
+        "sps_cv": _round_or_none(cv),
+    }
+
+
+def _topic_aggregate(per_run_topics: list[dict[str, float]]) -> dict[str, dict]:
+    """Mean/std per topic across a list of per-run topic_scores dicts."""
+    from collections import defaultdict
+
+    buckets: dict[str, list[float]] = defaultdict(list)
+    for scores in per_run_topics:
+        for topic, val in scores.items():
+            if val is None:
+                continue
+            buckets[topic].append(float(val))
+    out: dict[str, dict] = {}
+    for topic, vals in sorted(buckets.items()):
+        out[topic] = {
+            "mean": _round_or_none(_safe_mean(vals)),
+            "std": _round_or_none(_safe_stddev(vals) or 0.0),
+            "n_replicates": len(vals),
+        }
+    return out
+
+
+def _build_index_entry(
+    run_id: str,
+    config_id: str,
+    parsed,
+    cfg: dict,
+    scores: dict,
+    agg: dict,
+    timestamp: str | None,
+    display_name: str,
+    is_baseline: bool,
+    is_ensemble: bool,
+    n_topics: int,
+) -> dict:
+    return {
+        "run_id": run_id,
+        "config_id": config_id,
+        "framework": parsed.framework,
+        "base_provider": parsed.base_provider,
+        "model": parsed.model,
+        "display_name": display_name,
+        "dataset": cfg.get("dataset", "unknown"),
+        "temperature": cfg.get("temperature"),
+        "template": _tpl_name(cfg.get("prompt_template")),
+        "samples_per_question": cfg.get("samples_per_question"),
+        "n_questions": cfg.get("n_evaluated", agg.get("n_questions", 0)),
+        "n_topics": n_topics,
+        "sps": _round_or_none(scores.get("sps")),
+        "p_dist": _round_or_none(scores.get("p_dist")),
+        "p_rank": _round_or_none(scores.get("p_rank")),
+        "p_refuse": _round_or_none(scores.get("p_refuse")),
+        "jsd": _round_or_none(agg.get("mean_jsd")),
+        "tau": _round_or_none(agg.get("mean_kendall_tau")),
+        "timestamp": timestamp,
+        "is_baseline": is_baseline,
+        "is_ensemble": is_ensemble,
+    }
+
+
+def _build_run_detail(
+    run_id: str,
+    config_id: str,
+    parsed,
+    result: dict,
+    display_name: str,
+    is_baseline: bool,
+    is_ensemble: bool,
+    timestamp: str | None,
+) -> dict:
+    cfg = result.get("config", {}) or {}
+    scores = result.get("scores", {}) or {}
+    agg = result.get("aggregate", {}) or {}
+    per_question = result.get("per_question", []) or []
+    demo = result.get("demographic_breakdown", {}) or {}
+    temporal = result.get("temporal_breakdown", {}) or {}
+
+    detail = {
+        "run_id": run_id,
+        "config_id": config_id,
+        "benchmark": result.get("benchmark", "synthbench"),
+        "version": result.get("version"),
+        "timestamp": timestamp,
+        "framework": parsed.framework,
+        "base_provider": parsed.base_provider,
+        "model": parsed.model,
+        "display_name": display_name,
+        "is_baseline": is_baseline,
+        "is_ensemble": is_ensemble,
+        "dataset": cfg.get("dataset", "unknown"),
+        "temperature": cfg.get("temperature"),
+        "template": _tpl_name(cfg.get("prompt_template")),
+        "samples_per_question": cfg.get("samples_per_question"),
+        "n_requested": cfg.get("n_requested"),
+        "n_evaluated": cfg.get("n_evaluated"),
+        "question_set_hash": cfg.get("question_set_hash"),
+        "topic_filter": cfg.get("topic_filter"),
+        "parse_failure_rate": cfg.get("parse_failure_rate"),
+        "scores": {
+            "sps": _round_or_none(scores.get("sps")),
+            "p_dist": _round_or_none(scores.get("p_dist")),
+            "p_rank": _round_or_none(scores.get("p_rank")),
+            "p_refuse": _round_or_none(scores.get("p_refuse")),
+        },
+        "aggregate": {
+            "mean_jsd": _round_or_none(agg.get("mean_jsd")),
+            "median_jsd": _round_or_none(agg.get("median_jsd")),
+            "mean_kendall_tau": _round_or_none(agg.get("mean_kendall_tau")),
+            "composite_parity": _round_or_none(agg.get("composite_parity")),
+            "n_questions": agg.get("n_questions"),
+            "elapsed_seconds": _round_or_none(agg.get("elapsed_seconds"), places=3),
+            "per_metric_ci": agg.get("per_metric_ci"),
+            "n_parse_failures": agg.get("n_parse_failures"),
+        },
+        "per_question": _augment_per_question(per_question),
+    }
+
+    if scores.get("p_cond") is not None:
+        detail["scores"]["p_cond"] = _round_or_none(scores.get("p_cond"))
+    if scores.get("p_sub") is not None:
+        detail["scores"]["p_sub"] = _round_or_none(scores.get("p_sub"))
+
+    if demo:
+        detail["demographic_breakdown"] = demo
+    if temporal:
+        detail["temporal_breakdown"] = temporal
+
+    return detail
+
+
+def _build_config_rollup(
+    config_id: str,
+    parsed,
+    runs: list[dict],
+    dataset: str,
+    display_name: str,
+    is_baseline: bool,
+    is_ensemble: bool,
+) -> dict:
+    """Aggregate a set of replicate run records into a per-config rollup.
+
+    Each ``runs`` entry is a dict with keys: run_id, timestamp, scores,
+    aggregate, topic_scores, config.
+    """
+    replicates = []
+    sps_values: list[float] = []
+    jsd_values: list[float] = []
+    tau_values: list[float] = []
+    per_run_topics: list[dict[str, float]] = []
+
+    for r in runs:
+        scores = r["scores"]
+        agg = r["aggregate"]
+        replicates.append(
+            {
+                "run_id": r["run_id"],
+                "timestamp": r["timestamp"],
+                "sps": _round_or_none(scores.get("sps")),
+                "p_dist": _round_or_none(scores.get("p_dist")),
+                "p_rank": _round_or_none(scores.get("p_rank")),
+                "p_refuse": _round_or_none(scores.get("p_refuse")),
+                "jsd": _round_or_none(agg.get("mean_jsd")),
+                "tau": _round_or_none(agg.get("mean_kendall_tau")),
+                "n_questions": r["config"].get("n_evaluated", 0),
+            }
+        )
+        if scores.get("sps") is not None:
+            sps_values.append(float(scores["sps"]))
+        if agg.get("mean_jsd") is not None:
+            jsd_values.append(float(agg["mean_jsd"]))
+        if agg.get("mean_kendall_tau") is not None:
+            tau_values.append(float(agg["mean_kendall_tau"]))
+        if r.get("topic_scores"):
+            per_run_topics.append(r["topic_scores"])
+
+    sample_cfg = runs[0]["config"] if runs else {}
+
+    rollup = {
+        "config_id": config_id,
+        "framework": parsed.framework,
+        "base_provider": parsed.base_provider,
+        "model": parsed.model,
+        "display_name": display_name,
+        "dataset": dataset,
+        "temperature": sample_cfg.get("temperature"),
+        "template": _tpl_name(sample_cfg.get("prompt_template")),
+        "samples_per_question": sample_cfg.get("samples_per_question"),
+        "is_baseline": is_baseline,
+        "is_ensemble": is_ensemble,
+        "n_replicates": len(replicates),
+        "replicates": replicates,
+        "aggregate": {
+            "sps": {
+                "mean": _round_or_none(_safe_mean(sps_values)),
+                "std": _round_or_none(_safe_stddev(sps_values) or 0.0),
+            },
+            "jsd": {
+                "mean": _round_or_none(_safe_mean(jsd_values)),
+                "std": _round_or_none(_safe_stddev(jsd_values) or 0.0),
+            },
+            "tau": {
+                "mean": _round_or_none(_safe_mean(tau_values)),
+                "std": _round_or_none(_safe_stddev(tau_values) or 0.0),
+            },
+        },
+        "variance_summary": _compute_variance_summary(sps_values),
+        "topic_breakdown": _topic_aggregate(per_run_topics),
+    }
+    return rollup
+
+
+def _write_minified(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(payload, f, separators=(",", ":"), sort_keys=False)
+
+
+def publish_runs(
+    results_dir: Path,
+    output_dir: Path,
+    version: str = "0.1.0",
+) -> dict[str, int]:
+    """Emit the three run-explorer artifact families to ``output_dir``.
+
+    Artifacts written:
+        ``<output_dir>/runs-index.json`` — lightweight catalog of all runs
+        ``<output_dir>/config/<config-id>.json`` — per-config rollup
+        ``<output_dir>/run/<run-id>.json`` — full per-question detail
+
+    Returns a dict of counts: {"runs": N, "configs": M}.
+    """
+    from synthbench.config_id import build_config_id
+    from synthbench.leaderboard import display_provider_name, provider_framework
+
+    import shutil
+
+    results_dir = Path(results_dir)
+    output_dir = Path(output_dir)
+    run_dir = output_dir / "run"
+    config_dir = output_dir / "config"
+    # Clean stale artifacts so removed source runs don't linger.
+    if run_dir.exists():
+        shutil.rmtree(run_dir)
+    if config_dir.exists():
+        shutil.rmtree(config_dir)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    config_dir.mkdir(parents=True, exist_ok=True)
+
+    json_files = sorted(results_dir.glob("*.json"))
+    if not json_files:
+        raise ValueError(f"No result files found in {results_dir}")
+
+    # Two passes: first build per-run detail + collect replicate records by
+    # config_id; second pass writes config rollups.
+    index_entries: list[dict] = []
+    grouped: dict[str, list[dict]] = {}
+    group_meta: dict[str, dict] = {}
+
+    for jf in json_files:
+        try:
+            with open(jf) as f:
+                result = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            continue
+        if result.get("benchmark") != "synthbench":
+            continue
+
+        cfg = result.get("config", {}) or {}
+        provider_raw = cfg.get("provider", "unknown")
+        dataset = cfg.get("dataset", "unknown")
+        temperature = cfg.get("temperature")
+        template = _tpl_name(cfg.get("prompt_template"))
+        samples = cfg.get("samples_per_question")
+        qset = cfg.get("question_set_hash")
+
+        config_id, parsed = build_config_id(
+            provider_raw,
+            dataset=dataset,
+            temperature=temperature,
+            template=template,
+            samples_per_question=samples,
+            question_set_hash=qset,
+        )
+
+        display_name = display_provider_name(provider_raw)
+        framework_taxonomy = provider_framework(provider_raw)
+        is_baseline = framework_taxonomy == "baseline" or parsed.framework == "baseline"
+        is_ensemble = (
+            parsed.framework == "ensemble" or "ensemble" in provider_raw.lower()
+        )
+
+        run_id = _run_id_from_path(jf)
+        timestamp = _parse_run_timestamp(run_id, fallback=result.get("timestamp"))
+
+        # Derive topic scores once (also used in rollup aggregation).
+        per_question = result.get("per_question", []) or []
+        topic_scores = _compute_topic_scores(per_question) if per_question else {}
+
+        run_detail = _build_run_detail(
+            run_id=run_id,
+            config_id=config_id,
+            parsed=parsed,
+            result=result,
+            display_name=display_name,
+            is_baseline=is_baseline,
+            is_ensemble=is_ensemble,
+            timestamp=timestamp,
+        )
+        if topic_scores:
+            run_detail["topic_scores"] = {
+                k: _round_or_none(v) for k, v in topic_scores.items()
+            }
+
+        _write_minified(run_dir / f"{run_id}.json", run_detail)
+
+        agg = result.get("aggregate", {}) or {}
+        scores = result.get("scores", {}) or {}
+
+        index_entries.append(
+            _build_index_entry(
+                run_id=run_id,
+                config_id=config_id,
+                parsed=parsed,
+                cfg=cfg,
+                scores=scores,
+                agg=agg,
+                timestamp=timestamp,
+                display_name=display_name,
+                is_baseline=is_baseline,
+                is_ensemble=is_ensemble,
+                n_topics=len(topic_scores),
+            )
+        )
+
+        grouped.setdefault(config_id, []).append(
+            {
+                "run_id": run_id,
+                "timestamp": timestamp,
+                "config": cfg,
+                "scores": scores,
+                "aggregate": agg,
+                "topic_scores": topic_scores,
+            }
+        )
+        if config_id not in group_meta:
+            group_meta[config_id] = {
+                "parsed": parsed,
+                "dataset": dataset,
+                "display_name": display_name,
+                "is_baseline": is_baseline,
+                "is_ensemble": is_ensemble,
+            }
+
+    # Write per-config rollups.
+    for config_id, runs in grouped.items():
+        meta = group_meta[config_id]
+        # Sort replicates by timestamp for stable, chronological display.
+        runs_sorted = sorted(runs, key=lambda r: r.get("timestamp") or "")
+        rollup = _build_config_rollup(
+            config_id=config_id,
+            parsed=meta["parsed"],
+            runs=runs_sorted,
+            dataset=meta["dataset"],
+            display_name=meta["display_name"],
+            is_baseline=meta["is_baseline"],
+            is_ensemble=meta["is_ensemble"],
+        )
+        _write_minified(config_dir / f"{config_id}.json", rollup)
+
+    # Sort index for stable output: dataset, then SPS desc, then timestamp.
+    index_entries.sort(
+        key=lambda e: (
+            e.get("dataset") or "",
+            -(e.get("sps") or 0.0),
+            e.get("timestamp") or "",
+        )
+    )
+
+    index_payload = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "synthbench_version": version,
+        "n_runs": len(index_entries),
+        "n_configs": len(grouped),
+        "runs": index_entries,
+    }
+    _write_minified(output_dir / "runs-index.json", index_payload)
+
+    return {"runs": len(index_entries), "configs": len(grouped)}

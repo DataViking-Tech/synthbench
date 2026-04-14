@@ -1242,6 +1242,47 @@ def publish_data(results_dir, output):
         sys.exit(1)
 
 
+@main.command("publish-runs")
+@click.option(
+    "--results-dir",
+    "-d",
+    type=click.Path(exists=True),
+    default="leaderboard-results",
+    help="Directory containing result JSON files.",
+)
+@click.option(
+    "--output-dir",
+    "-o",
+    type=click.Path(),
+    default="site/public/data",
+    help=(
+        "Output directory for run-explorer artifacts. Emits "
+        "runs-index.json + config/ + run/ subtrees."
+    ),
+)
+def publish_runs_cmd(results_dir, output_dir):
+    """Emit run-explorer artifacts (runs-index, per-config, per-run JSON).
+
+    Example:
+        synthbench publish-runs --results-dir ./leaderboard-results --output-dir site/public/data
+    """
+    from synthbench.publish import publish_runs
+
+    try:
+        counts = publish_runs(
+            results_dir=Path(results_dir),
+            output_dir=Path(output_dir),
+            version=__version__,
+        )
+        click.echo(
+            f"Run explorer data exported: {counts['runs']} runs, "
+            f"{counts['configs']} configs → {output_dir}"
+        )
+    except ValueError as e:
+        click.echo(str(e), err=True)
+        sys.exit(1)
+
+
 @main.command()
 @click.argument("files", nargs=-1, required=True, type=click.Path(exists=True))
 @click.option(
