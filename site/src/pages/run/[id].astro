@@ -32,6 +32,7 @@ const encodePathSegment = (s: string): string =>
 const dataUrl = `${base}/data/run/${encodePathSegment(entry.run_id)}.json`;
 const configUrl = `${base}/config/${encodePathSegment(entry.config_id)}`;
 const leaderboardUrl = `${base}/leaderboard`;
+const questionBaseUrl = `${base}/question/${encodePathSegment(entry.dataset)}`;
 ---
 
 <BaseLayout title={`Run ${entry.run_id} - SynthBench`}>
@@ -39,6 +40,7 @@ const leaderboardUrl = `${base}/leaderboard`;
     class="run-detail mx-auto w-full max-w-6xl px-4 py-8"
     data-run-id={entry.run_id}
     data-data-url={dataUrl}
+    data-question-base={questionBaseUrl}
   >
     <!-- Breadcrumb -->
     <nav class="mb-6 text-sm text-muted">
@@ -228,6 +230,12 @@ const leaderboardUrl = `${base}/leaderboard`;
       .replace(/'/g, "&#39;");
   }
 
+  // Mirror publish._safe_question_key: non-alphanumeric / non-underscore /
+  // non-hyphen → `_`. Output is also URL-safe so no extra encoding needed.
+  function safeQuestionKey(key: string): string {
+    return key.replace(/[^A-Za-z0-9_\-]/g, "_");
+  }
+
   /** Distribution bar palette (keyed by index, cycles on reuse). */
   const BAR_COLORS = [
     "var(--color-primary)",
@@ -363,6 +371,7 @@ const leaderboardUrl = `${base}/leaderboard`;
   function renderPerQuestion(
     rows: PerQuestionRow[],
     showYearColumn: boolean,
+    questionBaseUrl: string,
   ): string {
     if (!rows.length) {
       return `<tr><td colspan="6" class="px-3 py-8 text-center text-muted">No per-question data available.</td></tr>`;
@@ -400,9 +409,20 @@ const leaderboardUrl = `${base}/leaderboard`;
           </tr>
           <tr id="${detailId}" class="pq-detail hidden border-b border-muted/10 bg-surface/50 dark:bg-surface-dark/50" data-detail-for="${i}" data-topic="${escapeHtml(topic)}">
             <td colspan="6" class="px-4 py-4">
-              <div class="mb-3 text-sm">
-                <strong>Question:</strong>
-                <span class="ml-1">${escapeHtml(row.text ?? "")}</span>
+              <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2 text-sm">
+                <div>
+                  <strong>Question:</strong>
+                  <span class="ml-1">${escapeHtml(row.text ?? "")}</span>
+                </div>
+                ${
+                  questionBaseUrl
+                    ? `<a href="${questionBaseUrl}/${safeQuestionKey(row.key)}/"
+                          class="pq-compare shrink-0 text-xs text-primary hover:underline"
+                          aria-label="Compare all models on question ${escapeHtml(row.key)}">
+                        Compare across models →
+                      </a>`
+                    : ""
+                }
               </div>
               <div class="mb-2 text-xs text-muted">
                 N samples: <span class="font-mono">${row.n_samples ?? "—"}</span>
@@ -535,9 +555,11 @@ const leaderboardUrl = `${base}/leaderboard`;
         }
       }
 
-      // Per-question rows
+      // Per-question rows — pass question-page base so each expanded detail
+      // row can link to `/question/<dataset>/<key>/` for the cross-model view.
+      const questionBaseUrl = root.dataset.questionBase ?? "";
       const tbody = document.getElementById("per-question-tbody");
-      if (tbody) tbody.innerHTML = renderPerQuestion(rows, showYear);
+      if (tbody) tbody.innerHTML = renderPerQuestion(rows, showYear, questionBaseUrl);
 
       populateTopicFilter(rows);
       wireRowExpansion();

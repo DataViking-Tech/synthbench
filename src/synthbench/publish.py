@@ -1535,3 +1535,372 @@ def publish_runs(
     _write_minified(output_dir / "runs-index.json", index_payload)
 
     return {"runs": len(index_entries), "configs": len(grouped)}
+
+
+# ---------------------------------------------------------------------------
+# Per-question question-explorer artifacts (sb-eiv)
+# ---------------------------------------------------------------------------
+
+
+# Filename-safe sanitization for question keys. Keys observed across the
+# three datasets (``GOQA_0_adeba4f8``, ``PREDICTA_W27``, ``AAPERSADV_W125``)
+# are alphanumeric + underscore, but we guard against future datasets whose
+# keys might contain slashes, spaces, or other shell/URL-hostile chars.
+_QUESTION_KEY_SAFE_RE = re.compile(r"[^A-Za-z0-9_\-]")
+
+
+def _safe_question_key(key: str) -> str:
+    """Return a filesystem- and URL-safe rendering of ``key``.
+
+    Non-safe characters are replaced with ``_``; the transform is stable,
+    so the same source key always maps to the same on-disk filename. This
+    mirrors the ``run_id`` strategy — keep the real key in JSON payloads
+    and index entries so the site can display it unaltered, while using
+    the sanitized form only for paths.
+    """
+    return _QUESTION_KEY_SAFE_RE.sub("_", key)
+
+
+def _pairwise_mean_and_max_jsd(
+    dists: list[dict[str, float]],
+) -> tuple[float | None, float | None]:
+    """Return (mean, max) pairwise JSD across a list of distributions.
+
+    Returns ``(None, None)`` when fewer than two distributions are provided.
+    """
+    from synthbench.metrics.distributional import jensen_shannon_divergence
+
+    if len(dists) < 2:
+        return (None, None)
+    values: list[float] = []
+    for i in range(len(dists)):
+        for j in range(i + 1, len(dists)):
+            values.append(jensen_shannon_divergence(dists[i], dists[j]))
+    if not values:
+        return (None, None)
+    return (sum(values) / len(values), max(values))
+
+
+def _top_option(dist: dict[str, float] | None) -> str | None:
+    """Return the option with highest mass, or ``None`` for empty / tied-zero."""
+    if not dist:
+        return None
+    best_key: str | None = None
+    best_val = -1.0
+    for k, v in dist.items():
+        try:
+            fv = float(v)
+        except (TypeError, ValueError):
+            continue
+        if fv > best_val:
+            best_val = fv
+            best_key = k
+    if best_val <= 0.0:
+        return None
+    return best_key
+
+
+def _collect_question_rollups(
+    results: list[tuple[str, dict]],
+) -> dict[tuple[str, str], dict]:
+    """Group per-question rows across all result files by (dataset, key).
+
+    Input: list of ``(run_id, raw_result_json)`` tuples. Deduplicates each
+    ``(dataset, key, framework, display_name)`` by keeping the row with the
+    largest ``n_samples`` — this mirrors the leaderboard dedup policy so a
+    model with multiple replicates contributes its best-sampled run.
+
+    Output: ``{(dataset, key): {question, options, human_*, model_responses}}``.
+    """
+    from synthbench.config_id import build_config_id
+    from synthbench.leaderboard import display_provider_name, provider_framework
+
+    # (dataset, key) → rollup skeleton (question text, options, human dist)
+    rollups: dict[tuple[str, str], dict] = {}
+    # (dataset, key, framework, display_name) → best response candidate
+    best_by_key: dict[tuple[str, str, str, str], dict] = {}
+
+    for run_id, data in results:
+        cfg = data.get("config", {}) or {}
+        provider_raw = cfg.get("provider", "") or ""
+        if not provider_raw:
+            continue
+        framework = provider_framework(provider_raw)
+        # Exclude baselines (majority/random) and ensembles — this view is
+        # "models answering the question"; derived aggregations would muddy
+        # the trendslop signal.
+        if framework == "baseline":
+            continue
+        if "ensemble" in provider_raw.lower():
+            continue
+
+        dataset = cfg.get("dataset", "unknown")
+        display_name = display_provider_name(provider_raw)
+        base_provider = (
+            provider_raw.split("/")[1] if "/" in provider_raw else provider_raw
+        )
+
+        tpl_stem = _tpl_name(cfg.get("prompt_template"))
+        config_id, _ = build_config_id(
+            provider_raw,
+            dataset=dataset,
+            temperature=cfg.get("temperature"),
+            template=tpl_stem,
+            samples_per_question=cfg.get("samples_per_question"),
+            question_set_hash=cfg.get("question_set_hash"),
+        )
+
+        for q in data.get("per_question", []) or []:
+            key = q.get("key")
+            if not key:
+                continue
+            model_dist = q.get("model_distribution")
+            if not isinstance(model_dist, dict) or not model_dist:
+                continue
+
+            rollup = rollups.get((dataset, key))
+            if rollup is None:
+                rollup = {
+                    "dataset": dataset,
+                    "key": key,
+                    "question": q.get("text", ""),
+                    "options": list(q.get("options") or []),
+                    "human_distribution": dict(q.get("human_distribution") or {}),
+                    "human_refusal_rate": q.get("human_refusal_rate"),
+                    "temporal_year": q.get("temporal_year"),
+                    "topic": q.get("topic"),
+                }
+                rollups[(dataset, key)] = rollup
+
+            n_samples = q.get("n_samples") or 0
+            candidate = {
+                "config_id": config_id,
+                "model": display_name,
+                "framework": framework,
+                "base_provider": base_provider,
+                "distribution": dict(model_dist),
+                "n_samples": int(n_samples) if n_samples is not None else 0,
+                "jsd_to_human": _round_or_none(q.get("jsd")),
+                "refusal_rate": _round_or_none(q.get("model_refusal_rate")),
+                "run_id": run_id,
+                "temperature": cfg.get("temperature"),
+                "template": tpl_stem,
+            }
+            bucket_key = (dataset, key, framework, display_name)
+            prev = best_by_key.get(bucket_key)
+            if prev is None or candidate["n_samples"] > prev["n_samples"]:
+                best_by_key[bucket_key] = candidate
+
+    for (dataset, key, _framework, _display), response in best_by_key.items():
+        rollup = rollups.get((dataset, key))
+        if rollup is None:
+            continue
+        rollup.setdefault("model_responses", []).append(response)
+
+    return rollups
+
+
+def _finalize_question_payload(rollup: dict) -> dict:
+    """Build the emitted per-question JSON from a raw rollup dict.
+
+    Sorts ``model_responses`` by ``jsd_to_human`` ascending (null → end) so
+    the top row is the closest-to-human model. Computes the summary block
+    used by the trendslop indicators (mean/max pairwise JSD, consensus
+    option, refusal-rate spread).
+    """
+    responses = rollup.get("model_responses", []) or []
+    # Sort stably: lowest jsd_to_human first, then model name for ties.
+    responses.sort(
+        key=lambda r: (
+            r.get("jsd_to_human")
+            if r.get("jsd_to_human") is not None
+            else float("inf"),
+            r.get("model") or "",
+        )
+    )
+
+    dists = [
+        r["distribution"] for r in responses if isinstance(r.get("distribution"), dict)
+    ]
+    cross_mean, cross_max = _pairwise_mean_and_max_jsd(dists)
+
+    # Consensus option: most common model-modal pick. Ties broken by alphabetic
+    # order so output is deterministic across publishes.
+    modal_counts: dict[str, int] = {}
+    for r in responses:
+        modal = _top_option(r.get("distribution"))
+        if modal is not None:
+            modal_counts[modal] = modal_counts.get(modal, 0) + 1
+    consensus: str | None = None
+    if modal_counts:
+        best_count = max(modal_counts.values())
+        tied = sorted([k for k, v in modal_counts.items() if v == best_count])
+        consensus = tied[0] if tied else None
+
+    refusals = [
+        r["refusal_rate"] for r in responses if r.get("refusal_rate") is not None
+    ]
+    refusal_spread = (
+        round(max(refusals) - min(refusals), 6) if len(refusals) >= 2 else None
+    )
+
+    jsd_to_human_values = [
+        r["jsd_to_human"] for r in responses if r.get("jsd_to_human") is not None
+    ]
+    jsd_to_human_mean = (
+        _round_or_none(sum(jsd_to_human_values) / len(jsd_to_human_values))
+        if jsd_to_human_values
+        else None
+    )
+
+    # Shape model_responses for emission (drop bookkeeping fields the
+    # frontend doesn't need; keep temperature/template for the drill-down
+    # breadcrumb on the question page).
+    emitted_responses = []
+    for r in responses:
+        emitted_responses.append(
+            {
+                "config_id": r["config_id"],
+                "model": r["model"],
+                "framework": r["framework"],
+                "base_provider": r["base_provider"],
+                "distribution": r["distribution"],
+                "n_samples": r["n_samples"],
+                "jsd_to_human": r["jsd_to_human"],
+                "refusal_rate": r["refusal_rate"],
+                "run_id": r["run_id"],
+                "temperature": r.get("temperature"),
+                "template": r.get("template"),
+            }
+        )
+
+    human_dist = rollup.get("human_distribution") or {}
+    payload: dict = {
+        "dataset": rollup["dataset"],
+        "key": rollup["key"],
+        "question": rollup.get("question", ""),
+        "options": rollup.get("options", []),
+        "human_distribution": human_dist,
+        "human_refusal_rate": _round_or_none(rollup.get("human_refusal_rate")),
+        "model_responses": emitted_responses,
+        "summary": {
+            "n_models": len(emitted_responses),
+            "cross_model_jsd_mean": _round_or_none(cross_mean),
+            "cross_model_jsd_max": _round_or_none(cross_max),
+            "consensus_option": consensus,
+            "human_top_option": _top_option(human_dist),
+            "refusal_rate_spread": refusal_spread,
+            "jsd_to_human_mean": jsd_to_human_mean,
+        },
+    }
+    topic = rollup.get("topic")
+    if topic:
+        payload["topic"] = topic
+    year = rollup.get("temporal_year")
+    if year:
+        payload["temporal_year"] = year
+    return payload
+
+
+def _build_question_index_entry(payload: dict) -> dict:
+    """Build a row for ``question/<dataset>/index.json`` from a per-question payload."""
+    text: str = payload.get("question", "") or ""
+    excerpt = text if len(text) <= 160 else text[:157] + "…"
+    summary = payload.get("summary", {}) or {}
+    entry = {
+        "key": payload["key"],
+        "question_excerpt": excerpt,
+        "n_models": summary.get("n_models", 0),
+        "cross_model_jsd_mean": summary.get("cross_model_jsd_mean"),
+        "cross_model_jsd_max": summary.get("cross_model_jsd_max"),
+        "jsd_to_human_mean": summary.get("jsd_to_human_mean"),
+        "consensus_option": summary.get("consensus_option"),
+        "human_top_option": summary.get("human_top_option"),
+        "refusal_rate_spread": summary.get("refusal_rate_spread"),
+    }
+    topic = payload.get("topic")
+    if topic:
+        entry["topic"] = topic
+    return entry
+
+
+def publish_questions(
+    results_dir: Path,
+    output_dir: Path,
+    version: str = "0.1.0",
+) -> dict[str, int]:
+    """Emit per-question rollups for the question-explorer view.
+
+    Inverts the per-run pivot: for every ``(dataset, question_key)`` pair
+    across all result files, aggregate every model's response into a single
+    JSON file. Also emits a per-dataset index so the site can iterate keys
+    at build time.
+
+    Artifacts written under ``<output_dir>``:
+        ``question/<dataset>/<sanitized-key>.json`` — full rollup
+        ``question/<dataset>/index.json`` — catalog per dataset
+
+    Returns counts: ``{"questions": N, "datasets": M}``.
+    """
+    import shutil
+
+    results_dir = Path(results_dir)
+    output_dir = Path(output_dir)
+    question_root = output_dir / "question"
+    if question_root.exists():
+        shutil.rmtree(question_root)
+    question_root.mkdir(parents=True, exist_ok=True)
+
+    json_files = sorted(results_dir.glob("*.json"))
+    loaded: list[tuple[str, dict]] = []
+    for jf in json_files:
+        try:
+            with open(jf) as f:
+                data = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            continue
+        if data.get("benchmark") != "synthbench":
+            continue
+        loaded.append((_run_id_from_path(jf), data))
+
+    if not loaded:
+        raise ValueError(f"No valid SynthBench result files found in {results_dir}")
+
+    rollups = _collect_question_rollups(loaded)
+
+    by_dataset_index: dict[str, list[dict]] = {}
+    n_questions = 0
+
+    for (dataset, key), rollup in rollups.items():
+        if not rollup.get("model_responses"):
+            continue
+        payload = _finalize_question_payload(rollup)
+        safe_key = _safe_question_key(key)
+        dataset_dir = question_root / dataset
+        dataset_dir.mkdir(parents=True, exist_ok=True)
+        _write_minified(dataset_dir / f"{safe_key}.json", payload)
+        by_dataset_index.setdefault(dataset, []).append(
+            _build_question_index_entry(payload)
+        )
+        n_questions += 1
+
+    for dataset, entries in by_dataset_index.items():
+        # Sort by descending cross-model JSD spread — divergent questions
+        # (most interesting for trendslop vetting) bubble to the top of the
+        # dataset index. Null spreads sort last.
+        entries.sort(
+            key=lambda e: (
+                -(e.get("cross_model_jsd_mean") or -1.0),
+                e.get("key") or "",
+            )
+        )
+        index_payload = {
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "synthbench_version": version,
+            "dataset": dataset,
+            "n_questions": len(entries),
+            "questions": entries,
+        }
+        _write_minified(question_root / dataset / "index.json", index_payload)
+
+    return {"questions": n_questions, "datasets": len(by_dataset_index)}

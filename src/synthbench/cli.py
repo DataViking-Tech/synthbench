@@ -1393,10 +1393,15 @@ def publish_data(results_dir, output):
 def publish_runs_cmd(results_dir, output_dir):
     """Emit run-explorer artifacts (runs-index, per-config, per-run JSON).
 
+    Also emits per-question rollups under ``<output-dir>/question/`` for the
+    question-explorer view (sb-eiv) — the two pivots share the same source
+    data, so regenerating runs without questions would leave /question
+    pages stale.
+
     Example:
         synthbench publish-runs --results-dir ./leaderboard-results --output-dir site/public/data
     """
-    from synthbench.publish import publish_runs
+    from synthbench.publish import publish_questions, publish_runs
 
     try:
         counts = publish_runs(
@@ -1407,6 +1412,56 @@ def publish_runs_cmd(results_dir, output_dir):
         click.echo(
             f"Run explorer data exported: {counts['runs']} runs, "
             f"{counts['configs']} configs → {output_dir}"
+        )
+        q_counts = publish_questions(
+            results_dir=Path(results_dir),
+            output_dir=Path(output_dir),
+            version=__version__,
+        )
+        click.echo(
+            f"Question explorer data exported: {q_counts['questions']} questions "
+            f"across {q_counts['datasets']} datasets → {output_dir}/question"
+        )
+    except ValueError as e:
+        click.echo(str(e), err=True)
+        sys.exit(1)
+
+
+@main.command("publish-questions")
+@click.option(
+    "--results-dir",
+    "-d",
+    type=click.Path(exists=True),
+    default="leaderboard-results",
+    help="Directory containing result JSON files.",
+)
+@click.option(
+    "--output-dir",
+    "-o",
+    type=click.Path(),
+    default="site/public/data",
+    help=(
+        "Output directory root. Emits question/<dataset>/<key>.json + "
+        "question/<dataset>/index.json beneath this path."
+    ),
+)
+def publish_questions_cmd(results_dir, output_dir):
+    """Emit per-question rollups for the /question explorer view (sb-eiv).
+
+    Example:
+        synthbench publish-questions --results-dir ./leaderboard-results --output-dir site/public/data
+    """
+    from synthbench.publish import publish_questions
+
+    try:
+        counts = publish_questions(
+            results_dir=Path(results_dir),
+            output_dir=Path(output_dir),
+            version=__version__,
+        )
+        click.echo(
+            f"Question explorer data exported: {counts['questions']} questions "
+            f"across {counts['datasets']} datasets → {output_dir}/question"
         )
     except ValueError as e:
         click.echo(str(e), err=True)

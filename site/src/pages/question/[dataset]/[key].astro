@@ -1,0 +1,388 @@
+---
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { resolve } from "node:path";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import type { QuestionIndex, QuestionIndexEntry, QuestionPayload } from "@/types/questions";
+
+export async function getStaticPaths() {
+  const questionRoot = resolve("public/data/question");
+  if (!existsSync(questionRoot)) {
+    return [];
+  }
+  const datasets = readdirSync(questionRoot, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name);
+
+  const out: Array<{
+    params: { dataset: string; key: string };
+    props: {
+      payload: QuestionPayload;
+      indexEntry: QuestionIndexEntry | null;
+      datasetCount: number;
+    };
+  }> = [];
+
+  for (const dataset of datasets) {
+    const datasetDir = resolve(questionRoot, dataset);
+    const indexPath = resolve(datasetDir, "index.json");
+    if (!existsSync(indexPath)) continue;
+    const idx = JSON.parse(readFileSync(indexPath, "utf-8")) as QuestionIndex;
+    const entryByKey = new Map(idx.questions.map((q) => [q.key, q]));
+    const files = readdirSync(datasetDir).filter((f) => f.endsWith(".json") && f !== "index.json");
+    for (const file of files) {
+      const payloadPath = resolve(datasetDir, file);
+      const payload = JSON.parse(readFileSync(payloadPath, "utf-8")) as QuestionPayload;
+      // File stem is the sanitized key; the payload preserves the real key.
+      const urlKey = file.replace(/\.json$/, "");
+      out.push({
+        params: { dataset, key: urlKey },
+        props: {
+          payload,
+          indexEntry: entryByKey.get(payload.key) ?? null,
+          datasetCount: idx.n_questions,
+        },
+      });
+    }
+  }
+
+  return out;
+}
+
+interface Props {
+  payload: QuestionPayload;
+  indexEntry: QuestionIndexEntry | null;
+  datasetCount: number;
+}
+
+const { payload, datasetCount } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+const explorUrl = `${base}/explore`;
+const leaderboardUrl = `${base}/leaderboard`;
+
+const fmt = (n: number | null | undefined, places = 3): string =>
+  n == null || Number.isNaN(n) ? "—" : n.toFixed(places);
+
+const pct = (n: number | null | undefined): string =>
+  n == null || Number.isNaN(n) ? "—" : `${(n * 100).toFixed(1)}%`;
+
+const humanTop = payload.summary.human_top_option;
+const consensus = payload.summary.consensus_option;
+const consensusAgrees = humanTop != null && consensus != null && humanTop === consensus;
+
+// Option order for all bars: use payload.options when present, else merge
+// keys from human + model dists so nothing is silently dropped.
+const options = (() => {
+  if (payload.options?.length) return payload.options;
+  const keys = new Set<string>();
+  for (const k of Object.keys(payload.human_distribution)) keys.add(k);
+  for (const r of payload.model_responses) {
+    for (const k of Object.keys(r.distribution)) keys.add(k);
+  }
+  return [...keys];
+})();
+
+const BAR_COLORS = [
+  "var(--color-primary)",
+  "var(--color-accent)",
+  "var(--color-provider-raw-llm)",
+  "var(--color-baseline)",
+  "var(--color-provider-synthpanel)",
+  "var(--color-muted)",
+];
+
+const escapeHtml = (s: unknown): string =>
+  String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+function renderBar(dist: Record<string, number>): string {
+  const segments = options
+    .map((k, i) => {
+      const v = dist[k] ?? 0;
+      const pctWidth = Math.max(0, Math.min(1, v)) * 100;
+      const color = BAR_COLORS[i % BAR_COLORS.length];
+      const title = `${escapeHtml(k)}: ${(v * 100).toFixed(1)}%`;
+      return `<span class="dist-seg" title="${title}" style="width:${pctWidth}%;background:${color}"></span>`;
+    })
+    .join("");
+  const accessibleSummary = options
+    .map((k) => `${k}: ${((dist[k] ?? 0) * 100).toFixed(1)}%`)
+    .join(", ");
+  return `<span class="dist-bar" role="img" aria-label="Distribution: ${escapeHtml(accessibleSummary)}">${segments}</span>`;
+}
+
+const pageTitle = `Question ${payload.key} (${payload.dataset}) - SynthBench`;
+
+// URL encoder for segments (question keys are sanitized to safe chars
+// already, but guard against spaces and reserved chars anyway).
+const encodePathSegment = (s: string): string =>
+  s.replace(/ /g, "%20").replace(/#/g, "%23").replace(/\?/g, "%3F");
+---
+
+<BaseLayout title={pageTitle}>
+  <div class="question-detail mx-auto w-full max-w-6xl px-4 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-6 text-sm text-muted" aria-label="Breadcrumb">
+      <a href={leaderboardUrl} class="hover:text-primary">Leaderboard</a>
+      <span class="mx-2">/</span>
+      <a href={explorUrl} class="hover:text-primary">Explore</a>
+      <span class="mx-2">/</span>
+      <span class="font-mono">{payload.dataset}</span>
+      <span class="mx-2">/</span>
+      <span class="text-text dark:text-text-dark">question</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="mb-6">
+      <div class="flex flex-wrap items-baseline gap-2">
+        <h1 class="text-2xl font-bold sm:text-3xl">Question detail</h1>
+        <span class="rounded bg-muted/20 px-2 py-0.5 font-mono text-xs text-muted">
+          {payload.dataset}
+        </span>
+        {
+          payload.topic && (
+            <span class="rounded bg-primary/10 px-2 py-0.5 text-xs text-primary">
+              {payload.topic}
+            </span>
+          )
+        }
+        {
+          payload.temporal_year ? (
+            <span class="rounded bg-muted/20 px-2 py-0.5 text-xs text-muted">
+              {payload.temporal_year}
+            </span>
+          ) : null
+        }
+      </div>
+      <p class="mt-1 break-all font-mono text-xs text-muted">{payload.key}</p>
+      <p class="mt-4 max-w-3xl text-base leading-relaxed">{payload.question}</p>
+      <p class="mt-2 text-xs text-muted">
+        1 of {datasetCount} questions for {payload.dataset}.
+      </p>
+    </header>
+
+    <!-- Trendslop indicators -->
+    <section
+      class="mb-8 rounded-lg border border-muted/20 p-5"
+      aria-labelledby="trendslop-heading"
+    >
+      <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+        <h2
+          id="trendslop-heading"
+          class="text-sm font-semibold uppercase tracking-wide text-muted"
+        >
+          Trendslop indicators
+        </h2>
+        <span class="text-xs text-muted">
+          Cross-model divergence · consensus vs. human · refusal spread
+        </span>
+      </div>
+      <dl
+        class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3 lg:grid-cols-6"
+      >
+        <div>
+          <dt class="text-xs text-muted">Models</dt>
+          <dd class="font-mono text-lg">{payload.summary.n_models}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Cross-model JSD (mean)</dt>
+          <dd class="font-mono text-lg">
+            {fmt(payload.summary.cross_model_jsd_mean)}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Cross-model JSD (max)</dt>
+          <dd class="font-mono text-lg">
+            {fmt(payload.summary.cross_model_jsd_max)}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">JSD to human (mean)</dt>
+          <dd class="font-mono text-lg">
+            {fmt(payload.summary.jsd_to_human_mean)}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Consensus option</dt>
+          <dd class="text-sm">
+            <span class="font-semibold">{consensus ?? "—"}</span>
+            {
+              humanTop && consensus && (
+                <span
+                  class={`ml-1 text-xs ${consensusAgrees ? "text-primary" : "text-accent"}`}
+                >
+                  {consensusAgrees ? "matches human" : `human: ${humanTop}`}
+                </span>
+              )
+            }
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-muted">Refusal-rate spread</dt>
+          <dd class="font-mono text-lg">
+            {pct(payload.summary.refusal_rate_spread)}
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- Human baseline -->
+    <section class="mb-8">
+      <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+        Human baseline
+      </h2>
+      <div class="rounded-lg border border-muted/20 p-4">
+        <div class="dist-legend">
+          {
+            options.map((opt, i) => (
+              <span class="dist-chip">
+                <span
+                  class="dist-swatch"
+                  style={`background:${BAR_COLORS[i % BAR_COLORS.length]}`}
+                />
+                {opt}
+              </span>
+            ))
+          }
+        </div>
+        <div class="dist-row mt-2">
+          <span class="dist-label">Human</span>
+          <span set:html={renderBar(payload.human_distribution)} />
+        </div>
+        {
+          payload.human_refusal_rate != null && (
+            <p class="mt-2 text-xs text-muted">
+              Human refusal rate: <span class="font-mono">{pct(payload.human_refusal_rate)}</span>
+            </p>
+          )
+        }
+      </div>
+    </section>
+
+    <!-- Per-model distributions -->
+    <section class="mb-8">
+      <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+        Model distributions
+        <span class="ml-2 text-xs font-normal text-muted">
+          sorted by JSD to human, ascending
+        </span>
+      </h2>
+      <div class="overflow-x-auto rounded-lg border border-muted/20">
+        <table class="w-full text-sm" id="per-model-table">
+          <caption class="sr-only">
+            Each model's distribution over the question options, alongside its
+            divergence from the human baseline and refusal rate. Rows link to
+            the full per-run detail page.
+          </caption>
+          <thead>
+            <tr class="bg-surface dark:bg-surface-dark border-b border-muted/20">
+              <th class="px-3 py-2 text-left font-semibold" scope="col">Model</th>
+              <th class="px-3 py-2 text-left font-semibold" scope="col">Framework</th>
+              <th class="px-3 py-2 text-left font-semibold" scope="col">Distribution</th>
+              <th class="px-3 py-2 text-right font-semibold" scope="col">JSD → human</th>
+              <th class="px-3 py-2 text-right font-semibold" scope="col">Refusal</th>
+              <th class="px-3 py-2 text-right font-semibold" scope="col">N samples</th>
+              <th class="px-3 py-2 text-right font-semibold" scope="col">Run</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              payload.model_responses.map((r) => {
+                const runUrl = `${base}/run/${encodePathSegment(r.run_id)}/`;
+                return (
+                  <tr class="border-b border-muted/10 hover:bg-primary/5">
+                    <td class="px-3 py-2">
+                      <div class="font-semibold">{r.model}</div>
+                      <div class="text-xs text-muted">{r.base_provider}</div>
+                    </td>
+                    <td class="px-3 py-2 font-mono text-xs">{r.framework}</td>
+                    <td class="px-3 py-2">
+                      <span
+                        class="inline-block w-full min-w-[140px]"
+                        set:html={renderBar(r.distribution)}
+                      />
+                    </td>
+                    <td class="px-3 py-2 text-right font-mono">
+                      {fmt(r.jsd_to_human)}
+                    </td>
+                    <td class="px-3 py-2 text-right font-mono">
+                      {pct(r.refusal_rate)}
+                    </td>
+                    <td class="px-3 py-2 text-right font-mono text-xs">
+                      {r.n_samples}
+                    </td>
+                    <td class="px-3 py-2 text-right">
+                      <a
+                        href={runUrl}
+                        class="text-primary hover:underline"
+                        aria-label={`View full run ${r.run_id}`}
+                      >
+                        view →
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })
+            }
+          </tbody>
+        </table>
+      </div>
+      {
+        payload.model_responses.length === 0 && (
+          <p class="mt-3 text-sm text-muted">
+            No model responses available for this question.
+          </p>
+        )
+      }
+    </section>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .question-detail .dist-bar {
+    display: flex;
+    width: 100%;
+    min-width: 140px;
+    height: 1rem;
+    overflow: hidden;
+    border-radius: 0.25rem;
+    background: color-mix(in oklch, var(--color-muted) 15%, transparent);
+  }
+  .question-detail .dist-seg {
+    display: block;
+    height: 100%;
+  }
+  .question-detail .dist-row {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .question-detail .dist-label {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+  .question-detail .dist-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    margin-bottom: 0.35rem;
+  }
+  .question-detail .dist-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .question-detail .dist-swatch {
+    display: inline-block;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 0.125rem;
+  }
+</style>
