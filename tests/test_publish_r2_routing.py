@@ -1,10 +1,15 @@
-"""Routing tests for the R2 publish path (sb-sjs).
+"""Routing tests for the R2 publish path (sb-sjs, sb-sj6).
 
-Verifies that ``publish_runs`` and ``publish_questions`` send per-dataset
-artifacts to the injected uploader for non-``full`` datasets and continue
-to write public-tier datasets to disk. Uses a fake S3 client wrapped by a
-real ``R2Uploader`` so the assertions cover end-to-end serialization, not
-a mocked boundary inside the publish module.
+Verifies the three-way tier routing now that ``aggregates_only`` and
+``gated`` have distinct semantics (sb-sj6):
+
+* ``full``  → local ``site/public/data/`` (static Pages origin)
+* ``gated`` → R2 (authenticated Worker origin)
+* ``aggregates_only`` → no per-question/run/config artifact at all
+
+Uses a fake S3 client wrapped by a real ``R2Uploader`` so the assertions
+cover end-to-end serialization, not a mocked boundary inside the publish
+module.
 """
 
 from __future__ import annotations
@@ -88,19 +93,19 @@ def _make_run_result(provider: str, dataset: str) -> dict:
 
 
 def test_publish_questions_routes_gated_dataset_to_r2(tmp_path: Path):
-    """opinionsqa is `aggregates_only` → per-question + index land in R2."""
+    """``gated`` datasets (e.g. subpop) send per-question + index to R2."""
     results_dir = tmp_path / "raw"
     results_dir.mkdir()
     (results_dir / "run_one.json").write_text(
         json.dumps(
             _make_question_result(
-                "openrouter/anthropic/claude-haiku-4-5", "opinionsqa", "Q1"
+                "openrouter/anthropic/claude-haiku-4-5", "subpop", "Q1"
             )
         )
     )
     (results_dir / "run_two.json").write_text(
         json.dumps(
-            _make_question_result("openrouter/openai/gpt-4o-mini", "opinionsqa", "Q1")
+            _make_question_result("openrouter/openai/gpt-4o-mini", "subpop", "Q1")
         )
     )
 
@@ -109,22 +114,30 @@ def test_publish_questions_routes_gated_dataset_to_r2(tmp_path: Path):
     counts = publish_questions(results_dir, out_dir, r2_uploader=uploader)
 
     assert counts == {"questions": 1, "datasets": 1}
-    # No per-question file on disk for the gated dataset.
-    assert not (out_dir / "question" / "opinionsqa" / "Q1.json").exists()
-    assert not (out_dir / "question" / "opinionsqa" / "index.json").exists()
+    # No per-question file on disk for the gated dataset — it lives in R2.
+    assert not (out_dir / "question" / "subpop" / "Q1.json").exists()
+    assert not (out_dir / "question" / "subpop" / "index.json").exists()
 
     keys = {c["Key"] for c in client.calls}
-    assert "question/opinionsqa/Q1.json" in keys
-    assert "question/opinionsqa/index.json" in keys
+    assert "question/subpop/Q1.json" in keys
+    assert "question/subpop/index.json" in keys
 
     # Payload integrity: the body for Q1 still parses and carries the
-    # cross-model rollup the site expects.
+    # cross-model rollup the site expects. Unlike under the pre-sb-sj6
+    # aggregates_only treatment, ``human_distribution`` stays populated
+    # because authenticated readers are the whole point of the gate.
     q1_body = next(
-        c["Body"] for c in client.calls if c["Key"] == "question/opinionsqa/Q1.json"
+        c["Body"] for c in client.calls if c["Key"] == "question/subpop/Q1.json"
     )
     payload = json.loads(q1_body)
-    assert payload["dataset"] == "opinionsqa"
+    assert payload["dataset"] == "subpop"
     assert payload["key"] == "Q1"
+    assert payload["human_distribution"] == {"A": 0.6, "B": 0.4}
+
+    # The gated-routes manifest is always written locally so the Astro SSG
+    # can enumerate shell pages for this dataset/key.
+    routes = json.loads((out_dir / "gated-routes.json").read_text())
+    assert routes["datasets"].get("subpop") == ["Q1"]
 
 
 def test_publish_questions_keeps_full_dataset_on_disk_with_uploader(tmp_path: Path):
@@ -149,11 +162,13 @@ def test_publish_questions_keeps_full_dataset_on_disk_with_uploader(tmp_path: Pa
     assert client.calls == []
 
 
-def test_publish_questions_without_uploader_writes_all_locally(tmp_path: Path):
-    """Local-only mode (no uploader) preserves pre-sb-sjs behavior."""
+def test_publish_questions_aggregates_only_emits_nothing_per_question(tmp_path: Path):
+    """``aggregates_only`` datasets (opinionsqa) emit no per-question
+    artifact — not to disk, not to R2. The leaderboard still gets its
+    aggregate row via ``runs-index.json`` + ``leaderboard.json``."""
     results_dir = tmp_path / "raw"
     results_dir.mkdir()
-    (results_dir / "gated_run.json").write_text(
+    (results_dir / "run.json").write_text(
         json.dumps(
             _make_question_result(
                 "openrouter/anthropic/claude-haiku-4-5", "opinionsqa", "Q1"
@@ -162,10 +177,32 @@ def test_publish_questions_without_uploader_writes_all_locally(tmp_path: Path):
     )
 
     out_dir = tmp_path / "site_data"
+    uploader, client = _uploader()
+    counts = publish_questions(results_dir, out_dir, r2_uploader=uploader)
+
+    assert counts == {"questions": 0, "datasets": 0}
+    assert not (out_dir / "question" / "opinionsqa" / "Q1.json").exists()
+    assert client.calls == []
+
+
+def test_publish_questions_without_uploader_writes_gated_locally(tmp_path: Path):
+    """Debug mode: without an uploader, gated-tier artifacts fall back to
+    local disk so operators can inspect publish output end-to-end."""
+    results_dir = tmp_path / "raw"
+    results_dir.mkdir()
+    (results_dir / "gated_run.json").write_text(
+        json.dumps(
+            _make_question_result(
+                "openrouter/anthropic/claude-haiku-4-5", "subpop", "Q1"
+            )
+        )
+    )
+
+    out_dir = tmp_path / "site_data"
     counts = publish_questions(results_dir, out_dir, r2_uploader=None)
 
     assert counts == {"questions": 1, "datasets": 1}
-    assert (out_dir / "question" / "opinionsqa" / "Q1.json").exists()
+    assert (out_dir / "question" / "subpop" / "Q1.json").exists()
 
 
 # -- publish_runs routing ---------------------------------------------------
@@ -176,9 +213,7 @@ def test_publish_runs_routes_gated_run_and_config_to_r2(tmp_path: Path):
     results_dir.mkdir()
     # Use a deterministic run_id-shaped filename so _run_id_from_path keys work.
     (results_dir / "20260101-aaa.json").write_text(
-        json.dumps(
-            _make_run_result("openrouter/anthropic/claude-haiku-4-5", "opinionsqa")
-        )
+        json.dumps(_make_run_result("openrouter/anthropic/claude-haiku-4-5", "subpop"))
     )
 
     out_dir = tmp_path / "site_data"
@@ -216,14 +251,43 @@ def test_publish_runs_keeps_full_run_local(tmp_path: Path):
     assert list((out_dir / "config").glob("*.json")) != []
 
 
+def test_publish_runs_aggregates_only_suppresses_detail(tmp_path: Path):
+    """sb-sj6: ``aggregates_only`` datasets contribute an index entry (so
+    the leaderboard row still renders) but emit NO per-run or per-config
+    JSON — neither to disk nor to R2. The front-end derives the aggregate
+    row from ``runs-index.json`` + ``leaderboard.json`` and disables the
+    drill-down link via ``dataset_policies``."""
+    results_dir = tmp_path / "raw"
+    results_dir.mkdir()
+    (results_dir / "20260101-ddd.json").write_text(
+        json.dumps(
+            _make_run_result("openrouter/anthropic/claude-haiku-4-5", "opinionsqa")
+        )
+    )
+
+    out_dir = tmp_path / "site_data"
+    uploader, client = _uploader()
+    counts = publish_runs(results_dir, out_dir, r2_uploader=uploader)
+
+    # Index entry still counted (the run exists; it just has no drill-down).
+    assert counts["runs"] == 1
+    # No uploads for aggregates_only.
+    assert client.calls == []
+    # No local per-run or per-config JSON.
+    assert list((out_dir / "run").glob("*.json")) == []
+    assert list((out_dir / "config").glob("*.json")) == []
+    # But the runs-index carries the aggregate row.
+    index = json.loads((out_dir / "runs-index.json").read_text())
+    assert index["n_runs"] == 1
+    assert index["runs"][0]["dataset"] == "opinionsqa"
+
+
 def test_publish_runs_runs_index_always_local_even_with_gated_runs(tmp_path: Path):
     """The cross-dataset catalog stays public so the site can route to it."""
     results_dir = tmp_path / "raw"
     results_dir.mkdir()
     (results_dir / "20260101-ccc.json").write_text(
-        json.dumps(
-            _make_run_result("openrouter/anthropic/claude-haiku-4-5", "opinionsqa")
-        )
+        json.dumps(_make_run_result("openrouter/anthropic/claude-haiku-4-5", "subpop"))
     )
 
     out_dir = tmp_path / "site_data"
@@ -232,4 +296,4 @@ def test_publish_runs_runs_index_always_local_even_with_gated_runs(tmp_path: Pat
 
     index = json.loads((out_dir / "runs-index.json").read_text())
     assert index["n_runs"] == 1
-    assert index["runs"][0]["dataset"] == "opinionsqa"
+    assert index["runs"][0]["dataset"] == "subpop"

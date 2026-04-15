@@ -32,13 +32,36 @@ class DatasetPolicy:
 
     @property
     def suppress_human_distribution(self) -> bool:
-        """True if per-question human_distribution should be withheld."""
-        return self.redistribution_policy != "full"
+        """True if ``human_distribution`` must be stripped from published rows.
+
+        ``gated`` datasets keep ``human_distribution`` in the payload because
+        the artifact ships to a JWT-authenticated R2 origin — only signed-in
+        users can reach it. ``full`` is public with the distribution intact.
+        Everything else has no payload shipped at all (see
+        :attr:`suppress_per_question`), so this flag is only consulted when a
+        payload is actually being emitted.
+        """
+        return self.redistribution_policy not in ("full", "gated")
 
     @property
     def suppress_per_question(self) -> bool:
-        """True if per-question payloads should not be published at all."""
-        return self.redistribution_policy == "citation_only"
+        """True if no per-question/run/config artifact should be emitted.
+
+        Under ``aggregates_only`` and ``citation_only`` the dataset
+        contributes only to aggregate leaderboard rows; no per-question,
+        per-run, or per-config JSON ships to disk or to R2.
+        """
+        return self.redistribution_policy in ("aggregates_only", "citation_only")
+
+    @property
+    def serves_from_r2(self) -> bool:
+        """True if per-question/run/config artifacts route to Cloudflare R2.
+
+        Only the ``gated`` tier uses R2. ``full`` stays on the static-site
+        Pages origin; ``aggregates_only`` and ``citation_only`` emit no
+        per-question/run/config artifact at all.
+        """
+        return self.redistribution_policy == "gated"
 
 
 _DEFAULT_POLICY = DatasetPolicy(

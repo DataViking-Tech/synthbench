@@ -150,9 +150,11 @@ def _make_result(
     }
 
 
-def test_publish_questions_suppresses_human_for_aggregates_only(tmp_path):
-    """Integration: generated per-question JSON for an aggregates_only
-    dataset must not expose the raw human distribution."""
+def test_publish_questions_suppresses_aggregates_only_entirely(tmp_path):
+    """Integration (sb-sj6): under the new policy semantics, an
+    ``aggregates_only`` dataset emits NO per-question artifact at all —
+    neither to disk nor to the gated-routes manifest. The leaderboard row
+    still renders via the aggregate scores on ``runs-index.json``."""
     results_dir = tmp_path / "results"
     out_dir = tmp_path / "site"
     results_dir.mkdir()
@@ -167,15 +169,23 @@ def test_publish_questions_suppresses_human_for_aggregates_only(tmp_path):
     publish_questions(results_dir, out_dir)
 
     payload_path = out_dir / "question" / "opinionsqa" / "Q1.json"
-    assert payload_path.exists()
-    payload = json.loads(payload_path.read_text())
-    assert payload["human_distribution"] == {}
-    assert payload["human_refusal_rate"] is None
-    assert payload["dataset_policy"]["redistribution_policy"] == "aggregates_only"
+    assert not payload_path.exists(), (
+        "aggregates_only datasets must not emit per-question JSON"
+    )
+    assert not (out_dir / "question" / "opinionsqa" / "index.json").exists()
+
+    # gated-routes manifest is emitted unconditionally but contains no entry
+    # for an aggregates_only dataset.
+    routes_path = out_dir / "gated-routes.json"
+    assert routes_path.exists()
+    routes = json.loads(routes_path.read_text())
+    assert "opinionsqa" not in routes["datasets"]
 
 
 def test_publish_questions_full_tier_publishes_human(tmp_path):
-    """Integration: the one `full`-tier dataset (NTIA) keeps raw human data."""
+    """Integration: ``full``-tier datasets (NTIA, GSS post-sb-sj6) keep
+    raw human data and land locally — no entry in the gated-routes
+    manifest because they're served from the static site directly."""
     results_dir = tmp_path / "results"
     out_dir = tmp_path / "site"
     results_dir.mkdir()
@@ -194,3 +204,32 @@ def test_publish_questions_full_tier_publishes_human(tmp_path):
     assert payload["human_distribution"] == {"A": 0.6, "B": 0.4}
     assert payload["human_refusal_rate"] == 0.05
     assert payload["dataset_policy"]["redistribution_policy"] == "full"
+
+    # Full-tier datasets are served from the static site, not R2 — no entry
+    # in the gated-routes manifest.
+    routes = json.loads((out_dir / "gated-routes.json").read_text())
+    assert "ntia" not in routes["datasets"]
+
+
+def test_publish_questions_gated_tier_routes_manifest(tmp_path):
+    """Integration (sb-sj6): a ``gated`` dataset emits a ``gated-routes.json``
+    entry listing its sanitized keys so the Astro SSG can prerender shell
+    pages. Without an R2 uploader the per-question payload still lands
+    locally (fallback for debugging), but the routes manifest is the
+    stable contract the static build reads."""
+    results_dir = tmp_path / "results"
+    out_dir = tmp_path / "site"
+    results_dir.mkdir()
+
+    result = _make_result(
+        "openrouter/anthropic/claude-haiku-4-5",
+        "subpop",  # gated
+        [_pq("subpop_Q1")],
+    )
+    (results_dir / "run1.json").write_text(json.dumps(result))
+
+    publish_questions(results_dir, out_dir)
+
+    routes = json.loads((out_dir / "gated-routes.json").read_text())
+    assert "subpop" in routes["datasets"]
+    assert routes["datasets"]["subpop"] == ["subpop_Q1"]

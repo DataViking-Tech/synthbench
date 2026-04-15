@@ -50,9 +50,11 @@ class PewTechDataset(Dataset):
     """Pew Internet & Technology: tech-focused survey questions from ATP."""
 
     # Pew ATP datasets require registration and agreement to Pew's terms
-    # (restricting redistribution). aggregates_only per the conservative
-    # rubric.
-    redistribution_policy = "aggregates_only"
+    # (restricting redistribution). The ``gated`` tier (sb-sj6) satisfies
+    # those terms: per-question distributions ship behind a JWT-
+    # authenticated Worker, so only identified visitors reach them.
+    # Anonymous visitors see the sign-in gate.
+    redistribution_policy = "gated"
     license_url = "https://www.pewresearch.org/internet/datasets/"
     citation = "Pew Research Center — Internet & Technology (American Trends Panel)"
 

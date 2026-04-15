@@ -32,8 +32,11 @@ class WVSDataset(Dataset):
     """World Values Survey Wave 7: cross-national opinion data."""
 
     # WVS microdata requires registration and explicit agreement to terms
-    # that restrict redistribution of the underlying data. aggregates_only.
-    redistribution_policy = "aggregates_only"
+    # that restrict redistribution of the underlying data. The ``gated``
+    # tier (sb-sj6) satisfies those terms: per-question distributions ship
+    # behind a JWT-authenticated Worker, so only identified visitors reach
+    # them. Anonymous visitors see the sign-in gate.
+    redistribution_policy = "gated"
     license_url = "https://worldvaluessurvey.org/WVSDocumentationWV7.jsp"
     citation = "World Values Survey Association — WVS Wave 7 (2017-2022)"
 

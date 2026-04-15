@@ -4,44 +4,80 @@ import { resolve } from "node:path";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import type { QuestionIndex, QuestionIndexEntry, QuestionPayload } from "@/types/questions";
 
-export async function getStaticPaths() {
-  const questionRoot = resolve("public/data/question");
-  if (!existsSync(questionRoot)) {
-    return [];
-  }
-  const datasets = readdirSync(questionRoot, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name);
+// sb-sj6: two-tier prerender.
+//   * ``full`` datasets (NTIA, GSS) ship per-question JSON locally at
+//     ``public/data/question/<dataset>/<key>.json``. We read each file,
+//     inline its payload, and prerender a fully server-rendered page.
+//   * ``gated`` datasets keep payloads in R2. ``gated-routes.json`` lists
+//     the sanitized keys so we can still prerender shell pages; the
+//     client fetches the payload via the Worker proxy with a Supabase
+//     JWT and swaps in either the data or a sign-in gate.
+interface GatedRoutesManifest {
+  datasets: Record<string, string[]>;
+}
 
+export async function getStaticPaths() {
+  const publicDataRoot = resolve("public/data");
+  const questionRoot = resolve(publicDataRoot, "question");
+
+  type PageProps = {
+    payload: QuestionPayload | null;
+    indexEntry: QuestionIndexEntry | null;
+    datasetCount: number | null;
+    tier: "full" | "gated";
+  };
   const out: Array<{
     params: { dataset: string; key: string };
-    props: {
-      payload: QuestionPayload;
-      indexEntry: QuestionIndexEntry | null;
-      datasetCount: number;
-    };
+    props: PageProps;
   }> = [];
 
-  for (const dataset of datasets) {
-    const datasetDir = resolve(questionRoot, dataset);
-    const indexPath = resolve(datasetDir, "index.json");
-    if (!existsSync(indexPath)) continue;
-    const idx = JSON.parse(readFileSync(indexPath, "utf-8")) as QuestionIndex;
-    const entryByKey = new Map(idx.questions.map((q) => [q.key, q]));
-    const files = readdirSync(datasetDir).filter((f) => f.endsWith(".json") && f !== "index.json");
-    for (const file of files) {
-      const payloadPath = resolve(datasetDir, file);
-      const payload = JSON.parse(readFileSync(payloadPath, "utf-8")) as QuestionPayload;
-      // File stem is the sanitized key; the payload preserves the real key.
-      const urlKey = file.replace(/\.json$/, "");
-      out.push({
-        params: { dataset, key: urlKey },
-        props: {
-          payload,
-          indexEntry: entryByKey.get(payload.key) ?? null,
-          datasetCount: idx.n_questions,
-        },
-      });
+  // --- Full-tier: walk on-disk artifacts. ---
+  if (existsSync(questionRoot)) {
+    const datasets = readdirSync(questionRoot, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name);
+    for (const dataset of datasets) {
+      const datasetDir = resolve(questionRoot, dataset);
+      const indexPath = resolve(datasetDir, "index.json");
+      if (!existsSync(indexPath)) continue;
+      const idx = JSON.parse(readFileSync(indexPath, "utf-8")) as QuestionIndex;
+      const entryByKey = new Map(idx.questions.map((q) => [q.key, q]));
+      const files = readdirSync(datasetDir).filter(
+        (f) => f.endsWith(".json") && f !== "index.json",
+      );
+      for (const file of files) {
+        const payloadPath = resolve(datasetDir, file);
+        const payload = JSON.parse(readFileSync(payloadPath, "utf-8")) as QuestionPayload;
+        const urlKey = file.replace(/\.json$/, "");
+        out.push({
+          params: { dataset, key: urlKey },
+          props: {
+            payload,
+            indexEntry: entryByKey.get(payload.key) ?? null,
+            datasetCount: idx.n_questions,
+            tier: "full",
+          },
+        });
+      }
+    }
+  }
+
+  // --- Gated-tier: enumerate shell routes from the routes manifest. ---
+  const gatedRoutesPath = resolve(publicDataRoot, "gated-routes.json");
+  if (existsSync(gatedRoutesPath)) {
+    const manifest = JSON.parse(readFileSync(gatedRoutesPath, "utf-8")) as GatedRoutesManifest;
+    for (const [dataset, keys] of Object.entries(manifest.datasets ?? {})) {
+      for (const key of keys) {
+        out.push({
+          params: { dataset, key },
+          props: {
+            payload: null,
+            indexEntry: null,
+            datasetCount: null,
+            tier: "gated",
+          },
+        });
+      }
     }
   }
 
@@ -49,12 +85,14 @@ export async function getStaticPaths() {
 }
 
 interface Props {
-  payload: QuestionPayload;
+  payload: QuestionPayload | null;
   indexEntry: QuestionIndexEntry | null;
-  datasetCount: number;
+  datasetCount: number | null;
+  tier: "full" | "gated";
 }
 
-const { payload, datasetCount } = Astro.props;
+const { payload, datasetCount, tier } = Astro.props;
+const { dataset: routeDataset, key: routeKey } = Astro.params;
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 const explorUrl = `${base}/explore`;
@@ -66,21 +104,25 @@ const fmt = (n: number | null | undefined, places = 3): string =>
 const pct = (n: number | null | undefined): string =>
   n == null || Number.isNaN(n) ? "—" : `${(n * 100).toFixed(1)}%`;
 
-const humanTop = payload.summary.human_top_option;
-const consensus = payload.summary.consensus_option;
+// ``payload`` is null for gated-tier shell pages — they render a loading
+// state and a client script fetches + hydrates the page via the Worker
+// proxy. The server-rendered full-tier branch uses the values below.
+const humanTop = payload?.summary.human_top_option ?? null;
+const consensus = payload?.summary.consensus_option ?? null;
 const consensusAgrees = humanTop != null && consensus != null && humanTop === consensus;
 
 // Dataset redistribution policy — drives whether the Human baseline section
 // is rendered with the raw distribution or replaced with a license notice.
-const datasetPolicy = payload.dataset_policy ?? null;
+const datasetPolicy = payload?.dataset_policy ?? null;
 const humanDistSuppressed = datasetPolicy != null && datasetPolicy.redistribution_policy !== "full";
 const humanHasData =
-  payload.human_distribution != null && Object.keys(payload.human_distribution).length > 0;
+  payload?.human_distribution != null && Object.keys(payload.human_distribution).length > 0;
 
 // Option order for all bars: use payload.options when present, else merge
 // keys from human + model + aggregated dists so nothing is silently dropped.
-const aggregatedResponses = payload.aggregated_responses ?? [];
+const aggregatedResponses = payload?.aggregated_responses ?? [];
 const options = (() => {
+  if (!payload) return [];
   if (payload.options?.length) return payload.options;
   const keys = new Set<string>();
   if (payload.human_distribution) {
@@ -128,7 +170,9 @@ function renderBar(dist: Record<string, number>): string {
   return `<span class="dist-bar" role="img" aria-label="Distribution: ${escapeHtml(accessibleSummary)}">${segments}</span>`;
 }
 
-const pageTitle = `Question ${payload.key} (${payload.dataset}) - SynthBench`;
+const displayKey = payload?.key ?? routeKey ?? "";
+const displayDataset = payload?.dataset ?? routeDataset ?? "";
+const pageTitle = `Question ${displayKey} (${displayDataset}) - SynthBench`;
 
 // URL encoder for segments (question keys are sanitized to safe chars
 // already, but guard against spaces and reserved chars anyway).
@@ -137,18 +181,36 @@ const encodePathSegment = (s: string): string =>
 ---
 
 <BaseLayout title={pageTitle} noindex={true}>
-  <div class="question-detail mx-auto w-full max-w-6xl px-4 py-8">
+  <div
+    class="question-detail mx-auto w-full max-w-6xl px-4 py-8"
+    data-tier={tier}
+    data-dataset={displayDataset}
+    data-question-key={displayKey}
+  >
     <!-- Breadcrumb -->
     <nav class="mb-6 text-sm text-muted" aria-label="Breadcrumb">
       <a href={leaderboardUrl} class="hover:text-primary">Leaderboard</a>
       <span class="mx-2">/</span>
       <a href={explorUrl} class="hover:text-primary">Explore</a>
       <span class="mx-2">/</span>
-      <span class="font-mono">{payload.dataset}</span>
+      <span class="font-mono">{displayDataset}</span>
       <span class="mx-2">/</span>
       <span class="text-text dark:text-text-dark">question</span>
     </nav>
-
+    {
+      payload == null && (
+        <div id="question-gated-shell" class="rounded-lg border border-muted/30 bg-muted/5 p-6">
+          <p class="text-sm text-muted">
+            <span class="font-semibold text-text dark:text-text-dark">
+              Loading per-question detail…
+            </span>
+            <span class="ml-2">This dataset is research-use gated and served from the authenticated data origin.</span>
+          </p>
+        </div>
+      )
+    }
+    {payload != null && (
+    <>
     <!-- Header -->
     <header class="mb-6">
       <div class="flex flex-wrap items-baseline gap-2">
@@ -357,7 +419,7 @@ const encodePathSegment = (s: string): string =>
           </thead>
           <tbody>
             {
-              payload.model_responses.map((r) => {
+              payload!.model_responses.map((r) => {
                 const runUrl = `${base}/run/${encodePathSegment(r.run_id)}/`;
                 return (
                   <tr class="border-b border-muted/10 hover:bg-primary/5">
@@ -398,7 +460,7 @@ const encodePathSegment = (s: string): string =>
         </table>
       </div>
       {
-        payload.model_responses.length === 0 && (
+        payload!.model_responses.length === 0 && (
           <p class="mt-3 text-sm text-muted">
             No model responses available for this question.
           </p>
@@ -498,7 +560,192 @@ const encodePathSegment = (s: string): string =>
         </section>
       )
     }
+    </>
+    )}
   </div>
+  <script>
+    // sb-sj6: gated-tier hydration. For ``gated`` shell pages the server
+    // rendered only the breadcrumb + loading placeholder; everything else
+    // (aggregates, human baseline, per-model table) is fetched client-side
+    // via the Worker proxy with a Supabase JWT. 401 surfaces as a sign-in
+    // gate; 200 swaps the shell for a full-render built from the fetched
+    // payload.
+    import type { QuestionPayload } from "@/types/questions";
+
+    const root = document.querySelector<HTMLElement>(".question-detail");
+    if (root && root.dataset.tier === "gated") {
+      void hydrateGatedQuestion(root);
+    }
+
+    async function hydrateGatedQuestion(root: HTMLElement): Promise<void> {
+      const dataset = root.dataset.dataset ?? "";
+      const key = root.dataset.questionKey ?? "";
+      if (!dataset || !key) return;
+      const shell = document.getElementById("question-gated-shell");
+
+      const { fetchTieredJson, renderSignInGate } = await import("@/lib/dataFetch");
+
+      const path = `question/${encodeURIComponent(dataset)}/${encodeURIComponent(key)}.json`;
+      const result = await fetchTieredJson<QuestionPayload>(path, "gated");
+      if (!result.ok) {
+        if (result.gated && shell) {
+          renderSignInGate(shell, { datasetLabel: dataset });
+          return;
+        }
+        if (shell) {
+          shell.innerHTML = `<p class="text-sm text-red-600 dark:text-red-400">Failed to load: ${escapeHtml(result.message)}</p>`;
+        }
+        return;
+      }
+      renderQuestionDetail(result.data, shell);
+    }
+
+    function renderQuestionDetail(
+      payload: QuestionPayload,
+      shell: HTMLElement | null,
+    ): void {
+      const host = shell ?? document.createElement("div");
+      host.innerHTML = buildQuestionMarkup(payload);
+      host.classList.remove("rounded-lg", "border", "border-muted/30", "bg-muted/5", "p-6");
+    }
+
+    function escapeHtml(s: unknown): string {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function fmt(n: number | null | undefined, places = 3): string {
+      return n == null || Number.isNaN(n) ? "—" : n.toFixed(places);
+    }
+
+    function pct(n: number | null | undefined): string {
+      return n == null || Number.isNaN(n) ? "—" : `${(n * 100).toFixed(1)}%`;
+    }
+
+    const BAR_COLORS = [
+      "var(--color-primary)",
+      "var(--color-accent)",
+      "var(--color-provider-raw-llm)",
+      "var(--color-baseline)",
+      "var(--color-provider-synthpanel)",
+      "var(--color-muted)",
+    ];
+
+    function buildQuestionMarkup(payload: QuestionPayload): string {
+      const options = payload.options?.length
+        ? payload.options
+        : collectKeys(payload);
+      const humanHasData =
+        payload.human_distribution != null &&
+        Object.keys(payload.human_distribution).length > 0;
+      const humanDist = payload.human_distribution ?? {};
+      const header = `
+        <header class="mb-6">
+          <div class="flex flex-wrap items-baseline gap-2">
+            <h1 class="text-2xl font-bold sm:text-3xl">Question detail</h1>
+            <span class="rounded bg-muted/20 px-2 py-0.5 font-mono text-xs text-muted">${escapeHtml(payload.dataset)}</span>
+            ${payload.topic ? `<span class="rounded bg-primary/10 px-2 py-0.5 text-xs text-primary">${escapeHtml(payload.topic)}</span>` : ""}
+          </div>
+          <p class="mt-1 break-all font-mono text-xs text-muted">${escapeHtml(payload.key)}</p>
+          <p class="mt-4 max-w-3xl text-base leading-relaxed">${escapeHtml(payload.question)}</p>
+        </header>
+      `;
+      const summary = payload.summary;
+      const trendslop = `
+        <section class="mb-8 rounded-lg border border-muted/20 p-5">
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-muted mb-3">Trendslop indicators</h2>
+          <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3 lg:grid-cols-6">
+            <div><dt class="text-xs text-muted">Models</dt><dd class="font-mono text-lg">${summary.n_models}</dd></div>
+            <div><dt class="text-xs text-muted">Cross-model JSD (mean)</dt><dd class="font-mono text-lg">${fmt(summary.cross_model_jsd_mean)}</dd></div>
+            <div><dt class="text-xs text-muted">Cross-model JSD (max)</dt><dd class="font-mono text-lg">${fmt(summary.cross_model_jsd_max)}</dd></div>
+            <div><dt class="text-xs text-muted">JSD to human (mean)</dt><dd class="font-mono text-lg">${fmt(summary.jsd_to_human_mean)}</dd></div>
+            <div><dt class="text-xs text-muted">Consensus option</dt><dd class="text-sm"><span class="font-semibold">${escapeHtml(summary.consensus_option ?? "—")}</span></dd></div>
+            <div><dt class="text-xs text-muted">Refusal-rate spread</dt><dd class="font-mono text-lg">${pct(summary.refusal_rate_spread)}</dd></div>
+          </dl>
+        </section>
+      `;
+      const humanSection = humanHasData
+        ? `
+          <section class="mb-8">
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-muted mb-3">Human baseline</h2>
+            <div class="rounded-lg border border-muted/20 p-4">
+              <div class="dist-row"><span class="dist-label">Human</span>${renderBar(humanDist, options)}</div>
+              ${payload.human_refusal_rate != null ? `<p class="mt-2 text-xs text-muted">Human refusal rate: <span class="font-mono">${pct(payload.human_refusal_rate)}</span></p>` : ""}
+            </div>
+          </section>
+        `
+        : "";
+      const modelRows = payload.model_responses
+        .map(
+          (r) => `
+          <tr class="border-b border-muted/10">
+            <td class="px-3 py-2"><div class="font-semibold">${escapeHtml(r.model)}</div><div class="text-xs text-muted">${escapeHtml(r.base_provider)}</div></td>
+            <td class="px-3 py-2 font-mono text-xs">${escapeHtml(r.framework)}</td>
+            <td class="px-3 py-2">${renderBar(r.distribution, options)}</td>
+            <td class="px-3 py-2 text-right font-mono">${fmt(r.jsd_to_human)}</td>
+            <td class="px-3 py-2 text-right font-mono">${pct(r.refusal_rate)}</td>
+            <td class="px-3 py-2 text-right font-mono text-xs">${r.n_samples}</td>
+          </tr>
+        `,
+        )
+        .join("");
+      const perModel = `
+        <section class="mb-8">
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-muted mb-3">Model distributions</h2>
+          <div class="overflow-x-auto rounded-lg border border-muted/20">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-surface dark:bg-surface-dark border-b border-muted/20">
+                  <th class="px-3 py-2 text-left font-semibold">Model</th>
+                  <th class="px-3 py-2 text-left font-semibold">Framework</th>
+                  <th class="px-3 py-2 text-left font-semibold">Distribution</th>
+                  <th class="px-3 py-2 text-right font-semibold">JSD → human</th>
+                  <th class="px-3 py-2 text-right font-semibold">Refusal</th>
+                  <th class="px-3 py-2 text-right font-semibold">N samples</th>
+                </tr>
+              </thead>
+              <tbody>${modelRows}</tbody>
+            </table>
+          </div>
+        </section>
+      `;
+      return header + trendslop + humanSection + perModel;
+    }
+
+    function renderBar(
+      dist: Record<string, number>,
+      options: string[],
+    ): string {
+      const segments = options
+        .map((k, i) => {
+          const v = dist[k] ?? 0;
+          const width = Math.max(0, Math.min(1, v)) * 100;
+          const color = BAR_COLORS[i % BAR_COLORS.length];
+          return `<span class="dist-seg" title="${escapeHtml(k)}: ${(v * 100).toFixed(1)}%" style="width:${width}%;background:${color}"></span>`;
+        })
+        .join("");
+      return `<span class="dist-bar">${segments}</span>`;
+    }
+
+    function collectKeys(payload: QuestionPayload): string[] {
+      const keys = new Set<string>();
+      if (payload.human_distribution) {
+        for (const k of Object.keys(payload.human_distribution)) keys.add(k);
+      }
+      for (const r of payload.model_responses) {
+        for (const k of Object.keys(r.distribution)) keys.add(k);
+      }
+      for (const r of payload.aggregated_responses ?? []) {
+        for (const k of Object.keys(r.distribution)) keys.add(k);
+      }
+      return [...keys];
+    }
+
+  </script>
 </BaseLayout>
 
 <style is:global>

@@ -46,9 +46,11 @@ def _default_cache_dir() -> Path:
 class EurobarometerConsumerDataset(Dataset):
     """Eurobarometer Consumer Modules: cross-EU consumer opinion questions."""
 
-    # GESIS terms of use explicitly restrict microdata redistribution;
-    # aggregates_only honors the upstream license.
-    redistribution_policy = "aggregates_only"
+    # GESIS terms of use permit redistribution for research use with
+    # attribution. Per-question distributions ship to the ``gated`` R2 tier
+    # (sb-sj6): signed-in researchers can see them; anonymous visitors hit
+    # the sign-in gate.
+    redistribution_policy = "gated"
     license_url = "https://www.gesis.org/eurobarometer-data-service/about-eurobarometer"
     citation = "European Commission / GESIS — Eurobarometer Consumer Modules"
 

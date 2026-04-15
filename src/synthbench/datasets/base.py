@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Literal
 
-RedistributionPolicy = Literal["full", "aggregates_only", "citation_only"]
+RedistributionPolicy = Literal["full", "gated", "aggregates_only", "citation_only"]
 
 
 @dataclass
@@ -33,19 +33,28 @@ class Dataset(ABC):
     """Interface that all benchmark datasets implement.
 
     Subclasses declare their redistribution policy and provenance so the
-    publish step can honor upstream license terms. Three tiers:
+    publish step can honor upstream license terms. Four tiers:
 
     ``full``
         Per-question human distributions are OK to publish publicly. Use only
         when the upstream license is unambiguously permissive (e.g. U.S.
-        Government public domain under 17 USC 105).
+        Government public domain under 17 USC 105, or explicit public-domain
+        release). Per-question/run/config JSONs ship to the static site.
+
+    ``gated``
+        Redistribution is permitted only under a research-use license that
+        requires controlled distribution. Per-question/run/config artifacts
+        ship to a private Cloudflare R2 bucket fronted by a JWT-authenticated
+        Worker; authenticated users who identify themselves can see the full
+        per-question ``human_distribution``. Anonymous visitors see a
+        sign-in gate.
 
     ``aggregates_only`` (default)
         Only aggregate scores (SPS, JSD, cross-model metrics, ranks) are
-        public. Per-question ``human_distribution`` and ``human_refusal_rate``
-        are suppressed from published artifacts. This is the safe default for
-        any license with redistribution restrictions, attribution-required
-        terms, non-commercial clauses, or ambiguous/missing license info.
+        public. No per-question/run/config artifact ships — neither to the
+        static site nor to R2. This is the safe default for any license with
+        ambiguous/missing redistribution rights, where even gated
+        distribution would exceed the permission granted.
 
     ``citation_only``
         Only metadata (question text, options) public; both per-question and

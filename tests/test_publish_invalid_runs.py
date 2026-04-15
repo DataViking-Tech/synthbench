@@ -171,9 +171,12 @@ def test_publish_runs_skips_invalid_runs(tmp_path):
     results_dir = tmp_path / "results"
     results_dir.mkdir()
 
+    # Use a `full`-tier dataset (ntia) for the good run so the per-run
+    # artifact actually lands on disk under the new tier semantics
+    # (sb-sj6: aggregates_only no longer emits per-run JSON).
     good = _mk_result(
         "openrouter/anthropic/claude-haiku-4-5",
-        "opinionsqa",
+        "ntia",
         [_healthy_pq(f"Q{i}") for i in range(20)],
     )
     bad = _mk_result(
@@ -202,14 +205,17 @@ def test_publish_questions_skips_invalid_runs(tmp_path):
     results_dir = tmp_path / "results"
     results_dir.mkdir()
 
+    # Use ``ntia`` (``full`` tier) so the per-question JSON actually lands
+    # locally under the post-sb-sj6 tier semantics — opinionsqa is now
+    # ``aggregates_only`` and emits no per-question artifact.
     good = _mk_result(
         "openrouter/anthropic/claude-haiku-4-5",
-        "opinionsqa",
+        "ntia",
         [_healthy_pq("Q1"), _healthy_pq("Q2")],
     )
     bad = _mk_result(
         "synthpanel/claude-haiku-4-5-20251001",
-        "opinionsqa",
+        "ntia",
         [_uniform_pq(f"Q{i}") for i in range(20)],
     )
     (results_dir / "good.json").write_text(json.dumps(good))
@@ -219,7 +225,7 @@ def test_publish_questions_skips_invalid_runs(tmp_path):
     publish_questions(results_dir, out_dir)
 
     # Q1 rollup must reference only the good run's model response.
-    q1 = json.loads((out_dir / "question" / "opinionsqa" / "Q1.json").read_text())
+    q1 = json.loads((out_dir / "question" / "ntia" / "Q1.json").read_text())
     response_run_ids = [r.get("run_id") for r in q1["model_responses"]]
     assert "bad" not in response_run_ids
     assert "good" in response_run_ids

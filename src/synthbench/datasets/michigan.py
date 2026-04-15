@@ -197,9 +197,11 @@ class MichiganSentimentDataset(Dataset):
     """University of Michigan Survey of Consumers monthly questions."""
 
     # SRC terms: "Publicly available for research; cite the Survey Research
-    # Center, University of Michigan." Research-use-only + attribution-
-    # required framing → aggregates_only per the conservative rubric.
-    redistribution_policy = "aggregates_only"
+    # Center, University of Michigan." Research-use + attribution-required
+    # distribution fits the ``gated`` tier (sb-sj6) — redistribution is
+    # scoped to identifiable researchers via the sign-in gate, with full
+    # attribution on every artifact.
+    redistribution_policy = "gated"
     license_url = "https://data.sca.isr.umich.edu/terms.php"
     citation = "Survey Research Center, University of Michigan — Surveys of Consumers"
 

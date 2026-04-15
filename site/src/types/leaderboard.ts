@@ -224,7 +224,7 @@ export interface CrossProviderConcordanceBlock {
   mean_human_jsd: number | null;
 }
 
-export type RedistributionPolicy = "full" | "aggregates_only" | "citation_only";
+export type RedistributionPolicy = "full" | "gated" | "aggregates_only" | "citation_only";
 
 /** One row of the dataset policy manifest emitted by publish.py. */
 export interface DatasetPolicyEntry {

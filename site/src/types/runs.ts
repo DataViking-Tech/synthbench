@@ -129,7 +129,7 @@ export interface RunAggregate {
   n_parse_failures: number | null;
 }
 
-export type RedistributionPolicy = "full" | "aggregates_only" | "citation_only";
+export type RedistributionPolicy = "full" | "gated" | "aggregates_only" | "citation_only";
 
 export interface DatasetPolicyInfo {
   redistribution_policy: RedistributionPolicy;

@@ -11,13 +11,17 @@ const policies: DatasetPolicyEntry[] = leaderboard.dataset_policies ?? [];
 
 const tierLabel: Record<string, string> = {
   full: "full",
+  gated: "gated",
   aggregates_only: "aggregates-only",
   citation_only: "citation-only",
 };
 
 const tierCopy: Record<string, string> = {
-  full: "Per-question human distributions are published.",
-  aggregates_only: "Aggregate scores public; per-question human distributions suppressed.",
+  full: "Per-question human distributions published openly on the static site.",
+  gated:
+    "Per-question human distributions served from authenticated origin; sign-in required (research-use license).",
+  aggregates_only:
+    "Aggregate scores public; no per-question artifact ships (permission missing or ambiguous).",
   citation_only: "Question metadata only; all per-question and aggregate metrics suppressed.",
 };
 ---
@@ -32,11 +36,31 @@ const tierCopy: Record<string, string> = {
       </h2>
       <p class="text-muted mb-6 max-w-2xl">
         Each upstream dataset carries its own license terms. SynthBench honors
-        them at publish time: datasets tiered <span class="font-mono">aggregates_only</span>
-        {" "}ship aggregate scores only — per-question human distributions are
-        suppressed from the public site. Aggregate metrics (SPS, JSD, ranks,
-        cross-model parity) are derived quantities and remain public regardless
-        of tier.
+        them at publish time across four tiers:
+      </p>
+      <ul class="mb-6 max-w-2xl list-disc pl-6 text-sm text-muted space-y-1">
+        <li>
+          <span class="font-mono">full</span> — per-question distributions
+          published openly (public-domain datasets).
+        </li>
+        <li>
+          <span class="font-mono">gated</span> — per-question distributions
+          served from a Cloudflare Worker that validates a Supabase JWT;
+          research-use sign-in required. No distribution ships anonymously.
+        </li>
+        <li>
+          <span class="font-mono">aggregates_only</span> — aggregate scores
+          public; no per-question artifact ships at all (gating does not
+          substitute for missing redistribution permission).
+        </li>
+        <li>
+          <span class="font-mono">citation_only</span> — question metadata
+          only; every downstream metric suppressed.
+        </li>
+      </ul>
+      <p class="text-muted mb-6 max-w-2xl">
+        Aggregate metrics (SPS, JSD, ranks, cross-model parity) are derived
+        quantities and remain public regardless of tier.
       </p>
 
       <div class="overflow-x-auto rounded-lg border border-muted/20">
