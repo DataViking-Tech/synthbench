@@ -39,6 +39,13 @@ def _default_cache_dir() -> Path:
 class SubPOPDataset(Dataset):
     """SubPOP: 3,362 questions across 22 US subpopulations."""
 
+    # Dataset is gated on HuggingFace and published under CC-BY-NC-SA-4.0.
+    # Non-commercial + share-alike restrictions tier this down to
+    # aggregates_only per the conservative rubric.
+    redistribution_policy = "aggregates_only"
+    license_url = "https://huggingface.co/datasets/jjssuh/subpop"
+    citation = "Suh et al., ACL 2025 — SubPOP: Subpopulation-Level Opinion Prediction"
+
     def __init__(self, data_dir: Path | str | None = None):
         self._data_dir = Path(data_dir) if data_dir else _default_cache_dir()
 

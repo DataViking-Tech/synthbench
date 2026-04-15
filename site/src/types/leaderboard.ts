@@ -202,6 +202,16 @@ export interface CrossProviderConcordanceBlock {
   mean_human_jsd: number | null;
 }
 
+export type RedistributionPolicy = "full" | "aggregates_only" | "citation_only";
+
+/** One row of the dataset policy manifest emitted by publish.py. */
+export interface DatasetPolicyEntry {
+  name: string;
+  redistribution_policy: RedistributionPolicy;
+  license_url: string | null;
+  citation: string | null;
+}
+
 export interface SynthBenchData {
   generated_at: string;
   synthbench_version: string;
@@ -212,6 +222,8 @@ export interface SynthBenchData {
   baselines?: Baselines;
   pricing_snapshot?: PricingSnapshot;
   cross_provider_concordance?: Record<string, CrossProviderConcordanceBlock>;
+  /** Per-dataset redistribution policy + provenance. */
+  dataset_policies?: DatasetPolicyEntry[];
 }
 
 /** @deprecated Use SynthBenchData — alias kept for existing component imports */

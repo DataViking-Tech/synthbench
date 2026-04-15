@@ -431,9 +431,13 @@ const questionBaseUrl = `${base}/question/${encodePathSegment(entry.dataset)}`;
                 · parity: <span class="font-mono">${fmt(row.parity)}</span>
                 ${row.temporal_year ? `· year: <span class="font-mono">${row.temporal_year}</span>` : ""}
               </div>
-              <div class="dist-legend">${renderLegend(row.options ?? [], row.human_distribution)}</div>
+              <div class="dist-legend">${renderLegend(row.options ?? [], row.human_distribution ?? row.model_distribution)}</div>
               <div class="dist-stack">
-                ${renderStackedBar("Human", row.human_distribution, row.options ?? [])}
+                ${
+                  row.human_distribution
+                    ? renderStackedBar("Human", row.human_distribution, row.options ?? [])
+                    : `<div class="dist-row"><span class="dist-label">Human</span><span class="text-xs text-muted">suppressed by dataset license</span></div>`
+                }
                 ${renderStackedBar("Model", row.model_distribution, row.options ?? [])}
               </div>
             </td>

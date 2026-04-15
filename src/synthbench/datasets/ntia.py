@@ -147,12 +147,21 @@ def _render_text(description: str, universe: str) -> str:
 class NTIADataset(Dataset):
     """NTIA Internet Use Survey: CPS supplement on US internet use.
 
+    Redistribution: ``full``. U.S. Government works are not subject to
+    copyright (17 USC 105); NTIA explicitly publishes the Internet Use Survey
+    Analyze Table for public use without restriction. This is the only
+    adapter currently tiered as ``full``.
+
     Args:
         data_dir: Local cache directory. Defaults to ``~/.synthbench/data/ntia``.
         dataset_filter: Survey wave to load (e.g. ``"Nov 2023"``). When set,
             only questions from that wave are returned. When None, loads all
             waves available in the Analyze Table.
     """
+
+    redistribution_policy = "full"
+    license_url = "https://www.ntia.gov/page/download-ntia-internet-use-survey-datasets"
+    citation = "NTIA Internet Use Survey (U.S. Government work, 17 USC 105)"
 
     DEMOGRAPHIC_ATTRIBUTES = DEMOGRAPHIC_ATTRIBUTES
 

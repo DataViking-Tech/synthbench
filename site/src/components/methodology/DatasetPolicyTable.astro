@@ -1,0 +1,97 @@
+---
+import type { DatasetPolicyEntry, SynthBenchData } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+// `as unknown as` — the JSON's entry unions don't narrow to the strict
+// interface cleanly; this component only reads dataset_policies (populated
+// by publish.py at build time).
+const leaderboard = leaderboardRaw as unknown as SynthBenchData;
+const policies: DatasetPolicyEntry[] = leaderboard.dataset_policies ?? [];
+
+const tierLabel: Record<string, string> = {
+  full: "full",
+  aggregates_only: "aggregates-only",
+  citation_only: "citation-only",
+};
+
+const tierCopy: Record<string, string> = {
+  full: "Per-question human distributions are published.",
+  aggregates_only: "Aggregate scores public; per-question human distributions suppressed.",
+  citation_only: "Question metadata only; all per-question and aggregate metrics suppressed.",
+};
+---
+
+{
+  policies.length > 0 && (
+    <section class="w-full max-w-4xl mx-auto py-12" id="dataset-policies">
+      <h2
+        class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+      >
+        Dataset redistribution policy
+      </h2>
+      <p class="text-muted mb-6 max-w-2xl">
+        Each upstream dataset carries its own license terms. SynthBench honors
+        them at publish time: datasets tiered <span class="font-mono">aggregates_only</span>
+        {" "}ship aggregate scores only — per-question human distributions are
+        suppressed from the public site. Aggregate metrics (SPS, JSD, ranks,
+        cross-model parity) are derived quantities and remain public regardless
+        of tier.
+      </p>
+
+      <div class="overflow-x-auto rounded-lg border border-muted/20">
+        <table class="w-full text-sm">
+          <caption class="sr-only">
+            Per-dataset redistribution policy tier and provenance, used by
+            synthbench publish to gate which fields appear in public
+            artifacts.
+          </caption>
+          <thead>
+            <tr class="border-b border-muted/20 bg-surface text-xs dark:bg-surface-dark">
+              <th class="px-3 py-2 text-left font-semibold" scope="col">
+                Dataset
+              </th>
+              <th class="px-3 py-2 text-left font-semibold" scope="col">
+                Tier
+              </th>
+              <th class="px-3 py-2 text-left font-semibold" scope="col">
+                Source &amp; license
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {policies.map((p) => (
+              <tr class="border-b border-muted/10">
+                <td class="px-3 py-2 font-mono text-xs">{p.name}</td>
+                <td class="px-3 py-2">
+                  <span class="font-mono text-xs">
+                    {tierLabel[p.redistribution_policy] ?? p.redistribution_policy}
+                  </span>
+                  <p class="mt-0.5 text-xs text-muted">
+                    {tierCopy[p.redistribution_policy] ?? ""}
+                  </p>
+                </td>
+                <td class="px-3 py-2 text-xs">
+                  {p.citation ?? "—"}
+                  {p.license_url && (
+                    <>
+                      {" "}
+                      <a
+                        href={p.license_url}
+                        class="text-primary hover:underline"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        (license)
+                      </a>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  )
+}

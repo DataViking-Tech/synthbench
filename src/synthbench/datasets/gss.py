@@ -31,6 +31,13 @@ def _default_cache_dir() -> Path:
 class GSSDataset(Dataset):
     """General Social Survey: US social attitudes from 1972 to present."""
 
+    # NORC releases GSS data for open research use but requires attribution
+    # on any redistribution. Per the conservative rubric, attribution-
+    # required-redistribution tiers down to aggregates_only.
+    redistribution_policy = "aggregates_only"
+    license_url = "https://gss.norc.org/About-The-GSS"
+    citation = "NORC at the University of Chicago — General Social Survey"
+
     def __init__(
         self,
         data_dir: Path | str | None = None,

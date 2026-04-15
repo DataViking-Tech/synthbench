@@ -73,6 +73,13 @@ def _aggregate_distributions(
 class GlobalOpinionQADataset(Dataset):
     """GlobalOpinionQA: 2,556 questions across 138 countries."""
 
+    # Upstream license CC-BY-NC-SA-4.0 carries non-commercial + share-alike
+    # restrictions. Per the conservative rubric we withhold per-question
+    # distributions; aggregate metrics remain public.
+    redistribution_policy = "aggregates_only"
+    license_url = "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+    citation = "Durmus et al. 2023, Anthropic — llm_global_opinions"
+
     def __init__(
         self,
         data_dir: Path | str | None = None,

@@ -8,6 +8,17 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from synthbench.datasets.policy import DatasetPolicy, all_policies, policy_for
+
+
+def _policy_to_dict(policy: DatasetPolicy) -> dict:
+    """Serialize a DatasetPolicy for embedding in published JSON artifacts."""
+    return {
+        "redistribution_policy": policy.redistribution_policy,
+        "license_url": policy.license_url,
+        "citation": policy.citation,
+    }
+
 
 def _dedup_results(results: list[dict]) -> list[dict]:
     """De-duplicate results: keep the run with the most n_evaluated per (display_name, framework, dataset).
@@ -1050,6 +1061,13 @@ def publish_leaderboard_data(
         "baselines": baselines,
         "cross_provider_concordance": cross_provider_concordance,
         "pricing_snapshot": _build_pricing_snapshot(),
+        "dataset_policies": [
+            {
+                "name": p.name,
+                **_policy_to_dict(p),
+            }
+            for p in all_policies()
+        ],
     }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1117,9 +1135,20 @@ def _run_id_from_path(path: Path) -> str:
     return path.stem
 
 
-def _augment_per_question(per_question: list[dict]) -> list[dict]:
-    """Return per-question rows with a lightweight ``topic`` label attached."""
+def _augment_per_question(
+    per_question: list[dict],
+    policy: DatasetPolicy | None = None,
+) -> list[dict]:
+    """Return per-question rows with a lightweight ``topic`` label attached.
+
+    If ``policy`` restricts redistribution of per-question human data, the
+    ``human_distribution`` and ``human_refusal_rate`` fields are stripped
+    before emission. Aggregate metrics (jsd, kendall_tau, parity) stay — they
+    are derived, not raw upstream data.
+    """
     from synthbench.topics import categorize_question
+
+    suppress_human = bool(policy and policy.suppress_human_distribution)
 
     out: list[dict] = []
     for q in per_question:
@@ -1128,6 +1157,9 @@ def _augment_per_question(per_question: list[dict]) -> list[dict]:
         row = dict(q)
         if topic:
             row["topic"] = topic
+        if suppress_human:
+            row.pop("human_distribution", None)
+            row.pop("human_refusal_rate", None)
         out.append(row)
     return out
 
@@ -1285,6 +1317,8 @@ def _build_run_detail(
     per_question = result.get("per_question", []) or []
     demo = result.get("demographic_breakdown", {}) or {}
     temporal = result.get("temporal_breakdown", {}) or {}
+    dataset_name = cfg.get("dataset", "unknown")
+    policy = policy_for(dataset_name)
 
     detail = {
         "run_id": run_id,
@@ -1298,7 +1332,8 @@ def _build_run_detail(
         "display_name": display_name,
         "is_baseline": is_baseline,
         "is_ensemble": is_ensemble,
-        "dataset": cfg.get("dataset", "unknown"),
+        "dataset": dataset_name,
+        "dataset_policy": _policy_to_dict(policy),
         "temperature": cfg.get("temperature"),
         "template": _tpl_name(cfg.get("prompt_template")),
         "samples_per_question": cfg.get("samples_per_question"),
@@ -1323,7 +1358,7 @@ def _build_run_detail(
             "per_metric_ci": agg.get("per_metric_ci"),
             "n_parse_failures": agg.get("n_parse_failures"),
         },
-        "per_question": _augment_per_question(per_question),
+        "per_question": _augment_per_question(per_question, policy=policy),
     }
 
     if scores.get("p_cond") is not None:
@@ -1845,23 +1880,35 @@ def _finalize_question_payload(rollup: dict) -> dict:
         )
 
     human_dist = rollup.get("human_distribution") or {}
+    policy = policy_for(rollup["dataset"])
+    # Pre-compute human_top_option before potentially clearing the raw
+    # distribution — the modal pick itself is an aggregate label, not the
+    # full distribution, and is safe to keep under aggregates_only.
+    human_top = _top_option(human_dist)
+    suppress_human = policy.suppress_human_distribution
+    emitted_human_dist: dict[str, float] | None = {} if suppress_human else human_dist
+    emitted_human_refusal: float | None = (
+        None if suppress_human else _round_or_none(rollup.get("human_refusal_rate"))
+    )
+
     payload: dict = {
         "dataset": rollup["dataset"],
         "key": rollup["key"],
         "question": rollup.get("question", ""),
         "options": rollup.get("options", []),
-        "human_distribution": human_dist,
-        "human_refusal_rate": _round_or_none(rollup.get("human_refusal_rate")),
+        "human_distribution": emitted_human_dist,
+        "human_refusal_rate": emitted_human_refusal,
         "model_responses": emitted_responses,
         "summary": {
             "n_models": len(emitted_responses),
             "cross_model_jsd_mean": _round_or_none(cross_mean),
             "cross_model_jsd_max": _round_or_none(cross_max),
             "consensus_option": consensus,
-            "human_top_option": _top_option(human_dist),
+            "human_top_option": human_top,
             "refusal_rate_spread": refusal_spread,
             "jsd_to_human_mean": jsd_to_human_mean,
         },
+        "dataset_policy": _policy_to_dict(policy),
     }
     topic = rollup.get("topic")
     if topic:
@@ -1946,6 +1993,10 @@ def publish_questions(
 
     for (dataset, key), rollup in rollups.items():
         if not rollup.get("model_responses"):
+            continue
+        policy = policy_for(dataset)
+        if policy.suppress_per_question:
+            # citation_only: no per-question artifact, no index entry.
             continue
         payload = _finalize_question_payload(rollup)
         safe_key = _safe_question_key(key)

@@ -36,15 +36,29 @@ export interface QuestionSummary {
   jsd_to_human_mean: number | null;
 }
 
+export type RedistributionPolicy = "full" | "aggregates_only" | "citation_only";
+
+export interface DatasetPolicyInfo {
+  redistribution_policy: RedistributionPolicy;
+  license_url: string | null;
+  citation: string | null;
+}
+
 export interface QuestionPayload {
   dataset: Dataset;
   key: string;
   question: string;
   options: string[];
+  /**
+   * Per-question human distribution. `{}` when the dataset's redistribution
+   * policy is `aggregates_only` — the field stays present so consumers can
+   * branch on emptiness rather than key existence.
+   */
   human_distribution: Record<string, number>;
   human_refusal_rate: number | null;
   model_responses: QuestionModelResponse[];
   summary: QuestionSummary;
+  dataset_policy?: DatasetPolicyInfo;
   topic?: string;
   temporal_year?: number | null;
 }

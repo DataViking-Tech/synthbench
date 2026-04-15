@@ -196,6 +196,13 @@ def _normalize_options(options: list) -> list[str]:
 class MichiganSentimentDataset(Dataset):
     """University of Michigan Survey of Consumers monthly questions."""
 
+    # SRC terms: "Publicly available for research; cite the Survey Research
+    # Center, University of Michigan." Research-use-only + attribution-
+    # required framing → aggregates_only per the conservative rubric.
+    redistribution_policy = "aggregates_only"
+    license_url = "https://data.sca.isr.umich.edu/terms.php"
+    citation = "Survey Research Center, University of Michigan — Surveys of Consumers"
+
     DEMOGRAPHIC_ATTRIBUTES = DEMOGRAPHIC_ATTRIBUTES
 
     def __init__(self, data_dir: Path | str | None = None):

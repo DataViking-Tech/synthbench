@@ -70,12 +70,21 @@ const humanTop = payload.summary.human_top_option;
 const consensus = payload.summary.consensus_option;
 const consensusAgrees = humanTop != null && consensus != null && humanTop === consensus;
 
+// Dataset redistribution policy — drives whether the Human baseline section
+// is rendered with the raw distribution or replaced with a license notice.
+const datasetPolicy = payload.dataset_policy ?? null;
+const humanDistSuppressed = datasetPolicy != null && datasetPolicy.redistribution_policy !== "full";
+const humanHasData =
+  payload.human_distribution != null && Object.keys(payload.human_distribution).length > 0;
+
 // Option order for all bars: use payload.options when present, else merge
 // keys from human + model dists so nothing is silently dropped.
 const options = (() => {
   if (payload.options?.length) return payload.options;
   const keys = new Set<string>();
-  for (const k of Object.keys(payload.human_distribution)) keys.add(k);
+  if (payload.human_distribution) {
+    for (const k of Object.keys(payload.human_distribution)) keys.add(k);
+  }
   for (const r of payload.model_responses) {
     for (const k of Object.keys(r.distribution)) keys.add(k);
   }
@@ -236,32 +245,85 @@ const encodePathSegment = (s: string): string =>
         Human baseline
       </h2>
       <div class="rounded-lg border border-muted/20 p-4">
-        <div class="dist-legend">
-          {
-            options.map((opt, i) => (
-              <span class="dist-chip">
-                <span
-                  class="dist-swatch"
-                  style={`background:${BAR_COLORS[i % BAR_COLORS.length]}`}
-                />
-                {opt}
-              </span>
-            ))
-          }
-        </div>
-        <div class="dist-row mt-2">
-          <span class="dist-label">Human</span>
-          <span set:html={renderBar(payload.human_distribution)} />
-        </div>
         {
-          payload.human_refusal_rate != null && (
-            <p class="mt-2 text-xs text-muted">
-              Human refusal rate: <span class="font-mono">{pct(payload.human_refusal_rate)}</span>
+          humanHasData ? (
+            <>
+              <div class="dist-legend">
+                {options.map((opt, i) => (
+                  <span class="dist-chip">
+                    <span
+                      class="dist-swatch"
+                      style={`background:${BAR_COLORS[i % BAR_COLORS.length]}`}
+                    />
+                    {opt}
+                  </span>
+                ))}
+              </div>
+              <div class="dist-row mt-2">
+                <span class="dist-label">Human</span>
+                <span set:html={renderBar(payload.human_distribution ?? {})} />
+              </div>
+              {payload.human_refusal_rate != null && (
+                <p class="mt-2 text-xs text-muted">
+                  Human refusal rate:{" "}
+                  <span class="font-mono">{pct(payload.human_refusal_rate)}</span>
+                </p>
+              )}
+            </>
+          ) : humanDistSuppressed ? (
+            <p class="text-sm text-muted">
+              <span class="font-semibold text-text dark:text-text-dark">
+                Per-question human distribution suppressed
+              </span>{" "}
+              to honor the upstream dataset license
+              {datasetPolicy?.citation ? ` (${datasetPolicy.citation})` : ""}. Aggregate metrics
+              (JSD to human, consensus alignment) remain available above; see
+              the source for the underlying distribution.
+              {humanTop && (
+                <>
+                  {" "}Human modal response: <span class="font-mono">{humanTop}</span>.
+                </>
+              )}
             </p>
+          ) : (
+            <p class="text-sm text-muted">No human distribution available for this question.</p>
           )
         }
       </div>
     </section>
+
+    {
+      datasetPolicy && (
+        <section class="mb-8">
+          <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+            Source &amp; license
+          </h2>
+          <div class="rounded-lg border border-muted/20 p-4 text-sm">
+            {datasetPolicy.citation && (
+              <p>
+                <span class="font-semibold">Source:</span>{" "}
+                {datasetPolicy.license_url ? (
+                  <a
+                    href={datasetPolicy.license_url}
+                    class="text-primary hover:underline"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {datasetPolicy.citation}
+                  </a>
+                ) : (
+                  <span>{datasetPolicy.citation}</span>
+                )}
+              </p>
+            )}
+            <p class="mt-1 text-xs text-muted">
+              Redistribution policy:{" "}
+              <span class="font-mono">{datasetPolicy.redistribution_policy}</span>
+            </p>
+          </div>
+        </section>
+      )
+    }
 
     <!-- Per-model distributions -->
     <section class="mb-8">

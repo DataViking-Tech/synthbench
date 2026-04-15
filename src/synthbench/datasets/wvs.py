@@ -31,6 +31,12 @@ def _default_cache_dir() -> Path:
 class WVSDataset(Dataset):
     """World Values Survey Wave 7: cross-national opinion data."""
 
+    # WVS microdata requires registration and explicit agreement to terms
+    # that restrict redistribution of the underlying data. aggregates_only.
+    redistribution_policy = "aggregates_only"
+    license_url = "https://worldvaluessurvey.org/WVSDocumentationWV7.jsp"
+    citation = "World Values Survey Association — WVS Wave 7 (2017-2022)"
+
     def __init__(
         self,
         data_dir: Path | str | None = None,

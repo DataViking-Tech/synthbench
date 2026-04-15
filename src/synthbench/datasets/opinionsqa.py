@@ -67,6 +67,19 @@ def _default_cache_dir() -> Path:
 class OpinionsQADataset(Dataset):
     """OpinionsQA: 1,498 questions from Pew American Trends Panel."""
 
+    # The CodaLab worksheet does not publish an explicit license and the
+    # underlying Pew ATP data carries its own redistribution restrictions.
+    # No permissive license found → aggregates_only per the conservative
+    # rubric.
+    redistribution_policy = "aggregates_only"
+    license_url = (
+        "https://worksheets.codalab.org/worksheets/0x6fb693719477478aac73fc07db333f69"
+    )
+    citation = (
+        "Santurkar et al., ICML 2023 — Whose Opinions Do LLMs Reflect? "
+        "(derived from Pew American Trends Panel)"
+    )
+
     def __init__(self, data_dir: Path | str | None = None):
         self._data_dir = Path(data_dir) if data_dir else _default_cache_dir()
 

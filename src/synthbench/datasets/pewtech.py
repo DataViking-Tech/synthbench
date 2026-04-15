@@ -49,6 +49,13 @@ def _default_cache_dir() -> Path:
 class PewTechDataset(Dataset):
     """Pew Internet & Technology: tech-focused survey questions from ATP."""
 
+    # Pew ATP datasets require registration and agreement to Pew's terms
+    # (restricting redistribution). aggregates_only per the conservative
+    # rubric.
+    redistribution_policy = "aggregates_only"
+    license_url = "https://www.pewresearch.org/internet/datasets/"
+    citation = "Pew Research Center — Internet & Technology (American Trends Panel)"
+
     def __init__(self, data_dir: Path | str | None = None):
         self._data_dir = Path(data_dir) if data_dir else _default_cache_dir()
 

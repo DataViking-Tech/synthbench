@@ -129,12 +129,25 @@ export interface RunAggregate {
   n_parse_failures: number | null;
 }
 
+export type RedistributionPolicy = "full" | "aggregates_only" | "citation_only";
+
+export interface DatasetPolicyInfo {
+  redistribution_policy: RedistributionPolicy;
+  license_url: string | null;
+  citation: string | null;
+}
+
 export interface PerQuestionRow {
   key: string;
   text: string;
   topic?: TopicCategory | string;
   options: string[];
-  human_distribution: Record<string, number>;
+  /**
+   * Per-question human distribution. Omitted entirely when the dataset's
+   * redistribution policy is `aggregates_only` — consumers must branch on
+   * field presence, not on an empty object.
+   */
+  human_distribution?: Record<string, number>;
   model_distribution: Record<string, number>;
   jsd: number;
   kendall_tau: number;
@@ -142,6 +155,7 @@ export interface PerQuestionRow {
   n_samples: number;
   n_parse_failures?: number;
   model_refusal_rate?: number;
+  /** Omitted when dataset policy is `aggregates_only`. */
   human_refusal_rate?: number;
   /** Only present on OpinionsQA runs. */
   temporal_year?: number | null;
@@ -160,6 +174,7 @@ export interface RunDetail {
   is_baseline: boolean;
   is_ensemble: boolean;
   dataset: Dataset;
+  dataset_policy?: DatasetPolicyInfo;
   temperature: number | null;
   template: string | null;
   samples_per_question: number | null;
