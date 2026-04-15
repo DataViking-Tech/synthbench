@@ -4143,8 +4143,8 @@
         "Some confidence": 0.4439
       },
       "model_distribution": {
-        "A lot of confidence": 0.06,
-        "Some confidence": 0.92,
+        "A lot of confidence": 0.0612,
+        "Some confidence": 0.9388,
         "Not too much confidence": 0.0,
         "No confidence at all": 0.0,
         "Refused": 0.0
@@ -4303,8 +4303,8 @@
       },
       "model_distribution": {
         "Very strong conflicts": 0.0,
-        "Strong conflicts": 0.28,
-        "Not very strong conflicts": 0.7,
+        "Strong conflicts": 0.2857,
+        "Not very strong conflicts": 0.7143,
         "There are not conflicts": 0.0,
         "Refused": 0.0
       },
@@ -4917,8 +4917,8 @@
         "Very serious problem": 0.5278
       },
       "model_distribution": {
-        "Very serious problem": 0.26,
-        "Somewhat serious problem": 0.68,
+        "Very serious problem": 0.2766,
+        "Somewhat serious problem": 0.7234,
         "Not too serious of a problem": 0.0,
         "Not a problem at all": 0.0,
         "Refused": 0.0
@@ -4983,8 +4983,8 @@
         "Very serious problem": 0.6922
       },
       "model_distribution": {
-        "Very serious problem": 0.8,
-        "Somewhat serious problem": 0.18,
+        "Very serious problem": 0.8163,
+        "Somewhat serious problem": 0.1837,
         "Not too serious of a problem": 0.0,
         "Not a problem at all": 0.0,
         "Refused": 0.0
@@ -5016,8 +5016,8 @@
         "Very serious problem": 0.551
       },
       "model_distribution": {
-        "Very serious problem": 0.64,
-        "Somewhat serious problem": 0.3,
+        "Very serious problem": 0.6809,
+        "Somewhat serious problem": 0.3191,
         "Not too serious of a problem": 0.0,
         "Not a problem at all": 0.0,
         "Refused": 0.0
@@ -5049,8 +5049,8 @@
         "Very serious problem": 0.4857
       },
       "model_distribution": {
-        "Very serious problem": 0.22,
-        "Somewhat serious problem": 0.68,
+        "Very serious problem": 0.2444,
+        "Somewhat serious problem": 0.7556,
         "Not too serious of a problem": 0.0,
         "Not a problem at all": 0.0,
         "Refused": 0.0
@@ -5082,9 +5082,9 @@
         "Very serious problem": 0.3241
       },
       "model_distribution": {
-        "Very serious problem": 0.02,
-        "Somewhat serious problem": 0.2,
-        "Not too serious of a problem": 0.66,
+        "Very serious problem": 0.0227,
+        "Somewhat serious problem": 0.2273,
+        "Not too serious of a problem": 0.75,
         "Not a problem at all": 0.0,
         "Refused": 0.0
       },
@@ -5111,8 +5111,8 @@
         "Refused": 0.0128
       },
       "model_distribution": {
-        "Good": 0.88,
-        "Bad": 0.06,
+        "Good": 0.9362,
+        "Bad": 0.0638,
         "Refused": 0.0
       },
       "jsd": 0.029396,
@@ -5142,9 +5142,9 @@
         "Strongly support limiting Chinese students": 0.2169
       },
       "model_distribution": {
-        "Strongly support limiting Chinese students": 0.02,
+        "Strongly support limiting Chinese students": 0.0217,
         "Somewhat support limiting Chinese students": 0.0,
-        "Somewhat oppose limiting Chinese students": 0.9,
+        "Somewhat oppose limiting Chinese students": 0.9783,
         "Strongly oppose limiting Chinese students": 0.0,
         "Refused": 0.0
       },
@@ -5174,7 +5174,7 @@
       },
       "model_distribution": {
         "Is a good example for other countries to follow": 0.0,
-        "Used to be a good example, but has not been in recent years": 0.9,
+        "Used to be a good example, but has not been in recent years": 1.0,
         "Has never been a good example for other countries to follow": 0.0,
         "Refused": 0.0
       },
@@ -5204,9 +5204,9 @@
         "Not too much": 0.2343
       },
       "model_distribution": {
-        "A great deal": 0.36,
-        "A fair amount": 0.32,
-        "Not too much": 0.12,
+        "A great deal": 0.45,
+        "A fair amount": 0.4,
+        "Not too much": 0.15,
         "Not at all": 0.0,
         "Refused": 0.0
       },
@@ -5234,7 +5234,7 @@
       },
       "model_distribution": {
         "More united than before the coronavirus outbreak": 0.0,
-        "More divided than before the coronavirus outbreak": 0.6,
+        "More divided than before the coronavirus outbreak": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.056584,
@@ -5327,7 +5327,7 @@
       },
       "model_distribution": {
         "Most things in society can be pretty clearly divided into good and evil": 0.0,
-        "Most things in society are too complicated to be clearly divided between good and evil": 0.98,
+        "Most things in society are too complicated to be clearly divided between good and evil": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.285586,
@@ -5354,7 +5354,7 @@
       },
       "model_distribution": {
         "Government aid to the poor does more harm than good, by making people too dependent on government assistance": 0.0,
-        "Government aid to the poor does more good than harm, because people can't get out of poverty until their basic needs are": 0.94,
+        "Government aid to the poor does more good than harm, because people can't get out of poverty until their basic needs are": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.285286,
@@ -5384,7 +5384,7 @@
         "Should not be done": 0.0198
       },
       "model_distribution": {
-        "A top priority": 0.88,
+        "A top priority": 1.0,
         "Important, but lower priority": 0.0,
         "Not too important": 0.0,
         "Should not be done": 0.0,
@@ -5417,7 +5417,7 @@
         "Should not be done": 0.0472
       },
       "model_distribution": {
-        "A top priority": 0.72,
+        "A top priority": 1.0,
         "An important, but not a top priority": 0.0,
         "A lower priority": 0.0,
         "Should not be done": 0.0,
@@ -5447,7 +5447,7 @@
       },
       "model_distribution": {
         "It's not the government's job to protect people from themselves": 0.0,
-        "Sometimes laws to protect people from themselves are necessary": 0.54,
+        "Sometimes laws to protect people from themselves are necessary": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.237164,
@@ -5473,8 +5473,8 @@
         "Yes, a responsibility of the federal government to provide for all Americans": 0.2796
       },
       "model_distribution": {
-        "Yes, a responsibility of the federal government to provide for all Americans": 0.32,
-        "No, not the responsibility of the federal government to provide": 0.06,
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.8421,
+        "No, not the responsibility of the federal government to provide": 0.1579,
         "Refused": 0.0
       },
       "jsd": 0.248245,
@@ -5501,7 +5501,7 @@
       },
       "model_distribution": {
         "A smaller government providing fewer services": 0.0,
-        "A bigger government providing more services": 0.18,
+        "A bigger government providing more services": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.330096,
@@ -5527,7 +5527,7 @@
         "Yes, it is": 0.5899
       },
       "model_distribution": {
-        "Yes, it is": 0.02,
+        "Yes, it is": 1.0,
         "No, it is not": 0.0,
         "Refused": 0.0
       },
@@ -5846,8 +5846,8 @@
         "Somewhat disagree": 0.0953
       },
       "model_distribution": {
-        "Definitely agree": 0.08,
-        "Somewhat agree": 0.88,
+        "Definitely agree": 0.0833,
+        "Somewhat agree": 0.9167,
         "Somewhat disagree": 0.0,
         "Definitely disagree": 0.0,
         "Refused": 0.0
@@ -6161,7 +6161,7 @@
         "Some": 0.38
       },
       "model_distribution": {
-        "A great deal": 0.98,
+        "A great deal": 1.0,
         "Some": 0.0,
         "Not much": 0.0,
         "Not at all": 0.0,
@@ -7481,9 +7481,9 @@
         "Small impact": 0.1771
       },
       "model_distribution": {
-        "Big impact": 0.02,
-        "Moderate impact": 0.84,
-        "Small impact": 0.12,
+        "Big impact": 0.0204,
+        "Moderate impact": 0.8571,
+        "Small impact": 0.1224,
         "No impact at all": 0.0,
         "Refused": 0.0
       },
@@ -7514,8 +7514,8 @@
         "Sometimes": 0.5117
       },
       "model_distribution": {
-        "Often": 0.22,
-        "Sometimes": 0.64,
+        "Often": 0.2558,
+        "Sometimes": 0.7442,
         "Hardly ever": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -7544,7 +7544,7 @@
       },
       "model_distribution": {
         "Yes, have done this": 0.0,
-        "No, have not done this": 0.78,
+        "No, have not done this": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.444989,
@@ -7571,7 +7571,7 @@
       },
       "model_distribution": {
         "Yes, have done this": 0.0,
-        "No, have not done this": 0.7,
+        "No, have not done this": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.263777,
@@ -7597,7 +7597,7 @@
         "Yes, have done this": 0.7995
       },
       "model_distribution": {
-        "Yes, have done this": 0.52,
+        "Yes, have done this": 1.0,
         "No, have not done this": 0.0,
         "Refused": 0.0
       },
@@ -7763,7 +7763,7 @@
       },
       "model_distribution": {
         "Society is better off if people make marriage and having children a priority": 0.0,
-        "Society is just as well off if people have priorities other than marriage and children": 0.94,
+        "Society is just as well off if people have priorities other than marriage and children": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.218511,
@@ -7789,7 +7789,7 @@
         "Refused": 0.0134
       },
       "model_distribution": {
-        "Medical treatments these days are worth the costs because they allow people to live longer and better quality lives": 0.88,
+        "Medical treatments these days are worth the costs because they allow people to live longer and better quality lives": 1.0,
         "Medical treatments these days often create as many problems as they solve": 0.0,
         "Refused": 0.0
       },
@@ -7818,8 +7818,8 @@
         "Refused": 0.0024
       },
       "model_distribution": {
-        "A big problem": 0.74,
-        "A small problem": 0.1,
+        "A big problem": 0.881,
+        "A small problem": 0.119,
         "Not a problem": 0.0,
         "Refused": 0.0
       },
@@ -7848,7 +7848,7 @@
         "Refused": 0.0028
       },
       "model_distribution": {
-        "A big problem": 0.76,
+        "A big problem": 1.0,
         "A small problem": 0.0,
         "Not a problem": 0.0,
         "Refused": 0.0
@@ -7879,7 +7879,7 @@
       },
       "model_distribution": {
         "A big problem": 0.0,
-        "A small problem": 0.54,
+        "A small problem": 1.0,
         "Not a problem": 0.0,
         "Refused": 0.0
       },
@@ -7968,8 +7968,8 @@
         "Refused": 0.0036
       },
       "model_distribution": {
-        "A lot": 0.12,
-        "A little": 0.86,
+        "A lot": 0.1224,
+        "A little": 0.8776,
         "Nothing at all": 0.0,
         "Refused": 0.0
       },
@@ -8000,8 +8000,8 @@
         "Very likely": 0.1606
       },
       "model_distribution": {
-        "Very likely": 0.2,
-        "Fairly likely": 0.78,
+        "Very likely": 0.2041,
+        "Fairly likely": 0.7959,
         "Not too likely": 0.0,
         "Not at all likely": 0.0,
         "Refused": 0.0
@@ -8033,8 +8033,8 @@
         "Very likely": 0.6
       },
       "model_distribution": {
-        "Very likely": 0.54,
-        "Fairly likely": 0.36,
+        "Very likely": 0.6,
+        "Fairly likely": 0.4,
         "Not too likely": 0.0,
         "Not at all likely": 0.0,
         "Refused": 0.0
@@ -8066,8 +8066,8 @@
         "Very likely": 0.1909
       },
       "model_distribution": {
-        "Very likely": 0.18,
-        "Fairly likely": 0.6,
+        "Very likely": 0.2308,
+        "Fairly likely": 0.7692,
         "Not too likely": 0.0,
         "Not at all likely": 0.0,
         "Refused": 0.0
@@ -8095,8 +8095,8 @@
         "Taking medical technology too far": 0.643
       },
       "model_distribution": {
-        "An appropriate use of medical technology": 0.12,
-        "Taking medical technology too far": 0.52,
+        "An appropriate use of medical technology": 0.1875,
+        "Taking medical technology too far": 0.8125,
         "Refused": 0.0
       },
       "jsd": 0.03163,
@@ -8123,7 +8123,7 @@
       },
       "model_distribution": {
         "I consider myself to be loyal to the news source(s) I get my news from": 0.0,
-        "I am not particularly loyal to the news source(s) I get my news from": 0.56,
+        "I am not particularly loyal to the news source(s) I get my news from": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.257663,
@@ -8149,7 +8149,7 @@
         "Yes": 0.5527
       },
       "model_distribution": {
-        "Yes": 0.32,
+        "Yes": 1.0,
         "No": 0.0,
         "Refused": 0.0
       },
@@ -8180,7 +8180,7 @@
         "Stay about the same": 0.2079
       },
       "model_distribution": {
-        "Grow larger": 0.16,
+        "Grow larger": 1.0,
         "Stay about the same": 0.0,
         "Be reduced": 0.0,
         "Be eliminated": 0.0,
@@ -8906,8 +8906,8 @@
       },
       "model_distribution": {
         "Almost daily": 0.0,
-        "About once a week": 0.08,
-        "About once a month": 0.02,
+        "About once a week": 0.8,
+        "About once a month": 0.2,
         "Less frequently": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -8940,8 +8940,8 @@
       },
       "model_distribution": {
         "Very confident": 0.0,
-        "Somewhat confident": 0.28,
-        "Not too confident": 0.14,
+        "Somewhat confident": 0.6667,
+        "Not too confident": 0.3333,
         "Not confident at all": 0.0,
         "Refused": 0.0
       },
@@ -8973,9 +8973,9 @@
       },
       "model_distribution": {
         "Very confident": 0.0,
-        "Somewhat confident": 0.22,
-        "Not too confident": 0.7,
-        "Not confident at all": 0.02,
+        "Somewhat confident": 0.234,
+        "Not too confident": 0.7447,
+        "Not confident at all": 0.0213,
         "Refused": 0.0
       },
       "jsd": 0.135313,
@@ -9199,7 +9199,7 @@
       "model_distribution": {
         "Very closely": 0.0,
         "Somewhat closely": 0.0,
-        "Not too closely": 0.14,
+        "Not too closely": 1.0,
         "Not at all closely": 0.0,
         "Refused": 0.0
       },
@@ -9232,7 +9232,7 @@
       "model_distribution": {
         "A great deal": 0.0,
         "Some": 0.0,
-        "Very little": 0.76,
+        "Very little": 1.0,
         "Not at all": 0.0,
         "Refused": 0.0
       },
@@ -9475,7 +9475,7 @@
         "Very well": 0.0663
       },
       "model_distribution": {
-        "Very well": 0.02,
+        "Very well": 1.0,
         "Pretty well": 0.0,
         "Not too well": 0.0,
         "Not at all well": 0.0,
@@ -9511,9 +9511,9 @@
         "Very well": 0.0921
       },
       "model_distribution": {
-        "Very well": 0.18,
+        "Very well": 0.9,
         "Pretty well": 0.0,
-        "Not too well": 0.02,
+        "Not too well": 0.1,
         "Not at all well": 0.0,
         "Not sure": 0.0,
         "Refused": 0.0
@@ -9547,9 +9547,9 @@
         "Very well": 0.0422
       },
       "model_distribution": {
-        "Very well": 0.52,
+        "Very well": 0.7222,
         "Pretty well": 0.0,
-        "Not too well": 0.2,
+        "Not too well": 0.2778,
         "Not at all well": 0.0,
         "Not sure": 0.0,
         "Refused": 0.0
@@ -9583,8 +9583,8 @@
         "Very well": 0.1477
       },
       "model_distribution": {
-        "Very well": 0.26,
-        "Pretty well": 0.72,
+        "Very well": 0.2653,
+        "Pretty well": 0.7347,
         "Not too well": 0.0,
         "Not at all well": 0.0,
         "Not sure": 0.0,
@@ -9810,7 +9810,7 @@
       },
       "model_distribution": {
         "Often": 0.0,
-        "Sometimes": 0.7,
+        "Sometimes": 1.0,
         "Rarely": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -12527,8 +12527,8 @@
       },
       "model_distribution": {
         "Reduced a great deal": 0.0,
-        "Reduced somewhat": 0.5,
-        "Kept about as is": 0.48,
+        "Reduced somewhat": 0.5102,
+        "Kept about as is": 0.4898,
         "Increased somewhat": 0.0,
         "Increased a great deal": 0.0,
         "Refused": 0.0
@@ -12561,8 +12561,8 @@
       },
       "model_distribution": {
         "Very similar to your values": 0.0,
-        "Somewhat similar to your values": 0.36,
-        "Somewhat different from your values": 0.62,
+        "Somewhat similar to your values": 0.3673,
+        "Somewhat different from your values": 0.6327,
         "Very different from your values": 0.0,
         "Refused": 0.0
       },
@@ -12594,8 +12594,8 @@
       },
       "model_distribution": {
         "Very similar to your values": 0.0,
-        "Somewhat similar to your values": 0.04,
-        "Somewhat different from your values": 0.92,
+        "Somewhat similar to your values": 0.0417,
+        "Somewhat different from your values": 0.9583,
         "Very different from your values": 0.0,
         "Refused": 0.0
       },
@@ -12715,7 +12715,7 @@
         "Refused": 0.0161
       },
       "model_distribution": {
-        "But they probably share many of my other values and goals": 0.92,
+        "But they probably share many of my other values and goals": 1.0,
         "And they probably don't share many of my other values and goals, either": 0.0,
         "Refused": 0.0
       },
@@ -12744,9 +12744,9 @@
         "Would want to move": 0.2727
       },
       "model_distribution": {
-        "Would want to move": 0.02,
-        "Would not want to move": 0.8,
-        "Not sure": 0.02,
+        "Would want to move": 0.0238,
+        "Would not want to move": 0.9524,
+        "Not sure": 0.0238,
         "Refused": 0.0
       },
       "jsd": 0.263041,
@@ -12773,7 +12773,7 @@
       },
       "model_distribution": {
         "Keep political leaders from doing their job": 0.0,
-        "Keep political leaders from doing things that shouldn't be done": 0.68,
+        "Keep political leaders from doing things that shouldn't be done": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.175783,
@@ -12803,9 +12803,9 @@
         "Refused": 0.0114
       },
       "model_distribution": {
-        "A great deal": 0.06,
-        "A fair amount": 0.26,
-        "Not too much": 0.16,
+        "A great deal": 0.125,
+        "A fair amount": 0.5417,
+        "Not too much": 0.3333,
         "Not at all": 0.0,
         "Refused": 0.0
       },
@@ -12836,9 +12836,9 @@
         "Refused": 0.0094
       },
       "model_distribution": {
-        "A great deal": 0.02,
-        "A fair amount": 0.2,
-        "Not too much": 0.1,
+        "A great deal": 0.0625,
+        "A fair amount": 0.625,
+        "Not too much": 0.3125,
         "Not at all": 0.0,
         "Refused": 0.0
       },
@@ -12869,10 +12869,10 @@
         "Very likely": 0.2194
       },
       "model_distribution": {
-        "Very likely": 0.04,
-        "Somewhat likely": 0.14,
-        "Not too likely": 0.14,
-        "Not at all likely": 0.04,
+        "Very likely": 0.1111,
+        "Somewhat likely": 0.3889,
+        "Not too likely": 0.3889,
+        "Not at all likely": 0.1111,
         "Refused": 0.0
       },
       "jsd": 0.035738,
@@ -12932,7 +12932,7 @@
       },
       "model_distribution": {
         "The obstacles that once made it harder for women than men to get ahead are now largely gone": 0.0,
-        "There are still significant obstacles that make it harder for women to get ahead than men": 0.98,
+        "There are still significant obstacles that make it harder for women to get ahead than men": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.284011,
@@ -12959,7 +12959,7 @@
       },
       "model_distribution": {
         "The obstacles that once made it harder for women than men to get ahead are now largely gone": 0.0,
-        "There are still significant obstacles that make it harder for women to get ahead than men": 0.86,
+        "There are still significant obstacles that make it harder for women to get ahead than men": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.260712,
@@ -12987,9 +12987,9 @@
         "We live in a safer world": 0.0967
       },
       "model_distribution": {
-        "We live in a safer world": 0.02,
-        "We live in a more dangerous world": 0.08,
-        "The world we live in is neither safer nor more dangerous": 0.54,
+        "We live in a safer world": 0.0312,
+        "We live in a more dangerous world": 0.125,
+        "The world we live in is neither safer nor more dangerous": 0.8438,
         "Refused": 0.0
       },
       "jsd": 0.329619,
@@ -13022,9 +13022,9 @@
       },
       "model_distribution": {
         "Every day": 0.0,
-        "Almost every day": 0.02,
-        "Sometimes": 0.38,
-        "Rarely": 0.02,
+        "Almost every day": 0.0476,
+        "Sometimes": 0.9048,
+        "Rarely": 0.0476,
         "Never": 0.0,
         "Refused": 0.0
       },
@@ -13057,10 +13057,10 @@
         "Sometimes": 0.2852
       },
       "model_distribution": {
-        "Every day": 0.02,
-        "Almost every day": 0.06,
-        "Sometimes": 0.3,
-        "Rarely": 0.06,
+        "Every day": 0.0455,
+        "Almost every day": 0.1364,
+        "Sometimes": 0.6818,
+        "Rarely": 0.1364,
         "Never": 0.0,
         "Refused": 0.0
       },
@@ -13093,9 +13093,9 @@
         "Sometimes": 0.3293
       },
       "model_distribution": {
-        "Every day": 0.02,
-        "Almost every day": 0.06,
-        "Sometimes": 0.32,
+        "Every day": 0.05,
+        "Almost every day": 0.15,
+        "Sometimes": 0.8,
         "Rarely": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -13128,9 +13128,9 @@
       },
       "model_distribution": {
         "Very worried": 0.0,
-        "Moderately worried": 0.04,
-        "Not too worried": 0.42,
-        "Not worried at all": 0.06,
+        "Moderately worried": 0.0769,
+        "Not too worried": 0.8077,
+        "Not worried at all": 0.1154,
         "Refused": 0.0
       },
       "jsd": 0.211869,
@@ -13161,9 +13161,9 @@
       },
       "model_distribution": {
         "Very worried": 0.0,
-        "Moderately worried": 0.12,
-        "Not too worried": 0.52,
-        "Not worried at all": 0.02,
+        "Moderately worried": 0.1818,
+        "Not too worried": 0.7879,
+        "Not worried at all": 0.0303,
         "Refused": 0.0
       },
       "jsd": 0.24509,

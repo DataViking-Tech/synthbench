@@ -997,7 +997,7 @@
       },
       "model_distribution": {
         "Less than 10 years": 0.0,
-        "10 to less than 50 years": 0.9667,
+        "10 to less than 50 years": 1.0,
         "50 to less than 100 years": 0.0,
         "100 or more years": 0.0,
         "It will never happen": 0.0,
@@ -1026,7 +1026,7 @@
         "Yes": 0.4687
       },
       "model_distribution": {
-        "Yes": 0.9667,
+        "Yes": 1.0,
         "No": 0.0,
         "Refused": 0.0
       },
@@ -1248,7 +1248,7 @@
         "Yes, likely": 0.7821
       },
       "model_distribution": {
-        "Yes, likely": 0.9667,
+        "Yes, likely": 1.0,
         "No, not likely": 0.0,
         "Refused": 0.0
       },
@@ -2229,8 +2229,8 @@
         "Refused": 0.0066
       },
       "model_distribution": {
-        "Men and women are basically similar": 0.7,
-        "Men and women are basically different": 0.2667,
+        "Men and women are basically similar": 0.7241,
+        "Men and women are basically different": 0.2759,
         "Refused": 0.0
       },
       "jsd": 0.124954,
@@ -2283,8 +2283,8 @@
         "Refused": 0.0078
       },
       "model_distribution": {
-        "Men and women are basically similar": 0.4333,
-        "Men and women are basically different": 0.5333,
+        "Men and women are basically similar": 0.4483,
+        "Men and women are basically different": 0.5517,
         "Refused": 0.0
       },
       "jsd": 0.011356,
@@ -2337,8 +2337,8 @@
         "Refused": 0.0082
       },
       "model_distribution": {
-        "Men and women are basically similar": 0.8333,
-        "Men and women are basically different": 0.1333,
+        "Men and women are basically similar": 0.8621,
+        "Men and women are basically different": 0.1379,
         "Refused": 0.0
       },
       "jsd": 0.042629,

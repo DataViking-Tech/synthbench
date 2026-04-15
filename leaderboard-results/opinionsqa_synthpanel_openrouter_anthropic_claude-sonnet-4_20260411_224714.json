@@ -5283,7 +5283,7 @@
         "Refused": 0.0118
       },
       "model_distribution": {
-        "Government investment in research is essential for scientific progress": 0.2667,
+        "Government investment in research is essential for scientific progress": 1.0,
         "Private investment will ensure that enough scientific progress is made, even without government investment": 0.0,
         "Refused": 0.0
       },
@@ -7374,7 +7374,7 @@
         "The country will be more politically divided": 0.6454
       },
       "model_distribution": {
-        "The country will be more politically divided": 0.9333,
+        "The country will be more politically divided": 1.0,
         "The country will be less politically divided": 0.0,
         "Refused": 0.0
       },
@@ -9187,7 +9187,7 @@
       },
       "model_distribution": {
         "Public opinion should play an important role to guide policy decisions about scientific issues": 0.0,
-        "Public opinion should not play an important role to guide policy decisions about scientific issues because these issues": 0.6333,
+        "Public opinion should not play an important role to guide policy decisions about scientific issues because these issues": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.354816,
@@ -11035,7 +11035,7 @@
         "Some interaction": 0.2362
       },
       "model_distribution": {
-        "A lot of interaction": 0.9667,
+        "A lot of interaction": 1.0,
         "Some interaction": 0.0,
         "Not much interaction": 0.0,
         "No interaction at all": 0.0,
@@ -11068,9 +11068,9 @@
         "Some interaction": 0.3945
       },
       "model_distribution": {
-        "A lot of interaction": 0.0333,
-        "Some interaction": 0.8667,
-        "Not much interaction": 0.0667,
+        "A lot of interaction": 0.0344,
+        "Some interaction": 0.8966,
+        "Not much interaction": 0.069,
         "No interaction at all": 0.0,
         "Refused": 0.0
       },
@@ -11956,8 +11956,8 @@
         "Some": 0.38
       },
       "model_distribution": {
-        "A great deal": 0.1333,
-        "Some": 0.8,
+        "A great deal": 0.1428,
+        "Some": 0.8572,
         "Not much": 0.0,
         "Not at all": 0.0,
         "Refused": 0.0
@@ -11989,8 +11989,8 @@
         "Some": 0.4166
       },
       "model_distribution": {
-        "A great deal": 0.7,
-        "Some": 0.0333,
+        "A great deal": 0.9546,
+        "Some": 0.0454,
         "Not much": 0.0,
         "Not at all": 0.0,
         "Refused": 0.0
@@ -12022,7 +12022,7 @@
         "Some": 0.265
       },
       "model_distribution": {
-        "A great deal": 0.7,
+        "A great deal": 1.0,
         "Some": 0.0,
         "Not much": 0.0,
         "Not at all": 0.0,
@@ -12052,7 +12052,7 @@
       },
       "model_distribution": {
         "The average American should be able to recognize it": 0.0,
-        "It is too much to ask of the average American to be able to recognize it": 0.9667,
+        "It is too much to ask of the average American to be able to recognize it": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.249126,
@@ -12106,7 +12106,7 @@
       },
       "model_distribution": {
         "The average American should be able to recognize it": 0.0,
-        "It is too much to ask of the average American to be able to recognize it": 0.9667,
+        "It is too much to ask of the average American to be able to recognize it": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.267521,
@@ -12133,7 +12133,7 @@
       },
       "model_distribution": {
         "The average American should be able to recognize it": 0.0,
-        "It is too much to ask of the average American to be able to recognize it": 0.8667,
+        "It is too much to ask of the average American to be able to recognize it": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.378256,
@@ -12159,8 +12159,8 @@
         "The average American should be able to recognize it": 0.3552
       },
       "model_distribution": {
-        "The average American should be able to recognize it": 0.0667,
-        "It is too much to ask of the average American to be able to recognize it": 0.5333,
+        "The average American should be able to recognize it": 0.1112,
+        "It is too much to ask of the average American to be able to recognize it": 0.8888,
         "Refused": 0.0
       },
       "jsd": 0.068881,
@@ -12187,7 +12187,7 @@
       },
       "model_distribution": {
         "I find it easy to recognize it": 0.0,
-        "It find it hard to recognize it": 0.5667,
+        "It find it hard to recognize it": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.440217,
@@ -12213,7 +12213,7 @@
         "Refused": 0.0131
       },
       "model_distribution": {
-        "I find it easy to recognize it": 0.7333,
+        "I find it easy to recognize it": 1.0,
         "It find it hard to recognize it": 0.0,
         "Refused": 0.0
       },
@@ -12240,8 +12240,8 @@
         "Refused": 0.0111
       },
       "model_distribution": {
-        "I find it easy to recognize it": 0.1667,
-        "It find it hard to recognize it": 0.5333,
+        "I find it easy to recognize it": 0.2381,
+        "It find it hard to recognize it": 0.7619,
         "Refused": 0.0
       },
       "jsd": 0.099195,
@@ -12267,8 +12267,8 @@
         "Refused": 0.0083
       },
       "model_distribution": {
-        "I find it easy to recognize it": 0.0667,
-        "It find it hard to recognize it": 0.6333,
+        "I find it easy to recognize it": 0.0953,
+        "It find it hard to recognize it": 0.9047,
         "Refused": 0.0
       },
       "jsd": 0.396399,
@@ -12294,8 +12294,8 @@
         "Refused": 0.0108
       },
       "model_distribution": {
-        "I find it easy to recognize it": 0.0333,
-        "It find it hard to recognize it": 0.8,
+        "I find it easy to recognize it": 0.04,
+        "It find it hard to recognize it": 0.96,
         "Refused": 0.0
       },
       "jsd": 0.238497,
@@ -12403,7 +12403,7 @@
       },
       "model_distribution": {
         "The freedom to publish and access it should be protected": 0.0,
-        "Steps should be taken to restrict it": 0.9667,
+        "Steps should be taken to restrict it": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.109543,
@@ -12429,7 +12429,7 @@
         "The freedom to publish and access it should be protected": 0.7087
       },
       "model_distribution": {
-        "The freedom to publish and access it should be protected": 0.9333,
+        "The freedom to publish and access it should be protected": 1.0,
         "Steps should be taken to restrict it": 0.0,
         "Refused": 0.0
       },
@@ -12456,8 +12456,8 @@
         "The freedom to publish and access it should be protected": 0.464
       },
       "model_distribution": {
-        "The freedom to publish and access it should be protected": 0.7667,
-        "Steps should be taken to restrict it": 0.0333,
+        "The freedom to publish and access it should be protected": 0.9584,
+        "Steps should be taken to restrict it": 0.0416,
         "Refused": 0.0
       },
       "jsd": 0.244673,
@@ -12483,7 +12483,7 @@
         "The freedom to publish and access it should be protected": 0.6466
       },
       "model_distribution": {
-        "The freedom to publish and access it should be protected": 0.6,
+        "The freedom to publish and access it should be protected": 1.0,
         "Steps should be taken to restrict it": 0.0,
         "Refused": 0.0
       },
@@ -12510,8 +12510,8 @@
         "The freedom to publish and access it should be protected": 0.2103
       },
       "model_distribution": {
-        "The freedom to publish and access it should be protected": 0.2333,
-        "Steps should be taken to restrict it": 0.5667,
+        "The freedom to publish and access it should be protected": 0.2916,
+        "Steps should be taken to restrict it": 0.7084,
         "Refused": 0.0
       },
       "jsd": 0.010319,
@@ -12539,8 +12539,8 @@
         "Refused": 0.0051
       },
       "model_distribution": {
-        "Major reason": 0.8,
-        "Minor reason": 0.0333,
+        "Major reason": 0.96,
+        "Minor reason": 0.04,
         "Not a reason": 0.0,
         "Refused": 0.0
       },
@@ -12569,7 +12569,7 @@
         "Refused": 0.0042
       },
       "model_distribution": {
-        "Major reason": 0.8333,
+        "Major reason": 1.0,
         "Minor reason": 0.0,
         "Not a reason": 0.0,
         "Refused": 0.0
@@ -12661,8 +12661,8 @@
         "Sometimes": 0.5117
       },
       "model_distribution": {
-        "Often": 0.0667,
-        "Sometimes": 0.8,
+        "Often": 0.077,
+        "Sometimes": 0.923,
         "Hardly ever": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -12690,8 +12690,8 @@
         "Yes": 0.4851
       },
       "model_distribution": {
-        "Yes": 0.7333,
-        "No": 0.1,
+        "Yes": 0.88,
+        "No": 0.12,
         "Refused": 0.0
       },
       "jsd": 0.138624,
@@ -12717,8 +12717,8 @@
         "Yes": 0.0861
       },
       "model_distribution": {
-        "Yes": 0.1,
-        "No": 0.7,
+        "Yes": 0.125,
+        "No": 0.875,
         "Refused": 0.0
       },
       "jsd": 0.005841,
@@ -12744,8 +12744,8 @@
         "Yes, have done this": 0.6461
       },
       "model_distribution": {
-        "Yes, have done this": 0.7667,
-        "No, have not done this": 0.0333,
+        "Yes, have done this": 0.9584,
+        "No, have not done this": 0.0416,
         "Refused": 0.0
       },
       "jsd": 0.124262,
@@ -12771,7 +12771,7 @@
         "Yes, have done this": 0.4316
       },
       "model_distribution": {
-        "Yes, have done this": 0.9333,
+        "Yes, have done this": 1.0,
         "No, have not done this": 0.0,
         "Refused": 0.0
       },
@@ -12798,7 +12798,7 @@
         "Yes, have done this": 0.7995
       },
       "model_distribution": {
-        "Yes, have done this": 0.9,
+        "Yes, have done this": 1.0,
         "No, have not done this": 0.0,
         "Refused": 0.0
       },
@@ -12825,8 +12825,8 @@
         "Yes, have done this": 0.3225
       },
       "model_distribution": {
-        "Yes, have done this": 0.2667,
-        "No, have not done this": 0.7,
+        "Yes, have done this": 0.2759,
+        "No, have not done this": 0.7241,
         "Refused": 0.0
       },
       "jsd": 0.005829,
@@ -12852,7 +12852,7 @@
         "Yes, have done this": 0.5337
       },
       "model_distribution": {
-        "Yes, have done this": 0.9333,
+        "Yes, have done this": 1.0,
         "No, have not done this": 0.0,
         "Refused": 0.0
       },
@@ -12916,7 +12916,7 @@
         "Small impact": 0.0799
       },
       "model_distribution": {
-        "Big impact": 0.5667,
+        "Big impact": 1.0,
         "Moderate impact": 0.0,
         "Small impact": 0.0,
         "No impact at all": 0.0,
@@ -12949,7 +12949,7 @@
         "Small impact": 0.1034
       },
       "model_distribution": {
-        "Big impact": 0.7,
+        "Big impact": 1.0,
         "Moderate impact": 0.0,
         "Small impact": 0.0,
         "No impact at all": 0.0,
@@ -12982,8 +12982,8 @@
         "Small impact": 0.1696
       },
       "model_distribution": {
-        "Big impact": 0.6333,
-        "Moderate impact": 0.2,
+        "Big impact": 0.76,
+        "Moderate impact": 0.24,
         "Small impact": 0.0,
         "No impact at all": 0.0,
         "Refused": 0.0
@@ -13015,8 +13015,8 @@
         "Small impact": 0.1771
       },
       "model_distribution": {
-        "Big impact": 0.7667,
-        "Moderate impact": 0.1333,
+        "Big impact": 0.8519,
+        "Moderate impact": 0.1481,
         "Small impact": 0.0,
         "No impact at all": 0.0,
         "Refused": 0.0
@@ -13048,8 +13048,8 @@
         "Sometimes": 0.4775
       },
       "model_distribution": {
-        "Often": 0.0667,
-        "Sometimes": 0.7333,
+        "Often": 0.0834,
+        "Sometimes": 0.9166,
         "Hardly ever": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -13077,8 +13077,8 @@
         "Yes": 0.5161
       },
       "model_distribution": {
-        "Yes": 0.7333,
-        "No": 0.2,
+        "Yes": 0.7857,
+        "No": 0.2143,
         "Refused": 0.0
       },
       "jsd": 0.059788,
@@ -13108,7 +13108,7 @@
         "Refused": 0.0074
       },
       "model_distribution": {
-        "A very big problem": 0.9,
+        "A very big problem": 1.0,
         "A moderately big problem": 0.0,
         "A small problem": 0.0,
         "Not a problem at all": 0.0,
@@ -13141,8 +13141,8 @@
         "Sometimes": 0.5174
       },
       "model_distribution": {
-        "Often": 0.0333,
-        "Sometimes": 0.8,
+        "Often": 0.04,
+        "Sometimes": 0.96,
         "Hardly ever": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -13172,9 +13172,9 @@
         "Stay the same": 0.3119
       },
       "model_distribution": {
-        "Get better": 0.1333,
-        "Stay the same": 0.0333,
-        "Get worse": 0.7667,
+        "Get better": 0.1428,
+        "Stay the same": 0.0357,
+        "Get worse": 0.8215,
         "Refused": 0.0
       },
       "jsd": 0.113437,
@@ -13204,7 +13204,7 @@
         "Refused": 0.0127
       },
       "model_distribution": {
-        "A very big challenge": 0.3667,
+        "A very big challenge": 1.0,
         "A moderately big challenge": 0.0,
         "A small challenge": 0.0,
         "Not a challenge at all": 0.0,
@@ -13237,8 +13237,8 @@
         "Refused": 0.0158
       },
       "model_distribution": {
-        "A very big challenge": 0.3,
-        "A moderately big challenge": 0.3667,
+        "A very big challenge": 0.45,
+        "A moderately big challenge": 0.55,
         "A small challenge": 0.0,
         "Not a challenge at all": 0.0,
         "Refused": 0.0
@@ -13270,8 +13270,8 @@
         "Refused": 0.0147
       },
       "model_distribution": {
-        "A very big challenge": 0.4,
-        "A moderately big challenge": 0.4,
+        "A very big challenge": 0.5,
+        "A moderately big challenge": 0.5,
         "A small challenge": 0.0,
         "Not a challenge at all": 0.0,
         "Refused": 0.0
@@ -13303,7 +13303,7 @@
         "Refused": 0.0203
       },
       "model_distribution": {
-        "A very big challenge": 0.8333,
+        "A very big challenge": 1.0,
         "A moderately big challenge": 0.0,
         "A small challenge": 0.0,
         "Not a challenge at all": 0.0,
@@ -13336,7 +13336,7 @@
         "Refused": 0.0196
       },
       "model_distribution": {
-        "A very big challenge": 0.8333,
+        "A very big challenge": 1.0,
         "A moderately big challenge": 0.0,
         "A small challenge": 0.0,
         "Not a challenge at all": 0.0,
@@ -13371,12 +13371,12 @@
         "The public": 0.2005
       },
       "model_distribution": {
-        "The government": 0.2667,
-        "Technology companies": 0.1667,
-        "The public": 0.4,
+        "The government": 0.3077,
+        "Technology companies": 0.1923,
+        "The public": 0.4615,
         "The news media": 0.0,
         "None of these": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.0384
       },
       "jsd": 0.375027,
       "kendall_tau": 0.276026,
@@ -13406,7 +13406,7 @@
       },
       "model_distribution": {
         "Very confident": 0.0,
-        "Somewhat confident": 0.9,
+        "Somewhat confident": 1.0,
         "Not too confident": 0.0,
         "Not at all confident": 0.0,
         "Refused": 0.0
@@ -13435,7 +13435,7 @@
       },
       "model_distribution": {
         "Deal fairly with all sides": 0.0,
-        "Tend to favor one side": 0.9,
+        "Tend to favor one side": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.351121,
@@ -13462,7 +13462,7 @@
       },
       "model_distribution": {
         "Keep political leaders from doing their job": 0.0,
-        "Keep political leaders from doing things that shouldn't be done": 0.9667,
+        "Keep political leaders from doing things that shouldn't be done": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.175783,
@@ -13489,7 +13489,7 @@
       },
       "model_distribution": {
         "Deal fairly with all sides": 0.0,
-        "Tend to favor one side": 0.9667,
+        "Tend to favor one side": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.160334,
@@ -13515,7 +13515,7 @@
         "Yes": 0.7517
       },
       "model_distribution": {
-        "Yes": 0.9333,
+        "Yes": 1.0,
         "No": 0.0,
         "Refused": 0.0
       },
@@ -13542,7 +13542,7 @@
         "Yes, use this": 0.7295
       },
       "model_distribution": {
-        "Yes, use this": 0.8667,
+        "Yes, use this": 1.0,
         "No, do not use this": 0.0,
         "Refused": 0.0
       },
@@ -13569,7 +13569,7 @@
         "Yes, use this": 0.3656
       },
       "model_distribution": {
-        "Yes, use this": 0.9333,
+        "Yes, use this": 1.0,
         "No, do not use this": 0.0,
         "Refused": 0.0
       },
@@ -13596,8 +13596,8 @@
         "Yes, use this": 0.2164
       },
       "model_distribution": {
-        "Yes, use this": 0.3333,
-        "No, do not use this": 0.5667,
+        "Yes, use this": 0.3703,
+        "No, do not use this": 0.6297,
         "Refused": 0.0
       },
       "jsd": 0.027231,
@@ -13623,8 +13623,8 @@
         "Yes, use this": 0.2768
       },
       "model_distribution": {
-        "Yes, use this": 0.5,
-        "No, do not use this": 0.3333,
+        "Yes, use this": 0.6,
+        "No, do not use this": 0.4,
         "Refused": 0.0
       },
       "jsd": 0.082814,
@@ -13652,10 +13652,10 @@
         "Refused": 0.0023
       },
       "model_distribution": {
-        "More secure": 0.0333,
-        "Less secure": 0.9,
+        "More secure": 0.0345,
+        "Less secure": 0.9311,
         "About the same": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.0345
       },
       "jsd": 0.140416,
       "kendall_tau": 0.182574,
@@ -13685,8 +13685,8 @@
       },
       "model_distribution": {
         "Very closely": 0.0,
-        "Somewhat closely": 0.0667,
-        "Not too closely": 0.8667,
+        "Somewhat closely": 0.0715,
+        "Not too closely": 0.9285,
         "Not at all closely": 0.0,
         "Refused": 0.0
       },
@@ -13740,8 +13740,8 @@
         "Yes": 0.2054
       },
       "model_distribution": {
-        "Yes": 0.4,
-        "No": 0.5,
+        "Yes": 0.4444,
+        "No": 0.5556,
         "Refused": 0.0
       },
       "jsd": 0.049349,
@@ -13767,8 +13767,8 @@
         "Refused": 0.0023
       },
       "model_distribution": {
-        "Yes, wear this": 0.2667,
-        "No, do not wear this": 0.6667,
+        "Yes, wear this": 0.2857,
+        "No, do not wear this": 0.7143,
         "Refused": 0.0
       },
       "jsd": 0.005182,
@@ -13794,7 +13794,7 @@
         "Yes, belong to this": 0.6845
       },
       "model_distribution": {
-        "Yes, belong to this": 0.9,
+        "Yes, belong to this": 1.0,
         "No, do not belong to this": 0.0,
         "Refused": 0.0
       },
@@ -13822,7 +13822,7 @@
       },
       "model_distribution": {
         "Yes, have used this": 0.0,
-        "No, have not used this": 0.7333,
+        "No, have not used this": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.094199,
@@ -13854,8 +13854,8 @@
         "Refused": 0.0033
       },
       "model_distribution": {
-        "Almost daily": 0.5,
-        "About once a week": 0.3667,
+        "Almost daily": 0.5769,
+        "About once a week": 0.4231,
         "About once a month": 0.0,
         "Less frequently": 0.0,
         "Never": 0.0,
@@ -13889,8 +13889,8 @@
       },
       "model_distribution": {
         "Very confident": 0.0,
-        "Somewhat confident": 0.0333,
-        "Not too confident": 0.8333,
+        "Somewhat confident": 0.0384,
+        "Not too confident": 0.9616,
         "Not confident at all": 0.0,
         "Refused": 0.0
       },
@@ -13923,7 +13923,7 @@
       "model_distribution": {
         "Very confident": 0.0,
         "Somewhat confident": 0.0,
-        "Not too confident": 0.7667,
+        "Not too confident": 1.0,
         "Not confident at all": 0.0,
         "Refused": 0.0
       },
@@ -13954,10 +13954,10 @@
         "Very confident": 0.0251
       },
       "model_distribution": {
-        "Very confident": 0.0333,
+        "Very confident": 0.0384,
         "Somewhat confident": 0.0,
-        "Not too confident": 0.1667,
-        "Not confident at all": 0.6667,
+        "Not too confident": 0.1923,
+        "Not confident at all": 0.7692,
         "Refused": 0.0
       },
       "jsd": 0.207634,
@@ -14022,8 +14022,8 @@
       "model_distribution": {
         "Very confident": 0.0,
         "Somewhat confident": 0.0,
-        "Not too confident": 0.9333,
-        "Not confident at all": 0.0333,
+        "Not too confident": 0.9655,
+        "Not confident at all": 0.0345,
         "Refused": 0.0
       },
       "jsd": 0.285126,
@@ -14054,7 +14054,7 @@
       },
       "model_distribution": {
         "Very comfortable": 0.0,
-        "Somewhat comfortable": 0.9333,
+        "Somewhat comfortable": 1.0,
         "Not too comfortable": 0.0,
         "Not comfortable at all": 0.0,
         "Refused": 0.0
@@ -14121,7 +14121,7 @@
       "model_distribution": {
         "Very comfortable": 0.0,
         "Somewhat comfortable": 0.0,
-        "Not too comfortable": 0.9333,
+        "Not too comfortable": 1.0,
         "Not comfortable at all": 0.0,
         "Refused": 0.0
       },
@@ -14153,8 +14153,8 @@
       },
       "model_distribution": {
         "A great deal": 0.0,
-        "Some": 0.0667,
-        "Very little": 0.7,
+        "Some": 0.087,
+        "Very little": 0.913,
         "Not at all": 0.0,
         "Refused": 0.0
       },
@@ -14181,9 +14181,9 @@
         "Yes, have done this": 0.5265
       },
       "model_distribution": {
-        "Yes, have done this": 0.7333,
+        "Yes, have done this": 0.8462,
         "No, have not done this": 0.0,
-        "Refused": 0.1333
+        "Refused": 0.1538
       },
       "jsd": 0.328017,
       "kendall_tau": 0.333333,
@@ -14208,9 +14208,9 @@
         "Yes": 0.1993
       },
       "model_distribution": {
-        "Yes": 0.1,
-        "No": 0.8333,
-        "Refused": 0.0333
+        "Yes": 0.1035,
+        "No": 0.8621,
+        "Refused": 0.0345
       },
       "jsd": 0.020236,
       "kendall_tau": 1.0,
@@ -14235,8 +14235,8 @@
         "Yes": 0.8733
       },
       "model_distribution": {
-        "Yes": 0.9,
-        "No": 0.0667,
+        "Yes": 0.931,
+        "No": 0.069,
         "Refused": 0.0
       },
       "jsd": 0.007941,
@@ -14408,7 +14408,7 @@
       },
       "model_distribution": {
         "Very satisfied": 0.0,
-        "Somewhat satisfied": 0.9667,
+        "Somewhat satisfied": 1.0,
         "Somewhat dissatisfied": 0.0,
         "Very dissatisfied": 0.0,
         "Refused": 0.0
@@ -14441,8 +14441,8 @@
       },
       "model_distribution": {
         "Very satisfied": 0.0,
-        "Somewhat satisfied": 0.0333,
-        "Somewhat dissatisfied": 0.9333,
+        "Somewhat satisfied": 0.0345,
+        "Somewhat dissatisfied": 0.9655,
         "Very dissatisfied": 0.0,
         "Refused": 0.0
       },
@@ -14474,8 +14474,8 @@
       },
       "model_distribution": {
         "Very satisfied": 0.0,
-        "Somewhat satisfied": 0.0333,
-        "Somewhat dissatisfied": 0.8667,
+        "Somewhat satisfied": 0.037,
+        "Somewhat dissatisfied": 0.963,
         "Very dissatisfied": 0.0,
         "Refused": 0.0
       },
@@ -14504,9 +14504,9 @@
         "Working part-time for pay": 0.2432
       },
       "model_distribution": {
-        "Working full-time for pay": 0.8,
-        "Working part-time for pay": 0.0333,
-        "Not working for pay at all": 0.0667,
+        "Working full-time for pay": 0.8889,
+        "Working part-time for pay": 0.037,
+        "Not working for pay at all": 0.0741,
         "Refused": 0.0
       },
       "jsd": 0.149136,
@@ -14984,9 +14984,9 @@
         "Too much for their adult children": 0.5822
       },
       "model_distribution": {
-        "Too much for their adult children": 0.1667,
+        "Too much for their adult children": 0.2174,
         "Too little for their adult children": 0.0,
-        "About the right amount": 0.6,
+        "About the right amount": 0.7826,
         "Refused": 0.0
       },
       "jsd": 0.165212,
@@ -15645,8 +15645,8 @@
         "Yes, a responsibility of the federal government to provide for all Americans": 0.2796
       },
       "model_distribution": {
-        "Yes, a responsibility of the federal government to provide for all Americans": 0.0333,
-        "No, not the responsibility of the federal government to provide": 0.0333,
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.5,
+        "No, not the responsibility of the federal government to provide": 0.5,
         "Refused": 0.0
       },
       "jsd": 0.039896,
@@ -17468,7 +17468,7 @@
         "Try to promote human rights in China, even if it harms economic relations with China": 0.7278
       },
       "model_distribution": {
-        "Try to promote human rights in China, even if it harms economic relations with China": 0.9333,
+        "Try to promote human rights in China, even if it harms economic relations with China": 1.0,
         "Prioritize strengthening economic relations with China, even if it means not addressing human rights issues": 0.0,
         "Refused": 0.0
       },
@@ -18494,7 +18494,7 @@
         "Refused": 0.0162
       },
       "model_distribution": {
-        "In foreign policy, the US should take into account the interests of its allies even if it means making compromises wit": 0.2667,
+        "In foreign policy, the US should take into account the interests of its allies even if it means making compromises wit": 1.0,
         "In foreign policy, the US should follow its own national interests even when its allies strongly disagree": 0.0,
         "Refused": 0.0
       },
@@ -18521,8 +18521,8 @@
         "We should pay less attention to problems overseas and concentrate on problems here at home": 0.459
       },
       "model_distribution": {
-        "It's best for the future of our country to be active in world affairs": 0.2667,
-        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.2667,
+        "It's best for the future of our country to be active in world affairs": 0.5,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.5,
         "Refused": 0.0
       },
       "jsd": 0.006735,
@@ -19367,7 +19367,7 @@
         "The economic system in this country unfairly favors powerful interests": 0.6931
       },
       "model_distribution": {
-        "The economic system in this country unfairly favors powerful interests": 0.9333,
+        "The economic system in this country unfairly favors powerful interests": 1.0,
         "The economic system in this country is generally fair to most Americans": 0.0,
         "Refused": 0.0
       },
@@ -19394,7 +19394,7 @@
         "Refused": 0.0154
       },
       "model_distribution": {
-        "America's openness to people from all over the world is essential to who we are as a nation": 0.8667,
+        "America's openness to people from all over the world is essential to who we are as a nation": 1.0,
         "If America is too open to people from all over the world, we risk losing our identity as a nation": 0.0,
         "Refused": 0.0
       },
@@ -19421,8 +19421,8 @@
         "Voting is a privilege that comes with responsibilities and can be limited if adult U.S. citizens don't meet some require": 0.4309
       },
       "model_distribution": {
-        "Voting is a fundamental right for every adult U.S. citizen and should not be restricted in any way": 0.8333,
-        "Voting is a privilege that comes with responsibilities and can be limited if adult U.S. citizens don't meet some require": 0.0333,
+        "Voting is a fundamental right for every adult U.S. citizen and should not be restricted in any way": 0.9616,
+        "Voting is a privilege that comes with responsibilities and can be limited if adult U.S. citizens don't meet some require": 0.0384,
         "Refused": 0.0
       },
       "jsd": 0.181736,
@@ -19448,7 +19448,7 @@
         "Refused": 0.0141
       },
       "model_distribution": {
-        "In foreign policy, the U.S. should take into account the interests of its allies even if it means making compromises": 0.8667,
+        "In foreign policy, the U.S. should take into account the interests of its allies even if it means making compromises": 1.0,
         "In foreign policy, the U.S. should follow its own national interests even when its allies strongly disagree": 0.0,
         "Refused": 0.0
       },
@@ -19476,7 +19476,7 @@
       },
       "model_distribution": {
         "The best way to ensure peace is through military strength": 0.0,
-        "Good diplomacy is the best way to ensure peace": 0.9,
+        "Good diplomacy is the best way to ensure peace": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.188902,
@@ -19503,7 +19503,7 @@
       },
       "model_distribution": {
         "Government is almost always wasteful and inefficient": 0.0,
-        "Government often does a better job than people give it credit for": 0.9,
+        "Government often does a better job than people give it credit for": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.351758,
@@ -19530,7 +19530,7 @@
       },
       "model_distribution": {
         "Compromise in politics is really just selling out on what you believe in": 0.0,
-        "Compromise is how things get done in politics, even though it sometimes means sacrificing your beliefs": 0.9,
+        "Compromise is how things get done in politics, even though it sometimes means sacrificing your beliefs": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.137519,
@@ -19558,9 +19558,9 @@
         "Should provide more assistance": 0.3509
       },
       "model_distribution": {
-        "Should provide more assistance": 0.7,
+        "Should provide more assistance": 0.7241,
         "Should provide less assistance": 0.0,
-        "Is providing about the right amount of assistance": 0.2667,
+        "Is providing about the right amount of assistance": 0.2759,
         "Refused": 0.0
       },
       "jsd": 0.229069,
@@ -19587,7 +19587,7 @@
       },
       "model_distribution": {
         "Better off when a parent stays home to focus on the family": 0.0,
-        "Just as well off when their parents work outside the home": 0.9667,
+        "Just as well off when their parents work outside the home": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.362233,
@@ -19615,7 +19615,7 @@
         "neither better nor worse at making good policy decisions about that subject than other people": 0.3109
       },
       "model_distribution": {
-        "Usually better at making good policy decisions about that subject than other people": 0.8667,
+        "Usually better at making good policy decisions about that subject than other people": 1.0,
         "Usually worse at making good policy decisions about that subject than other people": 0.0,
         "neither better nor worse at making good policy decisions about that subject than other people": 0.0,
         "Refused": 0.0
@@ -19763,8 +19763,8 @@
         "Work with any country to achieve U.S. goals, even if that sometimes means working closely with dictators or countries th": 0.4847
       },
       "model_distribution": {
-        "Work with any country to achieve U.S. goals, even if that sometimes means working closely with dictators or countries th": 0.8,
-        "Not work with dictators or countries that do not share our democratic values, even if that sometimes makes it harder to": 0.0667,
+        "Work with any country to achieve U.S. goals, even if that sometimes means working closely with dictators or countries th": 0.923,
+        "Not work with dictators or countries that do not share our democratic values, even if that sometimes makes it harder to": 0.077,
         "Refused": 0.0
       },
       "jsd": 0.183675,
@@ -20902,10 +20902,10 @@
       },
       "model_distribution": {
         "A lot better": 0.0,
-        "A little better": 0.8667,
-        "A little worse": 0.0667,
+        "A little better": 0.8966,
+        "A little worse": 0.069,
         "A lot worse": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.0344
       },
       "jsd": 0.281611,
       "kendall_tau": 0.527046,

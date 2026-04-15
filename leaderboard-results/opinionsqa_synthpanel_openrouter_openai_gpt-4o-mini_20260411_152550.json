@@ -954,7 +954,7 @@
       },
       "model_distribution": {
         "better prepared financially for retirement than older adults are today": 0.0,
-        "less prepared financially for retirement than older adults today": 0.98,
+        "less prepared financially for retirement than older adults today": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.148862,

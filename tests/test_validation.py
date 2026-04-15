@@ -193,6 +193,19 @@ class TestDistributionChecks:
         report = validate_submission(bad, tier2=False)
         assert any(i.code == "DIST_NEGATIVE" for i in report.errors)
 
+    def test_all_zero_distribution_treated_as_sentinel(self, clean_submission):
+        # Catastrophic parse-failure sentinel (sb-7gn): an all-zero
+        # model_distribution is the legitimate encoding for "model produced
+        # no parseable response on this question". It's paired with
+        # jsd=1.0 / tau=0.0 in per_question, and should NOT trip DIST_SUM.
+        bad = copy.deepcopy(clean_submission)
+        q = bad["per_question"][0]
+        q["model_distribution"] = dict.fromkeys(q["model_distribution"], 0.0)
+        q["jsd"] = 1.0
+        q["kendall_tau"] = 0.0
+        report = validate_submission(bad, tier2=False)
+        assert not any(i.code == "DIST_SUM" for i in report.errors)
+
 
 class TestQuestionSetHash:
     def test_reported_hash_mismatch(self, clean_submission):

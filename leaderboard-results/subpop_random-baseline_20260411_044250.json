@@ -1087,8 +1087,8 @@
         "Refused": 0.3333
       },
       "jsd": 0.266301,
-      "kendall_tau": -0.298142,
-      "parity": 0.542314,
+      "kendall_tau": -0.385758,
+      "parity": 0.52041,
       "n_samples": 30,
       "n_parse_failures": 0,
       "model_refusal_rate": 0.0,

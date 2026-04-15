@@ -5279,8 +5279,8 @@
         "Refused": 0.0051
       },
       "model_distribution": {
-        "Often": 0.9,
-        "Sometimes": 0.0667,
+        "Often": 0.931,
+        "Sometimes": 0.069,
         "Rarely": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -5313,7 +5313,7 @@
       },
       "model_distribution": {
         "Often": 0.0,
-        "Sometimes": 0.9,
+        "Sometimes": 1.0,
         "Rarely": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -5968,9 +5968,9 @@
       "model_distribution": {
         "Ronald Reagan": 0.0,
         "George H.W. Bush": 0.0,
-        "Bill Clinton": 0.0667,
+        "Bill Clinton": 0.069,
         "George W. Bush": 0.0,
-        "Barack Obama": 0.9,
+        "Barack Obama": 0.931,
         "Donald Trump": 0.0,
         "Joe Biden": 0.0,
         "Refused": 0.0
@@ -6231,9 +6231,9 @@
         "Refused": 0.0056
       },
       "model_distribution": {
-        "Too much attention": 0.0333,
-        "Too little attention": 0.8667,
-        "Right amount of attention": 0.0333,
+        "Too much attention": 0.0357,
+        "Too little attention": 0.9286,
+        "Right amount of attention": 0.0357,
         "Refused": 0.0
       },
       "jsd": 0.54079,
@@ -6261,9 +6261,9 @@
         "Refused": 0.0087
       },
       "model_distribution": {
-        "Too much attention": 0.1,
+        "Too much attention": 0.1765,
         "Too little attention": 0.0,
-        "Right amount of attention": 0.4667,
+        "Right amount of attention": 0.8235,
         "Refused": 0.0
       },
       "jsd": 0.242192,
@@ -6291,7 +6291,7 @@
         "Refused": 0.0077
       },
       "model_distribution": {
-        "Too much attention": 0.2667,
+        "Too much attention": 1.0,
         "Too little attention": 0.0,
         "Right amount of attention": 0.0,
         "Refused": 0.0

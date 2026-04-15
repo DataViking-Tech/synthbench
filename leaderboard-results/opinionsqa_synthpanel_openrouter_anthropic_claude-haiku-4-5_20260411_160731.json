@@ -130,9 +130,9 @@
         "Refused": 0.0042
       },
       "model_distribution": {
-        "Major factor": 0.02,
-        "Minor factor": 0.04,
-        "Not a factor": 0.92,
+        "Major factor": 0.0204,
+        "Minor factor": 0.0408,
+        "Not a factor": 0.9388,
         "Refused": 0.0
       },
       "jsd": 0.032286,
@@ -161,8 +161,8 @@
       },
       "model_distribution": {
         "Major factor": 0.0,
-        "Minor factor": 0.02,
-        "Not a factor": 0.96,
+        "Minor factor": 0.0204,
+        "Not a factor": 0.9796,
         "Refused": 0.0
       },
       "jsd": 0.142887,
@@ -190,8 +190,8 @@
         "Refused": 0.0042
       },
       "model_distribution": {
-        "Major factor": 0.12,
-        "Minor factor": 0.86,
+        "Major factor": 0.1224,
+        "Minor factor": 0.8776,
         "Not a factor": 0.0,
         "Refused": 0.0
       },
@@ -220,8 +220,8 @@
         "Refused": 0.0036
       },
       "model_distribution": {
-        "Major factor": 0.2,
-        "Minor factor": 0.78,
+        "Major factor": 0.2041,
+        "Minor factor": 0.7959,
         "Not a factor": 0.0,
         "Refused": 0.0
       },
@@ -250,8 +250,8 @@
         "Refused": 0.0053
       },
       "model_distribution": {
-        "Major factor": 0.34,
-        "Minor factor": 0.64,
+        "Major factor": 0.3469,
+        "Minor factor": 0.6531,
         "Not a factor": 0.0,
         "Refused": 0.0
       },
@@ -280,7 +280,7 @@
         "Refused": 0.0036
       },
       "model_distribution": {
-        "Major factor": 0.98,
+        "Major factor": 1.0,
         "Minor factor": 0.0,
         "Not a factor": 0.0,
         "Refused": 0.0
@@ -310,8 +310,8 @@
         "Refused": 0.0041
       },
       "model_distribution": {
-        "Major factor": 0.24,
-        "Minor factor": 0.74,
+        "Major factor": 0.2449,
+        "Minor factor": 0.7551,
         "Not a factor": 0.0,
         "Refused": 0.0
       },
@@ -346,7 +346,7 @@
       "model_distribution": {
         "A very good thing": 0.0,
         "A somewhat good thing": 0.0,
-        "A somewhat bad thing": 0.98,
+        "A somewhat bad thing": 1.0,
         "A very bad thing": 0.0,
         "Neither a good nor bad thing": 0.0,
         "Refused": 0.0
@@ -432,7 +432,7 @@
       },
       "model_distribution": {
         "Yes, have received in the past 12 months": 0.0,
-        "No, have not received in the past 12 months": 0.96,
+        "No, have not received in the past 12 months": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.061491,
@@ -459,7 +459,7 @@
       },
       "model_distribution": {
         "Larger and farther apart, but schools, stores, and restaurants are several miles away": 0.0,
-        "Smaller and closer to each other, but schools, stores, and restaurants are within walking distance": 0.04,
+        "Smaller and closer to each other, but schools, stores, and restaurants are within walking distance": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.39562,
@@ -488,7 +488,7 @@
       },
       "model_distribution": {
         "A good thing for the country": 0.0,
-        "A bad thing for the country": 0.92,
+        "A bad thing for the country": 1.0,
         "Neither a good thing or a bad thing": 0.0,
         "Refused": 0.0
       },
@@ -515,8 +515,8 @@
         "Taking technology too far": 0.5613
       },
       "model_distribution": {
-        "An appropriate use of technology": 0.8,
-        "Taking technology too far": 0.12,
+        "An appropriate use of technology": 0.8696,
+        "Taking technology too far": 0.1304,
         "Refused": 0.0
       },
       "jsd": 0.168092,
@@ -542,8 +542,8 @@
         "Taking technology too far": 0.6761
       },
       "model_distribution": {
-        "An appropriate use of technology": 0.02,
-        "Taking technology too far": 0.88,
+        "An appropriate use of technology": 0.0222,
+        "Taking technology too far": 0.9778,
         "Refused": 0.0
       },
       "jsd": 0.134,
@@ -569,7 +569,7 @@
         "Taking technology too far": 0.2596
       },
       "model_distribution": {
-        "An appropriate use of technology": 0.9,
+        "An appropriate use of technology": 1.0,
         "Taking technology too far": 0.0,
         "Refused": 0.0
       },
@@ -596,7 +596,7 @@
         "Taking technology too far": 0.4071
       },
       "model_distribution": {
-        "An appropriate use of technology": 0.9,
+        "An appropriate use of technology": 1.0,
         "Taking technology too far": 0.0,
         "Refused": 0.0
       },
@@ -623,7 +623,7 @@
         "Refused": 0.0179
       },
       "model_distribution": {
-        "Business corporations make too much profit": 0.9,
+        "Business corporations make too much profit": 1.0,
         "Most corporations make a fair and reasonable amount of profit": 0.0,
         "Refused": 0.0
       },
@@ -650,8 +650,8 @@
         "There is at least one candidate who shares most of my views": 0.6429
       },
       "model_distribution": {
-        "There is at least one candidate who shares most of my views": 0.1,
-        "None of the candidates represent my views well": 0.86,
+        "There is at least one candidate who shares most of my views": 0.1042,
+        "None of the candidates represent my views well": 0.8958,
         "Refused": 0.0
       },
       "jsd": 0.258442,
@@ -715,8 +715,8 @@
         "Refused": 0.0022
       },
       "model_distribution": {
-        "A lot": 0.18,
-        "A little": 0.78,
+        "A lot": 0.1875,
+        "A little": 0.8125,
         "Nothing at all": 0.0,
         "Refused": 0.0
       },
@@ -748,8 +748,8 @@
       },
       "model_distribution": {
         "Very enthusiastic": 0.0,
-        "Somewhat enthusiastic": 0.04,
-        "Not too enthusiastic": 0.92,
+        "Somewhat enthusiastic": 0.0417,
+        "Not too enthusiastic": 0.9583,
         "Not at all enthusiastic": 0.0,
         "Refused": 0.0
       },
@@ -781,7 +781,7 @@
       },
       "model_distribution": {
         "Very worried": 0.0,
-        "Somewhat worried": 0.94,
+        "Somewhat worried": 1.0,
         "Not too worried": 0.0,
         "Not at all worried": 0.0,
         "Refused": 0.0
@@ -815,8 +815,8 @@
         "Refused": 0.0017
       },
       "model_distribution": {
-        "Less than 10 years": 0.14,
-        "10 to less than 50 years": 0.8,
+        "Less than 10 years": 0.1489,
+        "10 to less than 50 years": 0.8511,
         "50 to less than 100 years": 0.0,
         "100 or more years": 0.0,
         "It will never happen": 0.0,
@@ -845,8 +845,8 @@
         "Yes": 0.4687
       },
       "model_distribution": {
-        "Yes": 0.02,
-        "No": 0.92,
+        "Yes": 0.0213,
+        "No": 0.9787,
         "Refused": 0.0
       },
       "jsd": 0.231459,
@@ -876,9 +876,9 @@
         "Very safe": 0.127
       },
       "model_distribution": {
-        "Very safe": 0.06,
-        "Somewhat safe": 0.02,
-        "Not too safe": 0.86,
+        "Very safe": 0.0638,
+        "Somewhat safe": 0.0213,
+        "Not too safe": 0.9149,
         "Not safe at all": 0.0,
         "Refused": 0.0
       },
@@ -911,8 +911,8 @@
       "model_distribution": {
         "Very safe": 0.0,
         "Somewhat safe": 0.0,
-        "Not too safe": 0.24,
-        "Not safe at all": 0.7,
+        "Not too safe": 0.2553,
+        "Not safe at all": 0.7447,
         "Refused": 0.0
       },
       "jsd": 0.263401,
@@ -941,7 +941,7 @@
       },
       "model_distribution": {
         "Increase": 0.0,
-        "Decrease": 0.94,
+        "Decrease": 1.0,
         "Stay about the same": 0.0,
         "Refused": 0.0
       },
@@ -1005,9 +1005,9 @@
         "Strongly oppose": 0.0501
       },
       "model_distribution": {
-        "Strongly favor": 0.04,
-        "Favor": 0.34,
-        "Oppose": 0.58,
+        "Strongly favor": 0.0417,
+        "Favor": 0.3542,
+        "Oppose": 0.6042,
         "Strongly oppose": 0.0,
         "Refused": 0.0
       },
@@ -1038,9 +1038,9 @@
         "Strongly oppose": 0.0201
       },
       "model_distribution": {
-        "Strongly favor": 0.3,
-        "Favor": 0.36,
-        "Oppose": 0.3,
+        "Strongly favor": 0.3125,
+        "Favor": 0.375,
+        "Oppose": 0.3125,
         "Strongly oppose": 0.0,
         "Refused": 0.0
       },
@@ -1074,8 +1074,8 @@
       },
       "model_distribution": {
         "Upper class": 0.0,
-        "Upper-middle class": 0.08,
-        "Middle class": 0.88,
+        "Upper-middle class": 0.0833,
+        "Middle class": 0.9167,
         "Lower-middle class": 0.0,
         "Lower class": 0.0,
         "Refused": 0.0
@@ -1103,8 +1103,8 @@
         "Refused": 0.0189
       },
       "model_distribution": {
-        "Other countries generally treat the United States about as fairly as we treat them": 0.4,
-        "Other countries often take unfair advantage of the United States": 0.54,
+        "Other countries generally treat the United States about as fairly as we treat them": 0.4255,
+        "Other countries often take unfair advantage of the United States": 0.5745,
         "Refused": 0.0
       },
       "jsd": 0.010451,
@@ -1130,7 +1130,7 @@
         "Refused": 0.0113
       },
       "model_distribution": {
-        "Allowing people to speak their minds freely, even if some students find their views upsetting or offensive": 0.9,
+        "Allowing people to speak their minds freely, even if some students find their views upsetting or offensive": 1.0,
         "Ensuring that students aren't exposed to views they find upsetting or offensive, even if that limits what people are a": 0.0,
         "Refused": 0.0
       },
@@ -1161,8 +1161,8 @@
         "Very attached": 0.2234
       },
       "model_distribution": {
-        "Very attached": 0.04,
-        "Somewhat attached": 0.88,
+        "Very attached": 0.0435,
+        "Somewhat attached": 0.9565,
         "Not too attached": 0.0,
         "Not at all attached": 0.0,
         "Refused": 0.0
@@ -1194,9 +1194,9 @@
         "Very important": 0.2757
       },
       "model_distribution": {
-        "Very important": 0.02,
-        "Somewhat important": 0.44,
-        "Not too important": 0.46,
+        "Very important": 0.0217,
+        "Somewhat important": 0.4783,
+        "Not too important": 0.5,
         "Not at all important": 0.0,
         "Refused": 0.0
       },
@@ -1227,9 +1227,9 @@
         "Very important": 0.6201
       },
       "model_distribution": {
-        "Very important": 0.22,
-        "Somewhat important": 0.16,
-        "Not too important": 0.54,
+        "Very important": 0.2391,
+        "Somewhat important": 0.1739,
+        "Not too important": 0.587,
         "Not at all important": 0.0,
         "Refused": 0.0
       },
@@ -1260,8 +1260,8 @@
         "Very important": 0.218
       },
       "model_distribution": {
-        "Very important": 0.02,
-        "Somewhat important": 0.9,
+        "Very important": 0.0217,
+        "Somewhat important": 0.9783,
         "Not too important": 0.0,
         "Not at all important": 0.0,
         "Refused": 0.0
@@ -1359,8 +1359,8 @@
         "Very important": 0.3026
       },
       "model_distribution": {
-        "Very important": 0.12,
-        "Somewhat important": 0.84,
+        "Very important": 0.125,
+        "Somewhat important": 0.875,
         "Not too important": 0.0,
         "Not at all important": 0.0,
         "Refused": 0.0
@@ -1392,10 +1392,10 @@
         "Very important": 0.0975
       },
       "model_distribution": {
-        "Very important": 0.02,
+        "Very important": 0.0208,
         "Somewhat important": 0.0,
-        "Not too important": 0.8,
-        "Not at all important": 0.14,
+        "Not too important": 0.8333,
+        "Not at all important": 0.1458,
         "Refused": 0.0
       },
       "jsd": 0.243162,
@@ -1428,9 +1428,9 @@
       },
       "model_distribution": {
         "Less than 1 year": 0.0,
-        "1-5 years": 0.3,
-        "6-10 years": 0.44,
-        "11-20 years": 0.22,
+        "1-5 years": 0.3125,
+        "6-10 years": 0.4583,
+        "11-20 years": 0.2292,
         "More than 20 years": 0.0,
         "Refused": 0.0
       },
@@ -1458,7 +1458,7 @@
       },
       "model_distribution": {
         "Compromise in politics is really just selling out on what you believe in": 0.0,
-        "Compromise is how things get done in politics, even though it sometimes means sacrificing your beliefs": 0.94,
+        "Compromise is how things get done in politics, even though it sometimes means sacrificing your beliefs": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.137519,
@@ -1486,8 +1486,8 @@
         "Urban": 0.198
       },
       "model_distribution": {
-        "Urban": 0.8,
-        "Suburban": 0.12,
+        "Urban": 0.8696,
+        "Suburban": 0.1304,
         "Rural": 0.0,
         "Refused": 0.0
       },
@@ -1520,7 +1520,7 @@
       "model_distribution": {
         "A great deal of confidence": 0.0,
         "A fair amount of confidence": 0.0,
-        "Not too much confidence": 0.92,
+        "Not too much confidence": 1.0,
         "No confidence at all": 0.0,
         "Refused": 0.0
       },
@@ -1553,7 +1553,7 @@
       "model_distribution": {
         "A great deal of confidence": 0.0,
         "A fair amount of confidence": 0.0,
-        "Not too much confidence": 0.92,
+        "Not too much confidence": 1.0,
         "No confidence at all": 0.0,
         "Refused": 0.0
       },
@@ -1585,7 +1585,7 @@
       },
       "model_distribution": {
         "A great deal of confidence": 0.0,
-        "A fair amount of confidence": 0.92,
+        "A fair amount of confidence": 1.0,
         "Not too much confidence": 0.0,
         "No confidence at all": 0.0,
         "Refused": 0.0
@@ -1685,7 +1685,7 @@
       "model_distribution": {
         "A great deal of confidence": 0.0,
         "A fair amount of confidence": 0.0,
-        "Not too much confidence": 0.98,
+        "Not too much confidence": 1.0,
         "No confidence at all": 0.0,
         "Refused": 0.0
       },
@@ -1714,9 +1714,9 @@
         "Too much time in prison": 0.2781
       },
       "model_distribution": {
-        "Too much time in prison": 0.72,
-        "Too little time in prison": 0.04,
-        "About the right amount of time in prison": 0.22,
+        "Too much time in prison": 0.7347,
+        "Too little time in prison": 0.0408,
+        "About the right amount of time in prison": 0.2245,
         "Refused": 0.0
       },
       "jsd": 0.194358,
@@ -1743,7 +1743,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.98,
+        "No": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.12313,
@@ -1769,7 +1769,7 @@
         "Yes, have this": 0.5233
       },
       "model_distribution": {
-        "Yes, have this": 0.96,
+        "Yes, have this": 1.0,
         "No, do not have this": 0.0,
         "Refused": 0.0
       },
@@ -1796,8 +1796,8 @@
         "Yes, have this": 0.4093
       },
       "model_distribution": {
-        "Yes, have this": 0.42,
-        "No, do not have this": 0.54,
+        "Yes, have this": 0.4375,
+        "No, do not have this": 0.5625,
         "Refused": 0.0
       },
       "jsd": 0.006315,
@@ -1823,8 +1823,8 @@
         "Yes, have this": 0.2374
       },
       "model_distribution": {
-        "Yes, have this": 0.22,
-        "No, do not have this": 0.74,
+        "Yes, have this": 0.2292,
+        "No, do not have this": 0.7708,
         "Refused": 0.0
       },
       "jsd": 0.005223,
@@ -1850,8 +1850,8 @@
         "Yes, have this": 0.4649
       },
       "model_distribution": {
-        "Yes, have this": 0.02,
-        "No, do not have this": 0.94,
+        "Yes, have this": 0.0208,
+        "No, do not have this": 0.9792,
         "Refused": 0.0
       },
       "jsd": 0.236946,
@@ -1877,8 +1877,8 @@
         "Yes, have this": 0.2557
       },
       "model_distribution": {
-        "Yes, have this": 0.28,
-        "No, do not have this": 0.68,
+        "Yes, have this": 0.2917,
+        "No, do not have this": 0.7083,
         "Refused": 0.0
       },
       "jsd": 0.005968,
@@ -1959,7 +1959,7 @@
       },
       "model_distribution": {
         "Men and women are basically similar": 0.0,
-        "Men and women are basically different": 0.98,
+        "Men and women are basically different": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.131209,
@@ -1985,8 +1985,8 @@
         "Refused": 0.0062
       },
       "model_distribution": {
-        "Men and women are basically similar": 0.38,
-        "Men and women are basically different": 0.56,
+        "Men and women are basically similar": 0.4043,
+        "Men and women are basically different": 0.5957,
         "Refused": 0.0
       },
       "jsd": 0.091479,
@@ -2012,8 +2012,8 @@
         "Yes": 0.5161
       },
       "model_distribution": {
-        "Yes": 0.84,
-        "No": 0.1,
+        "Yes": 0.8936,
+        "No": 0.1064,
         "Refused": 0.0
       },
       "jsd": 0.131712,
@@ -2040,7 +2040,7 @@
       },
       "model_distribution": {
         "Yes, have used this": 0.0,
-        "No, have not used this": 0.94,
+        "No, have not used this": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.094199,
@@ -2064,7 +2064,7 @@
         "Not selected": 0.7373
       },
       "model_distribution": {
-        "Not selected": 0.94,
+        "Not selected": 1.0,
         "Cholesterol": 0.0
       },
       "jsd": 0.145746,
@@ -2088,8 +2088,8 @@
         "Sugar": 0.426
       },
       "model_distribution": {
-        "Not selected": 0.06,
-        "Sugar": 0.88
+        "Not selected": 0.0638,
+        "Sugar": 0.9362
       },
       "jsd": 0.239868,
       "kendall_tau": -1.0,
@@ -2112,8 +2112,8 @@
         "Not selected": 0.6323
       },
       "model_distribution": {
-        "Not selected": 0.86,
-        "Artificial preservatives": 0.08
+        "Not selected": 0.9149,
+        "Artificial preservatives": 0.0851
       },
       "jsd": 0.08726,
       "kendall_tau": 1.0,
@@ -2136,7 +2136,7 @@
         "Not selected": 0.7037
       },
       "model_distribution": {
-        "Not selected": 0.94,
+        "Not selected": 1.0,
         "Artificial colors": 0.0
       },
       "jsd": 0.1668,
@@ -2184,7 +2184,7 @@
         "Not selected": 0.8777
       },
       "model_distribution": {
-        "Not selected": 0.98,
+        "Not selected": 1.0,
         "Gluten": 0.0
       },
       "jsd": 0.064018,
@@ -2208,8 +2208,8 @@
         "Not selected": 0.8079
       },
       "model_distribution": {
-        "Not selected": 0.54,
-        "None of these": 0.44
+        "Not selected": 0.551,
+        "None of these": 0.449
       },
       "jsd": 0.055802,
       "kendall_tau": 1.0,
@@ -2235,7 +2235,7 @@
       },
       "model_distribution": {
         "The average person is exposed to additives in the food they eat every day, which pose a serious risk to their health": 0.0,
-        "The average person is exposed to additives in the food they eat every day but they eat such a small amount that this doe": 0.76,
+        "The average person is exposed to additives in the food they eat every day but they eat such a small amount that this doe": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.32279,
@@ -2263,9 +2263,9 @@
         "Worse": 0.3479
       },
       "model_distribution": {
-        "Better": 0.1,
-        "Worse": 0.12,
-        "About the same as now": 0.7,
+        "Better": 0.1087,
+        "Worse": 0.1304,
+        "About the same as now": 0.7609,
         "Refused": 0.0
       },
       "jsd": 0.071689,
@@ -2298,9 +2298,9 @@
       },
       "model_distribution": {
         "Helping a lot": 0.0,
-        "Helping a little": 0.04,
-        "Hurting a little": 0.6,
-        "Hurting a lot": 0.28,
+        "Helping a little": 0.0435,
+        "Hurting a little": 0.6522,
+        "Hurting a lot": 0.3043,
         "Neither helping nor hurting": 0.0,
         "Refused": 0.0
       },
@@ -2327,7 +2327,7 @@
         "The economic system in this country unfairly favors powerful interests": 0.7123
       },
       "model_distribution": {
-        "The economic system in this country unfairly favors powerful interests": 0.88,
+        "The economic system in this country unfairly favors powerful interests": 1.0,
         "The economic system in this country is generally fair to most Americans": 0.0,
         "Refused": 0.0
       },
@@ -2354,7 +2354,7 @@
         "The economic system in this country unfairly favors powerful interests": 0.6931
       },
       "model_distribution": {
-        "The economic system in this country unfairly favors powerful interests": 0.9,
+        "The economic system in this country unfairly favors powerful interests": 1.0,
         "The economic system in this country is generally fair to most Americans": 0.0,
         "Refused": 0.0
       },
@@ -2387,8 +2387,8 @@
       "model_distribution": {
         "Very well": 0.0,
         "Somewhat well": 0.0,
-        "Not too well": 0.18,
-        "Not at all well": 0.74,
+        "Not too well": 0.1957,
+        "Not at all well": 0.8043,
         "Refused": 0.0
       },
       "jsd": 0.227665,
@@ -2424,7 +2424,7 @@
         "A somewhat good thing": 0.0,
         "A somewhat bad thing": 0.0,
         "A very bad thing": 0.0,
-        "Neither a good nor bad thing": 0.92,
+        "Neither a good nor bad thing": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.379327,
@@ -2512,10 +2512,10 @@
         "Working part-time for pay": 0.1626
       },
       "model_distribution": {
-        "Working full-time for pay": 0.82,
-        "Working part-time for pay": 0.02,
-        "Not working for pay at all": 0.1,
-        "Refused": 0.02
+        "Working full-time for pay": 0.8542,
+        "Working part-time for pay": 0.0208,
+        "Not working for pay at all": 0.1042,
+        "Refused": 0.0208
       },
       "jsd": 0.064269,
       "kendall_tau": 0.182574,
@@ -2542,10 +2542,10 @@
         "Working part-time for pay": 0.4253
       },
       "model_distribution": {
-        "Working full-time for pay": 0.16,
-        "Working part-time for pay": 0.72,
-        "Not working for pay at all": 0.02,
-        "Refused": 0.02
+        "Working full-time for pay": 0.1739,
+        "Working part-time for pay": 0.7826,
+        "Not working for pay at all": 0.0217,
+        "Refused": 0.0217
       },
       "jsd": 0.126048,
       "kendall_tau": 0.912871,
@@ -2572,9 +2572,9 @@
         "Too much for their adult children": 0.5822
       },
       "model_distribution": {
-        "Too much for their adult children": 0.02,
-        "Too little for their adult children": 0.06,
-        "About the right amount": 0.58,
+        "Too much for their adult children": 0.0303,
+        "Too little for their adult children": 0.0909,
+        "About the right amount": 0.8788,
         "Refused": 0.0
       },
       "jsd": 0.316884,
@@ -2620,9 +2620,9 @@
         "A sibling": 0.0,
         "Your mother": 0.0,
         "Your father": 0.0,
-        "A friend": 0.26,
+        "A friend": 0.2766,
         "Another A family member": 0.0,
-        "Someone else": 0.68,
+        "Someone else": 0.7234,
         "Refused": 0.0
       },
       "jsd": 0.755945,
@@ -2650,10 +2650,10 @@
         "Working part-time for pay": 0.2432
       },
       "model_distribution": {
-        "Working full-time for pay": 0.9,
+        "Working full-time for pay": 0.9574,
         "Working part-time for pay": 0.0,
         "Not working for pay at all": 0.0,
-        "Refused": 0.04
+        "Refused": 0.0426
       },
       "jsd": 0.323556,
       "kendall_tau": 0.182574,
@@ -2680,8 +2680,8 @@
         "Refused": 0.009
       },
       "model_distribution": {
-        "Essential": 0.86,
-        "Important, but not essential": 0.08,
+        "Essential": 0.9149,
+        "Important, but not essential": 0.0851,
         "Not important": 0.0,
         "Refused": 0.0
       },
@@ -2710,8 +2710,8 @@
         "Refused": 0.0085
       },
       "model_distribution": {
-        "Essential": 0.86,
-        "Important, but not essential": 0.08,
+        "Essential": 0.9149,
+        "Important, but not essential": 0.0851,
         "Not important": 0.0,
         "Refused": 0.0
       },
@@ -2740,8 +2740,8 @@
         "Refused": 0.0131
       },
       "model_distribution": {
-        "Essential": 0.82,
-        "Important, but not essential": 0.12,
+        "Essential": 0.8723,
+        "Important, but not essential": 0.1277,
         "Not important": 0.0,
         "Refused": 0.0
       },
@@ -2802,7 +2802,7 @@
       "model_distribution": {
         "An unmarried person living with a partner has it easier": 0.0,
         "A married person has it easier": 0.0,
-        "Doesn't make much difference": 0.98,
+        "Doesn't make much difference": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.222714,
@@ -2831,7 +2831,7 @@
       },
       "model_distribution": {
         "An unmarried person living with a partner has it easier": 0.0,
-        "A married person has it easier": 0.96,
+        "A married person has it easier": 1.0,
         "Doesn't make much difference": 0.0,
         "Refused": 0.0
       },
@@ -2862,7 +2862,7 @@
       "model_distribution": {
         "Better chance of having a successful marriage": 0.0,
         "Worse chance of having a successful marriage": 0.0,
-        "Doesn't make much difference": 0.92,
+        "Doesn't make much difference": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.405434,
@@ -2889,7 +2889,7 @@
       },
       "model_distribution": {
         "Couples who are married do a better job raising children than couples who are living together but are not married": 0.0,
-        "Couples who are living together but are not married can raise children just as well as married couples": 0.92,
+        "Couples who are living together but are not married can raise children just as well as married couples": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.268549,
@@ -2915,9 +2915,9 @@
         "Yes": 0.4363
       },
       "model_distribution": {
-        "Yes": 0.04,
-        "No": 0.7,
-        "Refused": 0.14
+        "Yes": 0.0455,
+        "No": 0.7955,
+        "Refused": 0.1591
       },
       "jsd": 0.218842,
       "kendall_tau": 0.333333,
@@ -2953,9 +2953,9 @@
         "Basically every day": 0.0,
         "A few times a week": 0.0,
         "A few times a month": 0.0,
-        "Once a month": 0.84,
-        "Less than once a month": 0.04,
-        "Not at all": 0.04,
+        "Once a month": 0.913,
+        "Less than once a month": 0.0435,
+        "Not at all": 0.0435,
         "Refused": 0.0
       },
       "jsd": 0.558297,
@@ -2981,8 +2981,8 @@
         "Tend to favor one side": 0.4512
       },
       "model_distribution": {
-        "Deal fairly with all sides": 0.12,
-        "Tend to favor one side": 0.8,
+        "Deal fairly with all sides": 0.1304,
+        "Tend to favor one side": 0.8696,
         "Refused": 0.0
       },
       "jsd": 0.151649,
@@ -3013,7 +3013,7 @@
       },
       "model_distribution": {
         "All or most of the time": 0.0,
-        "Sometimes": 0.92,
+        "Sometimes": 1.0,
         "Hardly ever": 0.0,
         "Never": 0.0,
         "Refused": 0.0
@@ -3045,8 +3045,8 @@
         "Sometimes": 0.2951
       },
       "model_distribution": {
-        "All or most of the time": 0.72,
-        "Sometimes": 0.2,
+        "All or most of the time": 0.7826,
+        "Sometimes": 0.2174,
         "Hardly ever": 0.0,
         "Never": 0.0,
         "Refused": 0.0

@@ -172,7 +172,7 @@
         "Refused": 0.0232
       },
       "model_distribution": {
-        "That some states are making it too DIFFICULT for people to be able to get an abortion": 0.9333,
+        "That some states are making it too DIFFICULT for people to be able to get an abortion": 1.0,
         "That some states are making it too EASY for people to be able to get an abortion": 0.0,
         "Refused": 0.0
       },
@@ -205,9 +205,9 @@
       "model_distribution": {
         "Very difficult": 0.0,
         "Somewhat difficult": 0.0,
-        "Somewhat easy": 0.8667,
+        "Somewhat easy": 0.8966,
         "Very easy": 0.0,
-        "Refused": 0.1
+        "Refused": 0.1034
       },
       "jsd": 0.407317,
       "kendall_tau": 0.119523,
@@ -690,9 +690,9 @@
         "Refused": 0.008
       },
       "model_distribution": {
-        "Legal": 0.4667,
+        "Legal": 0.6364,
         "Illegal": 0.0,
-        "Not sure": 0.2667,
+        "Not sure": 0.3636,
         "Refused": 0.0
       },
       "jsd": 0.121768,
@@ -719,7 +719,7 @@
       },
       "model_distribution": {
         "Should face penalties": 0.0,
-        "Should not face penalties": 0.9,
+        "Should not face penalties": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.294449,
@@ -745,9 +745,9 @@
         "Refused": 0.0205
       },
       "model_distribution": {
-        "Should face penalties": 0.3,
-        "Should not face penalties": 0.0333,
-        "Refused": 0.6
+        "Should face penalties": 0.3214,
+        "Should not face penalties": 0.0357,
+        "Refused": 0.6429
       },
       "jsd": 0.427793,
       "kendall_tau": -0.333333,
@@ -772,9 +772,9 @@
         "Refused": 0.0157
       },
       "model_distribution": {
-        "Should face penalties": 0.0667,
-        "Should not face penalties": 0.4667,
-        "Refused": 0.4
+        "Should face penalties": 0.0715,
+        "Should not face penalties": 0.5,
+        "Refused": 0.4285
       },
       "jsd": 0.260381,
       "kendall_tau": 0.333333,
@@ -800,8 +800,8 @@
       },
       "model_distribution": {
         "Should face penalties": 0.0,
-        "Should not face penalties": 0.7,
-        "Refused": 0.2333
+        "Should not face penalties": 0.75,
+        "Refused": 0.25
       },
       "jsd": 0.288096,
       "kendall_tau": 0.333333,
@@ -829,9 +829,9 @@
       },
       "model_distribution": {
         "Serve jail time": 0.0,
-        "Pay a fine or do community service": 0.0667,
-        "Not sure": 0.6667,
-        "Refused": 0.2
+        "Pay a fine or do community service": 0.0715,
+        "Not sure": 0.7143,
+        "Refused": 0.2143
       },
       "jsd": 0.379186,
       "kendall_tau": 0.0,
@@ -858,10 +858,10 @@
         "Refused": 0.0019
       },
       "model_distribution": {
-        "Serve jail time": 0.0667,
-        "Pay a fine or do community service": 0.1667,
-        "Not sure": 0.4333,
-        "Refused": 0.2667
+        "Serve jail time": 0.0715,
+        "Pay a fine or do community service": 0.1786,
+        "Not sure": 0.4642,
+        "Refused": 0.2857
       },
       "jsd": 0.252338,
       "kendall_tau": -0.666667,
@@ -888,10 +888,10 @@
         "Refused": 0.0023
       },
       "model_distribution": {
-        "Lose their medical license": 0.0667,
-        "Not lose their medical license": 0.1667,
-        "Not sure": 0.6333,
-        "Refused": 0.0667
+        "Lose their medical license": 0.0715,
+        "Not lose their medical license": 0.1786,
+        "Not sure": 0.6785,
+        "Refused": 0.0715
       },
       "jsd": 0.192252,
       "kendall_tau": 0.182574,
@@ -922,8 +922,8 @@
         "Refused": 0.0127
       },
       "model_distribution": {
-        "Women should have a LOT more say than men": 0.5,
-        "Women should have a LITTLE more say than men": 0.4,
+        "Women should have a LOT more say than men": 0.5556,
+        "Women should have a LITTLE more say than men": 0.4444,
         "Women and men should have equal say": 0.0,
         "Men should have a LITTLE more say than women": 0.0,
         "Men should have a LOT more say than women": 0.0,
@@ -958,9 +958,9 @@
       "model_distribution": {
         "Strongly approve": 0.0,
         "Somewhat approve": 0.0,
-        "Somewhat disapprove": 0.0667,
-        "Strongly disapprove": 0.8,
-        "Refused": 0.0667
+        "Somewhat disapprove": 0.0715,
+        "Strongly disapprove": 0.8571,
+        "Refused": 0.0715
       },
       "jsd": 0.258026,
       "kendall_tau": 0.0,
@@ -1454,7 +1454,7 @@
       },
       "model_distribution": {
         "It\u2019s best for the future of our country to be active in world affairs": 0.0,
-        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.8333,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.309625,
@@ -1481,7 +1481,7 @@
       },
       "model_distribution": {
         "It\u2019s best for the future of our country to be active in world affairs": 0.0,
-        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.5333,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.290924,
@@ -1616,7 +1616,7 @@
       },
       "model_distribution": {
         "Biden\u2019s character and leadership skills": 0.0,
-        "Biden\u2019s policy positions and agenda": 0.1,
+        "Biden\u2019s policy positions and agenda": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.160049,
@@ -2440,7 +2440,7 @@
         "Refused": 0.0154
       },
       "model_distribution": {
-        "Move too fast using this technology, before fully understanding the risks for patients": 0.9667,
+        "Move too fast using this technology, before fully understanding the risks for patients": 1.0,
         "Move too slowly using this technology, missing opportunities to improve patients\u2019 health": 0.0,
         "Refused": 0.0
       },

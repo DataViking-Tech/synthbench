@@ -203,8 +203,8 @@
         "Not strong at all": 0.0494
       },
       "model_distribution": {
-        "Very strong": 0.4667,
-        "Fairly strong": 0.5,
+        "Very strong": 0.4828,
+        "Fairly strong": 0.5172,
         "Not too strong": 0.0,
         "Not strong at all": 0.0
       },
@@ -260,7 +260,7 @@
         "Very unfavorable": 0.4839
       },
       "model_distribution": {
-        "Very favorable": 0.0333,
+        "Very favorable": 1.0,
         "Somewhat favorable": 0.0,
         "Somewhat unfavorable": 0.0,
         "Very unfavorable": 0.0
@@ -379,11 +379,11 @@
         "DK/Refused": 0.0186
       },
       "model_distribution": {
-        "Being tough with China": 0.1333,
-        "Having a strong relationship with China": 0.4667,
+        "Being tough with China": 0.1599,
+        "Having a strong relationship with China": 0.56,
         "Being tough with China on territorial disputes": 0.0,
-        "Having a strong economic relationship with China": 0.1667,
-        "DK/Refused": 0.0667
+        "Having a strong economic relationship with China": 0.2,
+        "DK/Refused": 0.08
       },
       "jsd": 0.100833,
       "kendall_tau": 0.4,
@@ -485,7 +485,7 @@
       },
       "model_distribution": {
         "Keep troops in Iraq": 0.0,
-        "Remove its troops": 0.9667
+        "Remove its troops": 1.0
       },
       "jsd": 0.140212,
       "kendall_tau": 1.0,
@@ -574,11 +574,11 @@
         "None (VOL)": 0.2921
       },
       "model_distribution": {
-        "PRI": 0.2333,
+        "PRI": 0.5,
         "PAN": 0.0,
         "PRD": 0.0,
         "Other (VOL)": 0.0,
-        "None (VOL)": 0.2333
+        "None (VOL)": 0.5
       },
       "jsd": 0.264254,
       "kendall_tau": 0.680414,
@@ -605,10 +605,10 @@
         "Depends on the situation (VOL)": 0.0493
       },
       "model_distribution": {
-        "Morally acceptable": 0.3,
-        "Morally unacceptable": 0.1667,
-        "Not a moral issue": 0.3,
-        "Depends on the situation (VOL)": 0.0333
+        "Morally acceptable": 0.375,
+        "Morally unacceptable": 0.2084,
+        "Not a moral issue": 0.375,
+        "Depends on the situation (VOL)": 0.0416
       },
       "jsd": 0.05996,
       "kendall_tau": 0.182574,
@@ -718,7 +718,7 @@
         "Cannot live together": 0.4398
       },
       "model_distribution": {
-        "Can live together": 0.9667,
+        "Can live together": 1.0,
         "Cannot live together": 0.0
       },
       "jsd": 0.265232,
@@ -748,7 +748,7 @@
       "model_distribution": {
         "Very good": 0.0,
         "Somewhat good": 0.0,
-        "Somewhat bad": 0.9333,
+        "Somewhat bad": 1.0,
         "Very bad": 0.0
       },
       "jsd": 0.522985,
@@ -1245,8 +1245,8 @@
       },
       "model_distribution": {
         "Very favorable": 0.0,
-        "Somewhat favorable": 0.0333,
-        "Somewhat unfavorable": 0.2333,
+        "Somewhat favorable": 0.1249,
+        "Somewhat unfavorable": 0.8751,
         "Very unfavorable": 0.0
       },
       "jsd": 0.336642,
@@ -1273,7 +1273,7 @@
       },
       "model_distribution": {
         "Use military force to fight the rebels": 0.0,
-        "Negotiate a settlement with the rebels and Russia": 0.0333,
+        "Negotiate a settlement with the rebels and Russia": 1.0,
         "Both/neither (VOL)": 0.0
       },
       "jsd": 0.289388,
@@ -1299,9 +1299,9 @@
         "No effect": 0.234
       },
       "model_distribution": {
-        "Improve": 0.5667,
+        "Improve": 0.8947,
         "Worse": 0.0,
-        "No effect": 0.0667
+        "No effect": 0.1053
       },
       "jsd": 0.207865,
       "kendall_tau": 0.333333,
@@ -1324,7 +1324,7 @@
         "Bad": 0.4104
       },
       "model_distribution": {
-        "Good": 0.8333,
+        "Good": 1.0,
         "Bad": 0.0
       },
       "jsd": 0.243842,
@@ -1403,8 +1403,8 @@
         "Very bad": 0.1448
       },
       "model_distribution": {
-        "Very good": 0.2,
-        "Somewhat good": 0.2333,
+        "Very good": 0.4616,
+        "Somewhat good": 0.5384,
         "Somewhat bad": 0.0,
         "Very bad": 0.0
       },
@@ -1597,7 +1597,7 @@
         "Bad": 0.5065
       },
       "model_distribution": {
-        "Good": 0.8333,
+        "Good": 1.0,
         "Bad": 0.0
       },
       "jsd": 0.316479,
@@ -1655,8 +1655,8 @@
         "Depends on the situation (VOL)": 0.0987
       },
       "model_distribution": {
-        "Morally acceptable": 0.0667,
-        "Morally unacceptable": 0.0667,
+        "Morally acceptable": 0.5,
+        "Morally unacceptable": 0.5,
         "Not a moral issue": 0.0,
         "Depends on the situation (VOL)": 0.0
       },
@@ -1764,8 +1764,8 @@
       },
       "model_distribution": {
         "Very concerned": 0.0,
-        "Somewhat concerned": 0.4333,
-        "Not too concerned": 0.3,
+        "Somewhat concerned": 0.5909,
+        "Not too concerned": 0.4091,
         "Not at all concerned": 0.0
       },
       "jsd": 0.408888,
@@ -2066,7 +2066,7 @@
         "DK/Refused": 0.0443
       },
       "model_distribution": {
-        "Optimistic": 0.7667,
+        "Optimistic": 1.0,
         "Pessimistic": 0.0,
         "Neither (DO NOT READ)": 0.0,
         "DK/Refused": 0.0
@@ -2096,7 +2096,7 @@
         "Nothing at all": 0.0103
       },
       "model_distribution": {
-        "Great deal": 0.9333,
+        "Great deal": 1.0,
         "Fair amount": 0.0,
         "Not very much": 0.0,
         "Nothing at all": 0.0
@@ -2183,7 +2183,7 @@
       },
       "model_distribution": {
         "Yes, I know someone": 0.0,
-        "No, I do not know anyone": 0.8
+        "No, I do not know anyone": 1.0
       },
       "jsd": 0.295302,
       "kendall_tau": 1.0,
@@ -2305,11 +2305,11 @@
         "DK/Refused": 0.0303
       },
       "model_distribution": {
-        "Very favorable": 0.0333,
+        "Very favorable": 0.0357,
         "Somewhat favorable": 0.0,
         "Somewhat unfavorable": 0.0,
         "Very unfavorable": 0.0,
-        "DK/Refused": 0.9
+        "DK/Refused": 0.9643
       },
       "jsd": 0.841453,
       "kendall_tau": -0.597614,
@@ -2365,7 +2365,7 @@
       "model_distribution": {
         "Very good": 0.0,
         "Somewhat good": 0.0,
-        "Somewhat poor": 0.1333,
+        "Somewhat poor": 1.0,
         "Very poor": 0.0
       },
       "jsd": 0.344456,
@@ -2419,8 +2419,8 @@
         "Disagree": 0.6866
       },
       "model_distribution": {
-        "Agree": 0.9333,
-        "Disagree": 0.0333
+        "Agree": 0.9655,
+        "Disagree": 0.0345
       },
       "jsd": 0.386371,
       "kendall_tau": -1.0,
@@ -2443,8 +2443,8 @@
         "Wrong decision": 0.4157
       },
       "model_distribution": {
-        "Right decision": 0.8667,
-        "Wrong decision": 0.1
+        "Right decision": 0.8966,
+        "Wrong decision": 0.1034
       },
       "jsd": 0.096504,
       "kendall_tau": 1.0,
@@ -2467,7 +2467,7 @@
         "Disapprove": 0.863
       },
       "model_distribution": {
-        "Approve": 0.9667,
+        "Approve": 1.0,
         "Disapprove": 0.0
       },
       "jsd": 0.698275,
@@ -2493,7 +2493,7 @@
         "DK/Refused": 0.1541
       },
       "model_distribution": {
-        "Support": 0.9667,
+        "Support": 1.0,
         "Oppose": 0.0,
         "DK/Refused": 0.0
       },
@@ -2522,9 +2522,9 @@
         "Not a problem at all": 0.1876
       },
       "model_distribution": {
-        "Very big problem": 0.2,
-        "Moderately big problem": 0.0667,
-        "Small problem": 0.7,
+        "Very big problem": 0.2069,
+        "Moderately big problem": 0.069,
+        "Small problem": 0.7241,
         "Not a problem at all": 0.0
       },
       "jsd": 0.250679,
@@ -2548,8 +2548,8 @@
         "Disapprove": 0.7503
       },
       "model_distribution": {
-        "Approve": 0.9333,
-        "Disapprove": 0.0333
+        "Approve": 0.9655,
+        "Disapprove": 0.0345
       },
       "jsd": 0.452719,
       "kendall_tau": -1.0,
@@ -2573,7 +2573,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.9667
+        "No": 1.0
       },
       "jsd": 0.08339,
       "kendall_tau": 1.0,
@@ -2602,11 +2602,11 @@
         "DK/Refused": 0.1103
       },
       "model_distribution": {
-        "Strongly approve": 0.2,
-        "Approve": 0.3667,
+        "Strongly approve": 0.3333,
+        "Approve": 0.6112,
         "Disapprove": 0.0,
         "Strongly disapprove": 0.0,
-        "DK/Refused": 0.0333
+        "DK/Refused": 0.0555
       },
       "jsd": 0.215251,
       "kendall_tau": 0.527046,
@@ -2631,9 +2631,9 @@
         "No effect (VOL)": 0.0
       },
       "model_distribution": {
-        "Mostly help": 0.7,
+        "Mostly help": 0.9546,
         "Mostly hurt": 0.0,
-        "No effect (VOL)": 0.0333
+        "No effect (VOL)": 0.0454
       },
       "jsd": 0.180931,
       "kendall_tau": 0.333333,
@@ -2660,9 +2660,9 @@
         "Very unfavorable": 0.134
       },
       "model_distribution": {
-        "Very favorable": 0.1,
-        "Somewhat favorable": 0.3333,
-        "Somewhat unfavorable": 0.1333,
+        "Very favorable": 0.1765,
+        "Somewhat favorable": 0.5882,
+        "Somewhat unfavorable": 0.2353,
         "Very unfavorable": 0.0
       },
       "jsd": 0.094275,

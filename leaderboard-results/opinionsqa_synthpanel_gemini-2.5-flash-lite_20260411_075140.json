@@ -65,7 +65,7 @@
         "legal in all or most cases": 0.5486
       },
       "model_distribution": {
-        "legal in all or most cases": 0.92,
+        "legal in all or most cases": 1.0,
         "illegal in all or most cases": 0.0,
         "Refused": 0.0
       },
@@ -92,9 +92,9 @@
         "Yes, have received in the past 12 months": 0.1811
       },
       "model_distribution": {
-        "Yes, have received in the past 12 months": 0.02,
-        "No, have not received in the past 12 months": 0.94,
-        "Refused": 0.02
+        "Yes, have received in the past 12 months": 0.0204,
+        "No, have not received in the past 12 months": 0.9592,
+        "Refused": 0.0204
       },
       "jsd": 0.059005,
       "kendall_tau": 0.816497,
@@ -120,7 +120,7 @@
       },
       "model_distribution": {
         "Yes, have received in the past 12 months": 0.0,
-        "No, have not received in the past 12 months": 0.98,
+        "No, have not received in the past 12 months": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.025104,

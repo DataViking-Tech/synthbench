@@ -157,7 +157,7 @@
       },
       "model_distribution": {
         "Yes, I own a gun": 0.0,
-        "No, I don't own any guns": 0.9333,
+        "No, I don't own any guns": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.190188,
@@ -184,7 +184,7 @@
       },
       "model_distribution": {
         "Yes, someone else in my household owns a gun": 0.0,
-        "No, no one else in my household owns a gun": 0.9667,
+        "No, no one else in my household owns a gun": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.163476,
@@ -238,7 +238,7 @@
       },
       "model_distribution": {
         "Positive way": 0.0,
-        "Negative way": 0.9667,
+        "Negative way": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.26291,
@@ -264,8 +264,8 @@
         "Refused": 0.0204
       },
       "model_distribution": {
-        "Positive way": 0.8333,
-        "Negative way": 0.1,
+        "Positive way": 0.8929,
+        "Negative way": 0.1071,
         "Refused": 0.0
       },
       "jsd": 0.077447,
@@ -322,8 +322,8 @@
         "Refused": 0.0046
       },
       "model_distribution": {
-        "A great deal": 0.0667,
-        "A fair amount": 0.8333,
+        "A great deal": 0.0741,
+        "A fair amount": 0.9259,
         "Not too much": 0.0,
         "Not at all": 0.0,
         "Refused": 0.0
@@ -419,8 +419,8 @@
         "Yes, there were guns in my household": 0.5156
       },
       "model_distribution": {
-        "Yes, there were guns in my household": 0.1667,
-        "No, there were no guns in my household": 0.8,
+        "Yes, there were guns in my household": 0.1724,
+        "No, there were no guns in my household": 0.8276,
         "I am not sure if there were guns in my household": 0.0,
         "Refused": 0.0
       },
@@ -481,7 +481,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.9667,
+        "No": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.036831,
@@ -508,7 +508,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.9333,
+        "No": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.120695,
@@ -535,7 +535,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.9667,
+        "No": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.099025,
@@ -599,9 +599,9 @@
       },
       "model_distribution": {
         "Often": 0.0,
-        "Sometimes": 0.1,
-        "Hardly ever": 0.6,
-        "Never": 0.2333,
+        "Sometimes": 0.1071,
+        "Hardly ever": 0.6429,
+        "Never": 0.25,
         "Refused": 0.0
       },
       "jsd": 0.124205,
@@ -632,9 +632,9 @@
       },
       "model_distribution": {
         "Often": 0.0,
-        "Sometimes": 0.1,
+        "Sometimes": 0.1111,
         "Hardly ever": 0.0,
-        "Never": 0.8,
+        "Never": 0.8889,
         "Refused": 0.0
       },
       "jsd": 0.075364,
@@ -733,7 +733,7 @@
       },
       "model_distribution": {
         "Very likely": 0.0,
-        "Somewhat likely": 0.9667,
+        "Somewhat likely": 1.0,
         "Not too likely": 0.0,
         "Not at all likely": 0.0,
         "I am already doing this": 0.0,
@@ -767,7 +767,7 @@
       },
       "model_distribution": {
         "Will definitely happen": 0.0,
-        "Will probably happen": 0.9667,
+        "Will probably happen": 1.0,
         "Will probably not happen": 0.0,
         "Will definitely not happen": 0.0,
         "Refused": 0.0
@@ -833,8 +833,8 @@
       },
       "model_distribution": {
         "Will definitely happen": 0.0,
-        "Will probably happen": 0.8,
-        "Will probably not happen": 0.1667,
+        "Will probably happen": 0.8276,
+        "Will probably not happen": 0.1724,
         "Will definitely not happen": 0.0,
         "Refused": 0.0
       },
@@ -929,8 +929,8 @@
       },
       "model_distribution": {
         "Very enthusiastic": 0.0,
-        "Somewhat enthusiastic": 0.8667,
-        "Not too enthusiastic": 0.1,
+        "Somewhat enthusiastic": 0.8966,
+        "Not too enthusiastic": 0.1034,
         "Not at all enthusiastic": 0.0,
         "Refused": 0.0
       },
@@ -962,8 +962,8 @@
       },
       "model_distribution": {
         "Very worried": 0.0,
-        "Somewhat worried": 0.7667,
-        "Not too worried": 0.2,
+        "Somewhat worried": 0.7931,
+        "Not too worried": 0.2069,
         "Not at all worried": 0.0,
         "Refused": 0.0
       },
@@ -1091,9 +1091,9 @@
       },
       "model_distribution": {
         "Very safe": 0.0,
-        "Somewhat safe": 0.0667,
-        "Not too safe": 0.8333,
-        "Not safe at all": 0.0667,
+        "Somewhat safe": 0.069,
+        "Not too safe": 0.862,
+        "Not safe at all": 0.069,
         "Refused": 0.0
       },
       "jsd": 0.23865,
@@ -1122,7 +1122,7 @@
       },
       "model_distribution": {
         "Increase": 0.0,
-        "Decrease": 0.9667,
+        "Decrease": 1.0,
         "Stay about the same": 0.0,
         "Refused": 0.0
       },
@@ -1153,8 +1153,8 @@
         "Strongly oppose": 0.0346
       },
       "model_distribution": {
-        "Strongly favor": 0.0667,
-        "Favor": 0.8667,
+        "Strongly favor": 0.0715,
+        "Favor": 0.9285,
         "Oppose": 0.0,
         "Strongly oppose": 0.0,
         "Refused": 0.0
@@ -1186,9 +1186,9 @@
         "Strongly oppose": 0.0501
       },
       "model_distribution": {
-        "Strongly favor": 0.0333,
-        "Favor": 0.0667,
-        "Oppose": 0.8,
+        "Strongly favor": 0.037,
+        "Favor": 0.0741,
+        "Oppose": 0.8889,
         "Strongly oppose": 0.0,
         "Refused": 0.0
       },
@@ -1219,9 +1219,9 @@
         "Strongly oppose": 0.0201
       },
       "model_distribution": {
-        "Strongly favor": 0.2,
-        "Favor": 0.6333,
-        "Oppose": 0.1333,
+        "Strongly favor": 0.2069,
+        "Favor": 0.6552,
+        "Oppose": 0.1379,
         "Strongly oppose": 0.0,
         "Refused": 0.0
       },
@@ -1248,7 +1248,7 @@
         "Yes, likely": 0.7821
       },
       "model_distribution": {
-        "Yes, likely": 0.7667,
+        "Yes, likely": 1.0,
         "No, not likely": 0.0,
         "Refused": 0.0
       },
@@ -1275,7 +1275,7 @@
         "Yes, likely": 0.808
       },
       "model_distribution": {
-        "Yes, likely": 0.9333,
+        "Yes, likely": 1.0,
         "No, not likely": 0.0,
         "Refused": 0.0
       },
@@ -1385,7 +1385,7 @@
         "Too much importance": 0.155
       },
       "model_distribution": {
-        "Too much importance": 0.9667,
+        "Too much importance": 1.0,
         "Not enough importance": 0.0,
         "Just about right": 0.0,
         "Refused": 0.0
@@ -1447,8 +1447,8 @@
         "Somewhat realistic": 0.5869
       },
       "model_distribution": {
-        "Extremely realistic": 0.0333,
-        "Somewhat realistic": 0.9333,
+        "Extremely realistic": 0.0345,
+        "Somewhat realistic": 0.9655,
         "Not very realistic": 0.0,
         "Not at all realistic": 0.0,
         "Refused": 0.0
@@ -1542,7 +1542,7 @@
         "Yes, likely": 0.7729
       },
       "model_distribution": {
-        "Yes, likely": 0.8,
+        "Yes, likely": 1.0,
         "No, not likely": 0.0,
         "Refused": 0.0
       },
@@ -1569,8 +1569,8 @@
         "Yes, likely": 0.6019
       },
       "model_distribution": {
-        "Yes, likely": 0.7333,
-        "No, not likely": 0.0667,
+        "Yes, likely": 0.9166,
+        "No, not likely": 0.0834,
         "Refused": 0.0
       },
       "jsd": 0.105022,
@@ -1651,7 +1651,7 @@
       },
       "model_distribution": {
         "Yes, likely": 0.0,
-        "No, not likely": 0.9333,
+        "No, not likely": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.151549,
@@ -1677,8 +1677,8 @@
         "Yes, likely": 0.4126
       },
       "model_distribution": {
-        "Yes, likely": 0.4333,
-        "No, not likely": 0.5333,
+        "Yes, likely": 0.4483,
+        "No, not likely": 0.5517,
         "Refused": 0.0
       },
       "jsd": 0.004186,
@@ -1708,8 +1708,8 @@
         "Strongly oppose": 0.0305
       },
       "model_distribution": {
-        "Strongly favor": 0.7,
-        "Favor": 0.2667,
+        "Strongly favor": 0.7241,
+        "Favor": 0.2759,
         "Oppose": 0.0,
         "Strongly oppose": 0.0,
         "Refused": 0.0
@@ -1774,9 +1774,9 @@
         "Strongly oppose": 0.1519
       },
       "model_distribution": {
-        "Strongly favor": 0.0333,
-        "Favor": 0.4333,
-        "Oppose": 0.4667,
+        "Strongly favor": 0.0357,
+        "Favor": 0.4643,
+        "Oppose": 0.5001,
         "Strongly oppose": 0.0,
         "Refused": 0.0
       },
@@ -1803,7 +1803,7 @@
         "The government would have an obligation to take care of people whose jobs are displaced by robots and computers": 0.4491
       },
       "model_distribution": {
-        "The government would have an obligation to take care of people whose jobs are displaced by robots and computers": 0.7333,
+        "The government would have an obligation to take care of people whose jobs are displaced by robots and computers": 1.0,
         "Individuals would have an obligation to take care of their own financial well-being, even if robots and computers": 0.0,
         "Refused": 0.0
       },
@@ -1831,7 +1831,7 @@
       },
       "model_distribution": {
         "If businesses can receive better work at lower cost by replacing humans with robots and computers, they are justified": 0.0,
-        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 0.8333,
+        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.32807,
@@ -1861,8 +1861,8 @@
         "Very likely": 0.1105
       },
       "model_distribution": {
-        "Very likely": 0.3333,
-        "Somewhat likely": 0.5333,
+        "Very likely": 0.3846,
+        "Somewhat likely": 0.6154,
         "Not very likely": 0.0,
         "Not at all likely": 0.0,
         "Refused": 0.0
@@ -1960,8 +1960,8 @@
         "Very likely": 0.0755
       },
       "model_distribution": {
-        "Very likely": 0.1667,
-        "Somewhat likely": 0.8,
+        "Very likely": 0.1724,
+        "Somewhat likely": 0.8276,
         "Not very likely": 0.0,
         "Not at all likely": 0.0,
         "Refused": 0.0
@@ -2059,7 +2059,7 @@
         "Very likely": 0.206
       },
       "model_distribution": {
-        "Very likely": 0.9333,
+        "Very likely": 1.0,
         "Somewhat likely": 0.0,
         "Not very likely": 0.0,
         "Not at all likely": 0.0,
@@ -2091,7 +2091,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.9333,
+        "No": 1.0,
         "I'm not sure": 0.0,
         "Refused": 0.0
       },
@@ -2120,8 +2120,8 @@
         "Yes": 0.0368
       },
       "model_distribution": {
-        "Yes": 0.0333,
-        "No": 0.8333,
+        "Yes": 0.0384,
+        "No": 0.9616,
         "I'm not sure": 0.0,
         "Refused": 0.0
       },
@@ -2148,8 +2148,8 @@
         "Yes": 0.1966
       },
       "model_distribution": {
-        "Yes": 0.9,
-        "No": 0.0333,
+        "Yes": 0.9643,
+        "No": 0.0357,
         "Refused": 0.0
       },
       "jsd": 0.512655,
@@ -2176,7 +2176,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.7667,
+        "No": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.20123,
@@ -2257,7 +2257,7 @@
       },
       "model_distribution": {
         "Men and women are basically similar": 0.0,
-        "Men and women are basically different": 0.9667,
+        "Men and women are basically different": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.131209,
@@ -2337,7 +2337,7 @@
         "Refused": 0.0082
       },
       "model_distribution": {
-        "Men and women are basically similar": 0.9667,
+        "Men and women are basically similar": 1.0,
         "Men and women are basically different": 0.0,
         "Refused": 0.0
       },
@@ -2391,7 +2391,7 @@
         "Whether someone is a man or a woman is determined by the sex they were assigned at birth": 0.5106
       },
       "model_distribution": {
-        "Whether someone is a man or a woman is determined by the sex they were assigned at birth": 0.9667,
+        "Whether someone is a man or a woman is determined by the sex they were assigned at birth": 1.0,
         "Someone can be a man or a woman even if that is different from the sex they were assigned at birth": 0.0,
         "Refused": 0.0
       },
@@ -2419,7 +2419,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.8667,
+        "No": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.231125,
@@ -2447,8 +2447,8 @@
         "Refused": 0.0177
       },
       "model_distribution": {
-        "Our society has gone too far in accepting people who are transgender": 0.8333,
-        "Our society has not gone far enough in accepting people who are transgender": 0.0333,
+        "Our society has gone too far in accepting people who are transgender": 0.9616,
+        "Our society has not gone far enough in accepting people who are transgender": 0.0384,
         "Our society has been about right when it comes to accepting people who are transgender": 0.0,
         "Refused": 0.0
       },
@@ -2545,8 +2545,8 @@
         "Very well": 0.3735
       },
       "model_distribution": {
-        "Very well": 0.0333,
-        "Somewhat well": 0.9333,
+        "Very well": 0.0345,
+        "Somewhat well": 0.9655,
         "Not too well": 0.0,
         "Not at all well": 0.0,
         "Refused": 0.0
@@ -2579,8 +2579,8 @@
       },
       "model_distribution": {
         "Very well": 0.0,
-        "Somewhat well": 0.9333,
-        "Not too well": 0.0333,
+        "Somewhat well": 0.9655,
+        "Not too well": 0.0345,
         "Not at all well": 0.0,
         "Refused": 0.0
       },
@@ -2611,9 +2611,9 @@
         "Very well": 0.1442
       },
       "model_distribution": {
-        "Very well": 0.0667,
-        "Somewhat well": 0.2333,
-        "Not too well": 0.6667,
+        "Very well": 0.069,
+        "Somewhat well": 0.2413,
+        "Not too well": 0.6897,
         "Not at all well": 0.0,
         "Refused": 0.0
       },
@@ -2645,7 +2645,7 @@
       },
       "model_distribution": {
         "Very well": 0.0,
-        "Somewhat well": 0.9667,
+        "Somewhat well": 1.0,
         "Not too well": 0.0,
         "Not at all well": 0.0,
         "Refused": 0.0
@@ -2745,7 +2745,7 @@
       "model_distribution": {
         "Definitely agree": 0.0,
         "Somewhat agree": 0.0,
-        "Somewhat disagree": 0.9333,
+        "Somewhat disagree": 1.0,
         "Definitely disagree": 0.0,
         "Refused": 0.0
       },
@@ -2777,7 +2777,7 @@
       },
       "model_distribution": {
         "Always vote in local elections": 0.0,
-        "Sometimes vote in local elections": 0.8667,
+        "Sometimes vote in local elections": 1.0,
         "Rarely vote in local elections": 0.0,
         "Never vote in local elections": 0.0,
         "Refused": 0.0
@@ -2886,8 +2886,8 @@
         "Yes": 0.285
       },
       "model_distribution": {
-        "Yes": 0.2333,
-        "No": 0.7,
+        "Yes": 0.25,
+        "No": 0.75,
         "Refused": 0.0
       },
       "jsd": 0.002617,
@@ -2922,7 +2922,7 @@
       },
       "model_distribution": {
         "Basically every day": 0.0,
-        "A few times a week": 0.9333,
+        "A few times a week": 1.0,
         "A few times a month": 0.0,
         "Once a month": 0.0,
         "Less than once a month": 0.0,
@@ -2961,11 +2961,11 @@
       },
       "model_distribution": {
         "Basically every day": 0.0,
-        "A few times a week": 0.1333,
-        "A few times a month": 0.6,
+        "A few times a week": 0.1481,
+        "A few times a month": 0.6667,
         "Once a month": 0.0,
-        "Less than once a month": 0.1333,
-        "Not at all": 0.0333,
+        "Less than once a month": 0.1481,
+        "Not at all": 0.037,
         "Refused": 0.0
       },
       "jsd": 0.193067,
@@ -3001,10 +3001,10 @@
       "model_distribution": {
         "Basically every day": 0.0,
         "A few times a week": 0.0,
-        "A few times a month": 0.1,
-        "Once a month": 0.0333,
-        "Less than once a month": 0.5667,
-        "Not at all": 0.1333,
+        "A few times a month": 0.12,
+        "Once a month": 0.04,
+        "Less than once a month": 0.6801,
+        "Not at all": 0.16,
         "Refused": 0.0
       },
       "jsd": 0.158612,
@@ -3035,7 +3035,7 @@
       },
       "model_distribution": {
         "Very worried": 0.0,
-        "Moderately worried": 0.8667,
+        "Moderately worried": 1.0,
         "Not too worried": 0.0,
         "Not worried at all": 0.0,
         "Refused": 0.0
@@ -3068,8 +3068,8 @@
       },
       "model_distribution": {
         "Very worried": 0.0,
-        "Moderately worried": 0.0667,
-        "Not too worried": 0.7333,
+        "Moderately worried": 0.0834,
+        "Not too worried": 0.9166,
         "Not worried at all": 0.0,
         "Refused": 0.0
       },
@@ -3100,8 +3100,8 @@
         "Very satisfied": 0.4986
       },
       "model_distribution": {
-        "Very satisfied": 0.3667,
-        "Somewhat satisfied": 0.4667,
+        "Very satisfied": 0.44,
+        "Somewhat satisfied": 0.56,
         "Somewhat dissatisfied": 0.0,
         "Very dissatisfied": 0.0,
         "Refused": 0.0

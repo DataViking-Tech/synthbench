@@ -1709,7 +1709,7 @@
         "Strongly oppose": 0.0305
       },
       "model_distribution": {
-        "Strongly favor": 0.94,
+        "Strongly favor": 1.0,
         "Favor": 0.0,
         "Oppose": 0.0,
         "Strongly oppose": 0.0,
@@ -1742,8 +1742,8 @@
         "Strongly oppose": 0.1216
       },
       "model_distribution": {
-        "Strongly favor": 0.1,
-        "Favor": 0.84,
+        "Strongly favor": 0.1064,
+        "Favor": 0.8936,
         "Oppose": 0.0,
         "Strongly oppose": 0.0,
         "Refused": 0.0
@@ -1776,8 +1776,8 @@
       },
       "model_distribution": {
         "Strongly favor": 0.0,
-        "Favor": 0.06,
-        "Oppose": 0.88,
+        "Favor": 0.0638,
+        "Oppose": 0.9362,
         "Strongly oppose": 0.0,
         "Refused": 0.0
       },
@@ -1804,7 +1804,7 @@
         "The government would have an obligation to take care of people whose jobs are displaced by robots and computers": 0.4491
       },
       "model_distribution": {
-        "The government would have an obligation to take care of people whose jobs are displaced by robots and computers": 0.82,
+        "The government would have an obligation to take care of people whose jobs are displaced by robots and computers": 1.0,
         "Individuals would have an obligation to take care of their own financial well-being, even if robots and computers": 0.0,
         "Refused": 0.0
       },
@@ -1831,8 +1831,8 @@
         "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 0.4791
       },
       "model_distribution": {
-        "If businesses can receive better work at lower cost by replacing humans with robots and computers, they are justified": 0.1,
-        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 0.46,
+        "If businesses can receive better work at lower cost by replacing humans with robots and computers, they are justified": 0.1786,
+        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 0.8214,
         "Refused": 0.0
       },
       "jsd": 0.098231,
@@ -1864,8 +1864,8 @@
       "model_distribution": {
         "Very likely": 0.0,
         "Somewhat likely": 0.0,
-        "Not very likely": 0.34,
-        "Not at all likely": 0.04,
+        "Not very likely": 0.8947,
+        "Not at all likely": 0.1053,
         "Refused": 0.0
       },
       "jsd": 0.31649,
@@ -1994,8 +1994,8 @@
         "Very likely": 0.3978
       },
       "model_distribution": {
-        "Very likely": 0.96,
-        "Somewhat likely": 0.02,
+        "Very likely": 0.9796,
+        "Somewhat likely": 0.0204,
         "Not very likely": 0.0,
         "Not at all likely": 0.0,
         "Refused": 0.0
@@ -2029,7 +2029,7 @@
       "model_distribution": {
         "Very likely": 0.0,
         "Somewhat likely": 0.0,
-        "Not very likely": 0.92,
+        "Not very likely": 1.0,
         "Not at all likely": 0.0,
         "Refused": 0.0
       },
@@ -2060,8 +2060,8 @@
         "Very likely": 0.206
       },
       "model_distribution": {
-        "Very likely": 0.48,
-        "Somewhat likely": 0.34,
+        "Very likely": 0.5854,
+        "Somewhat likely": 0.4146,
         "Not very likely": 0.0,
         "Not at all likely": 0.0,
         "Refused": 0.0
@@ -2092,7 +2092,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.74,
+        "No": 1.0,
         "I'm not sure": 0.0,
         "Refused": 0.0
       },
@@ -2122,7 +2122,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.58,
+        "No": 1.0,
         "I'm not sure": 0.0,
         "Refused": 0.0
       },
@@ -2149,8 +2149,8 @@
         "Yes": 0.1966
       },
       "model_distribution": {
-        "Yes": 0.36,
-        "No": 0.04,
+        "Yes": 0.9,
+        "No": 0.1,
         "Refused": 0.0
       },
       "jsd": 0.401493,
@@ -2177,7 +2177,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.34,
+        "No": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.20123,
@@ -2284,8 +2284,8 @@
         "Refused": 0.0078
       },
       "model_distribution": {
-        "Men and women are basically similar": 0.5,
-        "Men and women are basically different": 0.48,
+        "Men and women are basically similar": 0.5102,
+        "Men and women are basically different": 0.4898,
         "Refused": 0.0
       },
       "jsd": 0.023122,
@@ -2311,8 +2311,8 @@
         "Refused": 0.0062
       },
       "model_distribution": {
-        "Men and women are basically similar": 0.08,
-        "Men and women are basically different": 0.88,
+        "Men and women are basically similar": 0.0833,
+        "Men and women are basically different": 0.9167,
         "Refused": 0.0
       },
       "jsd": 0.004174,
@@ -2338,8 +2338,8 @@
         "Refused": 0.0082
       },
       "model_distribution": {
-        "Men and women are basically similar": 0.9,
-        "Men and women are basically different": 0.02,
+        "Men and women are basically similar": 0.9783,
+        "Men and women are basically different": 0.0217,
         "Refused": 0.0
       },
       "jsd": 0.14279,
@@ -2366,7 +2366,7 @@
       },
       "model_distribution": {
         "There are plenty of good jobs available": 0.0,
-        "Good jobs are difficult to find": 0.8,
+        "Good jobs are difficult to find": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.259255,
@@ -2393,7 +2393,7 @@
       },
       "model_distribution": {
         "Whether someone is a man or a woman is determined by the sex they were assigned at birth": 0.0,
-        "Someone can be a man or a woman even if that is different from the sex they were assigned at birth": 0.62,
+        "Someone can be a man or a woman even if that is different from the sex they were assigned at birth": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.331704,
@@ -2419,8 +2419,8 @@
         "Yes": 0.3889
       },
       "model_distribution": {
-        "Yes": 0.44,
-        "No": 0.02,
+        "Yes": 0.9565,
+        "No": 0.0435,
         "Refused": 0.0
       },
       "jsd": 0.301215,
@@ -2450,7 +2450,7 @@
       "model_distribution": {
         "Our society has gone too far in accepting people who are transgender": 0.0,
         "Our society has not gone far enough in accepting people who are transgender": 0.0,
-        "Our society has been about right when it comes to accepting people who are transgender": 0.26,
+        "Our society has been about right when it comes to accepting people who are transgender": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.545169,
@@ -2546,8 +2546,8 @@
         "Very well": 0.3735
       },
       "model_distribution": {
-        "Very well": 0.02,
-        "Somewhat well": 0.94,
+        "Very well": 0.0208,
+        "Somewhat well": 0.9792,
         "Not too well": 0.0,
         "Not at all well": 0.0,
         "Refused": 0.0
@@ -2580,7 +2580,7 @@
       },
       "model_distribution": {
         "Very well": 0.0,
-        "Somewhat well": 0.9,
+        "Somewhat well": 1.0,
         "Not too well": 0.0,
         "Not at all well": 0.0,
         "Refused": 0.0
@@ -2614,7 +2614,7 @@
       "model_distribution": {
         "Very well": 0.0,
         "Somewhat well": 0.0,
-        "Not too well": 0.66,
+        "Not too well": 1.0,
         "Not at all well": 0.0,
         "Refused": 0.0
       },
@@ -2646,7 +2646,7 @@
       },
       "model_distribution": {
         "Very well": 0.0,
-        "Somewhat well": 0.48,
+        "Somewhat well": 1.0,
         "Not too well": 0.0,
         "Not at all well": 0.0,
         "Refused": 0.0
@@ -2678,8 +2678,8 @@
         "Somewhat disagree": 0.1064
       },
       "model_distribution": {
-        "Definitely agree": 0.08,
-        "Somewhat agree": 0.16,
+        "Definitely agree": 0.3333,
+        "Somewhat agree": 0.6667,
         "Somewhat disagree": 0.0,
         "Definitely disagree": 0.0,
         "Refused": 0.0
@@ -2712,8 +2712,8 @@
       },
       "model_distribution": {
         "Definitely agree": 0.0,
-        "Somewhat agree": 0.06,
-        "Somewhat disagree": 0.02,
+        "Somewhat agree": 0.75,
+        "Somewhat disagree": 0.25,
         "Definitely disagree": 0.0,
         "Refused": 0.0
       },
@@ -2745,7 +2745,7 @@
       },
       "model_distribution": {
         "Definitely agree": 0.0,
-        "Somewhat agree": 0.02,
+        "Somewhat agree": 1.0,
         "Somewhat disagree": 0.0,
         "Definitely disagree": 0.0,
         "Refused": 0.0
@@ -2861,7 +2861,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.02,
+        "No": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.101167,
@@ -2888,7 +2888,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.1,
+        "No": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.161467,
@@ -2923,7 +2923,7 @@
       },
       "model_distribution": {
         "Basically every day": 0.0,
-        "A few times a week": 0.42,
+        "A few times a week": 1.0,
         "A few times a month": 0.0,
         "Once a month": 0.0,
         "Less than once a month": 0.0,
@@ -2961,9 +2961,9 @@
         "Refused": 0.0033
       },
       "model_distribution": {
-        "Basically every day": 0.02,
-        "A few times a week": 0.72,
-        "A few times a month": 0.18,
+        "Basically every day": 0.0217,
+        "A few times a week": 0.7826,
+        "A few times a month": 0.1957,
         "Once a month": 0.0,
         "Less than once a month": 0.0,
         "Not at all": 0.0,
@@ -3135,7 +3135,7 @@
       },
       "model_distribution": {
         "Very satisfied": 0.0,
-        "Somewhat satisfied": 0.04,
+        "Somewhat satisfied": 1.0,
         "Somewhat dissatisfied": 0.0,
         "Very dissatisfied": 0.0,
         "Refused": 0.0
@@ -3168,8 +3168,8 @@
       },
       "model_distribution": {
         "Very satisfied": 0.0,
-        "Somewhat satisfied": 0.1,
-        "Somewhat dissatisfied": 0.04,
+        "Somewhat satisfied": 0.7143,
+        "Somewhat dissatisfied": 0.2857,
         "Very dissatisfied": 0.0,
         "Refused": 0.0
       },
@@ -3200,8 +3200,8 @@
         "Very satisfied": 0.3465
       },
       "model_distribution": {
-        "Very satisfied": 0.08,
-        "Somewhat satisfied": 0.56,
+        "Very satisfied": 0.125,
+        "Somewhat satisfied": 0.875,
         "Somewhat dissatisfied": 0.0,
         "Very dissatisfied": 0.0,
         "Refused": 0.0
@@ -3494,7 +3494,7 @@
         "Very important": 0.6201
       },
       "model_distribution": {
-        "Very important": 0.16,
+        "Very important": 1.0,
         "Somewhat important": 0.0,
         "Not too important": 0.0,
         "Not at all important": 0.0,
@@ -3527,8 +3527,8 @@
         "Very important": 0.218
       },
       "model_distribution": {
-        "Very important": 0.68,
-        "Somewhat important": 0.04,
+        "Very important": 0.9444,
+        "Somewhat important": 0.0556,
         "Not too important": 0.0,
         "Not at all important": 0.0,
         "Refused": 0.0
@@ -3783,7 +3783,7 @@
         "Refused": 0.0038
       },
       "model_distribution": {
-        "Essential": 0.06,
+        "Essential": 1.0,
         "Important but not essential": 0.0,
         "Not important": 0.0,
         "Refused": 0.0
@@ -3813,7 +3813,7 @@
         "Refused": 0.0027
       },
       "model_distribution": {
-        "Essential": 0.56,
+        "Essential": 1.0,
         "Important but not essential": 0.0,
         "Not important": 0.0,
         "Refused": 0.0
@@ -3843,9 +3843,9 @@
         "Refused": 0.0254
       },
       "model_distribution": {
-        "More than their fair share": 0.4,
+        "More than their fair share": 0.4167,
         "Less than their fair share": 0.0,
-        "About the right amount": 0.56,
+        "About the right amount": 0.5833,
         "Refused": 0.0
       },
       "jsd": 0.22649,
@@ -4083,8 +4083,8 @@
         "Refused": 0.0082
       },
       "model_distribution": {
-        "Major problem in my local community": 0.02,
-        "Minor problem in my local community": 0.1,
+        "Major problem in my local community": 0.1667,
+        "Minor problem in my local community": 0.8333,
         "Not a problem in my local community": 0.0,
         "Refused": 0.0
       },
@@ -4113,8 +4113,8 @@
         "Refused": 0.0115
       },
       "model_distribution": {
-        "Major problem in my local community": 0.46,
-        "Minor problem in my local community": 0.52,
+        "Major problem in my local community": 0.4694,
+        "Minor problem in my local community": 0.5306,
         "Not a problem in my local community": 0.0,
         "Refused": 0.0
       },
@@ -4885,8 +4885,8 @@
         "Society is just as well off if people have priorities other than marriage and children": 0.5268
       },
       "model_distribution": {
-        "Society is better off if people make marriage and having children a priority": 0.48,
-        "Society is just as well off if people have priorities other than marriage and children": 0.5,
+        "Society is better off if people make marriage and having children a priority": 0.4898,
+        "Society is just as well off if people have priorities other than marriage and children": 0.5102,
         "Refused": 0.0
       },
       "jsd": 0.011203,
@@ -4912,7 +4912,7 @@
         "The economic system in this country unfairly favors powerful interests": 0.7123
       },
       "model_distribution": {
-        "The economic system in this country unfairly favors powerful interests": 0.96,
+        "The economic system in this country unfairly favors powerful interests": 1.0,
         "The economic system in this country is generally fair to most Americans": 0.0,
         "Refused": 0.0
       },
@@ -4940,7 +4940,7 @@
       },
       "model_distribution": {
         "The obstacles that once made it harder for women than men to get ahead are now largely gone": 0.0,
-        "There are still significant obstacles that make it harder for women to get ahead than men": 0.92,
+        "There are still significant obstacles that make it harder for women to get ahead than men": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.260712,
@@ -4966,8 +4966,8 @@
         "Refused": 0.0182
       },
       "model_distribution": {
-        "Government should do more to solve problems": 0.6,
-        "Government is doing too many things better left to businesses and individuals": 0.18,
+        "Government should do more to solve problems": 0.7692,
+        "Government is doing too many things better left to businesses and individuals": 0.2308,
         "Refused": 0.0
       },
       "jsd": 0.062054,
@@ -5176,9 +5176,9 @@
         "Refused": 0.0055
       },
       "model_distribution": {
-        "Mostly positive": 0.94,
+        "Mostly positive": 0.9792,
         "Mostly negative": 0.0,
-        "Refused": 0.02
+        "Refused": 0.0208
       },
       "jsd": 0.042395,
       "kendall_tau": 0.333333,
@@ -5203,8 +5203,8 @@
         "Refused": 0.0067
       },
       "model_distribution": {
-        "Mostly positive": 0.08,
-        "Mostly negative": 0.84,
+        "Mostly positive": 0.087,
+        "Mostly negative": 0.913,
         "Refused": 0.0
       },
       "jsd": 0.412166,
@@ -5230,7 +5230,7 @@
         "Refused": 0.0095
       },
       "model_distribution": {
-        "Government investments usually pay off in the long run": 0.86,
+        "Government investments usually pay off in the long run": 1.0,
         "Government investments aren't worth it": 0.0,
         "Refused": 0.0
       },
@@ -5257,7 +5257,7 @@
         "Refused": 0.0118
       },
       "model_distribution": {
-        "Government investments usually pay off in the long run": 0.74,
+        "Government investments usually pay off in the long run": 1.0,
         "Government investments aren't worth it": 0.0,
         "Refused": 0.0
       },
@@ -5433,7 +5433,7 @@
       },
       "model_distribution": {
         "Not selected": 0.0,
-        "Sugar": 0.94
+        "Sugar": 1.0
       },
       "jsd": 0.372713,
       "kendall_tau": -1.0,
@@ -5456,8 +5456,8 @@
         "Not selected": 0.6323
       },
       "model_distribution": {
-        "Not selected": 0.78,
-        "Artificial preservatives": 0.08
+        "Not selected": 0.907,
+        "Artificial preservatives": 0.093
       },
       "jsd": 0.080933,
       "kendall_tau": 1.0,
@@ -5480,8 +5480,8 @@
         "Not selected": 0.7037
       },
       "model_distribution": {
-        "Not selected": 0.64,
-        "Artificial colors": 0.08
+        "Not selected": 0.8889,
+        "Artificial colors": 0.1111
       },
       "jsd": 0.039271,
       "kendall_tau": 1.0,
@@ -5504,8 +5504,8 @@
         "Not selected": 0.5262
       },
       "model_distribution": {
-        "Not selected": 0.56,
-        "Artificial sweeteners": 0.06
+        "Not selected": 0.9032,
+        "Artificial sweeteners": 0.0968
       },
       "jsd": 0.134184,
       "kendall_tau": 1.0,
@@ -5528,7 +5528,7 @@
         "Not selected": 0.8777
       },
       "model_distribution": {
-        "Not selected": 0.4,
+        "Not selected": 1.0,
         "Gluten": 0.0
       },
       "jsd": 0.064018,
@@ -5613,9 +5613,9 @@
         "Worse for one's health than conventionally grown foods": 0.0221
       },
       "model_distribution": {
-        "Better for one's health than conventionally grown foods": 0.18,
-        "Worse for one's health than conventionally grown foods": 0.04,
-        "Neither better nor worse for one's health than conventionally grown foods": 0.72,
+        "Better for one's health than conventionally grown foods": 0.1915,
+        "Worse for one's health than conventionally grown foods": 0.0426,
+        "Neither better nor worse for one's health than conventionally grown foods": 0.766,
         "Refused": 0.0
       },
       "jsd": 0.065717,
@@ -5646,8 +5646,8 @@
       },
       "model_distribution": {
         "A great deal of health risk": 0.0,
-        "Some health risk": 0.2,
-        "Not too much health risk": 0.7,
+        "Some health risk": 0.2222,
+        "Not too much health risk": 0.7778,
         "No health risk at all": 0.0,
         "Refused": 0.0
       },
@@ -5679,8 +5679,8 @@
       },
       "model_distribution": {
         "A great deal of health risk": 0.0,
-        "Some health risk": 0.46,
-        "Not too much health risk": 0.24,
+        "Some health risk": 0.6571,
+        "Not too much health risk": 0.3429,
         "No health risk at all": 0.0,
         "Refused": 0.0
       },
@@ -5712,8 +5712,8 @@
       },
       "model_distribution": {
         "A great deal of health risk": 0.0,
-        "Some health risk": 0.16,
-        "Not too much health risk": 0.22,
+        "Some health risk": 0.4211,
+        "Not too much health risk": 0.5789,
         "No health risk at all": 0.0,
         "Refused": 0.0
       },
@@ -5745,8 +5745,8 @@
       },
       "model_distribution": {
         "A great deal of health risk": 0.0,
-        "Some health risk": 0.1,
-        "Not too much health risk": 0.12,
+        "Some health risk": 0.4545,
+        "Not too much health risk": 0.5455,
         "No health risk at all": 0.0,
         "Refused": 0.0
       },
@@ -5774,7 +5774,7 @@
       },
       "model_distribution": {
         "The average person is exposed to additives in the food they eat every day, which pose a serious risk to their health": 0.0,
-        "The average person is exposed to additives in the food they eat every day but they eat such a small amount that this doe": 0.04,
+        "The average person is exposed to additives in the food they eat every day but they eat such a small amount that this doe": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.32279,

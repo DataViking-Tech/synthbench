@@ -96,9 +96,9 @@
         "Refused": 0.0078
       },
       "model_distribution": {
-        "Yes": 0.1,
-        "No": 0.6,
-        "Not sure": 0.0333,
+        "Yes": 0.1364,
+        "No": 0.8182,
+        "Not sure": 0.0454,
         "Refused": 0.0
       },
       "jsd": 0.062302,
@@ -126,9 +126,9 @@
         "Refused": 0.0046
       },
       "model_distribution": {
-        "Yes": 0.2333,
-        "No": 0.6333,
-        "Not sure": 0.0333,
+        "Yes": 0.2593,
+        "No": 0.7037,
+        "Not sure": 0.037,
         "Refused": 0.0
       },
       "jsd": 0.059758,
@@ -154,9 +154,9 @@
         "Refused": 0.0232
       },
       "model_distribution": {
-        "That some states are making it too DIFFICULT for people to be able to get an abortion": 0.2,
+        "That some states are making it too DIFFICULT for people to be able to get an abortion": 0.8573,
         "That some states are making it too EASY for people to be able to get an abortion": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.1427
       },
       "jsd": 0.211257,
       "kendall_tau": 0.333333,
@@ -185,11 +185,11 @@
         "Refused": 0.0353
       },
       "model_distribution": {
-        "Very difficult": 0.0333,
+        "Very difficult": 0.1666,
         "Somewhat difficult": 0.0,
-        "Somewhat easy": 0.0333,
+        "Somewhat easy": 0.1666,
         "Very easy": 0.0,
-        "Refused": 0.1333
+        "Refused": 0.6668
       },
       "jsd": 0.513353,
       "kendall_tau": -0.447214,
@@ -217,9 +217,9 @@
       },
       "model_distribution": {
         "Harder than it is now": 0.0,
-        "Easier than it is now": 0.0333,
+        "Easier than it is now": 0.1665,
         "About what it is now": 0.0,
-        "Refused": 0.1667
+        "Refused": 0.8335
       },
       "jsd": 0.669211,
       "kendall_tau": -0.547723,
@@ -276,10 +276,10 @@
       },
       "model_distribution": {
         "Legal in all cases": 0.0,
-        "Legal in most cases": 0.1,
+        "Legal in most cases": 0.2308,
         "Illegal in most cases": 0.0,
         "Illegal in all cases": 0.0,
-        "Refused": 0.3333
+        "Refused": 0.7692
       },
       "jsd": 0.666824,
       "kendall_tau": -0.119523,
@@ -304,9 +304,9 @@
         "Refused": 0.0041
       },
       "model_distribution": {
-        "There are some exceptions when abortion should be against the law": 0.1,
+        "There are some exceptions when abortion should be against the law": 0.2,
         "Abortion should be legal in all cases": 0.0,
-        "Refused": 0.4
+        "Refused": 0.8
       },
       "jsd": 0.758801,
       "kendall_tau": -1.0,
@@ -333,10 +333,10 @@
         "Refused": 0.0019
       },
       "model_distribution": {
-        "Legal": 0.4333,
+        "Legal": 0.6842,
         "Illegal": 0.0,
-        "It depends": 0.0333,
-        "Refused": 0.1667
+        "It depends": 0.0526,
+        "Refused": 0.2632
       },
       "jsd": 0.17896,
       "kendall_tau": 0.333333,
@@ -363,7 +363,7 @@
         "Refused": 0.0027
       },
       "model_distribution": {
-        "Legal": 0.1667,
+        "Legal": 1.0,
         "Illegal": 0.0,
         "It depends": 0.0,
         "Refused": 0.0
@@ -393,9 +393,9 @@
         "Refused": 0.0041
       },
       "model_distribution": {
-        "Legal": 0.2333,
+        "Legal": 0.8751,
         "Illegal": 0.0,
-        "It depends": 0.0333,
+        "It depends": 0.1249,
         "Refused": 0.0
       },
       "jsd": 0.141505,
@@ -425,8 +425,8 @@
         "Refused": 0.0174
       },
       "model_distribution": {
-        "Legal in all cases": 0.0333,
-        "Legal in most cases": 0.0333,
+        "Legal in all cases": 0.5,
+        "Legal in most cases": 0.5,
         "Illegal in most cases": 0.0,
         "Illegal in all cases": 0.0,
         "Refused": 0.0
@@ -459,10 +459,10 @@
       },
       "model_distribution": {
         "Legal in all cases": 0.0,
-        "Legal in most cases": 0.0333,
+        "Legal in most cases": 0.1427,
         "Illegal in most cases": 0.0,
         "Illegal in all cases": 0.0,
-        "Refused": 0.2
+        "Refused": 0.8573
       },
       "jsd": 0.730785,
       "kendall_tau": -0.119523,
@@ -492,10 +492,10 @@
       },
       "model_distribution": {
         "Legal in all cases": 0.0,
-        "Legal in most cases": 0.0333,
+        "Legal in most cases": 0.1427,
         "Illegal in most cases": 0.0,
         "Illegal in all cases": 0.0,
-        "Refused": 0.2
+        "Refused": 0.8573
       },
       "jsd": 0.73765,
       "kendall_tau": -0.119523,
@@ -527,11 +527,11 @@
       },
       "model_distribution": {
         "Morally acceptable in all cases": 0.0,
-        "Morally acceptable in most cases": 0.0333,
+        "Morally acceptable in most cases": 0.1665,
         "Morally wrong in most cases": 0.0,
         "Morally wrong in all cases": 0.0,
         "Not a moral issue": 0.0,
-        "Refused": 0.1667
+        "Refused": 0.8335
       },
       "jsd": 0.750035,
       "kendall_tau": -0.258199,
@@ -585,8 +585,8 @@
         "Refused": 0.0092
       },
       "model_distribution": {
-        "A lot": 0.5333,
-        "A little": 0.3,
+        "A lot": 0.64,
+        "A little": 0.36,
         "Nothing at all": 0.0,
         "Refused": 0.0
       },
@@ -614,8 +614,8 @@
       },
       "model_distribution": {
         "Not asked": 0.0,
-        "Did not refuse": 0.8333,
-        "Refused": 0.0667
+        "Did not refuse": 0.9259,
+        "Refused": 0.0741
       },
       "jsd": 0.007505,
       "kendall_tau": 1.0,
@@ -644,8 +644,8 @@
       "model_distribution": {
         "Changed a lot": 0.0,
         "Changed a little": 0.0,
-        "Stayed about the same": 0.1333,
-        "Refused": 0.7333
+        "Stayed about the same": 0.1538,
+        "Refused": 0.8462
       },
       "jsd": 0.638913,
       "kendall_tau": -0.182574,
@@ -672,7 +672,7 @@
         "Refused": 0.008
       },
       "model_distribution": {
-        "Legal": 0.0667,
+        "Legal": 1.0,
         "Illegal": 0.0,
         "Not sure": 0.0,
         "Refused": 0.0
@@ -700,7 +700,7 @@
         "Refused": 0.0259
       },
       "model_distribution": {
-        "Should face penalties": 0.1,
+        "Should face penalties": 1.0,
         "Should not face penalties": 0.0,
         "Refused": 0.0
       },
@@ -727,7 +727,7 @@
         "Refused": 0.0205
       },
       "model_distribution": {
-        "Should face penalties": 0.2333,
+        "Should face penalties": 1.0,
         "Should not face penalties": 0.0,
         "Refused": 0.0
       },
@@ -754,7 +754,7 @@
         "Refused": 0.0157
       },
       "model_distribution": {
-        "Should face penalties": 0.0667,
+        "Should face penalties": 1.0,
         "Should not face penalties": 0.0,
         "Refused": 0.0
       },
@@ -971,8 +971,8 @@
         "Refused": 0.0072
       },
       "model_distribution": {
-        "A lot": 0.0667,
-        "Some": 0.9,
+        "A lot": 0.069,
+        "Some": 0.931,
         "Not too much": 0.0,
         "None at all": 0.0,
         "Refused": 0.0
@@ -1007,8 +1007,8 @@
       },
       "model_distribution": {
         "Greatly reduce the number of abortions": 0.0,
-        "Slightly reduce the number of abortions": 0.3667,
-        "Not change the number of abortions": 0.0333,
+        "Slightly reduce the number of abortions": 0.9168,
+        "Not change the number of abortions": 0.0833,
         "Slightly increase the number of abortions": 0.0,
         "Greatly increase the number of abortions": 0.0,
         "Refused": 0.0
@@ -1042,8 +1042,8 @@
         "Refused": 0.022
       },
       "model_distribution": {
-        "Greatly reduce the number of abortions": 0.6,
-        "Slightly reduce the number of abortions": 0.0667,
+        "Greatly reduce the number of abortions": 0.9,
+        "Slightly reduce the number of abortions": 0.1,
         "Not change the number of abortions": 0.0,
         "Slightly increase the number of abortions": 0.0,
         "Greatly increase the number of abortions": 0.0,
@@ -1079,7 +1079,7 @@
       },
       "model_distribution": {
         "Greatly reduce the number of abortions": 0.0,
-        "Slightly reduce the number of abortions": 0.4,
+        "Slightly reduce the number of abortions": 1.0,
         "Not change the number of abortions": 0.0,
         "Slightly increase the number of abortions": 0.0,
         "Greatly increase the number of abortions": 0.0,
@@ -1115,15 +1115,15 @@
       },
       "model_distribution": {
         "Greatly reduce the number of abortions": 0.0,
-        "Slightly reduce the number of abortions": 0.1667,
-        "Not change the number of abortions": 0.2,
+        "Slightly reduce the number of abortions": 0.4167,
+        "Not change the number of abortions": 0.5,
         "Slightly increase the number of abortions": 0.0,
         "Greatly increase the number of abortions": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.0833
       },
       "jsd": 0.171579,
-      "kendall_tau": 0.596285,
-      "parity": 0.813282,
+      "kendall_tau": 0.540062,
+      "parity": 0.799226,
       "n_samples": 30,
       "n_parse_failures": 0,
       "model_refusal_rate": 0.6,
@@ -1150,12 +1150,12 @@
         "Refused": 0.0217
       },
       "model_distribution": {
-        "Greatly reduce the number of abortions": 0.2667,
-        "Slightly reduce the number of abortions": 0.1,
+        "Greatly reduce the number of abortions": 0.6667,
+        "Slightly reduce the number of abortions": 0.25,
         "Not change the number of abortions": 0.0,
         "Slightly increase the number of abortions": 0.0,
         "Greatly increase the number of abortions": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.0833
       },
       "jsd": 0.24269,
       "kendall_tau": 0.298142,
@@ -1188,12 +1188,12 @@
         "Refused": 0.0095
       },
       "model_distribution": {
-        "Extremely important": 0.0333,
-        "Very important": 0.0667,
+        "Extremely important": 0.0908,
+        "Very important": 0.1819,
         "Somewhat important": 0.0,
-        "Not too important": 0.0667,
-        "Not at all important": 0.1667,
-        "I am not religious": 0.0333,
+        "Not too important": 0.1819,
+        "Not at all important": 0.4546,
+        "I am not religious": 0.0908,
         "Refused": 0.0
       },
       "jsd": 0.212985,
@@ -1225,9 +1225,9 @@
         "Refused": 0.0116
       },
       "model_distribution": {
-        "Extremely well": 0.2667,
+        "Extremely well": 0.6667,
         "Very well": 0.0,
-        "Somewhat well": 0.1333,
+        "Somewhat well": 0.3332,
         "Not too well": 0.0,
         "Not at all well": 0.0,
         "Refused": 0.0
@@ -1261,12 +1261,12 @@
         "Refused": 0.0144
       },
       "model_distribution": {
-        "Extremely well": 0.0333,
-        "Very well": 0.0667,
+        "Extremely well": 0.0769,
+        "Very well": 0.1539,
         "Somewhat well": 0.0,
-        "Not too well": 0.2667,
-        "Not at all well": 0.0333,
-        "Refused": 0.0333
+        "Not too well": 0.6155,
+        "Not at all well": 0.0769,
+        "Refused": 0.0769
       },
       "jsd": 0.254684,
       "kendall_tau": 0.0,
@@ -1297,12 +1297,12 @@
         "Refused": 0.016
       },
       "model_distribution": {
-        "Extremely well": 0.3333,
-        "Very well": 0.1333,
+        "Extremely well": 0.6667,
+        "Very well": 0.2667,
         "Somewhat well": 0.0,
         "Not too well": 0.0,
         "Not at all well": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.0666
       },
       "jsd": 0.270292,
       "kendall_tau": 0.298142,
@@ -1437,7 +1437,7 @@
       "model_distribution": {
         "It\u2019s best for the future of our country to be active in world affairs": 0.0,
         "We should pay less attention to problems overseas and concentrate on problems here at home": 0.0,
-        "Refused": 0.1
+        "Refused": 1.0
       },
       "jsd": 0.958152,
       "kendall_tau": -0.816497,
@@ -1464,7 +1464,7 @@
       "model_distribution": {
         "It\u2019s best for the future of our country to be active in world affairs": 0.0,
         "We should pay less attention to problems overseas and concentrate on problems here at home": 0.0,
-        "Refused": 0.9667
+        "Refused": 1.0
       },
       "jsd": 0.964829,
       "kendall_tau": -0.816497,
@@ -1491,7 +1491,7 @@
       "model_distribution": {
         "Yes, I have done this in the past 12 months": 0.0,
         "No, I have not done this in the past 12 months": 0.0,
-        "Refused": 0.9667
+        "Refused": 1.0
       },
       "jsd": 0.979246,
       "kendall_tau": -0.816497,
@@ -1517,8 +1517,8 @@
       },
       "model_distribution": {
         "Yes, I have done this in the past 12 months": 0.0,
-        "No, I have not done this in the past 12 months": 0.0667,
-        "Refused": 0.9
+        "No, I have not done this in the past 12 months": 0.069,
+        "Refused": 0.931
       },
       "jsd": 0.821142,
       "kendall_tau": -0.333333,
@@ -1571,8 +1571,8 @@
       },
       "model_distribution": {
         "Yes, I have done this in the past 12 months": 0.0,
-        "No, I have not done this in the past 12 months": 0.1,
-        "Refused": 0.7667
+        "No, I have not done this in the past 12 months": 0.1154,
+        "Refused": 0.8846
       },
       "jsd": 0.807692,
       "kendall_tau": -1.0,
@@ -1599,7 +1599,7 @@
       "model_distribution": {
         "Biden\u2019s character and leadership skills": 0.0,
         "Biden\u2019s policy positions and agenda": 0.0,
-        "Refused": 0.7
+        "Refused": 1.0
       },
       "jsd": 0.910235,
       "kendall_tau": -0.816497,
@@ -1627,7 +1627,7 @@
       },
       "model_distribution": {
         "Major factor": 0.0,
-        "Minor factor": 0.0333,
+        "Minor factor": 1.0,
         "Not a factor": 0.0,
         "Refused": 0.0
       },
@@ -1656,7 +1656,7 @@
         "Refused": 0.0052
       },
       "model_distribution": {
-        "Major factor": 0.0333,
+        "Major factor": 1.0,
         "Minor factor": 0.0,
         "Not a factor": 0.0,
         "Refused": 0.0
@@ -1686,9 +1686,9 @@
         "Refused": 0.0026
       },
       "model_distribution": {
-        "Major factor": 0.0333,
-        "Minor factor": 0.1,
-        "Not a factor": 0.1,
+        "Major factor": 0.1427,
+        "Minor factor": 0.4286,
+        "Not a factor": 0.4286,
         "Refused": 0.0
       },
       "jsd": 0.060642,
@@ -1716,8 +1716,8 @@
         "Refused": 0.0037
       },
       "model_distribution": {
-        "Major factor": 0.0667,
-        "Minor factor": 0.0333,
+        "Major factor": 0.667,
+        "Minor factor": 0.333,
         "Not a factor": 0.0,
         "Refused": 0.0
       },
@@ -1746,8 +1746,8 @@
         "Refused": 0.0044
       },
       "model_distribution": {
-        "Major factor": 0.0333,
-        "Minor factor": 0.1,
+        "Major factor": 0.2498,
+        "Minor factor": 0.7502,
         "Not a factor": 0.0,
         "Refused": 0.0
       },
@@ -1776,8 +1776,8 @@
         "Refused": 0.0075
       },
       "model_distribution": {
-        "Major factor": 0.0667,
-        "Minor factor": 0.0667,
+        "Major factor": 0.5,
+        "Minor factor": 0.5,
         "Not a factor": 0.0,
         "Refused": 0.0
       },
@@ -1806,7 +1806,7 @@
         "Refused": 0.0018
       },
       "model_distribution": {
-        "Major factor": 0.1667,
+        "Major factor": 1.0,
         "Minor factor": 0.0,
         "Not a factor": 0.0,
         "Refused": 0.0
@@ -1836,10 +1836,10 @@
         "Refused": 0.0043
       },
       "model_distribution": {
-        "Major factor": 0.0333,
-        "Minor factor": 0.1,
+        "Major factor": 0.1999,
+        "Minor factor": 0.6002,
         "Not a factor": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.1999
       },
       "jsd": 0.379395,
       "kendall_tau": -0.182574,
@@ -1866,8 +1866,8 @@
         "Refused": 0.0028
       },
       "model_distribution": {
-        "Yes": 0.0333,
-        "No": 0.9333,
+        "Yes": 0.0345,
+        "No": 0.9655,
         "Have not needed this": 0.0,
         "Refused": 0.0
       },
@@ -1896,10 +1896,10 @@
         "Refused": 0.0029
       },
       "model_distribution": {
-        "Yes": 0.0333,
-        "No": 0.8667,
+        "Yes": 0.0357,
+        "No": 0.9286,
         "Have not needed this": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.0357
       },
       "jsd": 0.137175,
       "kendall_tau": 0.547723,
@@ -1927,7 +1927,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.6333,
+        "No": 1.0,
         "Have not needed this": 0.0,
         "Refused": 0.0
       },
@@ -1957,7 +1957,7 @@
       },
       "model_distribution": {
         "Yes": 0.0,
-        "No": 0.6333,
+        "No": 1.0,
         "Have not needed this": 0.0,
         "Refused": 0.0
       },
@@ -1986,9 +1986,9 @@
         "Refused": 0.0051
       },
       "model_distribution": {
-        "A lot": 0.2333,
+        "A lot": 0.8751,
         "A little": 0.0,
-        "Nothing at all": 0.0333,
+        "Nothing at all": 0.1249,
         "Refused": 0.0
       },
       "jsd": 0.324257,
@@ -2018,11 +2018,11 @@
         "Refused": 0.0145
       },
       "model_distribution": {
-        "Strongly favor": 0.0333,
+        "Strongly favor": 0.2498,
         "Somewhat favor": 0.0,
         "Somewhat oppose": 0.0,
         "Strongly oppose": 0.0,
-        "Refused": 0.1
+        "Refused": 0.7502
       },
       "jsd": 0.709761,
       "kendall_tau": -0.597614,
@@ -2055,7 +2055,7 @@
         "Somewhat confident": 0.0,
         "Not too confident": 0.0,
         "Not at all confident": 0.0,
-        "Refused": 0.0667
+        "Refused": 1.0
       },
       "jsd": 0.947437,
       "kendall_tau": -0.632456,
@@ -2084,11 +2084,11 @@
         "Refused": 0.0135
       },
       "model_distribution": {
-        "Excellent": 0.1,
-        "Good": 0.0667,
+        "Excellent": 0.4286,
+        "Good": 0.2859,
         "Only fair": 0.0,
-        "Poor": 0.0333,
-        "Refused": 0.0333
+        "Poor": 0.1427,
+        "Refused": 0.1427
       },
       "jsd": 0.370319,
       "kendall_tau": -0.316228,
@@ -2117,11 +2117,11 @@
         "Refused": 0.0099
       },
       "model_distribution": {
-        "Very well": 0.1,
+        "Very well": 0.6002,
         "Somewhat well": 0.0,
-        "Not too well": 0.0333,
+        "Not too well": 0.1999,
         "Not at all well": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.1999
       },
       "jsd": 0.594412,
       "kendall_tau": -0.67082,
@@ -2146,9 +2146,9 @@
         "Refused": 0.0216
       },
       "model_distribution": {
-        "Right decision": 0.1667,
-        "Wrong decision": 0.0333,
-        "Refused": 0.1667
+        "Right decision": 0.4546,
+        "Wrong decision": 0.0908,
+        "Refused": 0.4546
       },
       "jsd": 0.245023,
       "kendall_tau": 0.0,
@@ -2182,7 +2182,7 @@
         "Sudan": 0.0,
         "Kenya": 0.0,
         "South Africa": 0.0,
-        "Nigeria": 0.9667,
+        "Nigeria": 1.0,
         "Not sure": 0.0,
         "Refused": 0.0
       },
@@ -2211,10 +2211,10 @@
         "Refused": 0.0112
       },
       "model_distribution": {
-        "Better": 0.5333,
+        "Better": 0.9412,
         "Worse": 0.0,
         "Not make much difference": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.0588
       },
       "jsd": 0.369549,
       "kendall_tau": 0.182574,
@@ -2241,7 +2241,7 @@
         "Refused": 0.0098
       },
       "model_distribution": {
-        "Better": 0.9333,
+        "Better": 1.0,
         "Worse": 0.0,
         "Not make much difference": 0.0,
         "Refused": 0.0
@@ -2271,7 +2271,7 @@
         "Refused": 0.0083
       },
       "model_distribution": {
-        "Better": 0.9667,
+        "Better": 1.0,
         "Worse": 0.0,
         "Not make much difference": 0.0,
         "Refused": 0.0
@@ -2301,9 +2301,9 @@
         "Refused": 0.0079
       },
       "model_distribution": {
-        "Better": 0.6,
-        "Worse": 0.0667,
-        "Not make much difference": 0.3,
+        "Better": 0.6207,
+        "Worse": 0.069,
+        "Not make much difference": 0.3103,
         "Refused": 0.0
       },
       "jsd": 0.275026,
@@ -2331,8 +2331,8 @@
         "Refused": 0.0085
       },
       "model_distribution": {
-        "Better": 0.4667,
-        "Worse": 0.5,
+        "Better": 0.4828,
+        "Worse": 0.5172,
         "Not make much difference": 0.0,
         "Refused": 0.0
       },
@@ -2363,9 +2363,9 @@
         "Refused": 0.007
       },
       "model_distribution": {
-        "Very comfortable": 0.3667,
-        "Somewhat comfortable": 0.4,
-        "Somewhat uncomfortable": 0.2,
+        "Very comfortable": 0.3793,
+        "Somewhat comfortable": 0.4138,
+        "Somewhat uncomfortable": 0.2069,
         "Very uncomfortable": 0.0,
         "Refused": 0.0
       },
@@ -2394,8 +2394,8 @@
         "Refused": 0.0168
       },
       "model_distribution": {
-        "Better health outcomes for patients": 0.9333,
-        "Worse health outcomes for patients": 0.0333,
+        "Better health outcomes for patients": 0.9655,
+        "Worse health outcomes for patients": 0.0345,
         "Not make much difference": 0.0,
         "Refused": 0.0
       },
@@ -2422,9 +2422,9 @@
         "Refused": 0.0154
       },
       "model_distribution": {
-        "Move too fast using this technology, before fully understanding the risks for patients": 0.9333,
+        "Move too fast using this technology, before fully understanding the risks for patients": 0.9655,
         "Move too slowly using this technology, missing opportunities to improve patients\u2019 health": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.0345
       },
       "jsd": 0.147335,
       "kendall_tau": 0.333333,
@@ -2455,7 +2455,7 @@
         "Refused": 0.0027
       },
       "model_distribution": {
-        "A chatbot that immediately answers customer questions": 0.9667,
+        "A chatbot that immediately answers customer questions": 1.0,
         "An online survey sent to customers that allows them to provide feedback": 0.0,
         "A contact page with a form available to customers to provide feedback": 0.0,
         "A detailed Frequently Asked Questions webpage": 0.0,
@@ -2810,10 +2810,10 @@
         "Refused": 0.0032
       },
       "model_distribution": {
-        "A major impact": 0.2667,
-        "A minor impact": 0.3333,
-        "No impact": 0.1333,
-        "Not sure": 0.2333,
+        "A major impact": 0.2759,
+        "A minor impact": 0.3448,
+        "No impact": 0.1379,
+        "Not sure": 0.2414,
         "Refused": 0.0
       },
       "jsd": 0.007509,
@@ -2909,7 +2909,7 @@
         "Refused": 0.0063
       },
       "model_distribution": {
-        "AI will help more than it hurts": 0.4333,
+        "AI will help more than it hurts": 1.0,
         "AI will equally help and hurt": 0.0,
         "AI will hurt more than it helps": 0.0,
         "Not sure": 0.0,
@@ -2942,10 +2942,10 @@
         "Refused": 0.0045
       },
       "model_distribution": {
-        "AI will help more than it hurts": 0.4,
-        "AI will equally help and hurt": 0.1667,
+        "AI will help more than it hurts": 0.5454,
+        "AI will equally help and hurt": 0.2273,
         "AI will hurt more than it helps": 0.0,
-        "Not sure": 0.1667,
+        "Not sure": 0.2273,
         "Refused": 0.0
       },
       "jsd": 0.154251,
@@ -2973,8 +2973,8 @@
         "Refused": 0.0037
       },
       "model_distribution": {
-        "A lot": 0.6333,
-        "A little": 0.1333,
+        "A lot": 0.8261,
+        "A little": 0.1739,
         "Nothing at all": 0.0,
         "Refused": 0.0
       },
@@ -3003,9 +3003,9 @@
         "Refused": 0.0035
       },
       "model_distribution": {
-        "Favor": 0.9,
-        "Oppose": 0.0333,
-        "Not sure": 0.0333,
+        "Favor": 0.9311,
+        "Oppose": 0.0345,
+        "Not sure": 0.0345,
         "Refused": 0.0
       },
       "jsd": 0.344488,
@@ -3033,8 +3033,8 @@
         "Refused": 0.0027
       },
       "model_distribution": {
-        "Favor": 0.1333,
-        "Oppose": 0.6667,
+        "Favor": 0.1666,
+        "Oppose": 0.8334,
         "Not sure": 0.0,
         "Refused": 0.0
       },
@@ -3066,9 +3066,9 @@
       },
       "model_distribution": {
         "AI would do a better job than humans": 0.0,
-        "AI would do a worse job than humans": 0.0333,
+        "AI would do a worse job than humans": 0.037,
         "AI would do about the same job as humans": 0.0,
-        "Not sure": 0.8667,
+        "Not sure": 0.963,
         "Refused": 0.0
       },
       "jsd": 0.504868,
@@ -3098,7 +3098,7 @@
         "Refused": 0.0047
       },
       "model_distribution": {
-        "AI would do a better job than humans": 0.8333,
+        "AI would do a better job than humans": 1.0,
         "AI would do a worse job than humans": 0.0,
         "AI would do about the same job as humans": 0.0,
         "Not sure": 0.0,
@@ -3132,10 +3132,10 @@
       },
       "model_distribution": {
         "AI would do a better job than humans": 0.0,
-        "AI would do a worse job than humans": 0.8,
+        "AI would do a worse job than humans": 0.96,
         "AI would do about the same job as humans": 0.0,
         "Not sure": 0.0,
-        "Refused": 0.0333
+        "Refused": 0.04
       },
       "jsd": 0.366519,
       "kendall_tau": 0.119523,
@@ -3165,10 +3165,10 @@
       },
       "model_distribution": {
         "AI would do a better job than humans": 0.0,
-        "AI would do a worse job than humans": 0.6333,
+        "AI would do a worse job than humans": 0.7307,
         "AI would do about the same job as humans": 0.0,
-        "Not sure": 0.1667,
-        "Refused": 0.0667
+        "Not sure": 0.1923,
+        "Refused": 0.077
       },
       "jsd": 0.212711,
       "kendall_tau": 0.527046,
@@ -3194,8 +3194,8 @@
       },
       "model_distribution": {
         "Yes, I would": 0.0,
-        "No, I would not": 0.6,
-        "Refused": 0.1
+        "No, I would not": 0.8571,
+        "Refused": 0.1429
       },
       "jsd": 0.231721,
       "kendall_tau": 0.333333,

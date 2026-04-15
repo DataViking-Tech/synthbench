@@ -65,9 +65,9 @@
         "legal in all or most cases": 0.5486
       },
       "model_distribution": {
-        "legal in all or most cases": 0.42,
+        "legal in all or most cases": 0.5833,
         "illegal in all or most cases": 0.0,
-        "Refused": 0.3
+        "Refused": 0.4167
       },
       "jsd": 0.367548,
       "kendall_tau": 0.333333,
@@ -92,8 +92,8 @@
         "Yes, have received in the past 12 months": 0.1811
       },
       "model_distribution": {
-        "Yes, have received in the past 12 months": 0.1,
-        "No, have not received in the past 12 months": 0.86,
+        "Yes, have received in the past 12 months": 0.1042,
+        "No, have not received in the past 12 months": 0.8958,
         "Refused": 0.0
       },
       "jsd": 0.014194,
@@ -119,8 +119,8 @@
         "Yes, have received in the past 12 months": 0.0406
       },
       "model_distribution": {
-        "Yes, have received in the past 12 months": 0.02,
-        "No, have not received in the past 12 months": 0.96,
+        "Yes, have received in the past 12 months": 0.0204,
+        "No, have not received in the past 12 months": 0.9796,
         "Refused": 0.0
       },
       "jsd": 0.006972,
@@ -1326,7 +1326,7 @@
       },
       "model_distribution": {
         "Yes, a responsibility of the federal government to provide for all Americans": 0.0,
-        "No, not the responsibility of the federal government to provide": 0.66,
+        "No, not the responsibility of the federal government to provide": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.300362,
@@ -1352,7 +1352,7 @@
         "Yes, a responsibility of the federal government to provide for all Americans": 0.7994
       },
       "model_distribution": {
-        "Yes, a responsibility of the federal government to provide for all Americans": 0.64,
+        "Yes, a responsibility of the federal government to provide for all Americans": 1.0,
         "No, not the responsibility of the federal government to provide": 0.0,
         "Refused": 0.0
       },
@@ -1380,7 +1380,7 @@
       },
       "model_distribution": {
         "Yes, a responsibility of the federal government to provide for all Americans": 0.0,
-        "No, not the responsibility of the federal government to provide": 0.72,
+        "No, not the responsibility of the federal government to provide": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.188028,
@@ -1406,7 +1406,7 @@
         "Yes, a responsibility of the federal government to provide for all Americans": 0.5553
       },
       "model_distribution": {
-        "Yes, a responsibility of the federal government to provide for all Americans": 0.66,
+        "Yes, a responsibility of the federal government to provide for all Americans": 1.0,
         "No, not the responsibility of the federal government to provide": 0.0,
         "Refused": 0.0
       },
@@ -1435,9 +1435,9 @@
         "Yes, there were guns in my household": 0.5156
       },
       "model_distribution": {
-        "Yes, there were guns in my household": 0.26,
-        "No, there were no guns in my household": 0.54,
-        "I am not sure if there were guns in my household": 0.02,
+        "Yes, there were guns in my household": 0.3171,
+        "No, there were no guns in my household": 0.6585,
+        "I am not sure if there were guns in my household": 0.0244,
         "Refused": 0.0
       },
       "jsd": 0.04612,
@@ -2249,8 +2249,8 @@
       },
       "model_distribution": {
         "Should provide more assistance": 0.0,
-        "Should provide less assistance": 0.08,
-        "Is providing about the right amount of assistance": 0.6,
+        "Should provide less assistance": 0.1176,
+        "Is providing about the right amount of assistance": 0.8824,
         "Refused": 0.0
       },
       "jsd": 0.339088,
@@ -2438,7 +2438,7 @@
         "Refused": 0.0095
       },
       "model_distribution": {
-        "Government investments usually pay off in the long run": 0.98,
+        "Government investments usually pay off in the long run": 1.0,
         "Government investments aren't worth it": 0.0,
         "Refused": 0.0
       },

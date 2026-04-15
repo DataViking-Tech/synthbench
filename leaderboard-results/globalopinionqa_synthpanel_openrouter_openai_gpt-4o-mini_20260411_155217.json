@@ -175,8 +175,8 @@
       },
       "model_distribution": {
         "Next 10 years": 0.0,
-        "Next 20 years": 0.5667,
-        "Next 50 years": 0.3333,
+        "Next 20 years": 0.6297,
+        "Next 50 years": 0.3703,
         "China will not replace U.S.": 0.0
       },
       "jsd": 0.42212,
@@ -262,9 +262,9 @@
       },
       "model_distribution": {
         "Very favorable": 0.0,
-        "Somewhat favorable": 0.2667,
-        "Somewhat unfavorable": 0.1667,
-        "Very unfavorable": 0.2333
+        "Somewhat favorable": 0.4,
+        "Somewhat unfavorable": 0.25,
+        "Very unfavorable": 0.3499
       },
       "jsd": 0.074256,
       "kendall_tau": 0.666667,
@@ -380,10 +380,10 @@
         "DK/Refused": 0.0186
       },
       "model_distribution": {
-        "Being tough with China": 0.4,
+        "Being tough with China": 0.4138,
         "Having a strong relationship with China": 0.0,
         "Being tough with China on territorial disputes": 0.0,
-        "Having a strong economic relationship with China": 0.5667,
+        "Having a strong economic relationship with China": 0.5862,
         "DK/Refused": 0.0
       },
       "jsd": 0.380713,
@@ -407,8 +407,8 @@
         "Other reasons": 0.634
       },
       "model_distribution": {
-        "Largely more connected": 0.8333,
-        "Other reasons": 0.0667
+        "Largely more connected": 0.9259,
+        "Other reasons": 0.0741
       },
       "jsd": 0.273358,
       "kendall_tau": -1.0,
@@ -1070,8 +1070,8 @@
         "No, does not respect personal freedoms": 0.7721
       },
       "model_distribution": {
-        "Yes, respects personal freedoms": 0.2,
-        "No, does not respect personal freedoms": 0.7667
+        "Yes, respects personal freedoms": 0.2069,
+        "No, does not respect personal freedoms": 0.7931
       },
       "jsd": 0.000466,
       "kendall_tau": 1.0,
@@ -1273,8 +1273,8 @@
         "Both/neither (VOL)": 0.2135
       },
       "model_distribution": {
-        "Use military force to fight the rebels": 0.0667,
-        "Negotiate a settlement with the rebels and Russia": 0.7667,
+        "Use military force to fight the rebels": 0.08,
+        "Negotiate a settlement with the rebels and Russia": 0.92,
         "Both/neither (VOL)": 0.0
       },
       "jsd": 0.181185,
@@ -1430,7 +1430,7 @@
         "Other reasons": 0.384
       },
       "model_distribution": {
-        "Largely more connected": 0.9,
+        "Largely more connected": 1.0,
         "Other reasons": 0.0
       },
       "jsd": 0.225241,
@@ -1656,10 +1656,10 @@
         "Depends on the situation (VOL)": 0.0987
       },
       "model_distribution": {
-        "Morally acceptable": 0.5667,
+        "Morally acceptable": 0.85,
         "Morally unacceptable": 0.0,
         "Not a moral issue": 0.0,
-        "Depends on the situation (VOL)": 0.1
+        "Depends on the situation (VOL)": 0.15
       },
       "jsd": 0.337505,
       "kendall_tau": 0.182574,
@@ -2127,8 +2127,8 @@
         "Very unfavorable": 0.4471
       },
       "model_distribution": {
-        "Very favorable": 0.3333,
-        "Somewhat favorable": 0.6333,
+        "Very favorable": 0.3448,
+        "Somewhat favorable": 0.6552,
         "Somewhat unfavorable": 0.0,
         "Very unfavorable": 0.0
       },

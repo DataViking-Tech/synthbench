@@ -1016,7 +1016,7 @@
         "Completely agree": 0.0,
         "Mostly agree": 0.0,
         "Mostly disagree": 0.0,
-        "Completely disagree": 0.4667
+        "Completely disagree": 1.0
       },
       "jsd": 0.680162,
       "kendall_tau": -0.707107,
@@ -1508,7 +1508,7 @@
         "Both (VOL)": 0.0169
       },
       "model_distribution": {
-        "European standards": 0.2,
+        "European standards": 1.0,
         "American standards": 0.0,
         "Neither (VOL)": 0.0,
         "Both (VOL)": 0.0

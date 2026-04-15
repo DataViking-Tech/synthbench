@@ -997,8 +997,8 @@
       },
       "model_distribution": {
         "Less than 10 years": 0.0,
-        "10 to less than 50 years": 0.8667,
-        "50 to less than 100 years": 0.1,
+        "10 to less than 50 years": 0.8966,
+        "50 to less than 100 years": 0.1034,
         "100 or more years": 0.0,
         "It will never happen": 0.0,
         "Refused": 0.0
@@ -1026,7 +1026,7 @@
         "Yes": 0.4687
       },
       "model_distribution": {
-        "Yes": 0.9667,
+        "Yes": 1.0,
         "No": 0.0,
         "Refused": 0.0
       },
@@ -1248,7 +1248,7 @@
         "Yes, likely": 0.7821
       },
       "model_distribution": {
-        "Yes, likely": 0.9667,
+        "Yes, likely": 1.0,
         "No, not likely": 0.0,
         "Refused": 0.0
       },
@@ -3100,7 +3100,7 @@
         "Very satisfied": 0.4986
       },
       "model_distribution": {
-        "Very satisfied": 0.9667,
+        "Very satisfied": 1.0,
         "Somewhat satisfied": 0.0,
         "Somewhat dissatisfied": 0.0,
         "Very dissatisfied": 0.0,

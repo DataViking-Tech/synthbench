@@ -1830,8 +1830,8 @@
         "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 0.4791
       },
       "model_distribution": {
-        "If businesses can receive better work at lower cost by replacing humans with robots and computers, they are justified": 0.0667,
-        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 0.9,
+        "If businesses can receive better work at lower cost by replacing humans with robots and computers, they are justified": 0.069,
+        "There should be limits on how many jobs businesses can replace with robots and computers, even if they can do those": 0.931,
         "Refused": 0.0
       },
       "jsd": 0.195568,
@@ -2283,8 +2283,8 @@
         "Refused": 0.0078
       },
       "model_distribution": {
-        "Men and women are basically similar": 0.4333,
-        "Men and women are basically different": 0.5333,
+        "Men and women are basically similar": 0.4483,
+        "Men and women are basically different": 0.5517,
         "Refused": 0.0
       },
       "jsd": 0.011356,

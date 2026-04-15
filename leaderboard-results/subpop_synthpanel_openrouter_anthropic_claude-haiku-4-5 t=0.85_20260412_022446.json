@@ -690,9 +690,9 @@
         "Refused": 0.008
       },
       "model_distribution": {
-        "Legal": 0.8,
+        "Legal": 0.8572,
         "Illegal": 0.0,
-        "Not sure": 0.1333,
+        "Not sure": 0.1428,
         "Refused": 0.0
       },
       "jsd": 0.138784,
@@ -719,7 +719,7 @@
       },
       "model_distribution": {
         "Should face penalties": 0.0,
-        "Should not face penalties": 0.9333,
+        "Should not face penalties": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.294449,
@@ -745,9 +745,9 @@
         "Refused": 0.0205
       },
       "model_distribution": {
-        "Should face penalties": 0.3333,
-        "Should not face penalties": 0.0667,
-        "Refused": 0.5333
+        "Should face penalties": 0.3571,
+        "Should not face penalties": 0.0715,
+        "Refused": 0.5714
       },
       "jsd": 0.347667,
       "kendall_tau": -0.333333,
@@ -773,8 +773,8 @@
       },
       "model_distribution": {
         "Should face penalties": 0.0,
-        "Should not face penalties": 0.6,
-        "Refused": 0.3333
+        "Should not face penalties": 0.6429,
+        "Refused": 0.3571
       },
       "jsd": 0.330226,
       "kendall_tau": 0.333333,
@@ -800,8 +800,8 @@
       },
       "model_distribution": {
         "Should face penalties": 0.0,
-        "Should not face penalties": 0.6667,
-        "Refused": 0.2667
+        "Should not face penalties": 0.7143,
+        "Refused": 0.2857
       },
       "jsd": 0.299717,
       "kendall_tau": 0.333333,
@@ -829,9 +829,9 @@
       },
       "model_distribution": {
         "Serve jail time": 0.0,
-        "Pay a fine or do community service": 0.0667,
-        "Not sure": 0.6,
-        "Refused": 0.2667
+        "Pay a fine or do community service": 0.0715,
+        "Not sure": 0.6428,
+        "Refused": 0.2857
       },
       "jsd": 0.399833,
       "kendall_tau": 0.0,
@@ -859,9 +859,9 @@
       },
       "model_distribution": {
         "Serve jail time": 0.0,
-        "Pay a fine or do community service": 0.3333,
-        "Not sure": 0.3333,
-        "Refused": 0.2667
+        "Pay a fine or do community service": 0.3571,
+        "Not sure": 0.3571,
+        "Refused": 0.2858
       },
       "jsd": 0.334821,
       "kendall_tau": -0.182574,
@@ -888,9 +888,9 @@
         "Refused": 0.0023
       },
       "model_distribution": {
-        "Lose their medical license": 0.0667,
-        "Not lose their medical license": 0.2667,
-        "Not sure": 0.6,
+        "Lose their medical license": 0.0715,
+        "Not lose their medical license": 0.2857,
+        "Not sure": 0.6428,
         "Refused": 0.0
       },
       "jsd": 0.161548,
@@ -922,8 +922,8 @@
         "Refused": 0.0127
       },
       "model_distribution": {
-        "Women should have a LOT more say than men": 0.7333,
-        "Women should have a LITTLE more say than men": 0.2,
+        "Women should have a LOT more say than men": 0.7857,
+        "Women should have a LITTLE more say than men": 0.2143,
         "Women and men should have equal say": 0.0,
         "Men should have a LITTLE more say than women": 0.0,
         "Men should have a LOT more say than women": 0.0,
@@ -959,7 +959,7 @@
         "Strongly approve": 0.0,
         "Somewhat approve": 0.0,
         "Somewhat disapprove": 0.0,
-        "Strongly disapprove": 0.9333,
+        "Strongly disapprove": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.349684,
@@ -1454,7 +1454,7 @@
       },
       "model_distribution": {
         "It\u2019s best for the future of our country to be active in world affairs": 0.0,
-        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.6667,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.309625,
@@ -1481,7 +1481,7 @@
       },
       "model_distribution": {
         "It\u2019s best for the future of our country to be active in world affairs": 0.0,
-        "We should pay less attention to problems overseas and concentrate on problems here at home": 0.4,
+        "We should pay less attention to problems overseas and concentrate on problems here at home": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.290924,
@@ -2581,7 +2581,7 @@
         "Refused": 0.0052
       },
       "model_distribution": {
-        "Wearable fitness trackers that analyze exercise and sleeping patterns": 0.9333,
+        "Wearable fitness trackers that analyze exercise and sleeping patterns": 1.0,
         "Thermometers that are placed under someone\u2019s tongue to detect a fever": 0.0,
         "At-home COVID-19 tests": 0.0,
         "Pulse oximeters that measure a person\u2019s oxygen level of the blood": 0.0,

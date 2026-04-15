@@ -374,7 +374,7 @@
         "Refused": 0.0141
       },
       "model_distribution": {
-        "In foreign policy, the U.S. should take into account the interests of its allies even if it means making compromises": 0.12,
+        "In foreign policy, the U.S. should take into account the interests of its allies even if it means making compromises": 1.0,
         "In foreign policy, the U.S. should follow its own national interests even when its allies strongly disagree": 0.0,
         "Refused": 0.0
       },
@@ -403,9 +403,9 @@
         "Refused": 0.004
       },
       "model_distribution": {
-        "Get better": 0.02,
-        "Stay about the same": 0.04,
-        "Get worse": 0.88,
+        "Get better": 0.0213,
+        "Stay about the same": 0.0426,
+        "Get worse": 0.9362,
         "Refused": 0.0
       },
       "jsd": 0.23157,
@@ -459,7 +459,7 @@
       },
       "model_distribution": {
         "Larger and farther apart, but schools, stores, and restaurants are several miles away": 0.0,
-        "Smaller and closer to each other, but schools, stores, and restaurants are within walking distance": 0.8,
+        "Smaller and closer to each other, but schools, stores, and restaurants are within walking distance": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.39562,
@@ -4046,7 +4046,7 @@
         "Try to promote human rights in China, even if it harms economic relations with China": 0.7278
       },
       "model_distribution": {
-        "Try to promote human rights in China, even if it harms economic relations with China": 0.94,
+        "Try to promote human rights in China, even if it harms economic relations with China": 1.0,
         "Prioritize strengthening economic relations with China, even if it means not addressing human rights issues": 0.0,
         "Refused": 0.0
       },
@@ -4670,7 +4670,7 @@
         "Refused": 0.0162
       },
       "model_distribution": {
-        "In foreign policy, the US should take into account the interests of its allies even if it means making compromises wit": 0.62,
+        "In foreign policy, the US should take into account the interests of its allies even if it means making compromises wit": 1.0,
         "In foreign policy, the US should follow its own national interests even when its allies strongly disagree": 0.0,
         "Refused": 0.0
       },
@@ -6445,8 +6445,8 @@
         "Refused": 0.0111
       },
       "model_distribution": {
-        "I find it easy to recognize it": 0.96,
-        "It find it hard to recognize it": 0.02,
+        "I find it easy to recognize it": 0.9796,
+        "It find it hard to recognize it": 0.0204,
         "Refused": 0.0
       },
       "jsd": 0.196364,
@@ -6499,8 +6499,8 @@
         "Refused": 0.0108
       },
       "model_distribution": {
-        "I find it easy to recognize it": 0.04,
-        "It find it hard to recognize it": 0.94,
+        "I find it easy to recognize it": 0.0408,
+        "It find it hard to recognize it": 0.9592,
         "Refused": 0.0
       },
       "jsd": 0.237193,
@@ -8815,7 +8815,7 @@
       "model_distribution": {
         "A great deal of concern for how the policies affect people like you": 0.0,
         "Some concern for how the policies affect people like you": 0.0,
-        "Not too much concern for how the policies affect people like you": 0.64,
+        "Not too much concern for how the policies affect people like you": 1.0,
         "No concern at all for how the policies affect people like you": 0.0,
         "Refused": 0.0
       },
@@ -10198,7 +10198,7 @@
         "Should go to schools that are racially and ethnically mixed, even if it means that some students don't go to school in their local community": 0.4792
       },
       "model_distribution": {
-        "Should go to schools that are racially and ethnically mixed, even if it means that some students don't go to school in their local community": 0.98,
+        "Should go to schools that are racially and ethnically mixed, even if it means that some students don't go to school in their local community": 1.0,
         "Should go to schools in their local community, even if it means that most schools are not racially and ethnically mixed": 0.0,
         "Refused": 0.0
       },

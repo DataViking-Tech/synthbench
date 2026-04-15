@@ -65,9 +65,9 @@
         "legal in all or most cases": 0.5486
       },
       "model_distribution": {
-        "legal in all or most cases": 0.54,
+        "legal in all or most cases": 0.6279,
         "illegal in all or most cases": 0.0,
-        "Refused": 0.32
+        "Refused": 0.3721
       },
       "jsd": 0.348696,
       "kendall_tau": 0.333333,
@@ -1325,8 +1325,8 @@
         "Yes, a responsibility of the federal government to provide for all Americans": 0.4781
       },
       "model_distribution": {
-        "Yes, a responsibility of the federal government to provide for all Americans": 0.02,
-        "No, not the responsibility of the federal government to provide": 0.68,
+        "Yes, a responsibility of the federal government to provide for all Americans": 0.0286,
+        "No, not the responsibility of the federal government to provide": 0.9714,
         "Refused": 0.0
       },
       "jsd": 0.229729,
@@ -1352,7 +1352,7 @@
         "Yes, a responsibility of the federal government to provide for all Americans": 0.7994
       },
       "model_distribution": {
-        "Yes, a responsibility of the federal government to provide for all Americans": 0.66,
+        "Yes, a responsibility of the federal government to provide for all Americans": 1.0,
         "No, not the responsibility of the federal government to provide": 0.0,
         "Refused": 0.0
       },
@@ -1380,7 +1380,7 @@
       },
       "model_distribution": {
         "Yes, a responsibility of the federal government to provide for all Americans": 0.0,
-        "No, not the responsibility of the federal government to provide": 0.72,
+        "No, not the responsibility of the federal government to provide": 1.0,
         "Refused": 0.0
       },
       "jsd": 0.188028,
@@ -1406,7 +1406,7 @@
         "Yes, a responsibility of the federal government to provide for all Americans": 0.5553
       },
       "model_distribution": {
-        "Yes, a responsibility of the federal government to provide for all Americans": 0.66,
+        "Yes, a responsibility of the federal government to provide for all Americans": 1.0,
         "No, not the responsibility of the federal government to provide": 0.0,
         "Refused": 0.0
       },
@@ -1435,8 +1435,8 @@
         "Yes, there were guns in my household": 0.5156
       },
       "model_distribution": {
-        "Yes, there were guns in my household": 0.26,
-        "No, there were no guns in my household": 0.64,
+        "Yes, there were guns in my household": 0.2889,
+        "No, there were no guns in my household": 0.7111,
         "I am not sure if there were guns in my household": 0.0,
         "Refused": 0.0
       },
@@ -2249,8 +2249,8 @@
       },
       "model_distribution": {
         "Should provide more assistance": 0.0,
-        "Should provide less assistance": 0.1,
-        "Is providing about the right amount of assistance": 0.72,
+        "Should provide less assistance": 0.122,
+        "Is providing about the right amount of assistance": 0.878,
         "Refused": 0.0
       },
       "jsd": 0.335686,

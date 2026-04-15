@@ -262,8 +262,8 @@
       "model_distribution": {
         "Very favorable": 0.0,
         "Somewhat favorable": 0.0,
-        "Somewhat unfavorable": 0.0667,
-        "Very unfavorable": 0.6
+        "Somewhat unfavorable": 0.1,
+        "Very unfavorable": 0.9
       },
       "jsd": 0.22849,
       "kendall_tau": 0.547723,
@@ -902,7 +902,7 @@
       },
       "model_distribution": {
         "Favor": 0.0,
-        "Oppose": 0.9333
+        "Oppose": 1.0
       },
       "jsd": 0.166374,
       "kendall_tau": 1.0,
@@ -1272,8 +1272,8 @@
         "Both/neither (VOL)": 0.2135
       },
       "model_distribution": {
-        "Use military force to fight the rebels": 0.0667,
-        "Negotiate a settlement with the rebels and Russia": 0.8667,
+        "Use military force to fight the rebels": 0.0715,
+        "Negotiate a settlement with the rebels and Russia": 0.9285,
         "Both/neither (VOL)": 0.0
       },
       "jsd": 0.187573,
@@ -1429,8 +1429,8 @@
         "Other reasons": 0.384
       },
       "model_distribution": {
-        "Largely more connected": 0.4667,
-        "Other reasons": 0.4667
+        "Largely more connected": 0.5,
+        "Other reasons": 0.5
       },
       "jsd": 0.009859,
       "kendall_tau": 0.0,
@@ -2126,10 +2126,10 @@
         "Very unfavorable": 0.4471
       },
       "model_distribution": {
-        "Very favorable": 0.0667,
-        "Somewhat favorable": 0.4667,
-        "Somewhat unfavorable": 0.3333,
-        "Very unfavorable": 0.0667
+        "Very favorable": 0.0715,
+        "Somewhat favorable": 0.5,
+        "Somewhat unfavorable": 0.3571,
+        "Very unfavorable": 0.0715
       },
       "jsd": 0.150806,
       "kendall_tau": 0.182574,
@@ -2305,11 +2305,11 @@
         "DK/Refused": 0.0303
       },
       "model_distribution": {
-        "Very favorable": 0.0667,
+        "Very favorable": 0.0715,
         "Somewhat favorable": 0.0,
         "Somewhat unfavorable": 0.0,
-        "Very unfavorable": 0.6,
-        "DK/Refused": 0.2667
+        "Very unfavorable": 0.6428,
+        "DK/Refused": 0.2857
       },
       "jsd": 0.62319,
       "kendall_tau": -0.737865,

@@ -32,10 +32,10 @@ jobs:
 
   validate-submissions:
     runs-on: ubuntu-latest
-    # Advisory until the validator's per-question recompute drift and the
-    # historical data-normalization follow-up land (sb-u0a). Don't block
-    # legitimate PRs on a gate that has its own known bugs + stale metrics.
-    continue-on-error: true
+    # Required gate. The historical data-quality follow-up (sb-7gn) backfilled
+    # stale jsd/tau/parity, normalized partial-mass distributions, and added
+    # an all-zero sentinel exception in _validate_distributions, so PRs that
+    # touch leaderboard-results/ are now safe to block on validation errors.
     steps:
       - uses: actions/checkout@v4
         with:

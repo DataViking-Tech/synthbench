@@ -440,7 +440,17 @@ def _validate_distributions(data: Mapping[str, Any]) -> list[Issue]:
                         )
                     )
                 total += float(weight)
-            if total == total and abs(total - 1.0) > DISTRIBUTION_SUM_TOLERANCE:
+            # An all-zero distribution is the legitimate sentinel for a
+            # catastrophic parse failure (no valid model output). It pairs
+            # with jsd=1.0 / tau=0.0 in per_question and is verified there
+            # by the recompute checks; we don't also want to flag it as a
+            # DIST_SUM violation. Distributions with non-trivial mass must
+            # still sum to 1.0 within tolerance.
+            if (
+                total == total
+                and total > DISTRIBUTION_SUM_TOLERANCE
+                and (abs(total - 1.0) > DISTRIBUTION_SUM_TOLERANCE)
+            ):
                 issues.append(
                     Issue(
                         code="DIST_SUM",
