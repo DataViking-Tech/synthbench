@@ -6,11 +6,13 @@ import "@/styles/global.css";
 interface Props {
   title: string;
   description?: string;
+  noindex?: boolean;
 }
 
 const {
   title,
   description = "SynthBench: Open benchmark for synthetic survey respondent quality",
+  noindex = false,
 } = Astro.props;
 ---
 
@@ -21,6 +23,7 @@ const {
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/synthbench/favicon.svg" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
   </head>
   <body
     class="min-h-screen bg-surface text-text dark:bg-surface-dark dark:text-text-dark"

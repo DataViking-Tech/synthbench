@@ -769,3 +769,39 @@ expectations.
 Wilson score intervals quantify uncertainty. This ensures fair comparison between
 logprob providers (exact distributions) and sampling providers (estimated
 distributions).
+
+## 8. Accessing Raw Data for Research
+
+SynthBench publishes aggregate leaderboard results openly. Per-run and
+per-question artifacts (under `/data/run/`, `/data/question/`, `/data/config/`,
+and `/data/runs-index.json`) are available at runtime for the site UI but are
+not intended for bulk scraping.
+
+**Policy:**
+
+- Public pages (home, leaderboard, findings, methodology, explore) are
+  indexable by search engines.
+- Detail pages (`/run/<id>`, `/question/<dataset>/<key>`, `/config/<id>`)
+  carry `<meta name="robots" content="noindex">`.
+- `robots.txt` disallows crawlers from the `/data/` JSON paths and the runs
+  index. Well-behaved crawlers will stay out.
+- Holdout-private and license-restricted question-level data is governed by
+  `sb-private` and `sb-djx`; those policies take precedence over anything a
+  crawler could opportunistically fetch.
+
+**Requesting research access:**
+
+If you need bulk access to per-question or per-run artifacts for a specific
+research purpose — replication, meta-analysis, methodological critique — open
+a GitHub issue on the SynthBench repository with:
+
+1. A one-paragraph description of the research question.
+2. The specific slice of data you need (dataset, date range, configs, or
+   questions).
+3. Whether outputs will be published, and where.
+4. Acknowledgement that holdout-private items will remain private.
+
+Bulk scraping of the deployed site is not the supported access path and will
+not be treated as consent to redistribute per-question artifacts. This
+document states the principle; a request-handling workflow is out of scope
+for this note.

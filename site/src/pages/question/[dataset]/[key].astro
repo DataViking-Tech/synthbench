@@ -123,7 +123,7 @@ const encodePathSegment = (s: string): string =>
   s.replace(/ /g, "%20").replace(/#/g, "%23").replace(/\?/g, "%3F");
 ---
 
-<BaseLayout title={pageTitle}>
+<BaseLayout title={pageTitle} noindex={true}>
   <div class="question-detail mx-auto w-full max-w-6xl px-4 py-8">
     <!-- Breadcrumb -->
     <nav class="mb-6 text-sm text-muted" aria-label="Breadcrumb">
