@@ -515,6 +515,159 @@ def compare(files, output):
         click.echo(f"\nSaved to {output}", err=True)
 
 
+# sb-t61h: Tier-2 CLI submission. Wraps the same Worker /submit endpoint the
+# web upload uses, but auths with a personal API key minted on /account so the
+# user never has to leave the terminal. Designed to be the last step of a
+# benchmark pipeline:
+#
+#   synthbench run -p openrouter -m gpt-4o-mini -d opinionsqa -o results/
+#   synthbench submit results/openrouter_gpt-4o-mini_opinionsqa.json
+#
+# Configuration via env vars is the supported path for shell-script automation:
+#   export SYNTHBENCH_API_KEY=sb_xxxx...
+#   export SYNTHBENCH_API_URL=https://api.synthbench.org   # default
+#
+# Flags (--api-key, --api-url) override env so ad-hoc invocations don't have
+# to mutate the shell.
+DEFAULT_API_URL = "https://api.synthbench.org"
+
+
+@main.command()
+@click.argument("run_file", type=click.Path(exists=True, dir_okay=False))
+@click.option(
+    "--api-key",
+    default=None,
+    help="API key (defaults to SYNTHBENCH_API_KEY env var). Generate at /account.",
+)
+@click.option(
+    "--api-url",
+    default=None,
+    help=f"Submission endpoint base (defaults to SYNTHBENCH_API_URL or {DEFAULT_API_URL}).",
+)
+@click.option(
+    "--timeout",
+    type=int,
+    default=60,
+    show_default=True,
+    help="HTTP timeout in seconds.",
+)
+@click.option(
+    "--json-out",
+    is_flag=True,
+    help="Print the raw response JSON to stdout (useful for piping).",
+)
+def submit(run_file, api_key, api_url, timeout, json_out):
+    """Submit a benchmark result JSON to the SynthBench leaderboard.
+
+    Authenticates with a personal API key (sb_<...>) generated at
+    https://synthbench.org/account. The same Tier-1 schema validation that
+    runs in the browser flow runs server-side; on success the submission
+    enters the validation queue and a moderator-free GitHub Actions run
+    publishes it to the leaderboard if it passes the full pipeline.
+
+    Example:
+
+        export SYNTHBENCH_API_KEY=sb_xxxx
+        synthbench submit results/openrouter_gpt-4o-mini_opinionsqa.json
+    """
+    import os
+
+    import httpx
+
+    key = api_key or os.environ.get("SYNTHBENCH_API_KEY")
+    if not key:
+        click.echo(
+            "Error: no API key provided. Pass --api-key or set SYNTHBENCH_API_KEY.\n"
+            "Generate one at https://synthbench.org/account.",
+            err=True,
+        )
+        sys.exit(2)
+    if not key.startswith("sb_"):
+        click.echo(
+            "Error: API key must start with 'sb_'. Did you paste a JWT by mistake?",
+            err=True,
+        )
+        sys.exit(2)
+
+    base = (api_url or os.environ.get("SYNTHBENCH_API_URL") or DEFAULT_API_URL).rstrip(
+        "/"
+    )
+    endpoint = f"{base}/submit"
+
+    path = Path(run_file)
+    try:
+        body = path.read_text()
+    except OSError as exc:
+        click.echo(f"Error: cannot read {path}: {exc}", err=True)
+        sys.exit(1)
+
+    # Cheap parse to fail before the network round-trip if the file isn't
+    # JSON at all. We rely on the Worker's Tier-1 validator for everything
+    # structural — duplicating it client-side would just rot in parallel.
+    try:
+        json.loads(body)
+    except json.JSONDecodeError as exc:
+        click.echo(f"Error: {path} is not valid JSON: {exc}", err=True)
+        sys.exit(1)
+
+    click.echo(f"Uploading {path.name} → {endpoint}", err=True)
+
+    try:
+        resp = httpx.post(
+            endpoint,
+            content=body,
+            headers={
+                "Authorization": f"Bearer {key}",
+                "Content-Type": "application/json",
+                "User-Agent": f"synthbench-cli/{__version__}",
+            },
+            timeout=timeout,
+        )
+    except httpx.HTTPError as exc:
+        click.echo(f"Error: network failure: {exc}", err=True)
+        sys.exit(1)
+
+    try:
+        payload = resp.json()
+    except ValueError:
+        payload = {"raw": resp.text}
+
+    if json_out:
+        click.echo(json.dumps(payload, indent=2))
+
+    if resp.status_code in (200, 202):
+        sub_id = payload.get("submission_id")
+        status = payload.get("status", "unknown")
+        click.echo(f"  ✓ submitted (id={sub_id}, status={status})", err=True)
+        warning = payload.get("warning")
+        if warning:
+            click.echo(f"  ! {warning}", err=True)
+        # Deep-link the user to the in-flight submission so they can poll
+        # status without leaving the terminal-browser loop.
+        site = base.replace("api.", "", 1) if base.startswith("https://api.") else base
+        click.echo(f"  Status URL: {site.rstrip('/')}/account/submissions/", err=True)
+        return
+
+    # Map common Worker errors to actionable messages so users don't have to
+    # cross-reference the OpenAPI spec.
+    error_msg = payload.get("error", resp.text or "unknown error")
+    hint = ""
+    if resp.status_code == 401:
+        hint = "  Hint: API key was rejected. Check it's not revoked at /account.\n"
+    elif resp.status_code == 403:
+        hint = "  Hint: API key lacks the 'submit' scope. Generate a new key with submit access.\n"
+    elif resp.status_code == 413:
+        hint = "  Hint: submission exceeded the 2 MB cap.\n"
+    elif resp.status_code == 429:
+        hint = "  Hint: per-key rate limit (60/hr) exceeded. Wait or use another key.\n"
+    elif resp.status_code >= 500:
+        hint = "  Hint: server error. Re-run; if it persists, check status.synthbench.org.\n"
+    click.echo(
+        f"Error (HTTP {resp.status_code}): {error_msg}\n{hint}".rstrip(), err=True
+    )
+    sys.exit(1)
+
+
 @main.command()
 @click.option("--provider", "-p", required=True, help="Provider name.")
 @click.option("--model", "-m", default="haiku", help="Model name or alias.")

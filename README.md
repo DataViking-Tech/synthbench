@@ -77,7 +77,31 @@ bypass: `git push --no-verify`.
 
 ## Submit Results
 
-Want to add your provider to the leaderboard? Here's how:
+Three ways to land a run on the leaderboard, in order of friction:
+
+### 1. CLI (recommended for repeat submissions)
+
+Mint an API key at [synthbench.org/account](https://synthbench.org/account/),
+then:
+
+```bash
+export SYNTHBENCH_API_KEY=sb_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+synthbench run --provider openrouter --model gpt-4o-mini --suite full -o results/
+synthbench submit results/openrouter_gpt-4o-mini_opinionsqa.json
+```
+
+The Worker validates the submission, stages it to R2, and dispatches the
+GitHub Actions pipeline. Successful runs publish within ~5 minutes. Keys
+are rate-limited to 60 submissions/hour. See
+[SUBMISSIONS.md → API key flow](SUBMISSIONS.md#api-key-flow-cli-submission).
+
+### 2. Web upload
+
+Sign in at [/account](https://synthbench.org/account/) and drag your result
+JSON into [/submit/upload](https://synthbench.org/submit/upload/). Same
+validation pipeline, no key required.
+
+### 3. GitHub PR (power-user path)
 
 1. **Fork** this repo.
 2. **Run** SynthBench with your provider:

@@ -89,7 +89,164 @@ const setupHref = `${base}account/setup/`;
           Sign out
         </button>
       </div>
+
+      <!-- sb-t61h: API Keys section. Only rendered for signed-in users; the
+           bootstrap script below mounts the list + create handlers. -->
+      <section class="mt-10" data-api-keys-section>
+        <header class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold tracking-tight text-text dark:text-text-dark">
+              API Keys
+            </h2>
+            <p class="mt-1 text-sm text-muted">
+              Personal access tokens for the <code>synthbench submit</code> CLI.
+              Up to 5 active keys per account.
+            </p>
+          </div>
+          <button
+            type="button"
+            data-api-keys-new
+            class="inline-flex shrink-0 items-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Generate new key
+          </button>
+        </header>
+
+        <p data-api-keys-error class="mt-3 hidden text-sm text-red-600"></p>
+
+        <div data-api-keys-loading class="mt-4 text-sm text-muted">
+          Loading keys…
+        </div>
+
+        <div data-api-keys-empty class="mt-4 hidden rounded-md border border-muted/30 bg-surface p-4 text-sm text-text dark:bg-surface-dark dark:text-text-dark">
+          You haven't created any API keys yet. Click <strong>Generate new key</strong>
+          to mint one for the CLI.
+        </div>
+
+        <ul data-api-keys-list class="mt-4 hidden space-y-2"></ul>
+      </section>
     </section>
+
+    <!-- sb-t61h: One-time key reveal modal. Plaintext lives only in this
+         element; copy + close zero it from the DOM. -->
+    <div
+      data-api-key-modal
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="api-key-modal-title"
+    >
+      <div class="w-full max-w-lg rounded-lg bg-surface p-6 shadow-xl dark:bg-surface-dark">
+        <h3
+          id="api-key-modal-title"
+          class="text-lg font-semibold text-text dark:text-text-dark"
+        >
+          Your new API key
+        </h3>
+        <p class="mt-2 text-sm text-text dark:text-text-dark">
+          Copy this key now — <strong>you won't be able to see it again.</strong>
+          If you lose it, generate a new one and revoke the old.
+        </p>
+        <div class="mt-4 flex items-stretch gap-2">
+          <code
+            data-api-key-modal-value
+            class="flex-1 select-all overflow-x-auto rounded border border-muted/40 bg-bg/40 px-3 py-2 font-mono text-sm text-text dark:text-text-dark"
+          >sb_…</code>
+          <button
+            type="button"
+            data-api-key-modal-copy
+            class="rounded-md border border-muted/30 px-3 text-sm font-semibold text-text hover:bg-muted/10 dark:text-text-dark"
+          >
+            Copy
+          </button>
+        </div>
+        <p
+          data-api-key-modal-copied
+          class="mt-2 hidden text-xs text-green-600 dark:text-green-300"
+        >
+          Copied to clipboard.
+        </p>
+        <div class="mt-6 flex justify-end">
+          <button
+            type="button"
+            data-api-key-modal-close
+            class="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90"
+          >
+            I've copied it
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- sb-t61h: Generate-key form modal. -->
+    <div
+      data-api-key-form-modal
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="api-key-form-title"
+    >
+      <form
+        data-api-key-form
+        class="w-full max-w-md rounded-lg bg-surface p-6 shadow-xl dark:bg-surface-dark"
+      >
+        <h3
+          id="api-key-form-title"
+          class="text-lg font-semibold text-text dark:text-text-dark"
+        >
+          Generate API key
+        </h3>
+        <div class="mt-4 grid gap-3">
+          <label class="block text-sm">
+            <span class="font-medium text-text dark:text-text-dark">Name</span>
+            <input
+              name="name"
+              required
+              maxlength="64"
+              placeholder="e.g. laptop-cli"
+              class="mt-1 w-full rounded-md border border-muted/40 bg-bg/40 px-3 py-2 text-sm text-text dark:text-text-dark"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-text dark:text-text-dark">Scope</span>
+            <select
+              name="scope"
+              class="mt-1 w-full rounded-md border border-muted/40 bg-bg/40 px-3 py-2 text-sm text-text dark:text-text-dark"
+            >
+              <option value="submit" selected>Submit runs</option>
+              <option value="read">Read gated data</option>
+              <option value="both">Read + submit</option>
+            </select>
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-text dark:text-text-dark">
+              Expires (optional)
+            </span>
+            <input
+              name="expires_at"
+              type="date"
+              class="mt-1 w-full rounded-md border border-muted/40 bg-bg/40 px-3 py-2 text-sm text-text dark:text-text-dark"
+            />
+          </label>
+        </div>
+        <p data-api-key-form-error class="mt-2 hidden text-sm text-red-600"></p>
+        <div class="mt-5 flex justify-end gap-2">
+          <button
+            type="button"
+            data-api-key-form-cancel
+            class="rounded-md border border-muted/30 px-4 py-2 text-sm font-semibold text-text dark:text-text-dark hover:bg-muted/10"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Generate
+          </button>
+        </div>
+      </form>
+    </div>
 
   </div>
 </BaseLayout>
@@ -135,6 +292,248 @@ const setupHref = `${base}account/setup/`;
     const profile = await getProfile(session.user.id);
     setText("[data-account-affiliation]", profile?.affiliation ?? null);
     setText("[data-account-purpose]", profile?.research_purpose ?? null);
+    await refreshApiKeys(session.user.id);
+  }
+
+  // sb-t61h: API Keys section ------------------------------------------------
+
+  async function refreshApiKeys(userId: string): Promise<void> {
+    const { listMyApiKeys, MAX_ACTIVE_KEYS_PER_USER, scopeLabel, revokeApiKey, deleteApiKey } =
+      await import("@/lib/apiKeys");
+    const list = document.querySelector<HTMLUListElement>("[data-api-keys-list]");
+    const empty = document.querySelector<HTMLElement>("[data-api-keys-empty]");
+    const loading = document.querySelector<HTMLElement>("[data-api-keys-loading]");
+    const newBtn = document.querySelector<HTMLButtonElement>("[data-api-keys-new]");
+
+    loading?.classList.remove("hidden");
+    list?.classList.add("hidden");
+    empty?.classList.add("hidden");
+
+    let rows: Awaited<ReturnType<typeof listMyApiKeys>>;
+    try {
+      rows = await listMyApiKeys(userId);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      showApiKeyError(msg);
+      loading?.classList.add("hidden");
+      return;
+    }
+    loading?.classList.add("hidden");
+    clearApiKeyError();
+
+    const activeCount = rows.filter((r) => !r.revoked_at).length;
+    if (newBtn) {
+      newBtn.disabled = activeCount >= MAX_ACTIVE_KEYS_PER_USER;
+      newBtn.title =
+        activeCount >= MAX_ACTIVE_KEYS_PER_USER
+          ? `You've reached the ${MAX_ACTIVE_KEYS_PER_USER}-key cap. Revoke one to mint another.`
+          : "";
+    }
+
+    if (rows.length === 0) {
+      empty?.classList.remove("hidden");
+      return;
+    }
+    if (!list) return;
+
+    list.innerHTML = "";
+    for (const row of rows) {
+      const li = document.createElement("li");
+      li.className =
+        "rounded-md border border-muted/30 bg-surface p-3 text-sm dark:bg-surface-dark";
+
+      const isRevoked = Boolean(row.revoked_at);
+      const isExpired = !isRevoked && row.expires_at ? new Date(row.expires_at) <= new Date() : false;
+      const stateLabel = isRevoked ? "Revoked" : isExpired ? "Expired" : "Active";
+      const stateClass = isRevoked
+        ? "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200"
+        : isExpired
+          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200"
+          : "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200";
+
+      const lastUsed = row.last_used_at
+        ? new Date(row.last_used_at).toLocaleString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+          })
+        : "never";
+      const created = new Date(row.created_at).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+      const expires = row.expires_at
+        ? new Date(row.expires_at).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
+        : "no expiry";
+
+      const actions = isRevoked
+        ? `<button type="button" data-key-delete="${row.id}" class="rounded-md border border-muted/30 px-2 py-1 text-xs font-semibold text-text hover:bg-muted/10 dark:text-text-dark">Delete</button>`
+        : `<button type="button" data-key-revoke="${row.id}" class="rounded-md border border-red-300/50 px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-900/20">Revoke</button>`;
+
+      li.innerHTML = `
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <div class="min-w-0">
+            <p class="truncate font-semibold text-text dark:text-text-dark">${escapeHtml(row.name)}</p>
+            <p class="mt-0.5 text-xs text-muted">
+              <code>${escapeHtml(row.key_prefix)}…</code> · ${escapeHtml(scopeLabel(row.scope))} ·
+              Created ${escapeHtml(created)} · Expires ${escapeHtml(expires)} · Last used ${escapeHtml(lastUsed)}
+            </p>
+          </div>
+          <div class="flex shrink-0 items-center gap-2">
+            <span class="rounded px-2 py-0.5 text-xs font-semibold ${stateClass}">${escapeHtml(stateLabel)}</span>
+            ${actions}
+          </div>
+        </div>
+      `;
+
+      const revokeBtn = li.querySelector<HTMLButtonElement>("[data-key-revoke]");
+      revokeBtn?.addEventListener("click", async () => {
+        if (!confirm(`Revoke key "${row.name}"? Existing CLI sessions using it will fail.`)) return;
+        revokeBtn.disabled = true;
+        const { error } = await revokeApiKey(row.id);
+        if (error) showApiKeyError(`Revoke failed: ${error}`);
+        await refreshApiKeys(userId);
+      });
+      const deleteBtn = li.querySelector<HTMLButtonElement>("[data-key-delete]");
+      deleteBtn?.addEventListener("click", async () => {
+        if (!confirm(`Permanently delete key "${row.name}"?`)) return;
+        deleteBtn.disabled = true;
+        const { error } = await deleteApiKey(row.id);
+        if (error) showApiKeyError(`Delete failed: ${error}`);
+        await refreshApiKeys(userId);
+      });
+
+      list.appendChild(li);
+    }
+    list.classList.remove("hidden");
+  }
+
+  function escapeHtml(s: unknown): string {
+    return String(s ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function showApiKeyError(msg: string): void {
+    const el = document.querySelector<HTMLElement>("[data-api-keys-error]");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
+  function clearApiKeyError(): void {
+    document.querySelector<HTMLElement>("[data-api-keys-error]")?.classList.add("hidden");
+  }
+
+  function openModal(selector: string): void {
+    const el = document.querySelector<HTMLElement>(selector);
+    if (!el) return;
+    el.classList.remove("hidden");
+    el.classList.add("flex");
+  }
+  function closeModal(selector: string): void {
+    const el = document.querySelector<HTMLElement>(selector);
+    if (!el) return;
+    el.classList.add("hidden");
+    el.classList.remove("flex");
+  }
+
+  function wireApiKeyForm(getUserId: () => string | null): void {
+    document.querySelector<HTMLButtonElement>("[data-api-keys-new]")?.addEventListener(
+      "click",
+      () => {
+        clearApiKeyError();
+        const formError = document.querySelector<HTMLElement>("[data-api-key-form-error]");
+        formError?.classList.add("hidden");
+        const form = document.querySelector<HTMLFormElement>("[data-api-key-form]");
+        form?.reset();
+        openModal("[data-api-key-form-modal]");
+      },
+    );
+    document
+      .querySelector<HTMLButtonElement>("[data-api-key-form-cancel]")
+      ?.addEventListener("click", () => closeModal("[data-api-key-form-modal]"));
+
+    document
+      .querySelector<HTMLFormElement>("[data-api-key-form]")
+      ?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const userId = getUserId();
+        if (!userId) {
+          showApiKeyError("You must be signed in to generate keys.");
+          return;
+        }
+        const form = e.currentTarget as HTMLFormElement;
+        const data = new FormData(form);
+        const name = String(data.get("name") ?? "").trim();
+        const scope = String(data.get("scope") ?? "submit") as "read" | "submit" | "both";
+        const rawExpires = String(data.get("expires_at") ?? "").trim();
+        const expiresAt = rawExpires ? new Date(`${rawExpires}T00:00:00Z`).toISOString() : null;
+
+        const formError = document.querySelector<HTMLElement>("[data-api-key-form-error]");
+        const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+        try {
+          const { createApiKey } = await import("@/lib/apiKeys");
+          const { plaintext } = await createApiKey(userId, { name, scope, expiresAt });
+          closeModal("[data-api-key-form-modal]");
+          revealKeyOnce(plaintext, userId);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          if (formError) {
+            formError.textContent = `Could not generate key: ${msg}`;
+            formError.classList.remove("hidden");
+          }
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      });
+
+    document
+      .querySelector<HTMLButtonElement>("[data-api-key-modal-close]")
+      ?.addEventListener("click", () => {
+        closeOneTimeReveal();
+        const userId = getUserId();
+        if (userId) refreshApiKeys(userId);
+      });
+
+    document
+      .querySelector<HTMLButtonElement>("[data-api-key-modal-copy]")
+      ?.addEventListener("click", async () => {
+        const value = document.querySelector<HTMLElement>("[data-api-key-modal-value]")?.textContent;
+        if (!value) return;
+        try {
+          await navigator.clipboard.writeText(value);
+          document.querySelector<HTMLElement>("[data-api-key-modal-copied]")?.classList.remove("hidden");
+        } catch {
+          // Clipboard write blocked (e.g. iframe). The user can still
+          // select-all + copy manually thanks to `select-all` on the code el.
+        }
+      });
+  }
+
+  function revealKeyOnce(plaintext: string, _userId: string): void {
+    const valueEl = document.querySelector<HTMLElement>("[data-api-key-modal-value]");
+    if (valueEl) valueEl.textContent = plaintext;
+    document.querySelector<HTMLElement>("[data-api-key-modal-copied]")?.classList.add("hidden");
+    openModal("[data-api-key-modal]");
+  }
+
+  function closeOneTimeReveal(): void {
+    const valueEl = document.querySelector<HTMLElement>("[data-api-key-modal-value]");
+    // Best-effort scrub of the plaintext before tearing down the modal so the
+    // key isn't sitting in a detached DOM node waiting to be inspected.
+    if (valueEl) valueEl.textContent = "sb_…";
+    closeModal("[data-api-key-modal]");
   }
 
   async function bootstrap(): Promise<void> {
@@ -179,8 +578,14 @@ const setupHref = `${base}account/setup/`;
       return;
     }
 
+    // Track the active user id so the API key form can resolve it after
+    // arbitrarily long form-fill latency without re-fetching the session.
+    let activeUserId: string | null = null;
+    wireApiKeyForm(() => activeUserId);
+
     const session = await getSession();
     if (session) {
+      activeUserId = session.user.id;
       await renderSignedIn(session);
     } else {
       show("signed-out");
@@ -188,8 +593,10 @@ const setupHref = `${base}account/setup/`;
 
     getSupabaseClient().auth.onAuthStateChange(async (_event, newSession) => {
       if (newSession) {
+        activeUserId = newSession.user.id;
         await renderSignedIn(newSession);
       } else {
+        activeUserId = null;
         show("signed-out");
       }
     });
