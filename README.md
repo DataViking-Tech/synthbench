@@ -1,10 +1,15 @@
 # SynthBench
 
+[![CI](https://github.com/DataViking-Tech/synthbench/actions/workflows/ci.yml/badge.svg)](https://github.com/DataViking-Tech/synthbench/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](pyproject.toml)
+[![Leaderboard](https://img.shields.io/badge/leaderboard-live-success)](https://synthbench.org/)
+
 Open benchmark harness for synthetic survey respondent quality.
 
 **The MLPerf of synthetic UXR.**
 
-SynthBench measures how well synthetic respondent systems (like [synthpanel](https://github.com/DataViking-Tech/SynthPanel), Ditto, Synthetic Users, or raw ChatGPT prompting) reproduce real human survey response patterns.
+SynthBench measures how well synthetic respondent systems (like [synthpanel](https://github.com/DataViking-Tech/SynthPanel), Ditto, Synthetic Users, or raw ChatGPT prompting) reproduce real human survey response patterns against real Pew American Trends Panel and GlobalOpinionQA ground truth — so "it sounds plausible" gets replaced with a measurable similarity score.
 
 ## Quick Start
 
@@ -27,7 +32,9 @@ See [`notebooks/getting_started.ipynb`](notebooks/getting_started.ipynb) for a g
 
 ## Leaderboard
 
-**[View the live leaderboard](https://dataviking-tech.github.io/synthbench/)**
+**[View the live leaderboard](https://synthbench.org/)** — see also the
+[methodology](https://synthbench.org/methodology/) and
+[findings](https://synthbench.org/findings/) pages.
 
 Regenerate leaderboard data for the Astro site:
 ```bash
