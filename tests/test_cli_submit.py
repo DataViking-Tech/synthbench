@@ -212,9 +212,12 @@ def test_submit_json_out_emits_payload(tmp_path, monkeypatch):
     runner = CliRunner()
     res = runner.invoke(main, ["submit", str(run), "--json-out"])
     assert res.exit_code == 0
-    # CliRunner in Click 8.x mixes stdout+stderr in .output. The --json-out
-    # flag emits a single JSON line; extract the JSON object from output.
-    json_lines = [ln for ln in res.output.splitlines() if ln.strip().startswith('{')]
+    # --json-out emits compact single-line JSON; find it in mixed output.
+    json_lines = [
+        ln
+        for ln in res.output.splitlines()
+        if ln.strip().startswith("{") and ln.strip().endswith("}")
+    ]
     assert json_lines, f"no JSON line in output: {res.output!r}"
     parsed = json.loads(json_lines[-1])
     assert parsed["submission_id"] == 7

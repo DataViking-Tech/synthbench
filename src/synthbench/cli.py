@@ -633,7 +633,8 @@ def submit(run_file, api_key, api_url, timeout, json_out):
         payload = {"raw": resp.text}
 
     if json_out:
-        click.echo(json.dumps(payload, indent=2))
+        # Compact single-line JSON for piping / jq / test capture
+        click.echo(json.dumps(payload))
 
     if resp.status_code in (200, 202):
         sub_id = payload.get("submission_id")
