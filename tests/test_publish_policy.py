@@ -48,7 +48,7 @@ def test_augment_full_policy_preserves_human_fields():
 
 def test_augment_aggregates_only_suppresses_human_fields():
     aggr = DatasetPolicy(
-        name="opinionsqa",
+        name="aggr_only_fixture",
         redistribution_policy="aggregates_only",
         license_url=None,
         citation=None,
@@ -103,8 +103,13 @@ def _rollup(dataset: str) -> dict:
 def test_finalize_aggregates_only_clears_human_distribution():
     """Per-question payload for an aggregates_only dataset emits an empty
     dict for human_distribution — aggregate fields (modal, JSD-to-human
-    mean) still work because they are pre-computed."""
-    payload = _finalize_question_payload(_rollup("opinionsqa"))
+    mean) still work because they are pre-computed.
+
+    Uses an unknown dataset name so ``policy_for`` falls back to the
+    conservative ``aggregates_only`` default — no registered adapter
+    currently sits at that tier (post-sb-dek), so the unknown fallback
+    is the only reachable aggregates_only fixture."""
+    payload = _finalize_question_payload(_rollup("aggr_only_fixture"))
     assert payload["human_distribution"] == {}
     assert payload["human_refusal_rate"] is None
     # But the human modal is derived — keep it.
@@ -114,8 +119,9 @@ def test_finalize_aggregates_only_clears_human_distribution():
     assert payload["summary"]["n_models"] == 1
     # Policy metadata embedded.
     assert payload["dataset_policy"]["redistribution_policy"] == "aggregates_only"
-    assert payload["dataset_policy"]["citation"]
-    assert payload["dataset_policy"]["license_url"]
+    # Unknown-dataset fallback has no citation/license URL.
+    assert payload["dataset_policy"]["citation"] is None
+    assert payload["dataset_policy"]["license_url"] is None
 
 
 def test_finalize_full_tier_keeps_human_distribution():
@@ -154,32 +160,36 @@ def test_publish_questions_suppresses_aggregates_only_entirely(tmp_path):
     """Integration (sb-sj6): under the new policy semantics, an
     ``aggregates_only`` dataset emits NO per-question artifact at all —
     neither to disk nor to the gated-routes manifest. The leaderboard row
-    still renders via the aggregate scores on ``runs-index.json``."""
+    still renders via the aggregate scores on ``runs-index.json``.
+
+    Uses an unregistered dataset name so ``policy_for`` falls back to the
+    conservative ``aggregates_only`` default — no shipped adapter sits at
+    that tier post-sb-dek (OpinionsQA was promoted to ``gated``)."""
     results_dir = tmp_path / "results"
     out_dir = tmp_path / "site"
     results_dir.mkdir()
 
     result = _make_result(
         "openrouter/anthropic/claude-haiku-4-5",
-        "opinionsqa",  # aggregates_only
+        "aggr_only_fixture",  # unknown → aggregates_only fallback
         [_pq("Q1")],
     )
     (results_dir / "run1.json").write_text(json.dumps(result))
 
     publish_questions(results_dir, out_dir)
 
-    payload_path = out_dir / "question" / "opinionsqa" / "Q1.json"
+    payload_path = out_dir / "question" / "aggr_only_fixture" / "Q1.json"
     assert not payload_path.exists(), (
         "aggregates_only datasets must not emit per-question JSON"
     )
-    assert not (out_dir / "question" / "opinionsqa" / "index.json").exists()
+    assert not (out_dir / "question" / "aggr_only_fixture" / "index.json").exists()
 
     # gated-routes manifest is emitted unconditionally but contains no entry
     # for an aggregates_only dataset.
     routes_path = out_dir / "gated-routes.json"
     assert routes_path.exists()
     routes = json.loads(routes_path.read_text())
-    assert "opinionsqa" not in routes["datasets"]
+    assert "aggr_only_fixture" not in routes["datasets"]
 
 
 def test_publish_questions_full_tier_publishes_human(tmp_path):

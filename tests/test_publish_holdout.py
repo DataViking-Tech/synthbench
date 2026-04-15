@@ -52,9 +52,11 @@ class TestAugmentPerQuestion:
         out = _augment_per_question(
             rows, policy=policy_for("opinionsqa"), dataset="opinionsqa"
         )
-        # opinionsqa policy is aggregates_only, so all human_distribution
-        # gets suppressed regardless — test that as-is (bead says suppress).
-        # But verify that the public row doesn't get an is_holdout flag.
+        # OpinionsQA is now ``gated`` (sb-dek), so human_distribution is
+        # preserved on public rows for delivery to authenticated R2 clients.
+        # The key assertion here is that the public row does NOT get an
+        # is_holdout flag — that's the holdout suppression contract this
+        # test guards.
         assert out[0].get("is_holdout") is not True
 
     def test_private_row_gets_is_holdout_flag(self):

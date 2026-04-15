@@ -163,15 +163,19 @@ def test_publish_questions_keeps_full_dataset_on_disk_with_uploader(tmp_path: Pa
 
 
 def test_publish_questions_aggregates_only_emits_nothing_per_question(tmp_path: Path):
-    """``aggregates_only`` datasets (opinionsqa) emit no per-question
-    artifact — not to disk, not to R2. The leaderboard still gets its
-    aggregate row via ``runs-index.json`` + ``leaderboard.json``."""
+    """``aggregates_only`` datasets emit no per-question artifact — not to
+    disk, not to R2. The leaderboard still gets its aggregate row via
+    ``runs-index.json`` + ``leaderboard.json``.
+
+    Uses an unregistered dataset name so ``policy_for`` falls back to
+    ``aggregates_only`` — post-sb-dek no shipped adapter remains at that
+    tier (OpinionsQA was promoted to ``gated``)."""
     results_dir = tmp_path / "raw"
     results_dir.mkdir()
     (results_dir / "run.json").write_text(
         json.dumps(
             _make_question_result(
-                "openrouter/anthropic/claude-haiku-4-5", "opinionsqa", "Q1"
+                "openrouter/anthropic/claude-haiku-4-5", "aggr_only_fixture", "Q1"
             )
         )
     )
@@ -181,7 +185,7 @@ def test_publish_questions_aggregates_only_emits_nothing_per_question(tmp_path: 
     counts = publish_questions(results_dir, out_dir, r2_uploader=uploader)
 
     assert counts == {"questions": 0, "datasets": 0}
-    assert not (out_dir / "question" / "opinionsqa" / "Q1.json").exists()
+    assert not (out_dir / "question" / "aggr_only_fixture" / "Q1.json").exists()
     assert client.calls == []
 
 
@@ -256,12 +260,18 @@ def test_publish_runs_aggregates_only_suppresses_detail(tmp_path: Path):
     the leaderboard row still renders) but emit NO per-run or per-config
     JSON — neither to disk nor to R2. The front-end derives the aggregate
     row from ``runs-index.json`` + ``leaderboard.json`` and disables the
-    drill-down link via ``dataset_policies``."""
+    drill-down link via ``dataset_policies``.
+
+    Uses an unregistered dataset name so ``policy_for`` falls back to
+    ``aggregates_only`` — post-sb-dek no shipped adapter remains at that
+    tier (OpinionsQA was promoted to ``gated``)."""
     results_dir = tmp_path / "raw"
     results_dir.mkdir()
     (results_dir / "20260101-ddd.json").write_text(
         json.dumps(
-            _make_run_result("openrouter/anthropic/claude-haiku-4-5", "opinionsqa")
+            _make_run_result(
+                "openrouter/anthropic/claude-haiku-4-5", "aggr_only_fixture"
+            )
         )
     )
 
@@ -279,7 +289,7 @@ def test_publish_runs_aggregates_only_suppresses_detail(tmp_path: Path):
     # But the runs-index carries the aggregate row.
     index = json.loads((out_dir / "runs-index.json").read_text())
     assert index["n_runs"] == 1
-    assert index["runs"][0]["dataset"] == "opinionsqa"
+    assert index["runs"][0]["dataset"] == "aggr_only_fixture"
 
 
 def test_publish_runs_runs_index_always_local_even_with_gated_runs(tmp_path: Path):

@@ -206,8 +206,9 @@ def test_publish_questions_skips_invalid_runs(tmp_path):
     results_dir.mkdir()
 
     # Use ``ntia`` (``full`` tier) so the per-question JSON actually lands
-    # locally under the post-sb-sj6 tier semantics — opinionsqa is now
-    # ``aggregates_only`` and emits no per-question artifact.
+    # locally under the post-sb-sj6 tier semantics — gated-tier datasets
+    # (incl. OpinionsQA post-sb-dek) only land locally as a debug fallback
+    # when no R2 uploader is wired in.
     good = _mk_result(
         "openrouter/anthropic/claude-haiku-4-5",
         "ntia",

@@ -85,32 +85,35 @@ def test_gss_is_full_redistribution():
         WVSDataset,
         EurobarometerConsumerDataset,
         PewTechDataset,
+        OpinionsQADataset,
     ],
 )
 def test_research_use_adapters_are_gated(adapter: type[Dataset]):
     """Datasets with research-use or non-commercial redistribution clauses
     ship via the ``gated`` tier — per-question artifacts land in R2 behind
-    the Supabase JWT gate (sb-sj6)."""
+    the Supabase JWT gate (sb-sj6).
+
+    OpinionsQA was promoted from ``aggregates_only`` to ``gated`` per
+    founder direction (sb-dek, 2026-04-15): the upstream Pew ATP data has
+    no explicit redistribution license, but the JWT gate provides the
+    research-use access control the founder is comfortable with.
+    """
     assert adapter.redistribution_policy == "gated"
-
-
-def test_opinionsqa_stays_aggregates_only():
-    """OpinionsQA has no explicit upstream license — gating does not
-    substitute for missing redistribution permission, so it stays
-    ``aggregates_only`` (no per-question artifact ships at all)."""
-    assert OpinionsQADataset.redistribution_policy == "aggregates_only"
 
 
 # -- Policy lookup + suppression booleans -----------------------------------
 
 
 def test_policy_for_known_dataset():
+    """Lookup of a registered adapter resolves to its declared tier with
+    citation + license URL populated. Uses ``opinionsqa`` (gated tier per
+    sb-dek) as a representative known-dataset case."""
     p = policy_for("opinionsqa")
     assert isinstance(p, DatasetPolicy)
-    assert p.redistribution_policy == "aggregates_only"
-    assert p.suppress_human_distribution is True
-    assert p.suppress_per_question is True
-    assert p.serves_from_r2 is False
+    assert p.redistribution_policy == "gated"
+    assert p.suppress_human_distribution is False
+    assert p.suppress_per_question is False
+    assert p.serves_from_r2 is True
     assert p.citation is not None
     assert p.license_url is not None
 

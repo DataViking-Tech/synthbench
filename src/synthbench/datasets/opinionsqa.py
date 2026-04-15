@@ -69,12 +69,11 @@ class OpinionsQADataset(Dataset):
 
     # The CodaLab worksheet does not publish an explicit license and the
     # underlying Pew ATP data carries its own redistribution restrictions.
-    # No permissive license found → ``aggregates_only``: gating does not
-    # substitute for missing redistribution permission, so per-question
-    # artifacts are suppressed entirely (no ``gated`` fallback). Only
-    # aggregate scores ship. sb-dek tracks the follow-up if founder later
-    # clears the ``gated`` upgrade.
-    redistribution_policy = "aggregates_only"
+    # Per founder direction (sb-dek, 2026-04-15): treated as ``gated``
+    # alongside other research-use datasets (SubPOP, WVS, Pew Tech, etc.)
+    # — per-question artifacts ship via Cloudflare R2 behind the Supabase
+    # JWT gate, never anonymously.
+    redistribution_policy = "gated"
     license_url = (
         "https://worksheets.codalab.org/worksheets/0x6fb693719477478aac73fc07db333f69"
     )
