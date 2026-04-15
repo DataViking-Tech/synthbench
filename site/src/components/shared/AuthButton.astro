@@ -1,0 +1,72 @@
+---
+// sb-8o4: nav-mounted auth widget. Renders a sign-in CTA when signed-out and
+// an "Account" link when signed-in. State is hydrated client-side from the
+// Supabase localStorage session — initial markup is the signed-out state so
+// the button is usable even if JS fails to load.
+const rawBase = import.meta.env.BASE_URL || "/";
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+const accountHref = `${base}account/`;
+---
+
+<div class="auth-button" data-auth-button>
+  <a
+    href={accountHref}
+    class="inline-flex items-center gap-1.5 text-sm/6 font-semibold text-text dark:text-text-dark hover:text-primary dark:hover:text-primary-light"
+    data-auth-state="signed-out"
+  >
+    Sign in
+  </a>
+  <a
+    href={accountHref}
+    class="hidden items-center gap-1.5 text-sm/6 font-semibold text-text dark:text-text-dark hover:text-primary dark:hover:text-primary-light"
+    data-auth-state="signed-in"
+  >
+    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+    <span data-auth-label>Account</span>
+  </a>
+</div>
+
+<script>
+  import { getSession, isAuthConfigured } from "@/lib/auth";
+
+  async function hydrate(): Promise<void> {
+    if (!isAuthConfigured()) return;
+    const root = document.querySelector<HTMLElement>("[data-auth-button]");
+    if (!root) return;
+    const signedOut = root.querySelector<HTMLElement>('[data-auth-state="signed-out"]');
+    const signedIn = root.querySelector<HTMLElement>('[data-auth-state="signed-in"]');
+    if (!signedOut || !signedIn) return;
+
+    const apply = (session: Awaited<ReturnType<typeof getSession>>): void => {
+      if (session) {
+        signedOut.classList.add("hidden");
+        signedIn.classList.remove("hidden");
+        signedIn.classList.add("inline-flex");
+        const label = signedIn.querySelector<HTMLElement>("[data-auth-label]");
+        if (label) {
+          const display =
+            (session.user.user_metadata?.user_name as string | undefined) ||
+            (session.user.user_metadata?.full_name as string | undefined) ||
+            session.user.email ||
+            "Account";
+          label.textContent = display;
+        }
+      } else {
+        signedIn.classList.add("hidden");
+        signedIn.classList.remove("inline-flex");
+        signedOut.classList.remove("hidden");
+      }
+    };
+
+    apply(await getSession());
+
+    // Re-render when sign-in / sign-out happens in another tab.
+    const { getSupabaseClient } = await import("@/lib/auth");
+    getSupabaseClient().auth.onAuthStateChange((_event, session) => apply(session));
+  }
+
+  hydrate();
+</script>

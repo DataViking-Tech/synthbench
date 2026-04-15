@@ -1,0 +1,87 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const rawBase = import.meta.env.BASE_URL || "/";
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+const accountHref = `${base}account/`;
+---
+
+<BaseLayout title="Signing in… · SynthBench" noindex={true}>
+  <div class="mx-auto max-w-xl px-4 py-24 text-center">
+    <h1 class="text-2xl font-semibold text-text dark:text-text-dark">Signing you in…</h1>
+    <p class="mt-3 text-sm text-muted" data-auth-callback-status>
+      Completing the sign-in flow with your identity provider.
+    </p>
+    <noscript class="mt-6 block text-sm text-red-600">
+      Sign-in requires JavaScript to be enabled.
+    </noscript>
+    <a
+      href={accountHref}
+      class="mt-6 hidden text-sm font-semibold text-primary dark:text-primary-light"
+      data-auth-callback-fallback
+    >
+      Continue to your account →
+    </a>
+  </div>
+</BaseLayout>
+
+<script>
+  import { getProfile, getSupabaseClient, isAuthConfigured, safeNextPath, withBase } from "@/lib/auth";
+
+  function setStatus(msg: string): void {
+    const el = document.querySelector<HTMLElement>("[data-auth-callback-status]");
+    if (el) el.textContent = msg;
+  }
+
+  function showFallback(): void {
+    document.querySelector<HTMLElement>("[data-auth-callback-fallback]")?.classList.remove("hidden");
+  }
+
+  async function run(): Promise<void> {
+    if (!isAuthConfigured()) {
+      setStatus("Authentication is not configured for this build.");
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const errParam = params.get("error_description") || params.get("error");
+    if (errParam) {
+      setStatus(`Sign-in failed: ${errParam}`);
+      showFallback();
+      return;
+    }
+
+    const client = getSupabaseClient();
+    const code = params.get("code");
+    if (code) {
+      const { error } = await client.auth.exchangeCodeForSession(code);
+      if (error) {
+        setStatus(`Sign-in failed: ${error.message}`);
+        showFallback();
+        return;
+      }
+    }
+
+    const { data, error } = await client.auth.getSession();
+    if (error || !data.session) {
+      setStatus("We couldn't establish a session. Please try signing in again.");
+      showFallback();
+      return;
+    }
+
+    const profile = await getProfile(data.session.user.id);
+    const next = safeNextPath(params.get("next"));
+    const setupUrl = withBase("account/setup/");
+    const target = profile
+      ? next
+      : `${setupUrl}?next=${encodeURIComponent(next)}`;
+
+    window.location.replace(target);
+  }
+
+  run().catch((err) => {
+    console.error("[auth/callback] unexpected error", err);
+    setStatus("An unexpected error occurred during sign-in.");
+    showFallback();
+  });
+</script>
