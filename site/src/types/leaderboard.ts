@@ -68,6 +68,19 @@ export interface LeaderboardEntry {
   topic_metrics?: Record<TopicCategory, TopicMetricBreakdown>;
   demographic_scores?: DemographicBreakdown[];
   replicates?: ReplicateRun[];
+
+  /**
+   * Cost fields (cost-metrics epic sb-tbm, Slice 3). All optional and nullable
+   * — publish.py emits them for runs that carry token_usage AND whose provider
+   * resolves to a priced entry in synthpanel. Missing / unresolved / self-hosted
+   * → null. Baselines → zero. See specs/cost-metrics/plan.md for semantics.
+   */
+  cost_usd?: number | null;
+  cost_per_100q?: number | null;
+  cost_per_sps_point?: number | null;
+  is_cost_estimated?: boolean | null;
+  input_tokens?: number | null;
+  output_tokens?: number | null;
 }
 
 export interface TopicMetricBreakdown {
@@ -158,6 +171,18 @@ export interface Baselines {
   temporal_drift?: TemporalDriftFloor;
 }
 
+/**
+ * Runtime pricing manifest captured by publish.py at publish time (sb-tbm
+ * Slice 3). Documents which synthpanel pricing rates were applied to cost
+ * fields in this leaderboard build.
+ */
+export interface PricingSnapshot {
+  generated_at: string;
+  synth_panel_version: string;
+  snapshot_date: string;
+  rates: Record<string, number | Record<string, number>>;
+}
+
 export interface SynthBenchData {
   generated_at: string;
   synthbench_version: string;
@@ -166,6 +191,7 @@ export interface SynthBenchData {
   convergence: ConvergencePoint[];
   findings: FindingsData;
   baselines?: Baselines;
+  pricing_snapshot?: PricingSnapshot;
 }
 
 /** @deprecated Use SynthBenchData — alias kept for existing component imports */

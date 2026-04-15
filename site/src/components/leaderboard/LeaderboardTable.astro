@@ -29,6 +29,15 @@ function fmtMetric(value: number | undefined): string {
   return value == null || Number.isNaN(value) ? "—" : value.toFixed(3);
 }
 
+// cost-metrics Slice 4 (sb-xij). Nullable → "—"; exact zero → "$0.00";
+// positive but <$0.01 → "<$0.01"; otherwise two-decimal dollars.
+function formatCost(value: number | null | undefined): string {
+  if (value == null || Number.isNaN(value)) return "—";
+  if (value === 0) return "$0.00";
+  if (value > 0 && value < 0.01) return "<$0.01";
+  return `$${value.toFixed(2)}`;
+}
+
 interface TopicRow {
   topic: string;
   sps: number;
@@ -109,6 +118,7 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
           <th class="px-4 py-3 text-right font-semibold" scope="col" aria-sort="none"><button type="button" class="ml-auto flex items-center gap-1 font-semibold hover:text-primary" data-sort="p_rank">p_rank <span class="sort-indicator" aria-hidden="true"></span></button></th>
           <th class="px-4 py-3 text-right font-semibold" scope="col" aria-sort="none"><button type="button" class="ml-auto flex items-center gap-1 font-semibold hover:text-primary" data-sort="p_refuse">p_refuse <span class="sort-indicator" aria-hidden="true"></span></button></th>
           <th class="px-4 py-3 text-right font-semibold" scope="col" aria-sort="none"><button type="button" class="ml-auto flex items-center gap-1 font-semibold hover:text-primary" data-sort="n">N <span class="sort-indicator" aria-hidden="true"></span></button></th>
+          <th class="px-4 py-3 text-right font-semibold" scope="col" aria-sort="none" title="Cost in US dollars to run 100 questions at this config's token usage and the pricing snapshot at publish time. Rows without token usage show —."><button type="button" class="ml-auto flex items-center gap-1 font-semibold hover:text-primary" data-sort="cost_per_100q">$/100Q <span class="sort-indicator" aria-hidden="true"></span></button></th>
           <th class="px-4 py-3 text-right font-semibold" scope="col" aria-sort="none"><button type="button" class="ml-auto flex items-center gap-1 font-semibold hover:text-primary" data-sort="ci">95% CI <span class="sort-indicator" aria-hidden="true"></span></button></th>
         </tr>
       </thead>
@@ -169,12 +179,13 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
             <td class="px-4 py-3 text-right font-mono">{entry.p_rank.toFixed(3)}</td>
             <td class="px-4 py-3 text-right font-mono">{entry.p_refuse.toFixed(3)}</td>
             <td class="px-4 py-3 text-right font-mono">{entry.n}</td>
+            <td class="px-4 py-3 text-right font-mono cost-cell" data-cost-per-100q={entry.cost_per_100q ?? ""}>{formatCost(entry.cost_per_100q)}</td>
             <td class="px-4 py-3 text-right font-mono text-xs">
               [{entry.ci_lower.toFixed(3)}, {entry.ci_upper.toFixed(3)}]
             </td>
           </tr>
           <tr id={detailId} class="detail-row hidden border-b border-muted/10" data-dataset={entry.dataset} data-variant={hiddenInDefaultView(entry) ? "variant" : "best"}>
-            <td colspan="12" class="px-4 py-4 bg-surface/50 dark:bg-surface-dark/50">
+            <td colspan="13" class="px-4 py-4 bg-surface/50 dark:bg-surface-dark/50">
               <div class="space-y-4 text-sm">
                 {(() => {
                   const rows = topicRows(entry);
@@ -278,10 +289,11 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
           </div>
         </div>
         <div class="text-xs text-muted mb-2">{entry.provider} · {entry.dataset} · {entry.framework}</div>
-        <div class="grid grid-cols-3 gap-2 text-xs">
+        <div class="grid grid-cols-2 gap-2 text-xs">
           <div><span class="text-muted">p_dist</span> <span class="font-mono">{entry.p_dist.toFixed(3)}</span></div>
           <div><span class="text-muted">p_rank</span> <span class="font-mono">{entry.p_rank.toFixed(3)}</span></div>
           <div><span class="text-muted">p_refuse</span> <span class="font-mono">{entry.p_refuse.toFixed(3)}</span></div>
+          <div title="Cost in US dollars to run 100 questions"><span class="text-muted">$/100Q</span> <span class="font-mono cost-cell" data-cost-per-100q={entry.cost_per_100q ?? ""}>{formatCost(entry.cost_per_100q)}</span></div>
         </div>
         </>
       );
@@ -420,16 +432,26 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
             const cmp = aStr.localeCompare(bStr, undefined, { sensitivity: "base", numeric: true });
             return ascending ? cmp : -cmp;
           }
-          let aVal: number;
-          let bVal: number;
+          let aVal: number | null | undefined;
+          let bVal: number | null | undefined;
           if (sortKey === "ci") {
             aVal = aData.ci_upper - aData.ci_lower;
             bVal = bData.ci_upper - bData.ci_lower;
           } else {
-            aVal = aData[sortKey] ?? 0;
-            bVal = bData[sortKey] ?? 0;
+            aVal = aData[sortKey];
+            bVal = bData[sortKey];
           }
-          return ascending ? aVal - bVal : bVal - aVal;
+          // Null-last: rows with missing values always sink to the bottom
+          // regardless of asc/desc direction. cost_per_100q is a common example
+          // (rows without token_usage carry null).
+          const aMissing = aVal == null || Number.isNaN(aVal);
+          const bMissing = bVal == null || Number.isNaN(bVal);
+          if (aMissing && bMissing) return 0;
+          if (aMissing) return 1;
+          if (bMissing) return -1;
+          return ascending
+            ? (aVal as number) - (bVal as number)
+            : (bVal as number) - (aVal as number);
         });
 
         for (const [entryRow, detailRow] of pairs) {
