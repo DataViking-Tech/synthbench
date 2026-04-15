@@ -16,6 +16,27 @@ jobs:
       - run: pip install ruff
       - run: ruff check .
       - run: ruff format --check .
+      - name: Guard against hyphenated sibling-project regression (sb-1el9)
+        # The sibling project's canonical names are `synthpanel` (PyPI package)
+        # and `SynthPanel` (GitHub repo). The stale pre-rename hyphenated form
+        # should never reappear. Historical audit notes (post-flip-audit-*.md)
+        # are allowed to reference the old name while documenting the rename.
+        # The pattern is assembled at runtime so this step doesn't match itself.
+        run: |
+          needle="synth""-""panel"
+          matches=$(grep -rnI "$needle" \
+            --exclude-dir=node_modules \
+            --exclude-dir=.git \
+            --exclude-dir=leaderboard-results \
+            --exclude-dir=dist \
+            --exclude-dir=.astro \
+            --exclude="post-flip-audit-*.md" \
+            . || true)
+          if [ -n "$matches" ]; then
+            echo "::error::Hyphenated sibling-project name found — use 'synthpanel' (PyPI) or 'SynthPanel' (repo)."
+            echo "$matches"
+            exit 1
+          fi
 
   test:
     runs-on: ubuntu-latest
