@@ -1,0 +1,55 @@
+---
+// Documents the 80/20 private-holdout split enforced by
+// `synthbench.private_holdout` and surfaced in the leaderboard as the
+// "verified" / "flagged" verification badge.
+---
+
+<section class="w-full max-w-4xl mx-auto py-12" id="private-holdout">
+  <h2
+    class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    Private holdout split
+  </h2>
+  <p class="text-muted mb-4 max-w-3xl">
+    Every holdout-enabled dataset is partitioned deterministically into an
+    80% public subset and a 20% private subset. Per-question human
+    distributions for the private subset are suppressed from every public
+    artifact — the site, the run-detail JSON, and the question-explorer
+    pages — so a submitter can't reverse-engineer the private answer key by
+    reading public files.
+  </p>
+  <p class="text-muted mb-4 max-w-3xl">
+    Submissions must include results for every question, public and
+    private. We (the SynthBench maintainers) score the private subset
+    locally against the hidden distribution and publish the resulting
+    <span class="font-mono">sps_private</span> alongside
+    <span class="font-mono">sps_public</span>. Rows whose public/private
+    SPS delta stays within a tolerance of 0.05 earn a
+    <span
+      class="mx-1 inline-block text-xs px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+      >✓ verified</span
+    > badge; rows outside the tolerance are
+    <span
+      class="mx-1 inline-block text-xs px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400"
+      >⚠ flagged</span
+    > for review.
+  </p>
+  <p class="text-muted mb-4 max-w-3xl">
+    The partition is derived from a SHA-256 hash of <span class="font-mono"
+      >dataset_name + ":" + question_key</span
+    >. That makes it stable across runs, machines, and Python versions
+    without needing a seed file. We do not publish which questions land in
+    the private subset — doing so would defeat the anti-fabrication
+    property.
+  </p>
+  <p class="text-muted max-w-3xl">
+    <strong>Why bother.</strong> Two independent motivations converge on
+    the same mechanism. First, future LLMs may train on SynthBench itself;
+    holding out 20% slows that recursion. Second (and more important after
+    the public flip): once per-question human distributions are visible,
+    a bad actor could fabricate a submission JSON that exactly matches
+    them. The private subset is a cheap cheating detector — a fabricator
+    has no signal on the hidden keys, so their public and private SPS
+    diverge sharply.
+  </p>
+</section>

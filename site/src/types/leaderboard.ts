@@ -86,6 +86,28 @@ export interface LeaderboardEntry {
   topic_metrics?: Record<TopicCategory, TopicMetricBreakdown>;
   demographic_scores?: DemographicBreakdown[];
   replicates?: ReplicateRun[];
+
+  /**
+   * SPS recomputed over the public 80% of the dataset's holdout split.
+   * Present only on holdout-enabled datasets with enough per-question rows
+   * to compute a subset mean. See `synthbench.private_holdout`.
+   */
+  sps_public?: number;
+  /**
+   * SPS recomputed over the private 20% of the dataset's holdout split.
+   * The hidden answer key means this score is what our server computes,
+   * not what the submitter could fake against public distributions.
+   */
+  sps_private?: number;
+  /** |sps_public − sps_private|. Large values suggest fabrication or contamination. */
+  sps_public_private_delta?: number;
+  /**
+   * Verification badge derived from `sps_public_private_delta` vs
+   * `SPS_DIVERGENCE_THRESHOLD` (0.05). "verified" = delta within threshold,
+   * "flagged" = delta exceeds threshold (submission warrants review).
+   * Absent when the split cannot be computed.
+   */
+  verification_badge?: "verified" | "flagged";
 }
 
 export interface TopicMetricBreakdown {

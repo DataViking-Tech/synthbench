@@ -167,6 +167,20 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
               {!entry.is_baseline && entry.provider.startsWith("SynthPanel") && !entry.is_ensemble && (
                 <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-provider-synthpanel/10 text-provider-synthpanel" title={entry.provider}>conditioned</span>
               )}
+              {entry.verification_badge === "verified" && (
+                <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" title={
+                  entry.sps_public != null && entry.sps_private != null
+                    ? `Public SPS ${entry.sps_public.toFixed(3)} vs private SPS ${entry.sps_private.toFixed(3)} — delta within threshold`
+                    : "Private holdout scores agree — within divergence threshold"
+                }>✓ verified</span>
+              )}
+              {entry.verification_badge === "flagged" && (
+                <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400" title={
+                  entry.sps_public != null && entry.sps_private != null
+                    ? `Public SPS ${entry.sps_public.toFixed(3)} vs private SPS ${entry.sps_private.toFixed(3)} — delta exceeds threshold, under review`
+                    : "Public/private SPS diverge beyond threshold — under review"
+                }>⚠ flagged</span>
+              )}
               {entry.temperature != null && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/15 text-accent font-mono"><span class="sr-only">temperature </span>t={entry.temperature}</span>}
               {entry.template && <span class="ml-1 text-xs px-1.5 py-0.5 rounded bg-accent/15 text-accent font-mono"><span class="sr-only">prompt template </span>tpl={entry.template}</span>}
               <span class="block text-xs text-muted">{entry.provider}</span>

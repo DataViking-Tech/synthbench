@@ -25,6 +25,12 @@ from synthbench.metrics.composite import synthbench_parity_score
 from synthbench.metrics.distributional import jensen_shannon_divergence
 from synthbench.metrics.ranking import kendall_tau_b
 from synthbench.metrics.refusal import refusal_calibration
+from synthbench.private_holdout import (
+    SPS_DIVERGENCE_THRESHOLD,
+    compute_split_sps,
+    is_holdout_enabled,
+    is_private_holdout,
+)
 from synthbench.stats import question_set_hash
 
 # Tolerances for numerical comparison. Distributions are serialized to 4
@@ -572,6 +578,125 @@ def _validate_parse_failure_plausibility(
     return issues
 
 
+def _validate_private_holdout(data: Mapping[str, Any]) -> list[Issue]:
+    """Enforce full-question coverage and flag public/private SPS divergence.
+
+    Two integrity gates, only run on holdout-enabled datasets:
+
+    1. **Full coverage.** Submissions must include per-question results for
+       *both* halves of the split. Missing the private subset is the classic
+       fabrication shortcut — a cheater matches the visible public human
+       distributions and never looks at the private keys. We reject with a
+       clear error whenever fewer than ~5% of submitted rows are private
+       (for honest splits we expect ~20%, so the 5% threshold tolerates the
+       legitimate small-sample case where only a handful of private keys
+       land in a subset by chance).
+
+    2. **SPS divergence.** Recompute SPS on the public and private subsets
+       separately. When the gap exceeds
+       :data:`synthbench.private_holdout.SPS_DIVERGENCE_THRESHOLD`, we flag
+       the submission as suspicious. Public SPS that massively outstrips
+       private SPS means the submitter "knew" the public answers — by
+       training on them, by peeking at published distributions, or by
+       outright fabrication. The flag is a WARNING so a human reviewer can
+       adjudicate borderline cases; ship-stopping decisions happen
+       upstream.
+    """
+    issues: list[Issue] = []
+    config = data.get("config") or {}
+    dataset = str(config.get("dataset") or "")
+    if not dataset or not is_holdout_enabled(dataset):
+        return issues
+
+    per_question = data.get("per_question") or []
+    if not isinstance(per_question, list) or not per_question:
+        return issues
+
+    total = 0
+    n_private = 0
+    for row in per_question:
+        if not isinstance(row, dict):
+            continue
+        total += 1
+        key = row.get("key")
+        if isinstance(key, str) and is_private_holdout(dataset, key):
+            n_private += 1
+
+    if total == 0:
+        return issues
+
+    # Below this threshold, the 20% expected private ratio becomes a
+    # statistical claim we can't actually make — at N=2 a fair split
+    # might land 0-private-rows with probability 0.64. Partial / fixture
+    # submissions used in development routinely sit under this bar, so we
+    # skip enforcement on small submissions and rely on production-scale
+    # runs (which always have hundreds of questions) to hit the validator.
+    MIN_ROWS_FOR_ENFORCEMENT = 25
+    if total < MIN_ROWS_FOR_ENFORCEMENT:
+        return issues
+
+    # Private-coverage gate. Using a conservative 5% lower bound so we don't
+    # false-positive on intentionally tiny debug submissions — a legit full
+    # run hits the 20% expected ratio.
+    expected_private_ratio = 0.05
+    if n_private == 0:
+        issues.append(
+            Issue(
+                code="HOLDOUT_MISSING_PRIVATE",
+                severity=Severity.ERROR,
+                message=(
+                    f"submission on {dataset!r} omits the entire private "
+                    f"holdout subset ({total} questions, 0 private). "
+                    "Submit results for all questions — the private subset "
+                    "is the cheating detector, not optional coverage."
+                ),
+                path="per_question",
+            )
+        )
+    elif n_private / total < expected_private_ratio:
+        issues.append(
+            Issue(
+                code="HOLDOUT_COVERAGE",
+                severity=Severity.ERROR,
+                message=(
+                    f"submission on {dataset!r} has {n_private}/{total} "
+                    f"private-holdout rows ({n_private / total:.1%}); "
+                    f"expected ~20% (min {expected_private_ratio:.0%})"
+                ),
+                path="per_question",
+            )
+        )
+
+    # Divergence check — only meaningful with both subsets populated.
+    if n_private > 0:
+        split = compute_split_sps(dataset, per_question)
+        sps_public = split.get("sps_public")
+        sps_private = split.get("sps_private")
+        delta = split.get("delta")
+        if (
+            isinstance(delta, (int, float))
+            and isinstance(sps_public, (int, float))
+            and isinstance(sps_private, (int, float))
+            and float(delta) > SPS_DIVERGENCE_THRESHOLD
+        ):
+            issues.append(
+                Issue(
+                    code="HOLDOUT_DIVERGENCE",
+                    severity=Severity.WARNING,
+                    message=(
+                        f"sps_public={float(sps_public):.4f} vs "
+                        f"sps_private={float(sps_private):.4f} "
+                        f"(delta={float(delta):.4f}) exceeds "
+                        f"threshold {SPS_DIVERGENCE_THRESHOLD}. "
+                        "Suspicious — may indicate fabrication, contamination, "
+                        "or a legitimate distribution shift worth reviewing."
+                    ),
+                    path="aggregate",
+                )
+            )
+    return issues
+
+
 # ---------------------------------------------------------------------------
 # Tier 2: recomputation verification
 # ---------------------------------------------------------------------------
@@ -1080,6 +1205,7 @@ def validate_submission(
         report.extend(_validate_counts(mapping))
         report.extend(_validate_question_set_hash(mapping, expected_question_hash))
         report.extend(_validate_parse_failure_plausibility(mapping))
+        report.extend(_validate_private_holdout(mapping))
 
     if tier2 and not report.errors and isinstance(data, dict):
         report.extend(_validate_per_question_metrics(data))

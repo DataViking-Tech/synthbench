@@ -438,6 +438,29 @@ def _build_entry(
             }
     entry.update(cost_fields)
 
+    # Private-holdout verification fields: sps_public / sps_private /
+    # delta + a "verified" | "flagged" badge computed off the delta vs. the
+    # divergence threshold. Only surfaced for holdout-enabled datasets; on
+    # others the keys stay absent so the site renders nothing.
+    from synthbench.private_holdout import compute_split_sps, is_holdout_enabled
+
+    dataset_name = cfg.get("dataset", "unknown")
+    if per_question and is_holdout_enabled(dataset_name):
+        split = compute_split_sps(dataset_name, per_question)
+        sps_public = split.get("sps_public")
+        sps_private = split.get("sps_private")
+        delta = split.get("delta")
+        if sps_public is not None:
+            entry["sps_public"] = round(float(sps_public), 6)
+        if sps_private is not None:
+            entry["sps_private"] = round(float(sps_private), 6)
+        if delta is not None:
+            entry["sps_public_private_delta"] = round(float(delta), 6)
+        if sps_public is not None and sps_private is not None:
+            entry["verification_badge"] = (
+                "flagged" if split.get("flagged") else "verified"
+            )
+
     return entry
 
 
@@ -1138,6 +1161,7 @@ def _run_id_from_path(path: Path) -> str:
 def _augment_per_question(
     per_question: list[dict],
     policy: DatasetPolicy | None = None,
+    dataset: str | None = None,
 ) -> list[dict]:
     """Return per-question rows with a lightweight ``topic`` label attached.
 
@@ -1145,10 +1169,18 @@ def _augment_per_question(
     ``human_distribution`` and ``human_refusal_rate`` fields are stripped
     before emission. Aggregate metrics (jsd, kendall_tau, parity) stay — they
     are derived, not raw upstream data.
+
+    On holdout-enabled datasets, the private 20% split also has its
+    ``human_distribution`` / ``human_refusal_rate`` suppressed regardless of
+    redistribution policy: the point of the private set is that the public
+    JSON can't be used to reverse-engineer the answer key. Rows get an
+    ``is_holdout`` flag so the site can badge them as private.
     """
+    from synthbench.private_holdout import is_holdout_enabled, is_private_holdout
     from synthbench.topics import categorize_question
 
-    suppress_human = bool(policy and policy.suppress_human_distribution)
+    suppress_human_by_policy = bool(policy and policy.suppress_human_distribution)
+    holdout_enabled = bool(dataset) and is_holdout_enabled(dataset)
 
     out: list[dict] = []
     for q in per_question:
@@ -1157,7 +1189,15 @@ def _augment_per_question(
         row = dict(q)
         if topic:
             row["topic"] = topic
-        if suppress_human:
+
+        is_holdout = False
+        if holdout_enabled:
+            key = row.get("key")
+            if isinstance(key, str) and is_private_holdout(dataset or "", key):
+                is_holdout = True
+                row["is_holdout"] = True
+
+        if suppress_human_by_policy or is_holdout:
             row.pop("human_distribution", None)
             row.pop("human_refusal_rate", None)
         out.append(row)
@@ -1358,13 +1398,31 @@ def _build_run_detail(
             "per_metric_ci": agg.get("per_metric_ci"),
             "n_parse_failures": agg.get("n_parse_failures"),
         },
-        "per_question": _augment_per_question(per_question, policy=policy),
+        "per_question": _augment_per_question(
+            per_question, policy=policy, dataset=dataset_name
+        ),
     }
 
     if scores.get("p_cond") is not None:
         detail["scores"]["p_cond"] = _round_or_none(scores.get("p_cond"))
     if scores.get("p_sub") is not None:
         detail["scores"]["p_sub"] = _round_or_none(scores.get("p_sub"))
+
+    # Holdout split report: compute SPS on the public/private partitions so
+    # the site can show both numbers and flag divergent submissions. Only
+    # emitted for datasets that actually participate in the split.
+    from synthbench.private_holdout import compute_split_sps, is_holdout_enabled
+
+    if is_holdout_enabled(dataset_name):
+        split = compute_split_sps(dataset_name, per_question)
+        detail["holdout_split"] = {
+            "sps_public": _round_or_none(split.get("sps_public")),
+            "sps_private": _round_or_none(split.get("sps_private")),
+            "delta": _round_or_none(split.get("delta")),
+            "n_public": split.get("n_public", 0),
+            "n_private": split.get("n_private", 0),
+            "flagged": bool(split.get("flagged", False)),
+        }
 
     if demo:
         detail["demographic_breakdown"] = demo
@@ -2029,12 +2087,22 @@ def publish_questions(
     by_dataset_index: dict[str, list[dict]] = {}
     n_questions = 0
 
+    from synthbench.private_holdout import is_private_holdout
+
     for (dataset, key), rollup in rollups.items():
         if not rollup.get("model_responses"):
             continue
         policy = policy_for(dataset)
         if policy.suppress_per_question:
             # citation_only: no per-question artifact, no index entry.
+            continue
+        # Private holdout keys ship no per-question page at all: the page
+        # would otherwise reveal the hidden human_distribution through its
+        # summary fields (``human_top_option`` in particular). We also skip
+        # the dataset index entry so the key isn't listed as "missing" —
+        # from the public site's perspective the holdout keys simply do
+        # not exist.
+        if is_private_holdout(dataset, key):
             continue
         payload = _finalize_question_payload(rollup)
         safe_key = _safe_question_key(key)
