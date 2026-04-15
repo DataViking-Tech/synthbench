@@ -55,16 +55,28 @@ jobs:
       - name: Install Doppler CLI
         uses: dopplerhq/cli-action@v3
 
-      # Shared infra creds (R2 + Supabase service role) live in
-      # dataviking-platform/prd (sb-vkz). Pull them into env vars for the
-      # download + status-update steps.
-      - name: Load shared infra secrets from dataviking-platform
+      # Doppler sourcing split (sb-cewj): shared Cloudflare/R2 creds live in
+      # dataviking-platform/prd (sb-vkz) while project-scoped Supabase values
+      # live in synthbench/prd. Mirrors the sb-svih split in deploy-worker.yml
+      # so a Doppler reorg doesn't have to touch multiple workflows.
+      - name: Load R2 creds from dataviking-platform
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_PLATFORM_TOKEN }}
         run: |
           set -euo pipefail
-          for name in R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
+          for name in R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY; do
             value=$(doppler secrets get "$name" --project dataviking-platform --config prd --plain)
+            echo "::add-mask::$value"
+            printf '%s<<__DVP_EOF__\n%s\n__DVP_EOF__\n' "$name" "$value" >> "$GITHUB_ENV"
+          done
+
+      - name: Load Supabase creds from synthbench
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: |
+          set -euo pipefail
+          for name in SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
+            value=$(doppler secrets get "$name" --project synthbench --config prd --plain)
             echo "::add-mask::$value"
             printf '%s<<__DVP_EOF__\n%s\n__DVP_EOF__\n' "$name" "$value" >> "$GITHUB_ENV"
           done
