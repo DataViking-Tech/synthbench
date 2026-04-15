@@ -583,6 +583,17 @@ const questionBaseUrl = `${base}/question/${encodePathSegment(entry.dataset)}`;
     border: 1px solid color-mix(in oklch, var(--color-muted) 25%, transparent);
     background: color-mix(in oklch, var(--color-surface) 60%, transparent);
   }
+  /* `--color-surface` is the LIGHT-mode token and is not flipped in
+     dark mode (the body uses Tailwind's `dark:bg-surface-dark` instead).
+     Without this override the tile renders translucent-white over the dark
+     page background, which collides with the lifted `--color-muted-dark`
+     label color and produces grey-on-grey text (sb-ave). */
+  @media (prefers-color-scheme: dark) {
+    .score-tile {
+      background: color-mix(in oklch, var(--color-surface-dark) 70%, transparent);
+      border-color: color-mix(in oklch, var(--color-muted) 35%, transparent);
+    }
+  }
   .score-label {
     font-size: 0.7rem;
     text-transform: uppercase;
