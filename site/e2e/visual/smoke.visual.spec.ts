@@ -6,9 +6,9 @@ import { expect, test } from "@playwright/test";
 // Ubuntu CI via the `vrt-baseline-update` label workflow — do NOT commit
 // baselines generated on macOS.
 //
-// Baselines last refreshed: 2026-04-15 (sb-mu7) — catch-up after color,
-// truncation, anomaly-metadata, license-policy, and noindex landings drifted
-// run-detail-dark.png cumulatively to 9% pixel delta.
+// Baselines last refreshed: 2026-04-15 (sb-l879) — catch-up after gated-tier
+// UI (sb-sj6), OpinionsQA tier promotion (sb-dek), and shared CF/R2 creds
+// migration (sb-vkz) landed cumulative pixel drift across all three snapshots.
 //
 // Representative run id is chosen to be stable across rebuilds: it lives in
 // leaderboard-results/ and survives publish-runs regeneration.
