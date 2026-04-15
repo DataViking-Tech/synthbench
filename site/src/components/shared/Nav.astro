@@ -5,19 +5,22 @@ import type { LeaderboardData } from "@/types/leaderboard";
 const leaderboard = leaderboardRaw as LeaderboardData;
 
 const currentPath = Astro.url.pathname;
+const rawBase = import.meta.env.BASE_URL || "/";
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+const baseNoTrail = base.replace(/\/$/, "");
 
 const navLinks = [
-  { href: "/synthbench/", label: "Home" },
-  { href: "/synthbench/leaderboard/", label: "Leaderboard" },
-  { href: "/synthbench/explore/", label: "Explore" },
-  { href: "/synthbench/findings/", label: "Findings" },
-  { href: "/synthbench/methodology/", label: "Methodology" },
-  { href: "/synthbench/submit/", label: "Submit" },
+  { href: base, label: "Home" },
+  { href: `${base}leaderboard/`, label: "Leaderboard" },
+  { href: `${base}explore/`, label: "Explore" },
+  { href: `${base}findings/`, label: "Findings" },
+  { href: `${base}methodology/`, label: "Methodology" },
+  { href: `${base}submit/`, label: "Submit" },
 ];
 
 function isActive(href: string): boolean {
-  if (href === "/synthbench/") {
-    return currentPath === "/synthbench/" || currentPath === "/synthbench";
+  if (href === base) {
+    return currentPath === base || currentPath === baseNoTrail;
   }
   return currentPath.startsWith(href);
 }
@@ -26,7 +29,7 @@ function isActive(href: string): boolean {
 <header class="bg-surface dark:bg-surface-dark">
   <nav aria-label="Global" class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
     <div class="flex lg:flex-1">
-      <a href="/synthbench/" class="-m-1.5 flex items-center gap-2 p-1.5">
+      <a href={base} class="-m-1.5 flex items-center gap-2 p-1.5">
         <svg class="h-8 w-auto text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M3 3v18h18" />
           <path d="M7 16l4-8 4 4 4-10" />
@@ -85,7 +88,7 @@ function isActive(href: string): boolean {
     <div class="fixed inset-0 z-50 bg-surface/80 dark:bg-surface-dark/80" id="mobile-menu-backdrop"></div>
     <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-surface p-6 sm:max-w-sm sm:ring-1 sm:ring-muted/10 dark:bg-surface-dark dark:sm:ring-muted/10" id="mobile-menu-panel">
       <div class="flex items-center justify-between">
-        <a href="/synthbench/" class="-m-1.5 flex items-center gap-2 p-1.5">
+        <a href={base} class="-m-1.5 flex items-center gap-2 p-1.5">
           <svg class="h-8 w-auto text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M3 3v18h18" />
             <path d="M7 16l4-8 4 4 4-10" />

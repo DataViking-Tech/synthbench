@@ -1,4 +1,7 @@
 ---
+const rawBase = import.meta.env.BASE_URL || "/";
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+
 const ctas = [
   {
     title: "Try SynthPanel",
@@ -11,7 +14,7 @@ const ctas = [
   {
     title: "Explore Methodology",
     description: "How we score models, what SPS measures, and why distribution fidelity matters.",
-    href: "/synthbench/methodology/",
+    href: `${base}methodology/`,
     label: "Read methodology",
     external: false,
   },
@@ -19,7 +22,7 @@ const ctas = [
     title: "Submit Your Model",
     description:
       "Run the benchmark on your model and submit results. Open to any provider or framework.",
-    href: "/synthbench/submit/",
+    href: `${base}submit/`,
     label: "Submit results",
     external: false,
   },
