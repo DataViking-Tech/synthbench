@@ -78,7 +78,8 @@ const humanHasData =
   payload.human_distribution != null && Object.keys(payload.human_distribution).length > 0;
 
 // Option order for all bars: use payload.options when present, else merge
-// keys from human + model dists so nothing is silently dropped.
+// keys from human + model + aggregated dists so nothing is silently dropped.
+const aggregatedResponses = payload.aggregated_responses ?? [];
 const options = (() => {
   if (payload.options?.length) return payload.options;
   const keys = new Set<string>();
@@ -86,6 +87,9 @@ const options = (() => {
     for (const k of Object.keys(payload.human_distribution)) keys.add(k);
   }
   for (const r of payload.model_responses) {
+    for (const k of Object.keys(r.distribution)) keys.add(k);
+  }
+  for (const r of aggregatedResponses) {
     for (const k of Object.keys(r.distribution)) keys.add(k);
   }
   return [...keys];
@@ -401,6 +405,99 @@ const encodePathSegment = (s: string): string =>
         )
       }
     </section>
+
+    {
+      aggregatedResponses.length > 0 && (
+        <section class="mb-8" aria-labelledby="aggregated-heading">
+          <h2
+            id="aggregated-heading"
+            class="mb-1 text-sm font-semibold uppercase tracking-wide text-muted"
+          >
+            Aggregated configurations
+            <span class="ml-2 text-xs font-normal text-muted">
+              ensemble blends of the models above
+            </span>
+          </h2>
+          <p class="mb-3 max-w-3xl text-xs text-muted">
+            These are post-hoc blends of the constituent runs above. Shown here
+            for comparison but <em>not</em> included in the cross-model summary
+            statistics, which are computed only from single-model responses to
+            avoid double-counting.
+          </p>
+          <div class="overflow-x-auto rounded-lg border border-accent/30 bg-accent/5">
+            <table class="w-full text-sm" id="aggregated-table">
+              <caption class="sr-only">
+                Post-hoc ensemble blends of the single-model rows above. These
+                rows are excluded from the trendslop summary statistics.
+              </caption>
+              <thead>
+                <tr class="bg-surface dark:bg-surface-dark border-b border-muted/20">
+                  <th class="px-3 py-2 text-left font-semibold" scope="col">
+                    Configuration
+                  </th>
+                  <th class="px-3 py-2 text-left font-semibold" scope="col">
+                    Framework
+                  </th>
+                  <th class="px-3 py-2 text-left font-semibold" scope="col">
+                    Distribution
+                  </th>
+                  <th class="px-3 py-2 text-right font-semibold" scope="col">
+                    JSD → human
+                  </th>
+                  <th class="px-3 py-2 text-right font-semibold" scope="col">
+                    Refusal
+                  </th>
+                  <th class="px-3 py-2 text-right font-semibold" scope="col">
+                    N samples
+                  </th>
+                  <th class="px-3 py-2 text-right font-semibold" scope="col">
+                    Run
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {aggregatedResponses.map((r) => {
+                  const runUrl = `${base}/run/${encodePathSegment(r.run_id)}/`;
+                  return (
+                    <tr class="border-b border-muted/10 hover:bg-accent/10">
+                      <td class="px-3 py-2">
+                        <div class="font-semibold">{r.model}</div>
+                        <div class="text-xs text-muted">{r.base_provider}</div>
+                      </td>
+                      <td class="px-3 py-2 font-mono text-xs">{r.framework}</td>
+                      <td class="px-3 py-2">
+                        <span
+                          class="inline-block w-full min-w-[140px]"
+                          set:html={renderBar(r.distribution)}
+                        />
+                      </td>
+                      <td class="px-3 py-2 text-right font-mono">
+                        {fmt(r.jsd_to_human)}
+                      </td>
+                      <td class="px-3 py-2 text-right font-mono">
+                        {pct(r.refusal_rate)}
+                      </td>
+                      <td class="px-3 py-2 text-right font-mono text-xs">
+                        {r.n_samples}
+                      </td>
+                      <td class="px-3 py-2 text-right">
+                        <a
+                          href={runUrl}
+                          class="text-primary hover:underline"
+                          aria-label={`View full run ${r.run_id}`}
+                        >
+                          view →
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )
+    }
   </div>
 </BaseLayout>
 

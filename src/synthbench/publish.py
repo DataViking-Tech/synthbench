@@ -1715,7 +1715,12 @@ def _collect_question_rollups(
     largest ``n_samples`` — this mirrors the leaderboard dedup policy so a
     model with multiple replicates contributes its best-sampled run.
 
-    Output: ``{(dataset, key): {question, options, human_*, model_responses}}``.
+    Output: ``{(dataset, key): {question, options, human_*, model_responses,
+    aggregated_responses}}``. ``model_responses`` is the cross-model sample
+    that feeds the trendslop summary (raw + single-model product, no
+    baselines, no ensembles). ``aggregated_responses`` is a parallel bucket
+    for ensemble entries — shown on the per-question page for comparison
+    but deliberately excluded from the summary stats.
     """
     from synthbench.config_id import build_config_id
     from synthbench.leaderboard import display_provider_name, provider_framework
@@ -1723,7 +1728,11 @@ def _collect_question_rollups(
     # (dataset, key) → rollup skeleton (question text, options, human dist)
     rollups: dict[tuple[str, str], dict] = {}
     # (dataset, key, framework, display_name) → best response candidate
+    # (cross-model trendslop bucket).
     best_by_key: dict[tuple[str, str, str, str], dict] = {}
+    # Parallel bucket for ensemble entries, keyed the same way so replicates
+    # dedup on n_samples.
+    best_aggregated_by_key: dict[tuple[str, str, str, str], dict] = {}
 
     for run_id, data in results:
         cfg = data.get("config", {}) or {}
@@ -1731,13 +1740,15 @@ def _collect_question_rollups(
         if not provider_raw:
             continue
         framework = provider_framework(provider_raw)
-        # Exclude baselines (majority/random) and ensembles — this view is
-        # "models answering the question"; derived aggregations would muddy
-        # the trendslop signal.
+        # Baselines (majority/random) are dropped entirely — they're not
+        # "models answering the question" in any sense the per-question
+        # view surfaces.
         if framework == "baseline":
             continue
-        if "ensemble" in provider_raw.lower():
-            continue
+        # Ensembles are partitioned into the aggregated bucket so they
+        # don't muddy the cross-model trendslop summary but remain visible
+        # on the per-question page.
+        is_ensemble = "ensemble" in provider_raw.lower()
 
         dataset = cfg.get("dataset", "unknown")
         display_name = display_provider_name(provider_raw)
@@ -1792,9 +1803,10 @@ def _collect_question_rollups(
                 "template": tpl_stem,
             }
             bucket_key = (dataset, key, framework, display_name)
-            prev = best_by_key.get(bucket_key)
+            target = best_aggregated_by_key if is_ensemble else best_by_key
+            prev = target.get(bucket_key)
             if prev is None or candidate["n_samples"] > prev["n_samples"]:
-                best_by_key[bucket_key] = candidate
+                target[bucket_key] = candidate
 
     for (dataset, key, _framework, _display), response in best_by_key.items():
         rollup = rollups.get((dataset, key))
@@ -1802,7 +1814,35 @@ def _collect_question_rollups(
             continue
         rollup.setdefault("model_responses", []).append(response)
 
+    for (
+        dataset,
+        key,
+        _framework,
+        _display,
+    ), response in best_aggregated_by_key.items():
+        rollup = rollups.get((dataset, key))
+        if rollup is None:
+            continue
+        rollup.setdefault("aggregated_responses", []).append(response)
+
     return rollups
+
+
+def _emit_response(r: dict) -> dict:
+    """Shape a single response for emission (drops bookkeeping fields)."""
+    return {
+        "config_id": r["config_id"],
+        "model": r["model"],
+        "framework": r["framework"],
+        "base_provider": r["base_provider"],
+        "distribution": r["distribution"],
+        "n_samples": r["n_samples"],
+        "jsd_to_human": r["jsd_to_human"],
+        "refusal_rate": r["refusal_rate"],
+        "run_id": r["run_id"],
+        "temperature": r.get("temperature"),
+        "template": r.get("template"),
+    }
 
 
 def _finalize_question_payload(rollup: dict) -> dict:
@@ -1811,7 +1851,9 @@ def _finalize_question_payload(rollup: dict) -> dict:
     Sorts ``model_responses`` by ``jsd_to_human`` ascending (null → end) so
     the top row is the closest-to-human model. Computes the summary block
     used by the trendslop indicators (mean/max pairwise JSD, consensus
-    option, refusal-rate spread).
+    option, refusal-rate spread) from ``model_responses`` ONLY —
+    ``aggregated_responses`` (ensembles) are emitted for display but
+    excluded from summary math to avoid double-counting.
     """
     responses = rollup.get("model_responses", []) or []
     # Sort stably: lowest jsd_to_human first, then model name for ties.
@@ -1861,23 +1903,18 @@ def _finalize_question_payload(rollup: dict) -> dict:
     # Shape model_responses for emission (drop bookkeeping fields the
     # frontend doesn't need; keep temperature/template for the drill-down
     # breadcrumb on the question page).
-    emitted_responses = []
-    for r in responses:
-        emitted_responses.append(
-            {
-                "config_id": r["config_id"],
-                "model": r["model"],
-                "framework": r["framework"],
-                "base_provider": r["base_provider"],
-                "distribution": r["distribution"],
-                "n_samples": r["n_samples"],
-                "jsd_to_human": r["jsd_to_human"],
-                "refusal_rate": r["refusal_rate"],
-                "run_id": r["run_id"],
-                "temperature": r.get("temperature"),
-                "template": r.get("template"),
-            }
+    emitted_responses = [_emit_response(r) for r in responses]
+
+    aggregated = rollup.get("aggregated_responses", []) or []
+    aggregated.sort(
+        key=lambda r: (
+            r.get("jsd_to_human")
+            if r.get("jsd_to_human") is not None
+            else float("inf"),
+            r.get("model") or "",
         )
+    )
+    emitted_aggregated = [_emit_response(r) for r in aggregated]
 
     human_dist = rollup.get("human_distribution") or {}
     policy = policy_for(rollup["dataset"])
@@ -1899,6 +1936,7 @@ def _finalize_question_payload(rollup: dict) -> dict:
         "human_distribution": emitted_human_dist,
         "human_refusal_rate": emitted_human_refusal,
         "model_responses": emitted_responses,
+        "aggregated_responses": emitted_aggregated,
         "summary": {
             "n_models": len(emitted_responses),
             "cross_model_jsd_mean": _round_or_none(cross_mean),

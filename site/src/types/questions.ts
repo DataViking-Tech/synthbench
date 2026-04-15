@@ -57,6 +57,13 @@ export interface QuestionPayload {
   human_distribution: Record<string, number>;
   human_refusal_rate: number | null;
   model_responses: QuestionModelResponse[];
+  /**
+   * Post-hoc aggregations (ensembles) of the constituent single-model runs.
+   * Shown on the per-question page as a distinct section for comparison,
+   * but deliberately excluded from the trendslop summary stats to avoid
+   * double-counting. Empty array when no ensembles answered the question.
+   */
+  aggregated_responses: QuestionModelResponse[];
   summary: QuestionSummary;
   dataset_policy?: DatasetPolicyInfo;
   topic?: string;
