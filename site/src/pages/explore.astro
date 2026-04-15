@@ -97,6 +97,10 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           <input id="filter-collapse" type="checkbox" checked class="accent-primary" />
           Collapse replicates into parent config
         </label>
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input id="filter-exploratory" type="checkbox" class="accent-primary" />
+          Show exploratory runs (small N or low samples)
+        </label>
       </div>
 
       <div class="flex items-end gap-2 lg:col-span-2 lg:justify-end">
@@ -187,12 +191,24 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     dataset: string;
     temperature: number | null;
     template: string | null;
+    samples_per_question: number | null;
+    n_questions: number;
     is_baseline: boolean;
     is_ensemble: boolean;
     replicates: RunIndexEntry[];
     agg_sps: number | null;
     agg_jsd: number | null;
     agg_tau: number | null;
+  }
+
+  // Thresholds from sb-djv: filter out quick-iteration runs that otherwise
+  // flood the grouped list with visually near-identical rows.
+  const EXPLORATORY_NQ = 50;
+  const EXPLORATORY_SPQ = 10;
+  function isExploratory(r: RunIndexEntry): boolean {
+    if (r.n_questions < EXPLORATORY_NQ) return true;
+    if (r.samples_per_question != null && r.samples_per_question <= EXPLORATORY_SPQ) return true;
+    return false;
   }
 
   const BASE = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
@@ -206,6 +222,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     tempMax: 2,
     tempIncludeNull: true,
     showBaselines: true,
+    showExploratory: false,
     collapseReplicates: true,
     selection: [] as Selection[],
     // Tracks which Framework/BaseModel keys are collapsed (default expanded).
@@ -241,6 +258,8 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
         dataset: head.dataset,
         temperature: head.temperature,
         template: head.template,
+        samples_per_question: head.samples_per_question,
+        n_questions: head.n_questions,
         is_baseline: head.is_baseline,
         is_ensemble: head.is_ensemble,
         replicates,
@@ -417,12 +436,18 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 
     const focusKey = captureFocusKey();
 
-    const filtered = state.runs.filter(matchesFilters);
+    const baseFiltered = state.runs.filter(matchesFilters);
+    const filtered = state.showExploratory
+      ? baseFiltered
+      : baseFiltered.filter((r) => !isExploratory(r));
     const nRuns = filtered.length;
     const nConfigs = new Set(filtered.map((r) => r.config_id)).size;
-    summary.textContent = state.collapseReplicates
+    const nHidden = baseFiltered.length - filtered.length;
+    const base = state.collapseReplicates
       ? `${nConfigs} configs · ${nRuns} runs (replicates collapsed)`
       : `${nRuns} runs across ${nConfigs} configs`;
+    summary.textContent =
+      nHidden > 0 ? `${base} · ${nHidden} hidden — show exploratory` : base;
     if (live) live.textContent = summary.textContent;
 
     tree.innerHTML = "";
@@ -454,6 +479,8 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           dataset: r.dataset,
           temperature: r.temperature,
           template: r.template,
+          samples_per_question: r.samples_per_question,
+          n_questions: r.n_questions,
           is_baseline: r.is_baseline,
           is_ensemble: r.is_ensemble,
           replicates: [r],
@@ -586,13 +613,30 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
           dsTag.textContent = g.dataset;
           tags.appendChild(dsTag);
 
+          if (g.samples_per_question != null) {
+            const sTag = document.createElement("span");
+            sTag.className =
+              "rounded bg-muted/10 text-xs text-muted px-1.5 py-0.5 font-mono";
+            sTag.textContent = `s=${g.samples_per_question}`;
+            sTag.title = `samples per question: ${g.samples_per_question}`;
+            tags.appendChild(sTag);
+          }
+          {
+            const nTag = document.createElement("span");
+            nTag.className =
+              "rounded bg-muted/10 text-xs text-muted px-1.5 py-0.5 font-mono";
+            nTag.textContent = `n=${g.n_questions}`;
+            nTag.title = `questions evaluated: ${g.n_questions}`;
+            tags.appendChild(nTag);
+          }
           if (g.temperature != null) {
             const tTag = document.createElement("span");
             tTag.className = "rounded bg-muted/10 text-xs text-muted px-1.5 py-0.5 font-mono";
             tTag.textContent = `t=${g.temperature}`;
             tags.appendChild(tTag);
           }
-          if (g.template) {
+          // "current" is the default template; show only non-default ones.
+          if (g.template && g.template !== "current") {
             const tplTag = document.createElement("span");
             tplTag.className =
               "rounded bg-muted/10 text-xs text-muted px-1.5 py-0.5 font-mono";
@@ -666,6 +710,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
     const tNull = byId<HTMLInputElement>("filter-temp-include-null");
     const baselines = byId<HTMLInputElement>("filter-baselines");
     const collapse = byId<HTMLInputElement>("filter-collapse");
+    const exploratory = byId<HTMLInputElement>("filter-exploratory");
     const reset = byId<HTMLButtonElement>("filter-reset");
     const expandAll = byId<HTMLButtonElement>("expand-all");
     const collapseAll = byId<HTMLButtonElement>("collapse-all");
@@ -710,6 +755,10 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       state.showBaselines = baselines.checked;
       render();
     });
+    exploratory?.addEventListener("change", () => {
+      state.showExploratory = exploratory.checked;
+      render();
+    });
     collapse?.addEventListener("change", () => {
       state.collapseReplicates = collapse.checked;
       // Switching mode invalidates any selection whose mode no longer matches.
@@ -727,6 +776,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       if (tNull) tNull.checked = true;
       if (baselines) baselines.checked = true;
       if (collapse) collapse.checked = true;
+      if (exploratory) exploratory.checked = false;
       state.search = "";
       state.dataset = "";
       state.framework = "";
@@ -734,6 +784,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       state.tempMax = 2;
       state.tempIncludeNull = true;
       state.showBaselines = true;
+      state.showExploratory = false;
       state.collapseReplicates = true;
       state.collapsedGroups.clear();
       updateTempLabel();
