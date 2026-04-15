@@ -29,7 +29,6 @@ from __future__ import annotations
 import math
 from typing import Any, Iterable, Mapping, Sequence
 
-from synthbench.metrics.distributional import jensen_shannon_divergence
 from synthbench.validation import Issue, Severity
 
 
@@ -48,10 +47,12 @@ HUMAN_REFUSAL_CUTOFF = 0.05
 HUMAN_REFUSAL_MIN_QUESTIONS = 3
 
 # Peer-outlier detector: two submissions are "same-family" if they share
-# the model family (e.g. both claim claude-haiku-4-5) and the dataset. The
-# detector flags when the submission's per-question JSD distribution is
-# >3 standard deviations from the peer mean on their overlapping questions.
-PEER_OUTLIER_SIGMA = 3.0
+# the model family (e.g. both claim claude-haiku-4-5) and the dataset.
+# We flag when the mean absolute delta between submission and peer JSD
+# on overlapping questions exceeds :data:`PEER_OUTLIER_DELTA`. Real
+# same-family runs differ by <=~0.05 on average; 0.15 is well outside
+# observed noise and inside the range produced by answer-key attacks.
+PEER_OUTLIER_DELTA = 0.15
 PEER_MIN_OVERLAP = 5
 
 
@@ -122,7 +123,8 @@ def check_missing_refusals(
         return None
 
     refusing_questions = [
-        q for q in pq_list
+        q
+        for q in pq_list
         if isinstance(q.get("human_refusal_rate"), (int, float))
         and float(q["human_refusal_rate"]) >= HUMAN_REFUSAL_CUTOFF
     ]
@@ -130,9 +132,7 @@ def check_missing_refusals(
         # Dataset doesn't have enough "refuseable" questions to reason about.
         return None
 
-    model_refusal_values = [
-        float(q.get("model_refusal_rate") or 0.0) for q in pq_list
-    ]
+    model_refusal_values = [float(q.get("model_refusal_rate") or 0.0) for q in pq_list]
     if any(v > 0.0 for v in model_refusal_values):
         return None
 
@@ -150,9 +150,7 @@ def check_missing_refusals(
     )
 
 
-def _same_family(
-    submission_provider: str, peer_provider: str
-) -> bool:
+def _same_family(submission_provider: str, peer_provider: str) -> bool:
     """True when two provider strings plausibly share a model family.
 
     Heuristic: take the last path segment (usually the model id) and
@@ -253,14 +251,7 @@ def check_peer_distribution_outlier(
 
     deltas = [sub - peer_mean for sub, peer_mean in overlap]
     mu = _mean(deltas)
-    sigma = _std(deltas)
-    # Compare the *mean* delta against the noise floor of per-question
-    # peer variance. If the peers themselves are tight and the submission
-    # is consistently much lower (negative mu), that's suspicious.
-    if sigma == 0:
-        return None
-    z = mu / (sigma / math.sqrt(len(deltas)))
-    if abs(z) < PEER_OUTLIER_SIGMA:
+    if abs(mu) < PEER_OUTLIER_DELTA:
         return None
 
     direction = "lower" if mu < 0 else "higher"
@@ -269,9 +260,9 @@ def check_peer_distribution_outlier(
         severity=Severity.WARNING,
         message=(
             f"per-question JSD runs {direction} than same-family peers "
-            f"({len(overlap)} shared questions, mean delta={mu:.4f}, "
-            f"z={z:.2f}). Investigate whether the claimed model matches "
-            f"the submission."
+            f"({len(overlap)} shared questions, mean delta={mu:.4f} > "
+            f"threshold {PEER_OUTLIER_DELTA}). Investigate whether the "
+            f"claimed model matches the submission."
         ),
         path="per_question",
     )
@@ -309,7 +300,7 @@ __all__ = [
     "SUSPICIOUS_STD_JSD",
     "HUMAN_REFUSAL_CUTOFF",
     "HUMAN_REFUSAL_MIN_QUESTIONS",
-    "PEER_OUTLIER_SIGMA",
+    "PEER_OUTLIER_DELTA",
     "PEER_MIN_OVERLAP",
     "check_suspicious_perfection",
     "check_missing_refusals",

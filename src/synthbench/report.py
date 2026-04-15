@@ -53,9 +53,7 @@ def _build_reproducibility_block(result: BenchmarkResult) -> dict:
         "model_revision_hash": cfg.get("model_revision_hash", ""),
         "prompt_template_hash": cfg.get("prompt_template_hash", ""),
         "framework_version": cfg.get("framework_version", __version__),
-        "submitted_at": cfg.get(
-            "submitted_at", datetime.now(timezone.utc).isoformat()
-        ),
+        "submitted_at": cfg.get("submitted_at", datetime.now(timezone.utc).isoformat()),
     }
 
 

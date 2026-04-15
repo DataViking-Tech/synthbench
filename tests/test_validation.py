@@ -467,6 +467,206 @@ class TestFabricationRejection:
         assert not report.ok
 
 
+# ---------------------------------------------------------------------------
+# Tier 3: raw_responses, reproducibility metadata, anomaly dispatch
+# ---------------------------------------------------------------------------
+
+
+def _with_raw_and_repro(submission: dict) -> dict:
+    """Attach a minimal raw_responses + reproducibility block to a clean fixture."""
+    sub = copy.deepcopy(submission)
+    sub["raw_responses"] = [
+        {
+            "key": q["key"],
+            "raw_text": ("The most likely answer given the population described is A."),
+            "selected_option": max(
+                q["model_distribution"], key=q["model_distribution"].get
+            ),
+        }
+        for q in sub["per_question"]
+    ]
+    sub["reproducibility"] = {
+        "seed": 42,
+        "model_revision_hash": "sha256:deadbeef",
+        "prompt_template_hash": "sha256:cafef00d",
+        "framework_version": "0.1.0",
+        "submitted_at": "2026-04-15T00:00:00+00:00",
+    }
+    return sub
+
+
+class TestTier3Orchestration:
+    def test_tier3_skipped_when_disabled(self, clean_submission):
+        """Tier 1+2 must ignore missing raw_responses/reproducibility."""
+        report = validate_submission(clean_submission, tier3=False)
+        assert report.ok
+        codes = {i.code for i in report.issues}
+        assert "RAW_RESPONSES_MISSING" not in codes
+        assert "REPRO_MISSING" not in codes
+
+    def test_tier3_flags_missing_fields_as_warnings(self, clean_submission):
+        """Legacy submissions without the new fields must warn, not error."""
+        report = validate_submission(clean_submission, tier3=True)
+        # Legacy-style fixture: no errors, but warnings for new fields.
+        assert report.ok
+        warning_codes = {i.code for i in report.warnings}
+        assert "RAW_RESPONSES_MISSING" in warning_codes
+        assert "REPRO_MISSING" in warning_codes
+
+    def test_tier3_with_valid_new_fields_clean(self, clean_submission):
+        """A submission supplying all tier-3 fields validates cleanly."""
+        submission = _with_raw_and_repro(clean_submission)
+        report = validate_submission(submission, tier3=True)
+        assert report.ok
+        # No tier-3 warnings should fire on a fully-populated valid submission.
+        tier3_codes = {
+            i.code
+            for i in report.issues
+            if i.code.startswith(("RAW_", "REPRO_", "ANOMALY_"))
+        }
+        assert tier3_codes == set()
+
+    def test_tier3_peers_parameter_passed_through(self, clean_submission):
+        """peers iterable should reach the outlier detector without error."""
+        submission = _with_raw_and_repro(clean_submission)
+        peers = [copy.deepcopy(submission)]
+        report = validate_submission(submission, tier3=True, peers=peers)
+        # Self-vs-self is identical → no outlier warning.
+        assert not any(i.code == "ANOMALY_PEER_OUTLIER" for i in report.issues)
+
+
+class TestRawResponsesValidator:
+    def test_non_list_is_warning(self, clean_submission):
+        sub = _with_raw_and_repro(clean_submission)
+        sub["raw_responses"] = "not a list"
+        report = validate_submission(sub, tier3=True)
+        assert any(i.code == "RAW_RESPONSES_TYPE" for i in report.warnings)
+
+    def test_low_coverage_warns(self, clean_submission):
+        """Must cover at least 10% of questions."""
+        sub = copy.deepcopy(clean_submission)
+        # Extend the fixture to 100 questions so 10% = 10 samples required.
+        base_q = sub["per_question"][0]
+        extra = []
+        for i in range(100):
+            q = copy.deepcopy(base_q)
+            q["key"] = f"Q_{i:03d}"
+            extra.append(q)
+        sub["per_question"] = extra
+        sub["aggregate"]["n_questions"] = 100
+        sub["config"]["question_set_hash"] = question_set_hash(
+            [q["key"] for q in extra]
+        )
+        sub = _with_raw_and_repro(sub)
+        sub["raw_responses"] = sub["raw_responses"][:2]  # only 2 of 100 = 2%
+        report = validate_submission(sub, tier3=True)
+        assert any(i.code == "RAW_RESPONSES_COVERAGE" for i in report.warnings)
+
+    def test_empty_raw_text_warns(self, clean_submission):
+        sub = _with_raw_and_repro(clean_submission)
+        sub["raw_responses"][0]["raw_text"] = ""
+        report = validate_submission(sub, tier3=True)
+        assert any(i.code == "RAW_RESPONSES_EMPTY" for i in report.warnings)
+
+    def test_mode_mismatch_warns(self, clean_submission):
+        """Selected option must match the top of the model distribution.
+        Use Q_B (not Q_A) because the fixture Q_A has two options tied
+        at the mode, which the validator correctly accepts."""
+        sub = _with_raw_and_repro(clean_submission)
+        second_q = sub["per_question"][1]  # Q_B: {A:0.6, B:0.3, C:0.1} — A wins.
+        dist = second_q["model_distribution"]
+        top_prob = max(dist.values())
+        non_top = next(opt for opt, prob in dist.items() if abs(prob - top_prob) > 1e-6)
+        sub["raw_responses"][1]["selected_option"] = non_top
+        report = validate_submission(sub, tier3=True)
+        assert any(i.code == "RAW_RESPONSES_MODE" for i in report.warnings)
+
+    def test_all_short_warns(self, clean_submission):
+        """All 1-character samples should fire the short-length detector."""
+        sub = _with_raw_and_repro(clean_submission)
+        for sample in sub["raw_responses"]:
+            sample["raw_text"] = "A"
+        report = validate_submission(sub, tier3=True)
+        assert any(i.code == "RAW_RESPONSES_LENGTH_SHORT" for i in report.warnings)
+
+
+class TestReproducibilityValidator:
+    def test_missing_block_warns(self, clean_submission):
+        report = validate_submission(clean_submission, tier3=True)
+        assert any(i.code == "REPRO_MISSING" for i in report.warnings)
+
+    def test_non_dict_warns(self, clean_submission):
+        sub = _with_raw_and_repro(clean_submission)
+        sub["reproducibility"] = "not a dict"
+        report = validate_submission(sub, tier3=True)
+        assert any(i.code == "REPRO_TYPE" for i in report.warnings)
+
+    def test_missing_field_warns(self, clean_submission):
+        sub = _with_raw_and_repro(clean_submission)
+        del sub["reproducibility"]["seed"]
+        report = validate_submission(sub, tier3=True)
+        codes = {i.code for i in report.warnings}
+        assert "REPRO_FIELD_MISSING" in codes
+
+    def test_empty_string_field_warns(self, clean_submission):
+        sub = _with_raw_and_repro(clean_submission)
+        sub["reproducibility"]["model_revision_hash"] = ""
+        report = validate_submission(sub, tier3=True)
+        codes = {i.code for i in report.warnings}
+        assert "REPRO_FIELD_EMPTY" in codes
+
+    def test_bad_seed_type_warns(self, clean_submission):
+        sub = _with_raw_and_repro(clean_submission)
+        sub["reproducibility"]["seed"] = "not-a-number"
+        report = validate_submission(sub, tier3=True)
+        codes = {i.code for i in report.warnings}
+        assert "REPRO_FIELD_TYPE" in codes
+
+    def test_none_seed_allowed(self, clean_submission):
+        """Providers without stochastic sampling legitimately have seed=None."""
+        sub = _with_raw_and_repro(clean_submission)
+        sub["reproducibility"]["seed"] = None
+        report = validate_submission(sub, tier3=True)
+        assert not any(
+            i.code in ("REPRO_FIELD_TYPE", "REPRO_FIELD_EMPTY")
+            and i.path == "reproducibility.seed"
+            for i in report.issues
+        )
+
+
+class TestTier3StrictMode:
+    """CI-style strict mode: tier-3 warnings become failures at the caller."""
+
+    def test_clean_in_strict_mode(self, clean_submission):
+        sub = _with_raw_and_repro(clean_submission)
+        report = validate_submission(sub, tier3=True)
+        # report.ok stays True (warnings only); caller decides strict behavior.
+        assert report.ok
+        assert report.warnings == []
+
+
+class TestTier3FabricationEndToEnd:
+    """The full submission-integrity pipeline against a fabricated run."""
+
+    def test_fabrication_rejected_at_tier2_even_without_tier3(self):
+        """Tier 2 already catches a classic fabricator. Tier 3 piles on."""
+        fabrication = _fabricated_submission()
+        report = validate_submission(fabrication, tier3=True)
+        assert not report.ok
+        error_codes = {i.code for i in report.errors}
+        warning_codes = {i.code for i in report.warnings}
+        # Tier-2 arithmetic rejects inflated aggregate scores.
+        assert error_codes & {
+            "AGG_COMPOSITE",
+            "AGG_MEAN_JSD",
+            "PER_Q_JSD",
+            "SCORES_SUB",
+        }
+        # Tier-3 adds raw_responses + repro warnings.
+        assert "RAW_RESPONSES_MISSING" in warning_codes
+        assert "REPRO_MISSING" in warning_codes
+
+
 class TestFileIO:
     def test_missing_file(self, tmp_path):
         report = validate_file(tmp_path / "nope.json")

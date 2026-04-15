@@ -896,8 +896,7 @@ def _validate_raw_responses(data: Mapping[str, Any]) -> list[Issue]:
                     code="RAW_RESPONSES_LENGTH",
                     severity=Severity.WARNING,
                     message=(
-                        f"raw_text length {length} exceeds "
-                        f"{RAW_RESPONSE_MAX_LENGTH}"
+                        f"raw_text length {length} exceeds {RAW_RESPONSE_MAX_LENGTH}"
                     ),
                     path=f"raw_responses[{idx}].raw_text",
                 )
@@ -909,9 +908,7 @@ def _validate_raw_responses(data: Mapping[str, Any]) -> list[Issue]:
         dist = model_dist_by_key.get(key)
         if dist is not None and isinstance(selected, str) and dist:
             numeric_items = [
-                (opt, float(val))
-                for opt, val in dist.items()
-                if _is_number(val)
+                (opt, float(val)) for opt, val in dist.items() if _is_number(val)
             ]
             if numeric_items:
                 top = max(p for _, p in numeric_items)
