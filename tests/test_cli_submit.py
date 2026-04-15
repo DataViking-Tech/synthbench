@@ -209,8 +209,8 @@ def test_submit_json_out_emits_payload(tmp_path, monkeypatch):
     _patch_post(monkeypatch, capture, response)
     # Split stdout from stderr so the assertion proves --json-out emits the
     # payload to stdout cleanly (log lines go to stderr via click.echo(err=True)).
-    runner = CliRunner(mix_stderr=False)
+    runner = CliRunner()
     res = runner.invoke(main, ["submit", str(run), "--json-out"])
     assert res.exit_code == 0
-    parsed = json.loads(res.stdout)
+    parsed = json.loads(res.output)
     assert parsed["submission_id"] == 7
