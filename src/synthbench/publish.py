@@ -1132,6 +1132,68 @@ def _augment_per_question(per_question: list[dict]) -> list[dict]:
     return out
 
 
+_QUESTION_TEXT_REGISTRY_CACHE: dict[Path, dict[str, dict[str, str]]] = {}
+
+
+def _load_question_text_registry(repo_root: Path) -> dict[str, dict[str, str]]:
+    """Load ``{dataset: {key: full_text}}`` from ``data/question-text-registries``.
+
+    The registries are small JSON fixtures committed under the repo root. They
+    carry the full question text for every ``(dataset, key)`` pair and exist to
+    rehydrate the per-question ``text`` field in historical
+    ``leaderboard-results/*.json`` files. Those files were written before the
+    report-writer stopped slicing question text at 120 chars (sb-5o1 /
+    PR #115), so roughly half the rows stored on disk end mid-word. Because the
+    benchmark runs themselves are expensive, we repair the data at publish time
+    from these fixtures instead of re-running every benchmark.
+
+    Returns an empty dict when the registry directory is missing so callers
+    degrade gracefully back to the (potentially truncated) text in the source
+    JSON.
+    """
+    cached = _QUESTION_TEXT_REGISTRY_CACHE.get(repo_root)
+    if cached is not None:
+        return cached
+    registry_dir = repo_root / "data" / "question-text-registries"
+    out: dict[str, dict[str, str]] = {}
+    if not registry_dir.exists():
+        _QUESTION_TEXT_REGISTRY_CACHE[repo_root] = out
+        return out
+    for path in sorted(registry_dir.glob("*.json")):
+        try:
+            with open(path) as f:
+                data = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            continue
+        dataset = data.get("dataset") or path.stem
+        questions = data.get("questions") or {}
+        if isinstance(questions, dict):
+            out[dataset] = {str(k): str(v) for k, v in questions.items() if v}
+    _QUESTION_TEXT_REGISTRY_CACHE[repo_root] = out
+    return out
+
+
+def _rehydrate_question_text(result: dict, registry: dict[str, dict[str, str]]) -> None:
+    """Replace truncated per-question ``text`` from the registry, in place.
+
+    Only overwrites when the registry has a *longer* string for the key — a
+    belt-and-suspenders check that keeps us from clobbering a full-length row
+    because a stale registry happened to carry a shorter value.
+    """
+    cfg = result.get("config") or {}
+    dataset = cfg.get("dataset") or ""
+    texts = registry.get(dataset)
+    if not texts:
+        return
+    for q in result.get("per_question") or []:
+        key = q.get("key")
+        if not key:
+            continue
+        full = texts.get(key)
+        if full and len(full) > len(q.get("text") or ""):
+            q["text"] = full
+
+
 def _compute_variance_summary(sps_values: list[float]) -> dict:
     nums = [float(v) for v in sps_values if v is not None]
     if not nums:
@@ -1399,6 +1461,12 @@ def publish_runs(
     if not json_files:
         raise ValueError(f"No result files found in {results_dir}")
 
+    # Historical per_question.text was truncated at 120 chars by report.py
+    # (removed in sb-5o1 / PR #115). Re-running benchmarks to regenerate the
+    # on-disk JSONs is prohibitively expensive, so we repair the text at
+    # publish time from committed fixtures.
+    text_registry = _load_question_text_registry(results_dir.parent)
+
     # Two passes: first build per-run detail + collect replicate records by
     # config_id; second pass writes config rollups.
     index_entries: list[dict] = []
@@ -1413,6 +1481,8 @@ def publish_runs(
             continue
         if result.get("benchmark") != "synthbench":
             continue
+
+        _rehydrate_question_text(result, text_registry)
 
         cfg = result.get("config", {}) or {}
         provider_raw = cfg.get("provider", "unknown")
@@ -1851,6 +1921,8 @@ def publish_questions(
         shutil.rmtree(question_root)
     question_root.mkdir(parents=True, exist_ok=True)
 
+    text_registry = _load_question_text_registry(results_dir.parent)
+
     json_files = sorted(results_dir.glob("*.json"))
     loaded: list[tuple[str, dict]] = []
     for jf in json_files:
@@ -1861,6 +1933,7 @@ def publish_questions(
             continue
         if data.get("benchmark") != "synthbench":
             continue
+        _rehydrate_question_text(data, text_registry)
         loaded.append((_run_id_from_path(jf), data))
 
     if not loaded:
