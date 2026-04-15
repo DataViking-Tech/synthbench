@@ -3,7 +3,7 @@
 // `uploadSubmission` POSTs a parsed submission JSON to the Worker's /submit
 // endpoint with the current Supabase JWT. `listMySubmissions` reads the
 // user's own rows from the Supabase `submissions` table (owner-read RLS,
-// provisioned by `supabase/migrations/20260415_submissions.sql`).
+// provisioned by `supabase/migrations/20260415190844_submissions.sql`).
 
 import { getSession, getSupabaseClient, isAuthConfigured } from "@/lib/auth";
 
