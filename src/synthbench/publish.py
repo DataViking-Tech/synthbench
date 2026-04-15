@@ -1571,15 +1571,17 @@ def _write_minified(path: Path, payload: dict) -> None:
 def _routes_to_r2(dataset: str | None, r2_uploader: "R2Uploader | None") -> bool:
     """Whether a per-dataset artifact should ship to R2 instead of local disk.
 
-    Returns False when no uploader is configured (local-only mode), when the
-    dataset is unknown (caller should treat as non-routable metadata), or
-    when the resolved redistribution policy is ``full`` — public-tier data
-    continues to land in ``site/public/data/`` so the static site can serve
-    it without auth.
+    Only the ``gated`` tier (sb-sj6) serves from R2. ``full`` continues to
+    land in ``site/public/data/`` for the static-site Pages origin;
+    ``aggregates_only`` and ``citation_only`` emit no per-question/run/
+    config artifact at all — callers must short-circuit on
+    :attr:`DatasetPolicy.suppress_per_question` before reaching this
+    helper. Returns False when no uploader is configured (local-only
+    mode) or when the dataset is unknown.
     """
     if r2_uploader is None or dataset is None:
         return False
-    return policy_for(dataset).redistribution_policy != "full"
+    return policy_for(dataset).serves_from_r2
 
 
 def _emit_artifact(
@@ -1613,23 +1615,36 @@ def publish_runs(
 ) -> dict[str, int]:
     """Emit the three run-explorer artifact families.
 
-    Per-run and per-config artifacts route to Cloudflare R2 when
-    ``r2_uploader`` is supplied AND the run's dataset has a non-``full``
-    redistribution policy (sb-sjs); otherwise they land on disk under
-    ``output_dir``. The catalog (``runs-index.json``) always lands locally —
-    it spans every dataset and carries only aggregate fields, so it stays
-    public alongside ``leaderboard.json``.
+    Per-run and per-config artifacts are routed by the dataset's
+    :class:`DatasetPolicy` (sb-sj6):
+
+    - ``full`` — artifacts land on disk under ``output_dir`` for the static
+      site; the Pages origin serves them without auth.
+    - ``gated`` — artifacts ship to Cloudflare R2 (requires
+      ``r2_uploader``); the Worker proxy fronts the bucket with Supabase
+      JWT validation so only signed-in visitors can reach them.
+    - ``aggregates_only`` / ``citation_only`` — no per-run / per-config
+      artifact emitted. The catalog row in ``runs-index.json`` still
+      appears so the leaderboard renders, but drill-down pages have no
+      payload to fetch (the frontend suppresses the link via
+      ``leaderboard.dataset_policies``).
+
+    The catalog (``runs-index.json``) always lands locally — it spans
+    every dataset and carries only aggregate fields, so it stays public
+    alongside ``leaderboard.json``.
 
     Artifacts written:
         ``<output_dir>/runs-index.json`` — public catalog (always local)
-        public datasets:
+        ``full`` datasets:
             ``<output_dir>/config/<config-id>.json`` — per-config rollup
             ``<output_dir>/run/<run-id>.json`` — full per-question detail
-        gated datasets (when ``r2_uploader`` is set):
+        ``gated`` datasets (when ``r2_uploader`` is set):
             ``r2://<bucket>/config/<config-id>.json``
             ``r2://<bucket>/run/<run-id>.json``
 
-    Returns a dict of counts: {"runs": N, "configs": M}.
+    Returns a dict of counts: {"runs": N, "configs": M}. Counts reflect
+    the index entries, not the number of per-run/per-config artifacts
+    actually emitted (suppressed datasets still contribute to the index).
     """
     from synthbench.config_id import build_config_id
     from synthbench.leaderboard import display_provider_name, provider_framework
@@ -1716,28 +1731,36 @@ def publish_runs(
         per_question = result.get("per_question", []) or []
         topic_scores = _compute_topic_scores(per_question) if per_question else {}
 
-        run_detail = _build_run_detail(
-            run_id=run_id,
-            config_id=config_id,
-            parsed=parsed,
-            result=result,
-            display_name=display_name,
-            is_baseline=is_baseline,
-            is_ensemble=is_ensemble,
-            timestamp=timestamp,
-        )
-        if topic_scores:
-            run_detail["topic_scores"] = {
-                k: _round_or_none(v) for k, v in topic_scores.items()
-            }
+        # Under ``aggregates_only`` / ``citation_only`` the dataset gets no
+        # per-run artifact at all — the catalog row in ``runs-index.json``
+        # carries only aggregate fields, so the leaderboard still renders
+        # without exposing per-question distributions through the drill-down
+        # detail. ``full`` lands locally; ``gated`` ships to R2 via the
+        # routing helper.
+        run_policy = policy_for(dataset)
+        if not run_policy.suppress_per_question:
+            run_detail = _build_run_detail(
+                run_id=run_id,
+                config_id=config_id,
+                parsed=parsed,
+                result=result,
+                display_name=display_name,
+                is_baseline=is_baseline,
+                is_ensemble=is_ensemble,
+                timestamp=timestamp,
+            )
+            if topic_scores:
+                run_detail["topic_scores"] = {
+                    k: _round_or_none(v) for k, v in topic_scores.items()
+                }
 
-        _emit_artifact(
-            output_dir,
-            f"run/{run_id}.json",
-            run_detail,
-            dataset=dataset,
-            r2_uploader=r2_uploader,
-        )
+            _emit_artifact(
+                output_dir,
+                f"run/{run_id}.json",
+                run_detail,
+                dataset=dataset,
+                r2_uploader=r2_uploader,
+            )
 
         agg = result.get("aggregate", {}) or {}
         scores = result.get("scores", {}) or {}
@@ -1777,9 +1800,14 @@ def publish_runs(
                 "is_ensemble": is_ensemble,
             }
 
-    # Write per-config rollups.
+    # Write per-config rollups. Skipped for ``aggregates_only`` /
+    # ``citation_only`` datasets so no per-question surface ships outside
+    # the aggregate leaderboard row; ``gated`` lands in R2, ``full`` local.
     for config_id, runs in grouped.items():
         meta = group_meta[config_id]
+        config_policy = policy_for(meta["dataset"])
+        if config_policy.suppress_per_question:
+            continue
         # Sort replicates by timestamp for stable, chronological display.
         runs_sorted = sorted(runs, key=lambda r: r.get("timestamp") or "")
         rollup = _build_config_rollup(
@@ -2171,16 +2199,17 @@ def publish_questions(
     JSON file. Also emits a per-dataset index so the site can iterate keys
     at build time.
 
-    Per-question files and the dataset index route to Cloudflare R2 when
-    ``r2_uploader`` is supplied AND the dataset's redistribution policy is
-    not ``full`` (sb-sjs). Public-tier datasets continue to land on disk so
-    the static site can serve them without auth.
+    Per-question files and the dataset index are routed by the dataset's
+    :class:`DatasetPolicy` (sb-sj6): ``full`` lands on disk for the static
+    site, ``gated`` ships to Cloudflare R2 (requires ``r2_uploader``), and
+    ``aggregates_only`` / ``citation_only`` emit no per-question artifact
+    at all.
 
     Artifacts written:
-        public datasets:
+        ``full`` datasets:
             ``<output_dir>/question/<dataset>/<sanitized-key>.json``
             ``<output_dir>/question/<dataset>/index.json``
-        gated datasets (when ``r2_uploader`` is set):
+        ``gated`` datasets (when ``r2_uploader`` is set):
             ``r2://<bucket>/question/<dataset>/<sanitized-key>.json``
             ``r2://<bucket>/question/<dataset>/index.json``
 
@@ -2227,12 +2256,20 @@ def publish_questions(
 
     from synthbench.private_holdout import is_private_holdout
 
+    # Track sanitized keys per gated dataset so we can emit a local routes
+    # manifest that the Astro static build enumerates for shell pages (the
+    # payload itself lives behind the gate in R2 and is fetched client-side
+    # once a JWT is available). Full-tier datasets don't need a routes
+    # manifest — Astro walks their local on-disk directory directly.
+    gated_routes: dict[str, list[str]] = {}
+
     for (dataset, key), rollup in rollups.items():
         if not rollup.get("model_responses"):
             continue
         policy = policy_for(dataset)
         if policy.suppress_per_question:
-            # citation_only: no per-question artifact, no index entry.
+            # aggregates_only / citation_only: no per-question artifact, no
+            # index entry.
             continue
         # Private holdout keys ship no per-question page at all: the page
         # would otherwise reveal the hidden human_distribution through its
@@ -2254,6 +2291,8 @@ def publish_questions(
         by_dataset_index.setdefault(dataset, []).append(
             _build_question_index_entry(payload)
         )
+        if policy.serves_from_r2:
+            gated_routes.setdefault(dataset, []).append(safe_key)
         n_questions += 1
 
     for dataset, entries in by_dataset_index.items():
@@ -2280,5 +2319,18 @@ def publish_questions(
             dataset=dataset,
             r2_uploader=r2_uploader,
         )
+
+    # Always emit a gated-routes manifest locally so the Astro SSG build can
+    # prerender shell pages for gated-tier questions even when the rich
+    # payload lives behind the Worker proxy. Empty mapping is fine; the file
+    # just encodes "no gated datasets need shell pages".
+    gated_routes_payload = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "synthbench_version": version,
+        "datasets": {
+            dataset: sorted(set(keys)) for dataset, keys in gated_routes.items()
+        },
+    }
+    _write_minified(output_dir / "gated-routes.json", gated_routes_payload)
 
     return {"questions": n_questions, "datasets": len(by_dataset_index)}

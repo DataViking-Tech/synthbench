@@ -602,9 +602,12 @@ def test_publish_questions_writes_expected_layout(tmp_path):
     results_dir.mkdir()
 
     opts = ["A", "B"]
+    # Use a ``full``-tier dataset (ntia) so the end-to-end emission lands
+    # locally under the new tier semantics (sb-sj6: ``aggregates_only`` no
+    # longer emits per-question JSON at all).
     run_one = _make_result(
         "openrouter/anthropic/claude-haiku-4-5",
-        "opinionsqa",
+        "ntia",
         [
             _pq("Q1", "q1", opts, {"A": 0.6, "B": 0.4}, {"A": 0.5, "B": 0.5}, jsd=0.05),
             _pq("Q2", "q2", opts, {"A": 0.3, "B": 0.7}, {"A": 0.4, "B": 0.6}, jsd=0.03),
@@ -612,14 +615,14 @@ def test_publish_questions_writes_expected_layout(tmp_path):
     )
     run_two = _make_result(
         "openrouter/openai/gpt-4o-mini",
-        "opinionsqa",
+        "ntia",
         [
             _pq("Q1", "q1", opts, {"A": 0.6, "B": 0.4}, {"A": 0.7, "B": 0.3}, jsd=0.08),
         ],
     )
     run_ensemble = _make_result(
         "ensemble/3-model-blend",
-        "opinionsqa",
+        "ntia",
         [
             _pq("Q1", "q1", opts, {"A": 0.6, "B": 0.4}, {"A": 0.6, "B": 0.4}, jsd=0.01),
         ],
@@ -635,10 +638,10 @@ def test_publish_questions_writes_expected_layout(tmp_path):
     assert counts == {"questions": 2, "datasets": 1}
 
     # Per-question file exists and parses.
-    q1_path = out_dir / "question" / "opinionsqa" / "Q1.json"
+    q1_path = out_dir / "question" / "ntia" / "Q1.json"
     assert q1_path.exists()
     q1 = json.loads(q1_path.read_text())
-    assert q1["dataset"] == "opinionsqa"
+    assert q1["dataset"] == "ntia"
     assert q1["key"] == "Q1"
     # Summary counts single-model responses only; ensemble doesn't bump n_models.
     assert q1["summary"]["n_models"] == 2
@@ -656,15 +659,15 @@ def test_publish_questions_writes_expected_layout(tmp_path):
     )
 
     # Q2 only has one model.
-    q2 = json.loads((out_dir / "question" / "opinionsqa" / "Q2.json").read_text())
+    q2 = json.loads((out_dir / "question" / "ntia" / "Q2.json").read_text())
     assert q2["summary"]["n_models"] == 1
     assert q2["summary"]["cross_model_jsd_mean"] is None
 
     # Per-dataset index emitted and sorted by descending cross-model divergence.
-    index_path = out_dir / "question" / "opinionsqa" / "index.json"
+    index_path = out_dir / "question" / "ntia" / "index.json"
     assert index_path.exists()
     idx = json.loads(index_path.read_text())
-    assert idx["dataset"] == "opinionsqa"
+    assert idx["dataset"] == "ntia"
     assert idx["n_questions"] == 2
     keys_in_order = [e["key"] for e in idx["questions"]]
     # Q1 has non-null cross-model JSD; Q2 is null → Q1 first.

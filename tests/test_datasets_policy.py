@@ -1,8 +1,11 @@
-"""Tests for per-dataset redistribution policy declarations (sb-r8n).
+"""Tests for per-dataset redistribution policy declarations (sb-r8n, sb-sj6).
 
 Every adapter must declare an explicit ``redistribution_policy`` tier; the
 publish pipeline reads this via :mod:`synthbench.datasets.policy` to decide
-which per-question fields appear in public artifacts.
+which per-question fields appear in public artifacts — and now (sb-sj6)
+which tier a dataset serves from: local static pages (``full``), the
+authenticated R2 origin (``gated``), or nothing at all
+(``aggregates_only`` / ``citation_only``).
 """
 
 from __future__ import annotations
@@ -28,7 +31,7 @@ from synthbench.datasets.policy import (
     policy_for,
 )
 
-VALID_TIERS = {"full", "aggregates_only", "citation_only"}
+VALID_TIERS = {"full", "gated", "aggregates_only", "citation_only"}
 
 
 # -- Per-adapter declaration ------------------------------------------------
@@ -54,35 +57,51 @@ def test_base_dataset_defaults_conservative():
     assert Dataset.citation is None
 
 
+# -- Per-dataset tier reassignments (sb-sj6) --------------------------------
+
+
 def test_ntia_is_full_redistribution():
-    """NTIA is U.S. Government public-domain (17 USC 105) — the one `full`
-    adapter currently shipped. If this flips, founder review must sign off
-    via an updated audit."""
+    """NTIA is U.S. Government public-domain (17 USC 105) — ``full`` tier."""
     assert NTIADataset.redistribution_policy == "full"
     assert "ntia.gov" in (NTIADataset.license_url or "")
     assert "17 USC 105" in (NTIADataset.citation or "")
+
+
+def test_gss_is_full_redistribution():
+    """GSS: upgraded to ``full`` per founder direction (sb-sj6) — treated as
+    public domain. Attribution still ships via citation, but the data is
+    served from the static-site Pages origin (no sign-in required)."""
+    assert GSSDataset.redistribution_policy == "full"
+    assert GSSDataset.license_url
+    assert GSSDataset.citation
 
 
 @pytest.mark.parametrize(
     "adapter",
     [
         GlobalOpinionQADataset,
-        GSSDataset,
         MichiganSentimentDataset,
         SubPOPDataset,
         WVSDataset,
         EurobarometerConsumerDataset,
-        OpinionsQADataset,
         PewTechDataset,
     ],
 )
-def test_restricted_adapters_are_aggregates_only(adapter: type[Dataset]):
-    """Every adapter whose upstream carries any restriction is tiered
-    ``aggregates_only`` per the conservative rubric."""
-    assert adapter.redistribution_policy == "aggregates_only"
+def test_research_use_adapters_are_gated(adapter: type[Dataset]):
+    """Datasets with research-use or non-commercial redistribution clauses
+    ship via the ``gated`` tier — per-question artifacts land in R2 behind
+    the Supabase JWT gate (sb-sj6)."""
+    assert adapter.redistribution_policy == "gated"
 
 
-# -- Policy lookup ----------------------------------------------------------
+def test_opinionsqa_stays_aggregates_only():
+    """OpinionsQA has no explicit upstream license — gating does not
+    substitute for missing redistribution permission, so it stays
+    ``aggregates_only`` (no per-question artifact ships at all)."""
+    assert OpinionsQADataset.redistribution_policy == "aggregates_only"
+
+
+# -- Policy lookup + suppression booleans -----------------------------------
 
 
 def test_policy_for_known_dataset():
@@ -90,7 +109,8 @@ def test_policy_for_known_dataset():
     assert isinstance(p, DatasetPolicy)
     assert p.redistribution_policy == "aggregates_only"
     assert p.suppress_human_distribution is True
-    assert p.suppress_per_question is False
+    assert p.suppress_per_question is True
+    assert p.serves_from_r2 is False
     assert p.citation is not None
     assert p.license_url is not None
 
@@ -100,6 +120,17 @@ def test_policy_for_full_tier():
     assert p.redistribution_policy == "full"
     assert p.suppress_human_distribution is False
     assert p.suppress_per_question is False
+    assert p.serves_from_r2 is False
+
+
+def test_policy_for_gated_tier():
+    """Gated-tier datasets ship per-question via R2 but keep the
+    ``human_distribution`` field populated — authenticated clients need it."""
+    p = policy_for("subpop")
+    assert p.redistribution_policy == "gated"
+    assert p.suppress_human_distribution is False
+    assert p.suppress_per_question is False
+    assert p.serves_from_r2 is True
 
 
 def test_policy_for_strips_filter_suffix():
@@ -117,6 +148,8 @@ def test_policy_for_unknown_defaults_aggregates_only():
     assert p.citation is None
     assert p.license_url is None
     assert p.suppress_human_distribution is True
+    assert p.suppress_per_question is True
+    assert p.serves_from_r2 is False
 
 
 def test_all_policies_covers_every_registered_dataset():
@@ -125,9 +158,12 @@ def test_all_policies_covers_every_registered_dataset():
 
 
 def test_dataset_policy_suppress_flags():
-    """DatasetPolicy derives suppression booleans from the tier."""
+    """DatasetPolicy derives suppression + routing booleans from the tier."""
     p_full = DatasetPolicy(
         name="n", redistribution_policy="full", license_url=None, citation=None
+    )
+    p_gated = DatasetPolicy(
+        name="n", redistribution_policy="gated", license_url=None, citation=None
     )
     p_aggr = DatasetPolicy(
         name="n",
@@ -143,7 +179,16 @@ def test_dataset_policy_suppress_flags():
     )
     assert p_full.suppress_human_distribution is False
     assert p_full.suppress_per_question is False
+    assert p_full.serves_from_r2 is False
+
+    assert p_gated.suppress_human_distribution is False
+    assert p_gated.suppress_per_question is False
+    assert p_gated.serves_from_r2 is True
+
     assert p_aggr.suppress_human_distribution is True
-    assert p_aggr.suppress_per_question is False
+    assert p_aggr.suppress_per_question is True
+    assert p_aggr.serves_from_r2 is False
+
     assert p_cite.suppress_human_distribution is True
     assert p_cite.suppress_per_question is True
+    assert p_cite.serves_from_r2 is False

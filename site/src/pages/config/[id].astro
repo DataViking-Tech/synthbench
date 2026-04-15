@@ -9,21 +9,34 @@ export async function getStaticPaths() {
   const here = dirname(fileURLToPath(import.meta.url));
   const indexPath = resolve(here, "../../../public/data/runs-index.json");
   const index = JSON.parse(readFileSync(indexPath, "utf-8")) as RunIndex;
-  const configIds = new Set<string>();
+  // First run encountered per config_id owns the dataset binding. Config
+  // ids are dataset-scoped (config_id includes the dataset name), so every
+  // replicate carries the same dataset — we just need any one of them.
+  const configToDataset = new Map<string, string>();
   for (const run of index.runs) {
-    if (run.config_id) configIds.add(run.config_id);
+    if (run.config_id && !configToDataset.has(run.config_id)) {
+      configToDataset.set(run.config_id, run.dataset ?? "");
+    }
   }
-  return [...configIds].map((id) => ({ params: { id } }));
+  return [...configToDataset.entries()].map(([id, dataset]) => ({
+    params: { id },
+    props: { dataset },
+  }));
+}
+
+interface Props {
+  dataset: string;
 }
 
 const { id } = Astro.params;
+const { dataset } = Astro.props;
 
 const rawBase = import.meta.env.BASE_URL || "/";
 const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
 ---
 
 <BaseLayout title={`Config ${id} — SynthBench`} noindex={true}>
-  <div class="mx-auto w-full max-w-5xl px-4 py-8">
+  <div class="config-detail mx-auto w-full max-w-5xl px-4 py-8" data-dataset={dataset}>
     <nav class="mb-4 text-sm text-muted">
       <a class="hover:underline" href={`${base}leaderboard/`}>Leaderboard</a>
       <span class="mx-2">/</span>
@@ -406,14 +419,58 @@ const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
 
   async function load(configId: string) {
     const baseUrl = import.meta.env.BASE_URL || "/";
-    const base = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
-    const url = `${base}data/config/${encodeURIComponent(configId)}.json`;
+    const normalizedBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+    const root = document.querySelector<HTMLElement>(".config-detail");
+    const dataset = root?.dataset.dataset ?? "";
 
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch config data: ${response.status}`);
+    // Resolve tier from the dataset_policies manifest shipped with
+    // leaderboard.json so we route gated-tier fetches through the Worker
+    // proxy with a Supabase JWT.
+    const { fetchTieredJson, lookupDatasetTier, renderSignInGate } =
+      await import("@/lib/dataFetch");
+    let tier: ReturnType<typeof lookupDatasetTier> = "unknown";
+    try {
+      const lbRes = await fetch(`${normalizedBase}/data/leaderboard.json`);
+      if (lbRes.ok) {
+        const lb = (await lbRes.json()) as {
+          dataset_policies?: Array<{
+            name: string;
+            redistribution_policy:
+              | "full"
+              | "gated"
+              | "aggregates_only"
+              | "citation_only";
+            license_url: string | null;
+            citation: string | null;
+          }>;
+        };
+        tier = lookupDatasetTier(dataset, lb.dataset_policies ?? null);
+      }
+    } catch {
+      tier = "unknown";
     }
-    const data = (await response.json()) as ConfigRollup;
+
+    const result = await fetchTieredJson<ConfigRollup>(
+      `config/${encodeURIComponent(configId)}.json`,
+      tier,
+    );
+    if (!result.ok) {
+      if (result.gated) {
+        const metadata = document.getElementById("metadata-card");
+        if (metadata) {
+          renderSignInGate(metadata, { datasetLabel: dataset });
+        }
+        const replicatesBody = document.getElementById("replicates-tbody");
+        if (replicatesBody) {
+          replicatesBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-sm text-muted">Sign in to view replicate detail.</td></tr>`;
+        }
+        const title = document.getElementById("config-title");
+        if (title) title.textContent = configId;
+        return;
+      }
+      throw new Error(result.message);
+    }
+    const data = result.data;
 
     const title = document.getElementById("config-title");
     if (title) {

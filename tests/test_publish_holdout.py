@@ -187,8 +187,13 @@ class TestRunDetailHoldoutSplit:
 class TestQuestionPageSuppression:
     def test_private_keys_get_no_question_page(self, tmp_path):
         """Per-question artifacts (site/public/data/question/<dataset>/<key>.json)
-        are not emitted for private holdout keys."""
-        pub_keys, priv_keys = _find_keys_by_partition("opinionsqa", 3, 2)
+        are not emitted for private holdout keys.
+
+        Uses a ``gated`` dataset (subpop) — the post-sb-sj6 ``aggregates_only``
+        tier suppresses per-question emission entirely, which would mask the
+        holdout-specific suppression this test is meant to verify.
+        """
+        pub_keys, priv_keys = _find_keys_by_partition("subpop", 3, 2)
         all_keys = pub_keys + priv_keys
 
         results_dir = tmp_path / "results"
@@ -214,7 +219,7 @@ class TestQuestionPageSuppression:
             "version": "0.1.0",
             "timestamp": "2026-04-14T00:00:00Z",
             "config": {
-                "dataset": "opinionsqa",
+                "dataset": "subpop",
                 "provider": "openrouter/anthropic/claude-haiku-4-5",
                 "n_evaluated": len(per_question),
             },
@@ -232,7 +237,7 @@ class TestQuestionPageSuppression:
         output_dir = tmp_path / "out"
         publish_questions(results_dir, output_dir)
 
-        question_dir = output_dir / "question" / "opinionsqa"
+        question_dir = output_dir / "question" / "subpop"
         assert question_dir.is_dir()
         files = {p.stem for p in question_dir.glob("*.json") if p.stem != "index"}
         # Public keys produce pages; private keys do not.

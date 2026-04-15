@@ -74,9 +74,10 @@ class GlobalOpinionQADataset(Dataset):
     """GlobalOpinionQA: 2,556 questions across 138 countries."""
 
     # Upstream license CC-BY-NC-SA-4.0 carries non-commercial + share-alike
-    # restrictions. Per the conservative rubric we withhold per-question
-    # distributions; aggregate metrics remain public.
-    redistribution_policy = "aggregates_only"
+    # restrictions. Per-question distributions ship to the ``gated`` R2 tier
+    # (sb-sj6): authenticated research users see them via the signed-in
+    # client; anonymous visitors hit the sign-in gate.
+    redistribution_policy = "gated"
     license_url = "https://creativecommons.org/licenses/by-nc-sa/4.0/"
     citation = "Durmus et al. 2023, Anthropic — llm_global_opinions"
 

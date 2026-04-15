@@ -29,7 +29,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const encodePathSegment = (s: string): string =>
   s.replace(/ /g, "%20").replace(/#/g, "%23").replace(/\?/g, "%3F");
 
-const dataUrl = `${base}/data/run/${encodePathSegment(entry.run_id)}.json`;
+const runPath = `run/${encodePathSegment(entry.run_id)}.json`;
 const configUrl = `${base}/config/${encodePathSegment(entry.config_id)}`;
 const leaderboardUrl = `${base}/leaderboard`;
 const questionBaseUrl = `${base}/question/${encodePathSegment(entry.dataset)}`;
@@ -39,7 +39,8 @@ const questionBaseUrl = `${base}/question/${encodePathSegment(entry.dataset)}`;
   <div
     class="run-detail mx-auto w-full max-w-6xl px-4 py-8"
     data-run-id={entry.run_id}
-    data-data-url={dataUrl}
+    data-run-path={runPath}
+    data-dataset={entry.dataset}
     data-question-base={questionBaseUrl}
   >
     <!-- Breadcrumb -->
@@ -522,18 +523,63 @@ const questionBaseUrl = `${base}/question/${encodePathSegment(entry.dataset)}`;
   async function loadRun(): Promise<void> {
     const root = document.querySelector<HTMLElement>(".run-detail");
     if (!root) return;
-    const url = root.dataset.dataUrl;
-    if (!url) {
+    const runPath = root.dataset.runPath;
+    const dataset = root.dataset.dataset ?? "";
+    if (!runPath) {
       showError("Missing data URL.");
       return;
     }
+
+    // Resolve the dataset's redistribution tier from the leaderboard
+    // policy manifest so we can route gated-tier fetches through the
+    // Worker proxy with a Supabase JWT. Leaderboard.json is always local
+    // and carries `dataset_policies` for every dataset.
+    const { fetchTieredJson, lookupDatasetTier, renderSignInGate } =
+      await import("@/lib/dataFetch");
+    const baseUrl = import.meta.env.BASE_URL || "/";
+    const normalizedBase = baseUrl.endsWith("/")
+      ? baseUrl.slice(0, -1)
+      : baseUrl;
+    let tier: ReturnType<typeof lookupDatasetTier> = "unknown";
     try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        showError(`HTTP ${res.status} loading ${url}`);
+      const lbRes = await fetch(`${normalizedBase}/data/leaderboard.json`);
+      if (lbRes.ok) {
+        const lb = (await lbRes.json()) as {
+          dataset_policies?: Array<{
+            name: string;
+            redistribution_policy:
+              | "full"
+              | "gated"
+              | "aggregates_only"
+              | "citation_only";
+            license_url: string | null;
+            citation: string | null;
+          }>;
+        };
+        tier = lookupDatasetTier(dataset, lb.dataset_policies ?? null);
+      }
+    } catch {
+      tier = "unknown";
+    }
+
+    try {
+      const result = await fetchTieredJson<RunDetail>(runPath, tier);
+      if (!result.ok) {
+        if (result.gated) {
+          // Swap the loading sections for an inline sign-in gate. The run
+          // card metadata (from the index entry) stays rendered above.
+          const scoresEl = document.getElementById("run-scores");
+          if (scoresEl) renderSignInGate(scoresEl, { datasetLabel: dataset });
+          const tbody = document.getElementById("per-question-tbody");
+          if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="6" class="px-3 py-6 text-center text-sm text-muted">Sign in to view per-question detail for this dataset.</td></tr>`;
+          }
+          return;
+        }
+        showError(result.message);
         return;
       }
-      const detail = (await res.json()) as RunDetail;
+      const detail = result.data;
 
       // Scores
       const scoresEl = document.getElementById("run-scores");

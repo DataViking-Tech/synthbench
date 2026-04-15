@@ -31,10 +31,10 @@ def _default_cache_dir() -> Path:
 class GSSDataset(Dataset):
     """General Social Survey: US social attitudes from 1972 to present."""
 
-    # NORC releases GSS data for open research use but requires attribution
-    # on any redistribution. Per the conservative rubric, attribution-
-    # required-redistribution tiers down to aggregates_only.
-    redistribution_policy = "aggregates_only"
+    # NORC releases GSS data into the public domain — per founder review
+    # (sb-sj6) this is treated as ``full`` tier, same as NTIA. Attribution
+    # still ships on every published artifact via ``citation`` below.
+    redistribution_policy = "full"
     license_url = "https://gss.norc.org/About-The-GSS"
     citation = "NORC at the University of Chicago — General Social Survey"
 
