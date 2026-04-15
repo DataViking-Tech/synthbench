@@ -12,6 +12,7 @@
     "lint:fix": "biome check --write ."
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.103.0",
     "astro": "^6.1.5",
     "echarts": "^5.6.0"
   },

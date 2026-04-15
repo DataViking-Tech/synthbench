@@ -1,0 +1,160 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const rawBase = import.meta.env.BASE_URL || "/";
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+const accountHref = `${base}account/`;
+---
+
+<BaseLayout title="Profile setup · SynthBench" noindex={true}>
+  <div class="mx-auto max-w-xl px-4 py-16">
+    <h1 class="text-2xl font-semibold tracking-tight text-text dark:text-text-dark">
+      Tell us about your research
+    </h1>
+    <p class="mt-2 text-sm text-muted">
+      We use this once to understand who's accessing the gated benchmark
+      datasets. You can edit it from your account at any time.
+    </p>
+
+    <form data-profile-form class="mt-8 space-y-5" data-setup-state="authed">
+      <div>
+        <label for="affiliation" class="block text-sm font-medium text-text dark:text-text-dark">
+          Affiliation
+        </label>
+        <input
+          id="affiliation"
+          name="affiliation"
+          type="text"
+          required
+          autocomplete="organization"
+          placeholder="e.g. Stanford CS, Anthropic, independent"
+          class="mt-1 block w-full rounded-md border border-muted/30 bg-surface px-3 py-2 text-sm text-text shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:bg-surface-dark dark:text-text-dark"
+        />
+      </div>
+
+      <div>
+        <label for="research_purpose" class="block text-sm font-medium text-text dark:text-text-dark">
+          Research purpose
+        </label>
+        <textarea
+          id="research_purpose"
+          name="research_purpose"
+          required
+          rows="4"
+          placeholder="A sentence or two on how you intend to use the data."
+          class="mt-1 block w-full rounded-md border border-muted/30 bg-surface px-3 py-2 text-sm text-text shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:bg-surface-dark dark:text-text-dark"
+        ></textarea>
+      </div>
+
+      <p data-profile-error class="hidden text-sm text-red-600"></p>
+
+      <div class="flex items-center justify-end gap-3">
+        <a
+          href={accountHref}
+          class="text-sm font-medium text-muted hover:text-text dark:hover:text-text-dark"
+        >
+          Skip for now
+        </a>
+        <button
+          type="submit"
+          class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 disabled:opacity-50"
+          data-profile-submit
+        >
+          Save profile
+        </button>
+      </div>
+    </form>
+
+    <section data-setup-state="not-authed" class="mt-8 hidden">
+      <p class="rounded-md border border-yellow-300/50 bg-yellow-100/40 p-4 text-sm text-text dark:text-text-dark">
+        You need to <a href={accountHref} class="font-semibold text-primary underline">sign in</a>
+        before setting up your profile.
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import {
+    getProfile,
+    getUser,
+    isAuthConfigured,
+    safeNextPath,
+    upsertProfile,
+    withBase,
+  } from "@/lib/auth";
+
+  function showError(msg: string): void {
+    const el = document.querySelector<HTMLElement>("[data-profile-error]");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
+
+  function toggleState(signedIn: boolean): void {
+    document
+      .querySelector<HTMLElement>('[data-setup-state="authed"]')
+      ?.classList.toggle("hidden", !signedIn);
+    document
+      .querySelector<HTMLElement>('[data-setup-state="not-authed"]')
+      ?.classList.toggle("hidden", signedIn);
+  }
+
+  async function bootstrap(): Promise<void> {
+    if (!isAuthConfigured()) {
+      toggleState(false);
+      return;
+    }
+
+    const user = await getUser();
+    if (!user) {
+      toggleState(false);
+      return;
+    }
+    toggleState(true);
+
+    // Pre-fill if a row already exists (Edit profile flow).
+    const existing = await getProfile(user.id);
+    const affiliation = document.getElementById("affiliation") as HTMLInputElement | null;
+    const purpose = document.getElementById("research_purpose") as HTMLTextAreaElement | null;
+    if (existing && affiliation && purpose) {
+      affiliation.value = existing.affiliation ?? "";
+      purpose.value = existing.research_purpose ?? "";
+    }
+
+    const form = document.querySelector<HTMLFormElement>("[data-profile-form]");
+    const submit = document.querySelector<HTMLButtonElement>("[data-profile-submit]");
+    if (!form || !submit) return;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const affiliationVal = String(data.get("affiliation") ?? "").trim();
+      const purposeVal = String(data.get("research_purpose") ?? "").trim();
+      if (!affiliationVal || !purposeVal) {
+        showError("Please fill in both fields.");
+        return;
+      }
+
+      submit.disabled = true;
+      const { error } = await upsertProfile(user.id, {
+        affiliation: affiliationVal,
+        research_purpose: purposeVal,
+      });
+      if (error) {
+        submit.disabled = false;
+        showError(`Failed to save profile: ${error}`);
+        return;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const next = safeNextPath(params.get("next")) || withBase("account/");
+      window.location.replace(next);
+    });
+  }
+
+  bootstrap().catch((err) => {
+    console.error("[account/setup] bootstrap failed", err);
+    showError("Unexpected error loading the setup form.");
+  });
+</script>
