@@ -43,6 +43,7 @@ const accountHref = `${base}account/`;
     const apply = (session: Awaited<ReturnType<typeof getSession>>): void => {
       if (session) {
         signedOut.classList.add("hidden");
+        signedOut.classList.remove("inline-flex");
         signedIn.classList.remove("hidden");
         signedIn.classList.add("inline-flex");
         const label = signedIn.querySelector<HTMLElement>("[data-auth-label]");
@@ -58,6 +59,7 @@ const accountHref = `${base}account/`;
         signedIn.classList.add("hidden");
         signedIn.classList.remove("inline-flex");
         signedOut.classList.remove("hidden");
+        signedOut.classList.add("inline-flex");
       }
     };
 
