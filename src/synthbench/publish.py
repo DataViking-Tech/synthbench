@@ -9,6 +9,36 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from synthbench.datasets.policy import DatasetPolicy, all_policies, policy_for
+from synthbench.run_validity import is_invalid_run, run_identity
+
+
+def _partition_valid_runs(
+    loaded: list[tuple[str, dict]],
+) -> tuple[list[tuple[str, dict]], list[dict]]:
+    """Split ``(run_id, data)`` pairs into valid runs + excluded-run records.
+
+    ``loaded`` comes from the publish-time JSON-load pass. An ``excluded``
+    record carries the run_id, a human-readable reason, identity fields,
+    and the uniformity metrics so downstream consumers (leaderboard.json
+    transparency block, operator CLI) can see exactly what was filtered
+    and why. See ``run_validity.is_invalid_run`` for the detection rule.
+    """
+    valid: list[tuple[str, dict]] = []
+    excluded: list[dict] = []
+    for run_id, data in loaded:
+        invalid, reason, metrics = is_invalid_run(data)
+        if invalid:
+            excluded.append(
+                {
+                    "run_id": run_id,
+                    "reason": reason,
+                    **run_identity(data),
+                    "metrics": metrics,
+                }
+            )
+            continue
+        valid.append((run_id, data))
+    return valid, excluded
 
 
 def _policy_to_dict(policy: DatasetPolicy) -> dict:
@@ -1009,18 +1039,28 @@ def publish_leaderboard_data(
     Returns the path to the generated JSON file.
     """
     json_files = sorted(results_dir.glob("*.json"))
-    results = []
+    loaded: list[tuple[str, dict]] = []
     for jf in json_files:
         try:
             with open(jf) as f:
                 data = json.load(f)
             if data.get("benchmark") == "synthbench":
-                results.append(data)
+                loaded.append((_run_id_from_path(jf), data))
         except (json.JSONDecodeError, KeyError):
             continue
 
-    if not results:
+    if not loaded:
         raise ValueError(f"No valid SynthBench result files found in {results_dir}")
+
+    valid_pairs, excluded_runs = _partition_valid_runs(loaded)
+    results = [data for _, data in valid_pairs]
+
+    if not results:
+        raise ValueError(
+            f"All {len(loaded)} result files in {results_dir} were filtered as "
+            f"invalid runs (uniform-distribution garbage). Refusing to emit "
+            f"an empty leaderboard."
+        )
 
     deduped = _dedup_results(results)
 
@@ -1091,6 +1131,7 @@ def publish_leaderboard_data(
             }
             for p in all_policies()
         ],
+        "excluded_runs": excluded_runs,
     }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1566,6 +1607,7 @@ def publish_runs(
     grouped: dict[str, list[dict]] = {}
     group_meta: dict[str, dict] = {}
 
+    pre_loaded: list[tuple[Path, str, dict]] = []
     for jf in json_files:
         try:
             with open(jf) as f:
@@ -1574,7 +1616,13 @@ def publish_runs(
             continue
         if result.get("benchmark") != "synthbench":
             continue
+        pre_loaded.append((jf, _run_id_from_path(jf), result))
 
+    valid_triples = [
+        (jf, rid, data) for (jf, rid, data) in pre_loaded if not is_invalid_run(data)[0]
+    ]
+
+    for jf, _run_id_early, result in valid_triples:
         _rehydrate_question_text(result, text_registry)
 
         cfg = result.get("config", {}) or {}
@@ -2082,7 +2130,12 @@ def publish_questions(
     if not loaded:
         raise ValueError(f"No valid SynthBench result files found in {results_dir}")
 
-    rollups = _collect_question_rollups(loaded)
+    # Drop invalid runs (uniform-distribution garbage) before inverting the
+    # per-run → per-question pivot, so bogus model_distributions don't
+    # pollute the cross-model rollups used by the question-explorer view.
+    valid_loaded, _excluded = _partition_valid_runs(loaded)
+
+    rollups = _collect_question_rollups(valid_loaded)
 
     by_dataset_index: dict[str, list[dict]] = {}
     n_questions = 0

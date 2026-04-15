@@ -1427,6 +1427,130 @@ def publish_runs_cmd(results_dir, output_dir):
         sys.exit(1)
 
 
+@main.command("scan-invalid")
+@click.option(
+    "--results-dir",
+    "-d",
+    type=click.Path(exists=True),
+    default="leaderboard-results",
+    help="Directory containing result JSON files to scan.",
+)
+@click.option(
+    "--json",
+    "json_output",
+    is_flag=True,
+    default=False,
+    help="Emit machine-readable JSON instead of a human-readable table.",
+)
+@click.option(
+    "--quarantine",
+    type=click.Path(),
+    default=None,
+    help=(
+        "Move detected invalid run files into this directory (created if "
+        "needed). Operator action; non-default. Default behaviour is to "
+        "report only."
+    ),
+)
+def scan_invalid(results_dir, json_output, quarantine):
+    """Scan result JSON files for invalid runs (uniform-distribution garbage).
+
+    Reports runs whose per-question ``model_distribution`` fields are
+    overwhelmingly uniform — the signature of a silent API failure or
+    provider fallback that parsed cleanly but carries no real signal.
+
+    Examples:
+        synthbench scan-invalid --results-dir leaderboard-results
+        synthbench scan-invalid --json | jq
+        synthbench scan-invalid --quarantine leaderboard-results/_quarantine
+    """
+    from synthbench.run_validity import is_invalid_run, run_identity
+
+    import shutil
+
+    results_path = Path(results_dir)
+    json_files = sorted(results_path.glob("*.json"))
+    invalid_records: list[dict] = []
+    scanned = 0
+
+    for jf in json_files:
+        try:
+            with open(jf) as f:
+                data = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            continue
+        if data.get("benchmark") != "synthbench":
+            continue
+        scanned += 1
+        invalid, reason, metrics = is_invalid_run(data)
+        if not invalid:
+            continue
+        invalid_records.append(
+            {
+                "run_id": jf.stem,
+                "path": str(jf),
+                "reason": reason,
+                **run_identity(data),
+                "metrics": metrics,
+            }
+        )
+
+    quarantine_dir = Path(quarantine) if quarantine else None
+    moved: list[str] = []
+    if quarantine_dir and invalid_records:
+        quarantine_dir.mkdir(parents=True, exist_ok=True)
+        for rec in invalid_records:
+            src = Path(rec["path"])
+            dst = quarantine_dir / src.name
+            shutil.move(str(src), str(dst))
+            rec["quarantined_to"] = str(dst)
+            moved.append(str(dst))
+
+    if json_output:
+        click.echo(
+            json.dumps(
+                {
+                    "results_dir": str(results_path),
+                    "n_scanned": scanned,
+                    "n_invalid": len(invalid_records),
+                    "quarantine_dir": str(quarantine_dir) if quarantine_dir else None,
+                    "invalid_runs": invalid_records,
+                },
+                indent=2,
+            )
+        )
+        return
+
+    if not invalid_records:
+        click.echo(
+            f"Scanned {scanned} runs in {results_path} — no invalid runs detected."
+        )
+        return
+
+    click.echo(
+        f"Scanned {scanned} runs in {results_path}. Detected "
+        f"{len(invalid_records)} invalid run(s):"
+    )
+    click.echo("")
+    for rec in invalid_records:
+        m = rec["metrics"]
+        click.echo(f"  ✗ {rec['run_id']}")
+        click.echo(f"      provider : {rec.get('provider')}")
+        click.echo(f"      dataset  : {rec.get('dataset')}")
+        click.echo(
+            f"      uniform  : {m['n_uniform_questions']}/{m['n_questions']} "
+            f"({m['uniform_fraction']:.1%})"
+        )
+        click.echo(f"      refusal  : {m['refusal_rate']:.4f}")
+        click.echo(f"      reason   : {rec['reason']}")
+        if "quarantined_to" in rec:
+            click.echo(f"      moved to : {rec['quarantined_to']}")
+        click.echo("")
+
+    if quarantine_dir:
+        click.echo(f"Moved {len(moved)} file(s) to {quarantine_dir}")
+
+
 @main.command("publish-questions")
 @click.option(
     "--results-dir",

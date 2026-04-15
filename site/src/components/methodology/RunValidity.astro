@@ -1,0 +1,67 @@
+---
+const criteria = [
+  {
+    label: "Uniform fraction",
+    detail:
+      "At least 80% of per-question model_distribution entries are within 0.01 of perfectly uniform (e.g. {0.25, 0.25, 0.25, 0.25} for a 4-option question).",
+  },
+  {
+    label: "Negligible refusals",
+    detail:
+      "Mean per-question model_refusal_rate ≤ 0.05. A model that genuinely refuses most questions is a legitimate safety pattern, not a failed API response.",
+  },
+  {
+    label: "Enough questions",
+    detail:
+      "At least 10 questions in the run. Shorter runs don't give enough signal to distinguish real flat distributions from API-failure garbage.",
+  },
+];
+---
+
+<section class="w-full max-w-4xl mx-auto py-12" id="run-validity">
+  <h2
+    class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    Run Validity Filtering
+  </h2>
+  <p class="text-muted mb-6 max-w-2xl">
+    Silent API failures — budget exhaustion, missed model aliases, provider
+    fallbacks — can return responses that parse cleanly but carry no real
+    signal, producing a run whose per-question distributions are all
+    perfectly uniform. Existing parse-failure tracking does not catch this
+    case because the response <em>did</em> parse. We filter these runs at
+    publish time so they never reach the leaderboard.
+  </p>
+
+  <p class="text-muted mb-6 max-w-2xl">
+    A run is excluded when <strong>all three</strong> of the following hold:
+  </p>
+
+  <ul class="space-y-3 mb-6">
+    {
+      criteria.map((c) => (
+        <li class="flex gap-3">
+          <span class="text-primary dark:text-primary-light mt-1 shrink-0">
+            &bull;
+          </span>
+          <span class="text-sm text-muted">
+            <strong class="text-text dark:text-text-dark">{c.label}.</strong>{" "}
+            {c.detail}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="text-muted max-w-2xl text-sm">
+    Excluded runs are listed in <code
+      class="text-xs bg-muted/10 rounded px-1.5 py-0.5"
+      >leaderboard.json#excluded_runs</code
+    > for transparency, and operators can run
+    <code class="text-xs bg-muted/10 rounded px-1.5 py-0.5"
+      >synthbench scan-invalid</code
+    > locally against any results directory. The rule is deliberately strict:
+    we would rather miss a borderline case than false-flag a legitimate run
+    whose distributions happen to be flat.
+  </p>
+</section>

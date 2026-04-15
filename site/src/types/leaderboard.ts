@@ -246,6 +246,25 @@ export interface SynthBenchData {
   cross_provider_concordance?: Record<string, CrossProviderConcordanceBlock>;
   /** Per-dataset redistribution policy + provenance. */
   dataset_policies?: DatasetPolicyEntry[];
+  /** Runs filtered at publish time as invalid (uniform-garbage etc.). */
+  excluded_runs?: ExcludedRun[];
+}
+
+/** A run filtered by publish.py's run-validity detector. */
+export interface ExcludedRun {
+  run_id: string;
+  reason: string;
+  provider: string | null;
+  dataset: string | null;
+  samples_per_question: number | null;
+  n_evaluated: number | null;
+  timestamp: string | null;
+  metrics: {
+    n_questions: number;
+    n_uniform_questions: number;
+    uniform_fraction: number;
+    refusal_rate: number;
+  };
 }
 
 /** @deprecated Use SynthBenchData — alias kept for existing component imports */
