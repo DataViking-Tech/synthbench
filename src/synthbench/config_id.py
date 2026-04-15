@@ -41,6 +41,33 @@ _MODEL_VENDOR_PREFIXES: tuple[tuple[str, str], ...] = (
     ("llama-", "meta"),
 )
 
+# Version-date suffixes appended to model aliases.
+#   Anthropic-style: ``-YYYYMMDD`` (8 digits) → ``claude-haiku-4-5-20251001``
+#   OpenAI-style:    ``-YYYY-MM-DD``           → ``gpt-4o-mini-2024-07-18``
+# These identify the same weights as the alias form. Stripping them in the
+# config_id path collapses the dated and undated variants into one group on
+# /explore and the leaderboard. Check the longer (OpenAI) pattern first so
+# ``gpt-X-2024-07-18`` is not misread as an 8-digit suffix.
+_OPENAI_DATE_SUFFIX = re.compile(r"-\d{4}-\d{2}-\d{2}$")
+_ANTHROPIC_DATE_SUFFIX = re.compile(r"-\d{8}$")
+
+
+def canonical_model(model: str) -> str:
+    """Strip trailing version-date suffixes from a model name.
+
+    ``claude-haiku-4-5-20251001`` → ``claude-haiku-4-5``
+    ``gpt-4o-mini-2024-07-18``    → ``gpt-4o-mini``
+
+    Models without a recognized date suffix pass through unchanged. The
+    function is idempotent: running it twice yields the same result.
+    """
+    if not model:
+        return model
+    stripped = _OPENAI_DATE_SUFFIX.sub("", model)
+    if stripped != model:
+        return stripped
+    return _ANTHROPIC_DATE_SUFFIX.sub("", model)
+
 
 @dataclass(frozen=True)
 class ParsedConfig:
@@ -231,6 +258,7 @@ def build_config_id(
     string (e.g. ``t=0.85`` vs the real ``config.temperature``).
     """
     parsed = parse_provider(provider)
+    canon_model = canonical_model(parsed.model)
 
     # Normalize template: drop path + extension
     tpl_norm = None
@@ -263,7 +291,7 @@ def build_config_id(
     hash_payload: dict[str, Any] = {
         "framework": parsed.framework,
         "base_provider": parsed.base_provider,
-        "model": parsed.model,
+        "model": canon_model,
         "knobs": {k: canonical_knobs[k] for k in sorted(canonical_knobs)},
     }
     if dataset is not None:
@@ -275,7 +303,7 @@ def build_config_id(
 
     hash8 = _hash_canonical(hash_payload)
 
-    slug_model = _slugify(parsed.model)
+    slug_model = _slugify(canon_model)
     slug_framework = _slugify(parsed.framework)
     temp_part = _format_temperature(temp_val)
     tpl_part = _format_template(tpl_norm)
@@ -292,6 +320,6 @@ def build_config_id(
     return slug, ParsedConfig(
         framework=parsed.framework,
         base_provider=parsed.base_provider,
-        model=parsed.model,
+        model=canon_model,
         knobs=resolved_knobs,
     )

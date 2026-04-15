@@ -101,11 +101,32 @@ def _config_key(result: dict) -> tuple:
     return (name, fw, dataset, temp, tpl_name)
 
 
+def _canonicalize_provider_model_segment(provider: str) -> str:
+    """Strip a version-date suffix from the model (last) path segment.
+
+    ``synthpanel/claude-haiku-4-5-20251001`` →
+    ``synthpanel/claude-haiku-4-5``. Used to collapse dated and undated
+    aliases of the same underlying model when looking up MODEL_MAP.
+    """
+    from synthbench.config_id import canonical_model
+
+    if "/" not in provider:
+        canon = canonical_model(provider)
+        return canon
+    head, _, tail = provider.rpartition("/")
+    canon_tail = canonical_model(tail)
+    if canon_tail == tail:
+        return provider
+    return f"{head}/{canon_tail}"
+
+
 def display_provider_name(provider: str) -> str:
     """Map full provider paths to human-friendly display names via MODEL_MAP.
 
     Handles suffixed names like 'synthpanel/... t=0.85 tpl=current' by
-    stripping suffixes before lookup.
+    stripping suffixes before lookup. Also normalizes Anthropic-style
+    ``-YYYYMMDD`` and OpenAI-style ``-YYYY-MM-DD`` model-version dates so
+    aliased + dated forms collapse to a single display name.
     """
     entry = MODEL_MAP.get(provider)
     if entry:
@@ -114,6 +135,11 @@ def display_provider_name(provider: str) -> str:
     entry = MODEL_MAP.get(base)
     if entry:
         return entry[0]
+    canon = _canonicalize_provider_model_segment(base)
+    if canon != base:
+        entry = MODEL_MAP.get(canon)
+        if entry:
+            return entry[0]
     return provider
 
 
@@ -126,6 +152,11 @@ def provider_framework(provider: str) -> str:
     entry = MODEL_MAP.get(base)
     if entry:
         return entry[1]
+    canon = _canonicalize_provider_model_segment(base)
+    if canon != base:
+        entry = MODEL_MAP.get(canon)
+        if entry:
+            return entry[1]
     if provider in BASELINE_PROVIDERS:
         return "baseline"
     return "raw"

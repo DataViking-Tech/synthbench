@@ -5,6 +5,7 @@ from __future__ import annotations
 from synthbench.config_id import (
     ParsedConfig,
     build_config_id,
+    canonical_model,
     parse_provider,
 )
 
@@ -255,3 +256,141 @@ class TestBuildConfigId:
         )
         assert slug.startswith("ensemble--3-model-blend--")
         assert parsed.framework == "ensemble"
+
+
+class TestCanonicalModel:
+    def test_strips_anthropic_date_suffix(self):
+        assert canonical_model("claude-haiku-4-5-20251001") == "claude-haiku-4-5"
+
+    def test_strips_anthropic_sonnet_date(self):
+        assert canonical_model("claude-sonnet-4-20250514") == "claude-sonnet-4"
+
+    def test_strips_anthropic_opus_date(self):
+        assert canonical_model("claude-opus-4-1-20250805") == "claude-opus-4-1"
+
+    def test_strips_openai_hyphenated_date_suffix(self):
+        assert canonical_model("gpt-4o-mini-2024-07-18") == "gpt-4o-mini"
+
+    def test_strips_openai_gpt4o_date(self):
+        assert canonical_model("gpt-4o-2024-08-06") == "gpt-4o"
+
+    def test_leaves_undated_anthropic_unchanged(self):
+        assert canonical_model("claude-haiku-4-5") == "claude-haiku-4-5"
+
+    def test_leaves_undated_openai_unchanged(self):
+        assert canonical_model("gpt-4o-mini") == "gpt-4o-mini"
+
+    def test_leaves_gemini_unchanged(self):
+        assert canonical_model("gemini-2.5-flash-lite") == "gemini-2.5-flash-lite"
+
+    def test_leaves_baseline_unchanged(self):
+        assert canonical_model("random-baseline") == "random-baseline"
+
+    def test_leaves_llama_unchanged(self):
+        assert canonical_model("llama-3.3-70b-instruct") == "llama-3.3-70b-instruct"
+
+    def test_empty_string(self):
+        assert canonical_model("") == ""
+
+    def test_is_idempotent(self):
+        """Running the function twice yields the same result."""
+        once = canonical_model("claude-haiku-4-5-20251001")
+        twice = canonical_model(once)
+        assert once == twice == "claude-haiku-4-5"
+
+    def test_idempotent_on_openai(self):
+        once = canonical_model("gpt-4o-mini-2024-07-18")
+        twice = canonical_model(once)
+        assert once == twice == "gpt-4o-mini"
+
+    def test_does_not_strip_short_numeric_suffix(self):
+        """Version fragments shorter than 8 digits must not be treated as dates."""
+        assert canonical_model("claude-haiku-4-5") == "claude-haiku-4-5"
+        assert canonical_model("gpt-4") == "gpt-4"
+
+    def test_does_not_strip_seven_digits(self):
+        """Exactly 7 trailing digits is not a YYYYMMDD date."""
+        assert canonical_model("some-model-1234567") == "some-model-1234567"
+
+    def test_does_not_strip_nine_digits(self):
+        """9 trailing digits is not a YYYYMMDD date either."""
+        assert canonical_model("some-model-123456789") == "some-model-123456789"
+
+
+class TestBuildConfigIdCanonicalization:
+    """config_id collapses dated + undated aliases of the same model."""
+
+    def test_anthropic_dated_and_aliased_produce_same_slug(self):
+        """`synthpanel/claude-haiku-4-5-20251001` and
+        `synthpanel/openrouter/anthropic/claude-haiku-4-5` are the same
+        underlying model — their config_ids must collapse."""
+        s_dated, p_dated = build_config_id(
+            "synthpanel/claude-haiku-4-5-20251001",
+            dataset="opinionsqa",
+            temperature=0.85,
+            template="current",
+        )
+        s_alias, p_alias = build_config_id(
+            "synthpanel/openrouter/anthropic/claude-haiku-4-5",
+            dataset="opinionsqa",
+            temperature=0.85,
+            template="current",
+        )
+        assert s_dated == s_alias
+        assert p_dated.model == "claude-haiku-4-5"
+        assert p_alias.model == "claude-haiku-4-5"
+
+    def test_openai_dated_and_aliased_produce_same_slug(self):
+        s_dated, _ = build_config_id(
+            "openrouter/openai/gpt-4o-mini-2024-07-18",
+            dataset="opinionsqa",
+            temperature=0.5,
+            template="current",
+        )
+        s_alias, _ = build_config_id(
+            "openrouter/openai/gpt-4o-mini",
+            dataset="opinionsqa",
+            temperature=0.5,
+            template="current",
+        )
+        assert s_dated == s_alias
+
+    def test_slug_uses_canonical_model_name(self):
+        """The human-readable slug portion drops the date suffix."""
+        slug, _ = build_config_id(
+            "raw-anthropic/claude-haiku-4-5-20251001",
+            dataset="opinionsqa",
+            temperature=0.85,
+            template="current",
+        )
+        parts = slug.split("--")
+        assert parts[1] == "claude-haiku-4-5"
+
+    def test_returned_parsed_model_is_canonical(self):
+        _, parsed = build_config_id(
+            "raw-anthropic/claude-haiku-4-5-20251001",
+            dataset="opinionsqa",
+        )
+        assert parsed.model == "claude-haiku-4-5"
+
+    def test_dated_and_aliased_collide_across_datasets(self):
+        """Canonicalization applies regardless of dataset — but different
+        datasets still produce different hashes (no cross-dataset collapse)."""
+        s1, _ = build_config_id(
+            "synthpanel/claude-haiku-4-5-20251001",
+            dataset="opinionsqa",
+            temperature=0.85,
+        )
+        s2, _ = build_config_id(
+            "synthpanel/claude-haiku-4-5-20251001",
+            dataset="subpop",
+            temperature=0.85,
+        )
+        assert s1 != s2
+
+    def test_parse_provider_unchanged_for_dated_models(self):
+        """`parse_provider` remains non-destructive — only `build_config_id`
+        applies canonicalization. This preserves traceability of the exact
+        provider string the run used."""
+        p = parse_provider("raw-anthropic/claude-haiku-4-5-20251001")
+        assert p.model == "claude-haiku-4-5-20251001"
