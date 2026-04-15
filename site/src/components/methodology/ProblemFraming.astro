@@ -1,0 +1,87 @@
+---
+---
+
+<section class="w-full max-w-4xl mx-auto py-12" id="problem-framing">
+  <h2
+    class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    Diagnosis without measurement
+  </h2>
+  <p class="text-muted mb-4 max-w-2xl">
+    Why a benchmark pinned to real human response distributions is the missing
+    companion piece to the cross-provider homogenization critique.
+  </p>
+
+  <div
+    class="rounded-lg border border-muted/20 bg-surface p-6 mb-6 dark:bg-surface-dark"
+  >
+    <p class="text-sm text-text/80 dark:text-text-dark/80 mb-3">
+      Romasanta, Thomas, and Levina
+      (<a
+        href="https://hbr.org/2026/03/researchers-asked-llms-for-strategic-advice-they-got-trendslop-in-return"
+        class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
+        target="_blank"
+        rel="noopener noreferrer">HBR, March 2026</a
+      >) ran 15,000 strategic-advice queries across seven frontier LLMs and
+      found that responses converged on the same trend-aligned recommendations
+      regardless of scenario context — <em>trendslop</em>, a shared attractor
+      across providers rather than an idiosyncrasy of any one model. The
+      critique lands. But it is a <strong>diagnosis without a measurement</strong>:
+      cross-model consensus is only evidence of failure if you can point to the
+      distribution the models should have matched, and on open-ended strategic
+      questions no such ground truth exists.
+    </p>
+    <p class="text-sm text-text/80 dark:text-text-dark/80">
+      SynthBench is the measurement. Every question we evaluate carries a human
+      response distribution — from Pew American Trends Panel, SubPOP
+      subpopulations, and GlobalOpinionQA cross-country data — and we score how
+      far each provider's output lands from that distribution, overall and per
+      demographic slice.
+    </p>
+  </div>
+
+  <h3
+    class="text-lg font-semibold tracking-tight text-text dark:text-text-dark mb-3"
+  >
+    Two orthogonal diagnostics
+  </h3>
+  <div class="grid gap-4 md:grid-cols-2 mb-6">
+    <div
+      class="rounded-lg border border-muted/20 bg-surface p-5 dark:bg-surface-dark"
+    >
+      <h4 class="text-base font-semibold mb-1">Ground-truth fidelity</h4>
+      <p class="text-xs uppercase tracking-wide text-muted mb-2">
+        Model vs. human distribution
+      </p>
+      <p class="text-sm text-text/80 dark:text-text-dark/80">
+        Mean Jensen-Shannon divergence against real survey responses, rolled up
+        into the Synthetic Panel Score (SPS). This is the primary SynthBench
+        metric — measured end-to-end in the sections below.
+      </p>
+    </div>
+    <div
+      class="rounded-lg border border-muted/20 bg-surface p-5 dark:bg-surface-dark"
+    >
+      <h4 class="text-base font-semibold mb-1">Cross-provider concordance</h4>
+      <p class="text-xs uppercase tracking-wide text-muted mb-2">
+        Model vs. model distribution
+      </p>
+      <p class="text-sm text-text/80 dark:text-text-dark/80">
+        Pairwise JSD between raw-LLM providers on the same items. Low
+        cross-provider JSD with high human-alignment means real population
+        variance is being tracked; low cross-provider JSD with low
+        human-alignment is the trendslop signature.{" "}
+        <a
+          href="/findings#cross-provider-jsd"
+          class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
+          >See the Cross-Provider JSD Matrix →</a
+        >
+      </p>
+    </div>
+  </div>
+
+  <p class="text-sm text-muted max-w-2xl">
+    The rest of this page documents the metrics, datasets, baselines, scoring
+    protocol, cost model, and related literature behind those two diagnostics.
+  </p>
+</section>

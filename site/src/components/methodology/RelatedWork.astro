@@ -3,44 +3,86 @@ interface Reference {
   title: string;
   authors: string;
   venue: string;
-  arxiv: string;
+  arxiv?: string;
+  url?: string;
+  urlLabel?: string;
   positioning: string;
 }
 
-const references: Reference[] = [
+interface Group {
+  heading: string;
+  intro?: string;
+  references: Reference[];
+}
+
+const groups: Group[] = [
   {
-    title:
-      "Language Model Fine-Tuning on Scaled Survey Data for Predicting Distributions of Public Opinions",
-    authors: "Suh, Jahanparast, Moon, Kang, Chang",
-    venue: "ACL 2025",
-    arxiv: "2502.16761",
-    positioning:
-      "SubPOP — the source of our 22-subpopulation dataset. Fine-tunes language models on scaled survey data to predict population-distribution responses. We use the shipped question-subpop distributions as ground truth for P_dist and P_sub on demographic slices.",
+    heading: "Synth-panel evaluation & social simulation",
+    references: [
+      {
+        title:
+          "Language Model Fine-Tuning on Scaled Survey Data for Predicting Distributions of Public Opinions",
+        authors: "Suh, Jahanparast, Moon, Kang, Chang",
+        venue: "ACL 2025",
+        arxiv: "2502.16761",
+        positioning:
+          "SubPOP — the source of our 22-subpopulation dataset. Fine-tunes language models on scaled survey data to predict population-distribution responses. We use the shipped question-subpop distributions as ground truth for P_dist and P_sub on demographic slices.",
+      },
+      {
+        title:
+          "Assessing the Reliability of Persona-Conditioned LLMs as Synthetic Survey Respondents",
+        authors: "Persona-reliability evaluation",
+        venue: "arXiv 2026",
+        arxiv: "2602.18462",
+        positioning:
+          "Contemporary methodological antecedent: evaluates 2 models across 70K WVS respondent-item pairs and finds that persona prompting does not uniformly improve alignment. SynthBench's P_cond sub-metric is designed to quantify exactly when conditioning helps versus hurts — surfacing the per-group cases their paper reports in aggregate.",
+      },
+      {
+        title:
+          "SocioVerse: A World Model for Social Simulation Powered by LLM Agents and A Pool of 10 Million Real-World Users",
+        authors: "Zhang, Lin, Wei, et al. (Fudan DISC)",
+        venue: "arXiv 2025",
+        arxiv: "2504.10157",
+        positioning:
+          "SocioVerse focuses on population-scale simulation dynamics via a 10M-user pool; SynthBench measures the per-question distributional parity layer that any system like SocioVerse depends on. Orthogonal and complementary — a population-simulator's downstream fidelity is bounded by the per-item parity its respondent models achieve.",
+      },
+      {
+        title:
+          "From Individual to Society: A Survey on Social Simulation Driven by LLM-based Agents",
+        authors: "Survey",
+        venue: "arXiv 2024",
+        arxiv: "2412.03563",
+        positioning:
+          "One-stop survey of LLM-driven social simulation spanning individual-level persona modeling through society-scale multi-agent dynamics. Useful entry point for readers placing SynthBench's per-question parity focus within the broader simulation landscape.",
+      },
+    ],
   },
   {
-    title: "Assessing the Reliability of Persona-Conditioned LLMs as Synthetic Survey Respondents",
-    authors: "Persona-reliability evaluation",
-    venue: "arXiv 2026",
-    arxiv: "2602.18462",
-    positioning:
-      "Contemporary methodological antecedent: evaluates 2 models across 70K WVS respondent-item pairs and finds that persona prompting does not uniformly improve alignment. SynthBench's P_cond sub-metric is designed to quantify exactly when conditioning helps versus hurts — surfacing the per-group cases their paper reports in aggregate.",
-  },
-  {
-    title:
-      "SocioVerse: A World Model for Social Simulation Powered by LLM Agents and A Pool of 10 Million Real-World Users",
-    authors: "Zhang, Lin, Wei, et al. (Fudan DISC)",
-    venue: "arXiv 2025",
-    arxiv: "2504.10157",
-    positioning:
-      "SocioVerse focuses on population-scale simulation dynamics via a 10M-user pool; SynthBench measures the per-question distributional parity layer that any system like SocioVerse depends on. Orthogonal and complementary — a population-simulator's downstream fidelity is bounded by the per-item parity its respondent models achieve.",
-  },
-  {
-    title: "From Individual to Society: A Survey on Social Simulation Driven by LLM-based Agents",
-    authors: "Survey",
-    venue: "arXiv 2024",
-    arxiv: "2412.03563",
-    positioning:
-      "One-stop survey of LLM-driven social simulation spanning individual-level persona modeling through society-scale multi-agent dynamics. Useful entry point for readers placing SynthBench's per-question parity focus within the broader simulation landscape.",
+    heading: "Broader LLM-as-advisor context",
+    intro:
+      "Work on systemic LLM failure modes in advisory settings. These papers motivate the need for distributional measurement infrastructure without themselves operationalizing a ground-truth comparison.",
+    references: [
+      {
+        title: "Researchers Asked LLMs for Strategic Advice. They Got 'Trendslop' in Return.",
+        authors: "Romasanta, Thomas, Levina",
+        venue: "HBR, March 2026",
+        url: "https://hbr.org/2026/03/researchers-asked-llms-for-strategic-advice-they-got-trendslop-in-return",
+        urlLabel: "hbr.org",
+        positioning:
+          "15,000 strategic-advice queries across seven frontier LLMs converged on the same trend-aligned recommendations regardless of scenario context. Coined 'trendslop' as a shared attractor across providers. SynthBench's Cross-Provider JSD Matrix operationalizes this as a measurable quantity paired with ground-truth human distributions — see the diagnostic on the Findings page.",
+      },
+      {
+        title:
+          "Navigating the Jagged Technological Frontier: Field Experimental Evidence of the Effects of AI on Knowledge Worker Productivity and Quality",
+        authors:
+          "Dell'Acqua, McFowland, Mollick, Lifshitz-Assaf, Kellogg, Rajendran, Krayer, Candelon, Lakhani",
+        venue: "HBS Working Paper 24-013, 2023",
+        url: "https://www.hbs.edu/faculty/Pages/item.aspx?num=64700",
+        urlLabel: "hbs.edu",
+        positioning:
+          "Field experiment with 758 BCG consultants demonstrating that LLM assistance lifts performance inside the capability frontier and degrades it outside — the 'jagged frontier' framing. Complements the trendslop critique: advisor quality depends on where the task sits relative to current model competence, not just on output fluency. Both motivate per-question, per-population measurement rather than aggregate benchmark leaderboards.",
+      },
+    ],
   },
 ];
 
@@ -57,41 +99,64 @@ function arxivUrl(id: string): string {
   </h2>
   <p class="text-muted mb-8 max-w-2xl">
     SynthBench builds on a growing body of work on LLM-based synthetic survey
-    respondents and social simulation. The following references anchor our
-    methodological choices and locate SynthBench within the broader field.
+    respondents and social simulation, and sits inside a broader industry
+    conversation about LLM failure modes in advisory settings. The references
+    below anchor our methodological choices and locate SynthBench within both
+    literatures.
   </p>
 
-  <ol class="space-y-5">
-    {
-      references.map((r) => (
-        <li class="rounded-lg border border-muted/20 bg-surface p-5 dark:bg-surface-dark">
-          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
-            <h3 class="text-base font-semibold text-text dark:text-text-dark">
-              {r.title}
-            </h3>
-            <span class="text-xs font-medium text-primary dark:text-primary-light">
-              {r.venue}
-            </span>
-          </div>
-          <p class="text-sm text-muted mb-2">
-            <span class="font-medium text-text/80 dark:text-text-dark/80">
-              {r.authors}
-            </span>
-            {" · "}
-            <a
-              href={arxivUrl(r.arxiv)}
-              class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              arXiv:{r.arxiv}
-            </a>
-          </p>
-          <p class="text-sm text-text/80 dark:text-text-dark/80">
-            {r.positioning}
-          </p>
-        </li>
-      ))
-    }
-  </ol>
+  {
+    groups.map((group) => (
+      <div class="mb-10 last:mb-0">
+        <h3 class="text-lg font-semibold tracking-tight text-text dark:text-text-dark mb-2">
+          {group.heading}
+        </h3>
+        {group.intro && (
+          <p class="text-sm text-muted mb-4 max-w-2xl">{group.intro}</p>
+        )}
+        <ol class="space-y-5">
+          {group.references.map((r) => (
+            <li class="rounded-lg border border-muted/20 bg-surface p-5 dark:bg-surface-dark">
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
+                <h4 class="text-base font-semibold text-text dark:text-text-dark">
+                  {r.title}
+                </h4>
+                <span class="text-xs font-medium text-primary dark:text-primary-light">
+                  {r.venue}
+                </span>
+              </div>
+              <p class="text-sm text-muted mb-2">
+                <span class="font-medium text-text/80 dark:text-text-dark/80">
+                  {r.authors}
+                </span>
+                {" · "}
+                {r.arxiv ? (
+                  <a
+                    href={arxivUrl(r.arxiv)}
+                    class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    arXiv:{r.arxiv}
+                  </a>
+                ) : r.url ? (
+                  <a
+                    href={r.url}
+                    class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {r.urlLabel ?? r.url}
+                  </a>
+                ) : null}
+              </p>
+              <p class="text-sm text-text/80 dark:text-text-dark/80">
+                {r.positioning}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    ))
+  }
 </section>
