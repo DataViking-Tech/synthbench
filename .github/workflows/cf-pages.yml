@@ -43,15 +43,30 @@ jobs:
 
       - run: pip install -e .[r2]
 
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      # sb-vkz doppler-reorg: pull shared Cloudflare/R2 creds from the
+      # dataviking-platform/prd project (read-only DOPPLER_PLATFORM_TOKEN)
+      # instead of synthbench/prd duplicates. R2_BUCKET stays on synthbench
+      # because the bucket name is product-specific.
+      - name: Load shared infra secrets from dataviking-platform
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_PLATFORM_TOKEN }}
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY; do
+            value=$(doppler secrets get "$name" --project dataviking-platform --config prd --plain)
+            echo "::add-mask::$value"
+            printf '%s<<__DVP_EOF__\n%s\n__DVP_EOF__\n' "$name" "$value" >> "$GITHUB_ENV"
+          done
+
       - name: Generate leaderboard data
         run: synthbench publish-data --results-dir leaderboard-results --output site/src/data/leaderboard.json
 
       - name: Generate run explorer artifacts
         run: synthbench publish-runs --results-dir leaderboard-results --output-dir site/public/data
         env:
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
 
       - name: Verify publish integrity (sb-4zy)
@@ -69,9 +84,10 @@ jobs:
           npm run build
 
       - name: Publish to Cloudflare Pages
+        # apiToken/accountId come from $GITHUB_ENV (sourced from Doppler
+        # dataviking-platform/prd in the earlier step); wrangler reads the
+        # CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID env vars directly.
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy site/dist --project-name=synthbench --branch=${{ github.head_ref || github.ref_name }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

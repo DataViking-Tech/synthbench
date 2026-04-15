@@ -35,19 +35,36 @@ jobs:
 
       - run: pip install -e .[r2]
 
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      # sb-vkz doppler-reorg: pull shared R2 creds from the
+      # dataviking-platform/prd project (read-only DOPPLER_PLATFORM_TOKEN)
+      # instead of synthbench/prd duplicates. R2_BUCKET stays on synthbench
+      # because the bucket name is product-specific.
+      - name: Load shared infra secrets from dataviking-platform
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_PLATFORM_TOKEN }}
+        run: |
+          set -euo pipefail
+          for name in R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY; do
+            value=$(doppler secrets get "$name" --project dataviking-platform --config prd --plain)
+            echo "::add-mask::$value"
+            printf '%s<<__DVP_EOF__\n%s\n__DVP_EOF__\n' "$name" "$value" >> "$GITHUB_ENV"
+          done
+
       - name: Generate leaderboard data
         run: synthbench publish-data --results-dir leaderboard-results --output site/src/data/leaderboard.json
 
       - name: Generate run explorer artifacts
         # Gated-tier per-question/run/config JSONs upload to R2 when the four
-        # R2_* secrets below are configured (sb-sjs). Without them the step
-        # falls back to local writes, preserving the pre-gate behavior so the
-        # site keeps building until the Worker proxy (sb-cf4) ships.
+        # R2_* vars are present (sb-sjs). R2 access creds come from Doppler
+        # dataviking-platform/prd via $GITHUB_ENV (sb-vkz); R2_BUCKET stays
+        # on the synthbench repo secret (product-specific). Without them the
+        # step falls back to local writes, preserving the pre-gate behavior
+        # so the site keeps building until the Worker proxy (sb-cf4) ships.
         run: synthbench publish-runs --results-dir leaderboard-results --output-dir site/public/data
         env:
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
 
       - name: Verify publish integrity (sb-4zy)
