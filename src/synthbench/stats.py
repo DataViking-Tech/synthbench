@@ -1,4 +1,4 @@
-# Vendored from synth-panel (DataViking-Tech/synth-panel). Keep in sync.
+# Vendored from synthpanel (DataViking-Tech/SynthPanel). Keep in sync.
 """Pure-Python statistical tests for synthetic panel analysis.
 
 All functions use only ``math``, ``random``, and ``dataclasses`` from stdlib.

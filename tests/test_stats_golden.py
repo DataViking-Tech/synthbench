@@ -1,4 +1,4 @@
-"""Golden tests for vendored stats.py — values must match synth-panel exactly."""
+"""Golden tests for vendored stats.py — values must match synthpanel exactly."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ class TestKrippendorffGolden:
     """4-rater 12-item nominal example with missing data.
 
     Verified against krippendorff 0.8.1 reference package: alpha = 0.871.
-    Data matches synth-panel's test_stats.py exactly.
+    Data matches synthpanel's test_stats.py exactly.
     """
 
     RELIABILITY_DATA = [

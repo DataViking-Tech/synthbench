@@ -144,7 +144,7 @@ default distribution. P_cond isolates the *conditioning mechanism itself*.
 
 **Conditioning protocol**: Each provider is tested with the persona spec it
 supports. For raw LLMs, we test all three OpinionsQA styles (QA, BIO, PORTRAY)
-and take the max. For dedicated providers (synth-panel, Ditto), we use their
+and take the max. For dedicated providers (synthpanel, Ditto), we use their
 native persona interface.
 
 #### P_sub — Subgroup Consistency
@@ -269,7 +269,7 @@ class Distribution:
 @dataclass
 class ProviderMetadata:
     """Provider identification and capabilities."""
-    name: str                      # e.g. "synth-panel", "openai-gpt4o"
+    name: str                      # e.g. "synthpanel", "openai-gpt4o"
     version: str                   # Semantic version or model identifier
     supports_logprobs: bool        # Can return token log-probabilities
     supports_distribution: bool    # Can return Distribution directly
@@ -329,7 +329,7 @@ class SynthRespondent(Protocol):
 
 | Provider | Adapter | Distribution Method | Notes |
 |----------|---------|-------------------|-------|
-| **synth-panel** | `SynthPanelAdapter` | Reported (native API returns distribution) | Our reference provider |
+| **synthpanel** | `SynthPanelAdapter` | Reported (native API returns distribution) | Our reference provider |
 | **OpenAI (GPT-4o, etc.)** | `OpenAIAdapter` | Logprobs (top-k token logprobs) | `conditioning_style` mapped to system/user prompt |
 | **Anthropic (Claude)** | `AnthropicAdapter` | Sampling (no logprobs available) | Requires n_samples >= 30 for stable distributions |
 | **Ditto** | `DittoAdapter` | Reported (if API returns distribution) or Sampling | Pending API access to confirm capabilities |
@@ -372,7 +372,7 @@ class OpenAIAdapter:
 CLI invocation:
 ```bash
 synthbench run --provider openai --model gpt-4o --suite core
-synthbench run --provider synth-panel --suite full
+synthbench run --provider synthpanel --suite full
 synthbench run --provider generic-http --config ./my-provider.yaml --suite core
 ```
 
@@ -617,7 +617,7 @@ Every SynthBench run produces a JSON artifact:
   "timestamp": "2026-04-10T12:00:00Z",
   "suite": "core",
   "provider": {
-    "name": "synth-panel",
+    "name": "synthpanel",
     "version": "2.1.0",
     "adapter": "SynthPanelAdapter",
     "config_hash": "sha256:..."
@@ -669,7 +669,7 @@ Every SynthBench run produces a JSON artifact:
 ================================================================
   SYNTHBENCH v1.0 SCORE CARD
 ================================================================
-  Provider:  synth-panel v2.1.0
+  Provider:  synthpanel v2.1.0
   Suite:     SynthBench-Core (300 questions)
   Date:      2026-04-10
   Run ID:    sb-20260410-a1b2c3
@@ -720,7 +720,7 @@ For multi-provider comparisons:
 ```
 | Provider        | Version | SPS  | P_dist | P_rank | P_cond | P_sub | P_refuse | Suite |
 |-----------------|---------|------|--------|--------|--------|-------|----------|-------|
-| synth-panel     | 2.1.0   | 0.74 | 0.81   | 0.77   | 0.68   | 0.72  | 0.71     | core  |
+| synthpanel      | 2.1.0   | 0.74 | 0.81   | 0.77   | 0.68   | 0.72  | 0.71     | core  |
 | GPT-4o (portray)| 2026-03 | 0.61 | 0.67   | 0.63   | 0.55   | 0.58  | 0.62     | core  |
 | Claude (portray)| sonnet  | 0.59 | 0.65   | 0.61   | 0.52   | 0.60  | 0.58     | core  |
 | GPT-4o (raw)    | 2026-03 | 0.48 | 0.55   | 0.52   | 0.00   | 0.45  | 0.40     | core  |

@@ -4,7 +4,7 @@ Open benchmark harness for synthetic survey respondent quality.
 
 **The MLPerf of synthetic UXR.**
 
-SynthBench measures how well synthetic respondent systems (like [synth-panel](https://github.com/DataViking-Tech/synth-panel), Ditto, Synthetic Users, or raw ChatGPT prompting) reproduce real human survey response patterns.
+SynthBench measures how well synthetic respondent systems (like [synthpanel](https://github.com/DataViking-Tech/SynthPanel), Ditto, Synthetic Users, or raw ChatGPT prompting) reproduce real human survey response patterns.
 
 ## Quick Start
 

@@ -15,7 +15,7 @@ from synthbench.publish import (
 )
 
 # Imported lazily by the helpers under test, but the test file needs the
-# pricing constants for assertion math. Tests skip cleanly if synth-panel
+# pricing constants for assertion math. Tests skip cleanly if synthpanel
 # (a dep added in this slice) is not installed.
 synth_panel_cost = pytest.importorskip("synth_panel.cost")
 HAIKU = synth_panel_cost.HAIKU_PRICING

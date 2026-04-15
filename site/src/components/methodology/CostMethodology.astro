@@ -16,19 +16,19 @@ const sections: CostSection[] = [
   {
     id: "what-we-derive",
     title: "What we derive",
-    body: "At publish time, we multiply recorded tokens by per-model pricing from synth-panel to derive four fields per leaderboard row: cost_usd (total spend for the run), cost_per_100q (spend normalized to 100 questions), cost_per_sps_point (spend per SPS point achieved), and is_cost_estimated (true if any pricing dimension was inferred rather than measured).",
+    body: "At publish time, we multiply recorded tokens by per-model pricing from synthpanel to derive four fields per leaderboard row: cost_usd (total spend for the run), cost_per_100q (spend normalized to 100 questions), cost_per_sps_point (spend per SPS point achieved), and is_cost_estimated (true if any pricing dimension was inferred rather than measured).",
     note: "Derivation happens in synthbench/publish.py. Tokens stay immutable in raw run JSON; cost is recomputed every time we republish, so price-list updates flow through without rerunning any benchmark.",
   },
   {
     id: "pricing-snapshot",
     title: "Pricing snapshot",
     body: "The exact pricing table used to derive costs is serialized into leaderboard.json under a top-level pricing_snapshot block. It includes a snapshot_date and per-provider rates (input, output, cache-creation, and cache-read cost per million tokens). Readers can reproduce every displayed cost from the snapshot and the raw token counts.",
-    note: "Rates track the public price list documented on provider pricing pages (e.g. https://www.anthropic.com/pricing). The snapshot is updated when synth-panel's cost.py constants are bumped.",
+    note: "Rates track the public price list documented on provider pricing pages (e.g. https://www.anthropic.com/pricing). The snapshot is updated when synthpanel's cost.py constants are bumped.",
   },
   {
     id: "self-hosted-policy",
     title: "Self-hosted and unknown models",
-    body: "For self-hosted models (Ollama, local inference) and any provider whose pricing is not tracked in synth-panel, cost_usd is reported as null. We deliberately do not impute a cost — hardware, electricity, and amortization vary too widely to produce a number readers can fairly compare against API-priced rows.",
+    body: "For self-hosted models (Ollama, local inference) and any provider whose pricing is not tracked in synthpanel, cost_usd is reported as null. We deliberately do not impute a cost — hardware, electricity, and amortization vary too widely to produce a number readers can fairly compare against API-priced rows.",
     note: "Null cost rows sort last in the leaderboard's $/100Q column and are excluded from the Cost-vs-SPS Pareto chart on the Findings page.",
   },
   {
