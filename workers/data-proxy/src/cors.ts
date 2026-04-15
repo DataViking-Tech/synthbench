@@ -5,7 +5,7 @@
 // headers — the browser will then block the read, which is the correct
 // outcome for unknown origins.
 
-const ALLOWED_METHODS = "GET, HEAD, OPTIONS";
+const ALLOWED_METHODS = "GET, HEAD, POST, OPTIONS";
 const ALLOWED_HEADERS = "Authorization, Content-Type";
 const MAX_AGE_SECONDS = "86400";
 

@@ -1,0 +1,190 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const rawBase = import.meta.env.BASE_URL || "/";
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+const accountHref = `${base}account/`;
+const uploadHref = `${base}submit/upload/`;
+---
+
+<BaseLayout title="My submissions · SynthBench" noindex={true}>
+  <div class="mx-auto max-w-3xl px-4 py-12">
+    <header class="flex items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-semibold tracking-tight text-text dark:text-text-dark">
+          My submissions
+        </h1>
+        <p class="mt-1 text-sm text-muted">
+          Runs you've uploaded via the web, newest first.
+        </p>
+      </div>
+      <a
+        href={uploadHref}
+        class="inline-flex shrink-0 items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90"
+      >
+        Upload a run
+      </a>
+    </header>
+
+    <!-- Signed-out view -->
+    <section data-submissions-state="signed-out" class="mt-8 hidden">
+      <div class="rounded-md border border-yellow-300/50 bg-yellow-100/40 p-4 text-sm text-text dark:text-text-dark">
+        Please <a href={accountHref} data-signin-href class="font-semibold text-primary underline">sign in</a>
+        to view your submission history.
+      </div>
+    </section>
+
+    <!-- Auth not configured -->
+    <section data-submissions-state="unavailable" class="mt-8 hidden">
+      <div class="rounded-md border border-red-300/50 bg-red-100/40 p-4 text-sm text-text dark:text-text-dark">
+        Authentication is not configured for this site build.
+      </div>
+    </section>
+
+    <!-- Loading -->
+    <section data-submissions-state="loading" class="mt-8">
+      <p class="text-sm text-muted">Loading submissions…</p>
+    </section>
+
+    <!-- Empty -->
+    <section data-submissions-state="empty" class="mt-8 hidden">
+      <div class="rounded-md border border-muted/30 bg-surface p-6 text-sm text-text dark:bg-surface-dark dark:text-text-dark">
+        <p class="font-semibold">You haven't uploaded anything yet.</p>
+        <p class="mt-1 text-muted">
+          Run <code>synthbench run -p &lt;provider&gt; -d &lt;dataset&gt;</code> locally,
+          then drop the result JSON into
+          <a class="underline" href={uploadHref}>the upload form</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- List -->
+    <section data-submissions-state="ready" class="mt-8 hidden">
+      <ul data-submissions-list class="space-y-3"></ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import { getUser, isAuthConfigured, withBase } from "@/lib/auth";
+  import { listMySubmissions, type SubmissionRow, type SubmissionStatus } from "@/lib/submissions";
+
+  type State = "signed-out" | "unavailable" | "loading" | "empty" | "ready";
+
+  const STATE_ORDER: State[] = ["signed-out", "unavailable", "loading", "empty", "ready"];
+
+  function showState(state: State): void {
+    for (const s of STATE_ORDER) {
+      document
+        .querySelector<HTMLElement>(`[data-submissions-state="${s}"]`)
+        ?.classList.toggle("hidden", s !== state);
+    }
+  }
+
+  function escapeHtml(s: unknown): string {
+    return String(s ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function statusBadgeClasses(status: SubmissionStatus): string {
+    switch (status) {
+      case "published":
+        return "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200";
+      case "rejected":
+        return "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200";
+      default:
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200";
+    }
+  }
+
+  function formatDate(iso: string): string {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    } catch {
+      return iso;
+    }
+  }
+
+  function rowHtml(row: SubmissionRow): string {
+    const status = row.status;
+    const badgeClass = statusBadgeClasses(status);
+    const model = escapeHtml(row.model_name ?? "(unknown model)");
+    const dataset = escapeHtml(row.dataset ?? "(unknown dataset)");
+    const framework = escapeHtml(row.framework ?? "—");
+    const nq = row.n_questions != null ? escapeHtml(String(row.n_questions)) : "—";
+    const submitted = escapeHtml(formatDate(row.submitted_at));
+    const rejectedBlock =
+      status === "rejected" && row.rejection_reason
+        ? `<p class="mt-2 rounded bg-red-50 dark:bg-red-900/20 p-2 text-xs text-red-700 dark:text-red-200"><strong>Rejected:</strong> ${escapeHtml(row.rejection_reason)}</p>`
+        : "";
+    const publishedBlock =
+      status === "published" && row.leaderboard_entry_id
+        ? `<p class="mt-2 text-xs text-muted">Leaderboard entry: <code>${escapeHtml(row.leaderboard_entry_id)}</code></p>`
+        : "";
+    return `
+      <li class="rounded-md border border-muted/30 bg-surface p-4 dark:bg-surface-dark">
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <div class="min-w-0">
+            <p class="truncate text-sm font-semibold text-text dark:text-text-dark">
+              ${model}
+              <span class="font-normal text-muted">on</span>
+              ${dataset}
+            </p>
+            <p class="mt-0.5 text-xs text-muted">
+              Framework: ${framework} · Questions: ${nq} · Submitted ${submitted}
+            </p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded px-2 py-0.5 text-xs font-semibold ${badgeClass}">
+            ${escapeHtml(status)}
+          </span>
+        </div>
+        ${rejectedBlock}
+        ${publishedBlock}
+      </li>
+    `;
+  }
+
+  async function bootstrap(): Promise<void> {
+    if (!isAuthConfigured()) {
+      showState("unavailable");
+      return;
+    }
+    const user = await getUser();
+    if (!user) {
+      const signInHref = document.querySelector<HTMLAnchorElement>("[data-signin-href]");
+      if (signInHref) {
+        const here = window.location.pathname + window.location.search;
+        signInHref.href = `${withBase("account/")}?next=${encodeURIComponent(here)}`;
+      }
+      showState("signed-out");
+      return;
+    }
+    showState("loading");
+    const rows = await listMySubmissions(user.id);
+    if (rows.length === 0) {
+      showState("empty");
+      return;
+    }
+    const list = document.querySelector<HTMLUListElement>("[data-submissions-list]");
+    if (list) {
+      list.innerHTML = rows.map(rowHtml).join("");
+    }
+    showState("ready");
+  }
+
+  bootstrap().catch((err) => {
+    console.error("[account/submissions] bootstrap failed", err);
+    showState("unavailable");
+  });
+</script>

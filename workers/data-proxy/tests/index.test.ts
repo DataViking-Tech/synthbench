@@ -55,11 +55,40 @@ function makeBucket(store: Map<string, string>): R2Bucket {
   } as unknown as R2Bucket;
 }
 
+interface PutRecord {
+  key: string;
+  value: string;
+  httpMetadata: { contentType?: string } | undefined;
+  customMetadata: Record<string, string> | undefined;
+}
+
+function makeWritableBucket(puts: PutRecord[]): R2Bucket {
+  return {
+    async put(
+      key: string,
+      value: string,
+      opts?: {
+        httpMetadata?: { contentType?: string };
+        customMetadata?: Record<string, string>;
+      },
+    ) {
+      puts.push({
+        key,
+        value,
+        httpMetadata: opts?.httpMetadata,
+        customMetadata: opts?.customMetadata,
+      });
+      return { key } as unknown as R2Object;
+    },
+  } as unknown as R2Bucket;
+}
+
 interface Harness {
   env: Parameters<typeof worker.fetch>[1];
   ctx: ExecutionContext;
   waitUntilPromises: Promise<unknown>[];
   fetchMock: ReturnType<typeof vi.fn>;
+  submissionPuts: PutRecord[];
 }
 
 function makeHarness(
@@ -78,15 +107,47 @@ function makeHarness(
   const fetchMock = vi.fn(async () => new Response(null, { status: 201 }));
   vi.stubGlobal("fetch", fetchMock);
 
+  const submissionPuts: PutRecord[] = [];
+
   const env = {
     DATA_BUCKET: makeBucket(store),
+    SUBMISSIONS_BUCKET: makeWritableBucket(submissionPuts),
     SUPABASE_URL,
     SUPABASE_JWT_AUD: "authenticated",
     SUPABASE_SERVICE_ROLE_KEY: "service-role-secret",
     ALLOWED_ORIGINS: `${SITE_ORIGIN},https://www.synthbench.org`,
+    GITHUB_DISPATCH_TOKEN: "ghp-test",
+    GITHUB_DISPATCH_REPO: "DataViking-Tech/synthbench",
+    GITHUB_DISPATCH_WORKFLOW: "process-submission.yml",
+    GITHUB_DISPATCH_REF: "main",
   } as Parameters<typeof worker.fetch>[1];
 
-  return { env, ctx, waitUntilPromises, fetchMock };
+  return { env, ctx, waitUntilPromises, fetchMock, submissionPuts };
+}
+
+function validSubmissionJson(): string {
+  return JSON.stringify({
+    benchmark: "synthbench",
+    config: {
+      model: "gpt-5",
+      provider: "openai",
+      dataset: "globalopinionqa",
+      framework: "native",
+    },
+    aggregate: {
+      n_questions: 1,
+      composite_parity: 0.7,
+      mean_jsd: 0.2,
+      mean_tau: 0.55,
+    },
+    per_question: [
+      {
+        human_distribution: [0.25, 0.25, 0.5],
+        model_distribution: [0.3, 0.3, 0.4],
+      },
+    ],
+    scores: { p_dist: 0.8, p_rank: 0.6 },
+  });
 }
 
 describe("Worker fetch handler", () => {
@@ -242,5 +303,225 @@ describe("Worker fetch handler", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("Access-Control-Allow-Origin")).toBeNull();
     expect(res.headers.get("Vary")).toBe("Origin");
+  });
+});
+
+describe("/submit route (sb-me0f)", () => {
+  it("rejects GET with 405", async () => {
+    const { env, ctx } = makeHarness();
+    const token = await signToken();
+    const res = await worker.fetch(
+      new Request(`${WORKER_ORIGIN}/submit`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      env,
+      ctx,
+    );
+    expect(res.status).toBe(405);
+  });
+
+  it("returns 401 when Authorization is missing", async () => {
+    const { env, ctx } = makeHarness();
+    const res = await worker.fetch(
+      new Request(`${WORKER_ORIGIN}/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: validSubmissionJson(),
+      }),
+      env,
+      ctx,
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 400 for invalid JSON bodies", async () => {
+    const { env, ctx } = makeHarness();
+    const token = await signToken();
+    const res = await worker.fetch(
+      new Request(`${WORKER_ORIGIN}/submit`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: "not valid json{",
+      }),
+      env,
+      ctx,
+    );
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toMatch(/invalid JSON/);
+  });
+
+  it("returns 400 when Tier-1 schema fails", async () => {
+    const { env, ctx } = makeHarness();
+    const token = await signToken();
+    const res = await worker.fetch(
+      new Request(`${WORKER_ORIGIN}/submit`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ benchmark: "other" }),
+      }),
+      env,
+      ctx,
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 413 when Content-Length exceeds the cap", async () => {
+    const { env, ctx } = makeHarness();
+    const token = await signToken();
+    const res = await worker.fetch(
+      new Request(`${WORKER_ORIGIN}/submit`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Content-Length": String(10 * 1024 * 1024),
+        },
+        body: "{}",
+      }),
+      env,
+      ctx,
+    );
+    expect(res.status).toBe(413);
+  });
+
+  it("returns 503 when GH dispatch env is not configured", async () => {
+    const { env, ctx } = makeHarness();
+    const token = await signToken();
+    const brokenEnv = { ...env, GITHUB_DISPATCH_TOKEN: "" };
+    const res = await worker.fetch(
+      new Request(`${WORKER_ORIGIN}/submit`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: validSubmissionJson(),
+      }),
+      brokenEnv,
+      ctx,
+    );
+    expect(res.status).toBe(503);
+  });
+
+  it("stages to R2, inserts the row, dispatches the workflow, returns 202", async () => {
+    const { env, ctx, fetchMock, submissionPuts } = makeHarness();
+    // First fetch call = Supabase insert (returns the row); second = GH dispatch.
+    fetchMock.mockImplementation(async (url: string | URL, _init?: RequestInit) => {
+      const u = String(url);
+      if (u.includes("/rest/v1/submissions")) {
+        return new Response(
+          JSON.stringify([{ id: 42, submitted_at: "2026-04-15T09:00:00Z", status: "validating" }]),
+          { status: 201, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      if (u.includes("api.github.com") && u.includes("/dispatches")) {
+        return new Response(null, { status: 204 });
+      }
+      return new Response(null, { status: 500 });
+    });
+
+    const token = await signToken({ sub: "user-xyz" });
+    const res = await worker.fetch(
+      new Request(`${WORKER_ORIGIN}/submit`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Origin: SITE_ORIGIN,
+          "User-Agent": "vitest-harness",
+        },
+        body: validSubmissionJson(),
+      }),
+      env,
+      ctx,
+    );
+    expect(res.status).toBe(202);
+    const body = (await res.json()) as { submission_id: number; status: string; file_path: string };
+    expect(body.submission_id).toBe(42);
+    expect(body.status).toBe("validating");
+    expect(body.file_path).toMatch(/^submissions\/\d{4}\/\d{2}\/\d{2}\/user-xyz\//);
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBe(SITE_ORIGIN);
+
+    // R2 staging happened with the right object body + metadata.
+    expect(submissionPuts).toHaveLength(1);
+    const put = submissionPuts[0];
+    if (!put) throw new Error("expected R2 put");
+    expect(put.customMetadata?.user_id).toBe("user-xyz");
+    expect(put.customMetadata?.model_name).toBe("gpt-5");
+    expect(put.customMetadata?.dataset).toBe("globalopinionqa");
+
+    // Both Supabase + GH dispatch were called.
+    const calls = fetchMock.mock.calls.map((c) => String(c[0]));
+    expect(calls.some((u) => u.includes("/rest/v1/submissions"))).toBe(true);
+    expect(
+      calls.some(
+        (u) =>
+          u.includes("api.github.com") &&
+          u.includes("DataViking-Tech/synthbench") &&
+          u.includes("process-submission.yml"),
+      ),
+    ).toBe(true);
+  });
+
+  it("still returns 202 with a warning when dispatch fails after insert", async () => {
+    const { env, ctx, fetchMock } = makeHarness();
+    fetchMock.mockImplementation(async (url: string | URL) => {
+      const u = String(url);
+      if (u.includes("/rest/v1/submissions")) {
+        return new Response(
+          JSON.stringify([{ id: 99, submitted_at: "2026-04-15T09:00:00Z", status: "validating" }]),
+          { status: 201 },
+        );
+      }
+      if (u.includes("api.github.com")) {
+        return new Response("boom", { status: 500 });
+      }
+      return new Response(null, { status: 500 });
+    });
+
+    const token = await signToken();
+    const res = await worker.fetch(
+      new Request(`${WORKER_ORIGIN}/submit`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: validSubmissionJson(),
+      }),
+      env,
+      ctx,
+    );
+    expect(res.status).toBe(202);
+    const body = (await res.json()) as { submission_id: number; warning?: string };
+    expect(body.submission_id).toBe(99);
+    expect(body.warning).toMatch(/dispatch failed/);
+  });
+
+  it("returns 502 when Supabase insert fails", async () => {
+    const { env, ctx, fetchMock } = makeHarness();
+    fetchMock.mockImplementation(async () => new Response("down", { status: 503 }));
+    const token = await signToken();
+    const res = await worker.fetch(
+      new Request(`${WORKER_ORIGIN}/submit`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: validSubmissionJson(),
+      }),
+      env,
+      ctx,
+    );
+    expect(res.status).toBe(502);
   });
 });

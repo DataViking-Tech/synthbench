@@ -1,10 +1,14 @@
-# Cloudflare Worker: Supabase-gated R2 proxy for synthbench gated-tier data (sb-io1).
+# Cloudflare Worker: Supabase-gated R2 proxy + submissions upload endpoint.
 #
-# Runtime deploy path (per bead sb-io1):
-#   1. `wrangler secret put SUPABASE_SERVICE_ROLE_KEY` — audit log writer (server-only)
-#   2. Bind route api.synthbench.org/data/* to this Worker in the CF dashboard
-#      or via `routes` below once the zone is registered.
-#   3. Confirm the R2 bucket `synthbench-data-prod` exists (created by sb-sjs).
+# Runtime deploy path:
+#   1. `wrangler secret put SUPABASE_SERVICE_ROLE_KEY`  — audit + submissions writes (sb-io1)
+#   2. `wrangler secret put GITHUB_DISPATCH_TOKEN`      — fine-grained PAT or App token with
+#                                                         `actions: write` on the synthbench repo (sb-me0f)
+#   3. Bind route api.synthbench.org/* to this Worker in the CF dashboard
+#      (or via the `routes` block below once the zone is registered).
+#   4. Confirm R2 buckets exist:
+#        - synthbench-data-prod        (publish artifacts, sb-sjs)
+#        - synthbench-submissions-prod (staging for /submit, sb-me0f)
 #
 # Rate limiting (bead scope §5) is configured as a Cloudflare Rulesets rate-limit
 # rule on the route, not in worker code. See README.md §"Rate limiting".
@@ -24,15 +28,25 @@ SUPABASE_JWT_AUD = "authenticated"
 # Comma-separated allowlist of origins the Worker will echo back in CORS
 # headers. Non-matching origins still get 200s but no CORS grant.
 ALLOWED_ORIGINS = "https://synthbench.org,https://www.synthbench.org"
+# GitHub workflow_dispatch targets for /submit (sb-me0f). Populated at deploy
+# time; the Worker returns 503 until all four are set.
+GITHUB_DISPATCH_REPO = "DataViking-Tech/synthbench"
+GITHUB_DISPATCH_WORKFLOW = "process-submission.yml"
+GITHUB_DISPATCH_REF = "main"
 
 [[r2_buckets]]
 binding = "DATA_BUCKET"
 bucket_name = "synthbench-data-prod"
 preview_bucket_name = "synthbench-data-preview"
 
+[[r2_buckets]]
+binding = "SUBMISSIONS_BUCKET"
+bucket_name = "synthbench-submissions-prod"
+preview_bucket_name = "synthbench-submissions-preview"
+
 # Route binding. Uncomment once DNS + zone are configured for api.synthbench.org.
 # [[routes]]
-# pattern = "api.synthbench.org/data/*"
+# pattern = "api.synthbench.org/*"
 # zone_name = "synthbench.org"
 
 [env.preview]
@@ -42,7 +56,14 @@ name = "synthbench-data-proxy-preview"
 SUPABASE_URL = ""
 SUPABASE_JWT_AUD = "authenticated"
 ALLOWED_ORIGINS = "https://synthbench.org,https://www.synthbench.org,http://localhost:4321"
+GITHUB_DISPATCH_REPO = "DataViking-Tech/synthbench"
+GITHUB_DISPATCH_WORKFLOW = "process-submission.yml"
+GITHUB_DISPATCH_REF = "main"
 
 [[env.preview.r2_buckets]]
 binding = "DATA_BUCKET"
 bucket_name = "synthbench-data-preview"
+
+[[env.preview.r2_buckets]]
+binding = "SUBMISSIONS_BUCKET"
+bucket_name = "synthbench-submissions-preview"

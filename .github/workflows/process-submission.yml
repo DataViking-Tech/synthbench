@@ -1,0 +1,221 @@
+name: Process Submission
+
+# sb-me0f: consumer for the web upload flow.
+#
+# Triggered by the data-proxy Worker after a user posts a file to /submit:
+# Worker stages the raw JSON to the synthbench-submissions-* R2 bucket,
+# inserts a `validating` row in Supabase, then dispatches this workflow with
+# the row id + R2 key. This job:
+#   1. Pulls the staged JSON from R2.
+#   2. Runs `synthbench validate --tier3 --peers leaderboard-results/ --json`.
+#   3. On pass: commits the JSON to leaderboard-results/ (the pages.yml
+#      workflow picks it up on push and rebuilds the leaderboard).
+#   4. On fail: records the rejection reason on the Supabase row.
+#
+# The web upload MVP (sb-me0f) currently requires an operator to add the
+# three required secrets before this workflow can run end-to-end. See the
+# PR body / SUBMISSIONS.md for the full runbook.
+
+on:
+  workflow_dispatch:
+    inputs:
+      submission_id:
+        description: "Supabase `submissions.id` (bigint). Used to update status."
+        required: true
+        type: string
+      file_path:
+        description: "R2 key of the staged submission JSON."
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  # Serialize by submission so a retry can't race the original dispatch.
+  group: process-submission-${{ inputs.submission_id }}
+  cancel-in-progress: false
+
+jobs:
+  validate-and-commit:
+    runs-on: ubuntu-latest
+    env:
+      SUBMISSION_ID: ${{ inputs.submission_id }}
+      FILE_PATH: ${{ inputs.file_path }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install synthbench
+        run: pip install -e .[r2]
+
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      # Shared infra creds (R2 + Supabase service role) live in
+      # dataviking-platform/prd (sb-vkz). Pull them into env vars for the
+      # download + status-update steps.
+      - name: Load shared infra secrets from dataviking-platform
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_PLATFORM_TOKEN }}
+        run: |
+          set -euo pipefail
+          for name in R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
+            value=$(doppler secrets get "$name" --project dataviking-platform --config prd --plain)
+            echo "::add-mask::$value"
+            printf '%s<<__DVP_EOF__\n%s\n__DVP_EOF__\n' "$name" "$value" >> "$GITHUB_ENV"
+          done
+
+      - name: Download staged submission from R2
+        env:
+          R2_BUCKET: synthbench-submissions-prod
+        run: |
+          set -euo pipefail
+          mkdir -p .submission
+          python - <<'PY'
+          import os
+          import pathlib
+
+          import boto3
+
+          account = os.environ["R2_ACCOUNT_ID"]
+          key_id = os.environ["R2_ACCESS_KEY_ID"]
+          secret = os.environ["R2_SECRET_ACCESS_KEY"]
+          bucket = os.environ["R2_BUCKET"]
+          file_path = os.environ["FILE_PATH"]
+
+          s3 = boto3.client(
+              "s3",
+              endpoint_url=f"https://{account}.r2.cloudflarestorage.com",
+              aws_access_key_id=key_id,
+              aws_secret_access_key=secret,
+              region_name="auto",
+          )
+          out = pathlib.Path(".submission/candidate.json")
+          with out.open("wb") as fh:
+              s3.download_fileobj(bucket, file_path, fh)
+          print(f"downloaded {bucket}/{file_path} -> {out} ({out.stat().st_size} bytes)")
+          PY
+
+      - name: Derive leaderboard slug
+        id: slug
+        run: |
+          set -euo pipefail
+          slug=$(SUBMISSION_ID="$SUBMISSION_ID" python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import re
+
+          data = json.loads(pathlib.Path(".submission/candidate.json").read_text())
+          cfg = data.get("config", {})
+          parts = [
+              str(cfg.get("provider", "unknown")),
+              str(cfg.get("model", cfg.get("framework", "model"))),
+              str(cfg.get("dataset", "dataset")),
+              os.environ["SUBMISSION_ID"],
+          ]
+          slug = "_".join(parts)
+          slug = re.sub(r"[^A-Za-z0-9._-]+", "-", slug).strip("-")
+          print(slug[:140])
+          PY
+          )
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+
+      - name: Validate submission (tier 1 + 2 + 3, strict)
+        id: validate
+        run: |
+          set -euo pipefail
+          # Capture exit code AND the JSON report so we can store a
+          # human-readable rejection reason on the Supabase row.
+          set +e
+          synthbench validate \
+            --tier3 \
+            --peers leaderboard-results/ \
+            --strict \
+            --json \
+            .submission/candidate.json > .submission/report.json 2> .submission/report.err
+          status=$?
+          set -e
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          cat .submission/report.json || true
+
+      - name: Mark rejected in Supabase
+        if: steps.validate.outputs.status != '0'
+        run: |
+          set -euo pipefail
+          reason=$(python - <<'PY'
+          import json
+          import pathlib
+
+          try:
+              r = json.loads(pathlib.Path(".submission/report.json").read_text())
+              files = r if isinstance(r, list) else r.get("files", [r])
+              first = files[0] if files else {}
+              errs = first.get("errors", [])
+              if errs:
+                  msg = errs[0].get("message", "validation failed")
+              else:
+                  msg = "validation failed"
+          except Exception as exc:  # noqa: BLE001
+              msg = f"validation failed ({exc})"
+          print(msg[:500])
+          PY
+          )
+          echo "::add-mask::$reason"
+          REASON="$reason" python - <<'PY' > .submission/patch.json
+          import json
+          import os
+
+          print(json.dumps({"status": "rejected", "rejection_reason": os.environ["REASON"]}))
+          PY
+          curl -fsS -X PATCH \
+            -H "Content-Type: application/json" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Prefer: return=minimal" \
+            --data-binary @.submission/patch.json \
+            "${SUPABASE_URL%/}/rest/v1/submissions?id=eq.${SUBMISSION_ID}"
+          echo
+          echo "Marked submission ${SUBMISSION_ID} rejected."
+          exit 1
+
+      - name: Commit submission to leaderboard-results/
+        if: steps.validate.outputs.status == '0'
+        env:
+          SLUG: ${{ steps.slug.outputs.slug }}
+        run: |
+          set -euo pipefail
+          dest="leaderboard-results/${SLUG}.json"
+          mkdir -p leaderboard-results
+          cp .submission/candidate.json "$dest"
+          git config user.name "synthbench-submit-bot"
+          git config user.email "submit-bot@synthbench.org"
+          git add "$dest"
+          git commit -m "submissions: add ${SLUG} via web upload (#${SUBMISSION_ID})"
+          git push origin HEAD:main
+
+      - name: Mark published in Supabase
+        if: steps.validate.outputs.status == '0'
+        env:
+          SLUG: ${{ steps.slug.outputs.slug }}
+        run: |
+          set -euo pipefail
+          python - <<'PY' > .submission/patch.json
+          import json
+          import os
+
+          print(json.dumps({"status": "published", "leaderboard_entry_id": os.environ["SLUG"]}))
+          PY
+          curl -fsS -X PATCH \
+            -H "Content-Type: application/json" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Prefer: return=minimal" \
+            --data-binary @.submission/patch.json \
+            "${SUPABASE_URL%/}/rest/v1/submissions?id=eq.${SUBMISSION_ID}"
+          echo
+          echo "Marked submission ${SUBMISSION_ID} published as ${SLUG}."

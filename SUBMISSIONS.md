@@ -1,8 +1,20 @@
 # Submitting to the SynthBench Leaderboard
 
 This document describes what every submission must look like, what the
-automated validation pipeline checks, and how to run those checks
-locally before you open a pull request.
+automated validation pipeline checks, and how to get your run onto the
+public leaderboard.
+
+## Two submission paths
+
+1. **Web upload (recommended, Tier-1 MVP — sb-me0f).** Sign in at
+   [synthbench.org/account](https://synthbench.org/account/), then drop
+   your result JSON into [/submit/upload](https://synthbench.org/submit/upload/).
+   Validation runs server-side; you can track status on
+   [/account/submissions](https://synthbench.org/account/submissions/).
+   Successful runs land on the leaderboard within ~5 minutes.
+2. **GitHub PR (power-user path).** Fork the repo, drop your file in
+   `leaderboard-results/`, open a PR. The same validators that guard the
+   web upload also run in the `validate-submissions` CI gate.
 
 ## The short version
 
@@ -14,8 +26,9 @@ synthbench run -p <provider> -d globalopinionqa -s 15 -n 100 -o results/
 synthbench validate results/<your-result>.json
 ```
 
-If `synthbench validate` exits non-zero, CI will reject the submission.
-Fix the issues — don't hand-edit numbers.
+If `synthbench validate` exits non-zero, the server will reject the
+submission (web upload) or CI will reject the PR. Fix the issues — don't
+hand-edit numbers.
 
 ## What gets validated
 
