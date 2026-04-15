@@ -1,0 +1,83 @@
+---
+interface CostSection {
+  id: string;
+  title: string;
+  body: string;
+  note?: string;
+}
+
+const sections: CostSection[] = [
+  {
+    id: "what-we-measure",
+    title: "What we measure",
+    body: "Every benchmark run records per-call token usage from the provider API — input tokens, output tokens, and (for Anthropic) cache-creation and cache-read tokens. Tokens are a measured quantity returned by the provider, not an estimate. The runner aggregates per-question usage into a run-level total stored alongside scores in the raw run JSON.",
+    note: "Runs on providers that do not return usage metadata (e.g. Ollama local inference) record no token counts, and downstream cost is reported as null rather than guessed.",
+  },
+  {
+    id: "what-we-derive",
+    title: "What we derive",
+    body: "At publish time, we multiply recorded tokens by per-model pricing from synth-panel to derive four fields per leaderboard row: cost_usd (total spend for the run), cost_per_100q (spend normalized to 100 questions), cost_per_sps_point (spend per SPS point achieved), and is_cost_estimated (true if any pricing dimension was inferred rather than measured).",
+    note: "Derivation happens in synthbench/publish.py. Tokens stay immutable in raw run JSON; cost is recomputed every time we republish, so price-list updates flow through without rerunning any benchmark.",
+  },
+  {
+    id: "pricing-snapshot",
+    title: "Pricing snapshot",
+    body: "The exact pricing table used to derive costs is serialized into leaderboard.json under a top-level pricing_snapshot block. It includes a snapshot_date and per-provider rates (input, output, cache-creation, and cache-read cost per million tokens). Readers can reproduce every displayed cost from the snapshot and the raw token counts.",
+    note: "Rates track the public price list documented on provider pricing pages (e.g. https://www.anthropic.com/pricing). The snapshot is updated when synth-panel's cost.py constants are bumped.",
+  },
+  {
+    id: "self-hosted-policy",
+    title: "Self-hosted and unknown models",
+    body: "For self-hosted models (Ollama, local inference) and any provider whose pricing is not tracked in synth-panel, cost_usd is reported as null. We deliberately do not impute a cost — hardware, electricity, and amortization vary too widely to produce a number readers can fairly compare against API-priced rows.",
+    note: "Null cost rows sort last in the leaderboard's $/100Q column and are excluded from the Cost-vs-SPS Pareto chart on the Findings page.",
+  },
+  {
+    id: "ensemble-cost",
+    title: "Ensemble cost",
+    body: "An ensemble run's cost is the sum of its constituent runs' costs. If every constituent has a tracked cost, the ensemble's cost_usd is the sum; if any constituent is null (self-hosted or unknown), the ensemble's cost_usd is null rather than a partial total.",
+    note: "This mirrors how ensembles aggregate elsewhere on the site: a composite number is only emitted when every input to that number is known.",
+  },
+  {
+    id: "pre-tracking-rows",
+    title: "Pre-tracking runs",
+    body: "Runs produced before per-call token capture landed in the runner have no usage metadata and therefore cost_usd is null. We do not backfill an estimate; the dash in the $/100Q column tells readers honestly that the number was never measured for that row.",
+    note: "A run's cost can only be recovered by re-running it on the current runner. Raw run JSONs are append-only.",
+  },
+];
+---
+
+<section class="w-full max-w-4xl mx-auto py-12" id="cost-computation">
+  <h2
+    class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    Cost computation
+  </h2>
+  <p class="text-muted mb-8 max-w-2xl">
+    Cost is a derived quantity on SynthBench: providers return measured token
+    counts at runtime, and the publish pipeline multiplies those by a dated
+    pricing snapshot to produce the <code
+      class="text-sm bg-muted/10 rounded px-1.5 py-0.5">$/100Q</code
+    > numbers you see on the leaderboard.
+  </p>
+
+  <div class="space-y-6">
+    {
+      sections.map((s) => (
+        <div
+          class="rounded-lg border border-muted/20 bg-surface p-6 dark:bg-surface-dark"
+          id={s.id}
+        >
+          <h3 class="text-lg font-semibold text-text dark:text-text-dark mb-2">
+            {s.title}
+          </h3>
+          <p class="text-muted mb-3">{s.body}</p>
+          {s.note && (
+            <p class="text-sm text-text/70 dark:text-text-dark/70 border-l-2 border-primary/40 dark:border-primary-light/40 pl-3">
+              {s.note}
+            </p>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</section>
