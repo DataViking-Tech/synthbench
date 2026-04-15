@@ -34,7 +34,9 @@ def test_load_registry_missing_directory_returns_empty(tmp_path: Path) -> None:
 
 
 def test_load_registry_reads_committed_fixture(tmp_path: Path) -> None:
-    _write_registry(tmp_path, "opinionsqa", {"K1": "full text one", "K2": "full text two"})
+    _write_registry(
+        tmp_path, "opinionsqa", {"K1": "full text one", "K2": "full text two"}
+    )
     registry = _load_question_text_registry(tmp_path)
     assert registry == {"opinionsqa": {"K1": "full text one", "K2": "full text two"}}
 
