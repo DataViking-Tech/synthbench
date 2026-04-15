@@ -52,18 +52,6 @@ const useLogScale =
 const PARETO_COLOR = "var(--color-accent)";
 const DOMINATED_COLOR = "var(--color-muted)";
 
-const seriesData = points.map((p) => ({
-  name: p.name,
-  value: [p.cost, p.sps] as [number, number],
-  itemStyle: {
-    color: p.dominated ? DOMINATED_COLOR : PARETO_COLOR,
-    opacity: p.dominated ? 0.5 : 1,
-  },
-  symbolSize: p.dominated ? 10 : 14,
-  // Per-point marker for tooltip + a11y; symbol stays default circle.
-  isPareto: !p.dominated,
-}));
-
 function formatCost(c: number): string {
   if (c === 0) return "$0.00";
   if (c < 0.01) return `$${c.toFixed(4)}`;
@@ -71,25 +59,32 @@ function formatCost(c: number): string {
   return `$${c.toFixed(2)}`;
 }
 
+// Chart.astro serializes the echarts option via JSON.stringify, which strips
+// function formatters and leaves only template strings. Echarts' string-only
+// templates (`{a}` `{b}` `{c}`) can't address arbitrary value-array indices,
+// so we encode the whole tooltip caption into the point's `name` field — the
+// default scatter tooltip then surfaces it verbatim as `{b}`.
+const seriesData = points.map((p) => {
+  const status = p.dominated ? "Dominated" : "Pareto-optimal";
+  const nameLine = `${p.name} — Cost: ${formatCost(p.cost)} · SPS: ${p.sps.toFixed(3)} · ${status}`;
+  return {
+    name: nameLine,
+    value: [p.cost, p.sps] as [number, number],
+    itemStyle: {
+      color: p.dominated ? DOMINATED_COLOR : PARETO_COLOR,
+      opacity: p.dominated ? 0.5 : 1,
+    },
+    symbolSize: p.dominated ? 10 : 14,
+  };
+});
+
 const chartOption = {
   tooltip: {
     trigger: "item" as const,
-    formatter: (params: {
-      data: {
-        name: string;
-        value: [number, number];
-        isPareto: boolean;
-      };
-    }) => {
-      const d = params.data;
-      const tag = d.isPareto ? "Pareto-optimal" : "Dominated";
-      return `<div style="font-size:13px">
-        <strong>${d.name}</strong><br/>
-        Cost: ${formatCost(d.value[0])}<br/>
-        SPS: ${d.value[1].toFixed(3)}<br/>
-        <span style="color:#888">${tag}</span>
-      </div>`;
-    },
+    // String formatter token {b} resolves to the point's pre-built caption
+    // (see seriesData above). Function formatters are unavailable because
+    // Chart.astro JSON-serializes the option into a data-attribute.
+    formatter: "<div style='font-size:13px'>{b}</div>",
   },
   grid: { left: 60, right: 30, top: 30, bottom: 50, containLabel: true },
   xAxis: {
@@ -97,9 +92,8 @@ const chartOption = {
     name: useLogScale ? "Cost (USD, log scale)" : "Cost (USD)",
     nameLocation: "middle" as const,
     nameGap: 30,
-    axisLabel: {
-      formatter: (v: number) => formatCost(v),
-    },
+    // String formatter token {value} survives JSON round-trip; prepend a $.
+    axisLabel: { formatter: "${value}" },
     ...(useLogScale ? { logBase: 10 } : { min: 0 }),
   },
   yAxis: {
@@ -109,7 +103,8 @@ const chartOption = {
     nameGap: 45,
     min: 0,
     max: 1,
-    axisLabel: { formatter: (v: number) => v.toFixed(1) },
+    // Echarts default decimal axis formatting is already clean here; a
+    // function formatter would be stripped during JSON serialization anyway.
   },
   series: [
     {

@@ -42,30 +42,45 @@ test.describe("/findings — Cost vs SPS Pareto", () => {
       return;
     }
     await chart.locator("svg, canvas").first().waitFor({ timeout: 10000 });
+    await chart.scrollIntoViewIfNeeded();
 
-    const box = await chart.boundingBox();
-    if (!box) throw new Error("chart container has no bounding box");
+    // Hover directly on a rendered scatter SVG path. Coordinate-based sweeps
+    // miss in SVG-rendered echarts because `mousemove` doesn't reliably fire
+    // mouseover on child paths; calling `.hover()` on the path element
+    // dispatches the events zrender listens for.
+    const pointHandle = await page.evaluateHandle(() => {
+      const container = document.querySelector("#cost-performance-pareto .echarts-container");
+      const svg = container?.querySelector("svg");
+      if (!svg) return null;
+      // Scatter points are filled paths whose "d" starts with "M1 0A..." — the
+      // echarts circle primitive. Filter out gridlines (fill=none) and the
+      // background rect.
+      const paths = Array.from(svg.querySelectorAll("path")).filter((p) => {
+        const fill = p.getAttribute("fill");
+        if (!fill || fill === "none" || fill === "transparent") return false;
+        if (/^#fff/i.test(fill)) return false;
+        return true;
+      });
+      return paths[0] ?? null;
+    });
+    const point = pointHandle.asElement();
+    expect(point, "expected at least one scatter point in the SVG").not.toBeNull();
+    if (!point) return;
+    await point.hover();
+    await page.waitForTimeout(400);
 
-    // Echarts paints points at data-driven coordinates; sweep a small grid
-    // until a tooltip appears so the test stays robust to data shifts.
-    let tooltipText = "";
-    outer: for (let row = 1; row <= 6; row++) {
-      for (let col = 1; col <= 6; col++) {
-        const x = box.x + (box.width * col) / 7;
-        const y = box.y + (box.height * row) / 7;
-        await page.mouse.move(x, y, { steps: 4 });
-        await page.waitForTimeout(120);
-        const tip = page
-          .locator("div")
-          .filter({ hasText: /SPS:\s*\d/ })
-          .first();
-        if ((await tip.count()) && (await tip.isVisible())) {
-          tooltipText = (await tip.innerText()).trim();
-          if (tooltipText.includes("SPS:")) break outer;
-        }
-      }
-    }
-    expect(tooltipText, "expected echarts tooltip with SPS row").toMatch(/SPS:\s*\d/);
+    // Echarts renders the tooltip as an absolutely-positioned div sibling to
+    // the zrender surface; scan for the visible div whose text carries our
+    // pre-built caption (see CostPerformancePareto.astro).
+    const tooltipText = await page.evaluate(() => {
+      const divs = Array.from(document.querySelectorAll("div"));
+      const vis = divs.filter(
+        (d) =>
+          d.offsetParent !== null && /SPS:\s*\d/.test(d.innerText) && /Cost:|\$/.test(d.innerText),
+      );
+      return vis[0]?.innerText ?? "";
+    });
+    expect(tooltipText, "expected tooltip with SPS + Cost on hover").toMatch(/SPS:\s*\d/);
     expect(tooltipText).toMatch(/Cost:|\$/);
   });
 

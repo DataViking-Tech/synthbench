@@ -64,23 +64,28 @@ export interface LeaderboardEntry {
    */
   dataset_coverage_count?: number;
 
+  /**
+   * Total USD spent on the LLM calls aggregated into this row, computed by
+   * publish.py from token_usage × pricing_snapshot. ``null`` for self-hosted,
+   * unknown-provider, or pre-tracking rows. See `_compute_cost_fields` in
+   * publish.py.
+   */
+  cost_usd?: number | null;
+  /** Cost normalized per 100 questions answered. ``null`` when cost_usd or n is unavailable. */
+  cost_per_100q?: number | null;
+  /** USD per 1.0 SPS point — only populated when sps ≥ 0.01 to avoid amplification. */
+  cost_per_sps_point?: number | null;
+  /** True when pricing was estimated (e.g., fallback table) rather than authoritative. */
+  is_cost_estimated?: boolean | null;
+  /** Total input tokens across all LLM calls aggregated into this row. */
+  input_tokens?: number | null;
+  /** Total output tokens across all LLM calls aggregated into this row. */
+  output_tokens?: number | null;
+
   topic_scores?: Record<TopicCategory, number>;
   topic_metrics?: Record<TopicCategory, TopicMetricBreakdown>;
   demographic_scores?: DemographicBreakdown[];
   replicates?: ReplicateRun[];
-
-  /**
-   * Cost fields (cost-metrics epic sb-tbm, Slice 3). All optional and nullable
-   * — publish.py emits them for runs that carry token_usage AND whose provider
-   * resolves to a priced entry in synthpanel. Missing / unresolved / self-hosted
-   * → null. Baselines → zero. See specs/cost-metrics/plan.md for semantics.
-   */
-  cost_usd?: number | null;
-  cost_per_100q?: number | null;
-  cost_per_sps_point?: number | null;
-  is_cost_estimated?: boolean | null;
-  input_tokens?: number | null;
-  output_tokens?: number | null;
 }
 
 export interface TopicMetricBreakdown {
