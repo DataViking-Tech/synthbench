@@ -1,0 +1,122 @@
+name: Deploy data-proxy Worker
+
+# sb-v09i: build + deploy the synthbench-data-proxy Cloudflare Worker to
+# api.synthbench.org.
+#
+# Split across two wrangler invocations because `wrangler secret put` requires
+# the Worker to already exist:
+#   1. `wrangler deploy` pushes the code, vars, R2 bindings, and the
+#      api.synthbench.org/* route from wrangler.toml.
+#   2. `wrangler secret put` reconciles the three runtime secrets pulled from
+#      Doppler so a rotation in Doppler propagates on the next merge to main.
+#
+# Mirrors cf-pages.yml for Doppler sourcing: Cloudflare creds live in
+# dataviking-platform/prd (shared), Supabase + GitHub-dispatch values live in
+# synthbench/prd (product-specific). GITHUB_DISPATCH_TOKEN is treated as
+# optional — if it's not yet provisioned in Doppler, the Worker still serves
+# /data/* and returns 503 on /submit until the operator adds it.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/data-proxy/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # Serialize deploys so a rapid double-merge can't race two `wrangler deploy`
+  # invocations against the same Worker slot.
+  group: deploy-data-proxy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Worker dependencies
+        working-directory: workers/data-proxy
+        run: npm ci
+
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      # Shared Cloudflare creds live in dataviking-platform/prd (sb-vkz). The
+      # token must carry Worker Scripts:Edit + Workers Routes:Edit — the
+      # existing cf-pages deploy token may need its scope widened; flag in PR.
+      - name: Load Cloudflare creds from Doppler
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_PLATFORM_TOKEN }}
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+            value=$(doppler secrets get "$name" --project dataviking-platform --config prd --plain)
+            echo "::add-mask::$value"
+            printf '%s<<__DWK_EOF__\n%s\n__DWK_EOF__\n' "$name" "$value" >> "$GITHUB_ENV"
+          done
+
+      # Worker-runtime secrets from synthbench/prd. GITHUB_DISPATCH_TOKEN is
+      # allowed to be absent on first rollout: /submit will stay 503 until
+      # submitConfigOk() in src/index.ts sees all four dispatch values set,
+      # but /data/* still serves. The reconcile step below skips empty values.
+      - name: Load Worker-runtime secrets from Doppler
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: |
+          set -euo pipefail
+          for name in SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
+            value=$(doppler secrets get "$name" --project synthbench --config prd --plain)
+            echo "::add-mask::$value"
+            printf '%s<<__DWK_EOF__\n%s\n__DWK_EOF__\n' "$name" "$value" >> "$GITHUB_ENV"
+          done
+          if value=$(doppler secrets get GITHUB_DISPATCH_TOKEN --project synthbench --config prd --plain 2>/dev/null); then
+            echo "::add-mask::$value"
+            printf 'GITHUB_DISPATCH_TOKEN<<__DWK_EOF__\n%s\n__DWK_EOF__\n' "$value" >> "$GITHUB_ENV"
+          else
+            echo "::warning::GITHUB_DISPATCH_TOKEN not found in synthbench/prd Doppler — /submit will stay 503 until it is provisioned and this workflow re-runs."
+            echo "GITHUB_DISPATCH_TOKEN=" >> "$GITHUB_ENV"
+          fi
+
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: workers/data-proxy
+          command: deploy
+
+      # Reconcile secrets AFTER deploy (the Worker must exist before
+      # `wrangler secret put` will accept the name). Values are piped on
+      # stdin so they never touch argv or the command log; empty values are
+      # skipped with a warning so a missing GITHUB_DISPATCH_TOKEN doesn't
+      # fail the whole run.
+      - name: Reconcile Worker secrets
+        working-directory: workers/data-proxy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL_VALUE: ${{ env.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY_VALUE: ${{ env.SUPABASE_SERVICE_ROLE_KEY }}
+          GITHUB_DISPATCH_TOKEN_VALUE: ${{ env.GITHUB_DISPATCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          put_secret() {
+            local name="$1" value="$2"
+            if [ -z "$value" ]; then
+              echo "::warning::Skipping wrangler secret put ${name} — empty value (provision in Doppler and re-run this workflow)."
+              return 0
+            fi
+            printf '%s' "$value" | npx --no-install wrangler secret put "$name"
+          }
+          put_secret SUPABASE_URL "$SUPABASE_URL_VALUE"
+          put_secret SUPABASE_SERVICE_ROLE_KEY "$SUPABASE_SERVICE_ROLE_KEY_VALUE"
+          put_secret GITHUB_DISPATCH_TOKEN "$GITHUB_DISPATCH_TOKEN_VALUE"

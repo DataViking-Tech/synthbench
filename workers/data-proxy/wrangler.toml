@@ -1,12 +1,13 @@
 # Cloudflare Worker: Supabase-gated R2 proxy + submissions upload endpoint.
 #
 # Runtime deploy path:
-#   1. `wrangler secret put SUPABASE_SERVICE_ROLE_KEY`  — audit + submissions writes (sb-io1)
-#   2. `wrangler secret put GITHUB_DISPATCH_TOKEN`      — fine-grained PAT or App token with
-#                                                         `actions: write` on the synthbench repo (sb-me0f)
-#   3. Bind route api.synthbench.org/* to this Worker in the CF dashboard
-#      (or via the `routes` block below once the zone is registered).
-#   4. Confirm R2 buckets exist:
+#   1. `.github/workflows/deploy-worker.yml` runs on merge to main (sb-v09i).
+#      It reconciles SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and
+#      GITHUB_DISPATCH_TOKEN from Doppler via `wrangler secret put` on every
+#      deploy, then runs `wrangler deploy` to apply the bindings below.
+#   2. Route api.synthbench.org/* is declared in the `[[routes]]` block below
+#      and applied by the workflow — no dashboard click-ops required.
+#   3. Confirm R2 buckets exist:
 #        - synthbench-data-prod        (publish artifacts, sb-sjs)
 #        - synthbench-submissions-prod (staging for /submit, sb-me0f)
 #
@@ -44,10 +45,12 @@ binding = "SUBMISSIONS_BUCKET"
 bucket_name = "synthbench-submissions-prod"
 preview_bucket_name = "synthbench-submissions-preview"
 
-# Route binding. Uncomment once DNS + zone are configured for api.synthbench.org.
-# [[routes]]
-# pattern = "api.synthbench.org/*"
-# zone_name = "synthbench.org"
+# Route binding (sb-v09i). api.synthbench.org is registered in the synthbench.org
+# zone; binding it here lets the deploy-worker.yml workflow attach the route
+# declaratively on every merge instead of requiring a dashboard step.
+[[routes]]
+pattern = "api.synthbench.org/*"
+zone_name = "synthbench.org"
 
 [env.preview]
 name = "synthbench-data-proxy-preview"
