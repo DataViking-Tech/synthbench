@@ -11,6 +11,10 @@ import click
 
 from synthbench import __version__
 
+# sb-ymux: re-exported so tests that monkeypatch SYNTHBENCH_API_URL + read the
+# fallback constant don't need a second import path.
+from synthbench.submission import DEFAULT_API_URL
+
 # Model aliases for convenience
 MODEL_ALIASES = {
     "haiku": "claude-haiku-4-5-20251001",
@@ -137,6 +141,61 @@ def main():
     default=None,
     help="Path to a custom persona prompt template file (synthpanel only).",
 )
+# sb-ymux: `synthbench run --submit` wiring. Keeping all submission flags on
+# the `run` subcommand (not a new subcommand) means a user's first try at
+# "benchmark → leaderboard" is literally one invocation. --wait folds the
+# current "run, copy path, synthbench submit" two-step into a single process
+# whose exit code reflects the validation outcome — suitable for CI gates.
+@click.option(
+    "--submit",
+    "submit_after",
+    is_flag=True,
+    help="After the benchmark saves, upload the JSON to the SynthBench leaderboard.",
+)
+@click.option(
+    "--wait",
+    is_flag=True,
+    help="With --submit: poll submission status until published/rejected. Exit "
+    "code 0 on published, 1 on rejected/error, 2 on timeout.",
+)
+@click.option(
+    "--api-key",
+    "submit_api_key",
+    default=None,
+    help="API key for --submit (defaults to SYNTHBENCH_API_KEY env var).",
+)
+@click.option(
+    "--api-url",
+    "submit_api_url",
+    default=None,
+    help="Submission endpoint base for --submit (defaults to SYNTHBENCH_API_URL env).",
+)
+@click.option(
+    "--submit-message",
+    default=None,
+    help="Optional note recorded on the submission (e.g. 'first run with new prompt template').",
+)
+@click.option(
+    "--submit-timeout",
+    type=int,
+    default=60,
+    show_default=True,
+    help="HTTP timeout (seconds) for the /submit request.",
+)
+@click.option(
+    "--poll-interval",
+    type=float,
+    default=10.0,
+    show_default=True,
+    help="With --wait: seconds between status polls.",
+)
+@click.option(
+    "--poll-timeout",
+    type=float,
+    default=900.0,
+    show_default=True,
+    help="With --wait: give up after this many seconds and exit 2.",
+)
 def run(
     provider,
     model,
@@ -156,6 +215,14 @@ def run(
     country,
     temperature,
     prompt_template,
+    submit_after,
+    wait,
+    submit_api_key,
+    submit_api_url,
+    submit_message,
+    submit_timeout,
+    poll_interval,
+    poll_timeout,
 ):
     """Run a benchmark evaluation.
 
@@ -165,6 +232,7 @@ def run(
         synthbench run --provider raw-anthropic --topic consumer
         synthbench run --provider raw-anthropic --demographics AGE,POLIDEOLOGY
         synthbench run --provider raw-anthropic --full-evaluation
+        synthbench run -p raw-anthropic -m haiku -s 30 -n 100 --submit --wait
     """
     # Resolve demographics (attribute list resolved in _run_async after dataset loads)
     demo_list = None
@@ -172,6 +240,25 @@ def run(
         demo_list = "__all__"  # sentinel: resolved per-dataset in _run_async
     elif demographics:
         demo_list = [d.strip().upper() for d in demographics.split(",")]
+
+    # --wait without --submit is a user error: we have nothing to wait on.
+    # Fail fast rather than silently ignore so a misconfigured CI job
+    # doesn't pass when it should have blocked on validation.
+    if wait and not submit_after:
+        click.echo("Error: --wait requires --submit.", err=True)
+        sys.exit(2)
+    if submit_message and not submit_after:
+        click.echo("Error: --submit-message requires --submit.", err=True)
+        sys.exit(2)
+    # --submit + --json-only would write the result JSON to stdout instead of
+    # a file, leaving no artifact on disk for the user to re-submit later if
+    # the upload fails. Refuse rather than quietly drop one of the two.
+    if submit_after and json_only:
+        click.echo(
+            "Error: --submit is incompatible with --json-only (no file to upload).",
+            err=True,
+        )
+        sys.exit(2)
 
     asyncio.run(
         _run_async(
@@ -192,6 +279,14 @@ def run(
             country,
             temperature,
             prompt_template,
+            submit_after=submit_after,
+            wait=wait,
+            submit_api_key=submit_api_key,
+            submit_api_url=submit_api_url,
+            submit_message=submit_message,
+            submit_timeout=submit_timeout,
+            poll_interval=poll_interval,
+            poll_timeout=poll_timeout,
         )
     )
 
@@ -214,6 +309,15 @@ async def _run_async(
     country=None,
     temperature=None,
     prompt_template=None,
+    *,
+    submit_after: bool = False,
+    wait: bool = False,
+    submit_api_key=None,
+    submit_api_url=None,
+    submit_message=None,
+    submit_timeout: int = 60,
+    poll_interval: float = 10.0,
+    poll_timeout: float = 900.0,
 ):
     from synthbench.datasets import DATASETS
     from synthbench.providers import load_provider
@@ -383,6 +487,25 @@ async def _run_async(
         click.echo(f"  JSON: {json_path}")
         click.echo(f"  Report: {md_path}")
 
+        if submit_after:
+            # sb-ymux: end-to-end "benchmark → leaderboard" path. The JSON was
+            # just written to disk above; we read it back rather than re-
+            # serializing `result` so the bytes on disk and the bytes
+            # uploaded are guaranteed identical (the Worker's Tier-1
+            # validator and the downstream GH Action both run against the
+            # staged R2 copy, so any drift here would be invisible until
+            # validation fails much later).
+            _submit_and_maybe_wait(
+                json_path=Path(json_path),
+                submit_api_key=submit_api_key,
+                submit_api_url=submit_api_url,
+                submit_message=submit_message,
+                submit_timeout=submit_timeout,
+                wait=wait,
+                poll_interval=poll_interval,
+                poll_timeout=poll_timeout,
+            )
+
 
 @main.command()
 @click.argument("json_file", type=click.Path(exists=True))
@@ -523,13 +646,168 @@ def compare(files, output):
 #   synthbench run -p openrouter -m gpt-4o-mini -d opinionsqa -o results/
 #   synthbench submit results/openrouter_gpt-4o-mini_opinionsqa.json
 #
+# sb-ymux: `synthbench run --submit` collapses the two steps into one — the
+# CLI wiring lives here, but the HTTP round-trip is in synthbench.submission
+# so `run --submit` and `submit` share exactly one implementation.
+#
 # Configuration via env vars is the supported path for shell-script automation:
 #   export SYNTHBENCH_API_KEY=sb_xxxx...
 #   export SYNTHBENCH_API_URL=https://api.synthbench.org   # default
 #
 # Flags (--api-key, --api-url) override env so ad-hoc invocations don't have
 # to mutate the shell.
-DEFAULT_API_URL = "https://api.synthbench.org"
+
+
+def _echo_submit_error(err, *, prefix: str = "Error") -> None:
+    """Render a SubmitError/PollError to stderr in the `synthbench submit`
+    format (HTTP code + server message + hint line), keeping output identical
+    across `submit` and `run --submit`."""
+    if err.status_code:
+        click.echo(f"{prefix} (HTTP {err.status_code}): {err.message}", err=True)
+    else:
+        click.echo(f"{prefix}: {err.message}", err=True)
+    hint = getattr(err, "hint", "")
+    if hint:
+        click.echo(f"  Hint: {hint}", err=True)
+
+
+def _submit_body(
+    *,
+    body: str,
+    source_label: str,
+    api_key: str | None,
+    api_url: str | None,
+    timeout: int,
+    json_out: bool,
+):
+    """Shared POST + stderr/stdout emitter used by both `submit` and
+    `run --submit`. Returns the resolved api_base plus the submission outcome
+    so callers that poll (e.g. --wait) don't re-derive them.
+    """
+    from synthbench import submission as sub
+
+    key = sub.resolve_api_key(api_key)
+    if isinstance(key, sub.SubmitError):
+        _echo_submit_error(key)
+        sys.exit(2)
+
+    base = sub.resolve_api_base(api_url)
+    click.echo(f"Uploading {source_label} → {base}/submit", err=True)
+
+    outcome = sub.post_submission(
+        body=body, api_key=key, api_base=base, timeout=timeout
+    )
+
+    if json_out and isinstance(outcome, sub.SubmitSuccess):
+        click.echo(json.dumps(outcome.payload))
+    elif (
+        json_out
+        and isinstance(outcome, sub.SubmitError)
+        and outcome.payload is not None
+    ):
+        click.echo(json.dumps(outcome.payload))
+
+    if isinstance(outcome, sub.SubmitError):
+        _echo_submit_error(outcome)
+        sys.exit(1)
+
+    click.echo(
+        f"  ✓ submitted (id={outcome.submission_id}, status={outcome.status})",
+        err=True,
+    )
+    warning = outcome.payload.get("warning")
+    if warning:
+        click.echo(f"  ! {warning}", err=True)
+    # Deep-link the user to the in-flight submission so they can poll
+    # status without leaving the terminal-browser loop.
+    site = base.replace("api.", "", 1) if base.startswith("https://api.") else base
+    click.echo(f"  Status URL: {site.rstrip('/')}/account/submissions/", err=True)
+    return key, base, outcome
+
+
+def _submit_and_maybe_wait(
+    *,
+    json_path: Path,
+    submit_api_key,
+    submit_api_url,
+    submit_message,
+    submit_timeout: int,
+    wait: bool,
+    poll_interval: float,
+    poll_timeout: float,
+) -> None:
+    """Upload the saved run file, optionally poll status, and sys.exit() with
+    a code the CI job can branch on.
+
+    Exit code contract (documented in the `synthbench run --submit` help):
+        0  — submitted, and if --wait, status=published (leaderboard updated)
+        1  — submission rejected by the Worker, OR rejected by the validator,
+              OR a hard error (bad key, HTTP 5xx)
+        2  — --wait timed out before the validator reached a terminal state
+    """
+    from synthbench import submission as sub
+
+    body_or_err = sub.read_run_body(str(json_path))
+    if isinstance(body_or_err, sub.SubmitError):
+        _echo_submit_error(body_or_err)
+        sys.exit(1)
+    body = sub.inject_submit_message(body_or_err, submit_message)
+
+    click.echo()
+    click.echo("✓ Benchmark complete. Submitting to leaderboard...", err=True)
+
+    key, base, outcome = _submit_body(
+        body=body,
+        source_label=json_path.name,
+        api_key=submit_api_key,
+        api_url=submit_api_url,
+        timeout=submit_timeout,
+        json_out=False,
+    )
+    if not wait:
+        return
+
+    click.echo(
+        f"  Waiting for validation (poll={poll_interval:g}s, timeout={poll_timeout:g}s)...",
+        err=True,
+    )
+    result = sub.poll_submission_status(
+        submission_id=outcome.submission_id,
+        api_key=key,
+        api_base=base,
+        interval=poll_interval,
+        timeout=poll_timeout,
+        on_poll=lambda s: click.echo(f"  status={s}", err=True),
+    )
+    if isinstance(result, sub.StatusResult):
+        if result.status == "published":
+            entry = result.leaderboard_entry_id or "(no entry id)"
+            click.echo(
+                f"  ✓ published (leaderboard_entry_id={entry})",
+                err=True,
+            )
+            return
+        # Only "rejected" remains for StatusResult since TERMINAL_STATUSES is
+        # {"published", "rejected"}. Surface the reason so CI logs tell the
+        # user what to fix without them having to click through /account.
+        reason = result.rejection_reason or "(no reason given)"
+        click.echo(f"  ✗ rejected: {reason}", err=True)
+        sys.exit(1)
+    if isinstance(result, sub.PollTimeout):
+        click.echo(
+            f"  ! polling timed out after {poll_timeout:g}s "
+            f"(last status={result.last_status}).",
+            err=True,
+        )
+        click.echo(
+            "  Submission continues server-side; check /account/submissions/ or "
+            "re-poll with synthbench submit.",
+            err=True,
+        )
+        sys.exit(2)
+    # PollError
+    _echo_submit_error(result, prefix="Poll error")
+    sys.exit(1)
 
 
 @main.command()
@@ -570,103 +848,22 @@ def submit(run_file, api_key, api_url, timeout, json_out):
         export SYNTHBENCH_API_KEY=sb_xxxx
         synthbench submit results/openrouter_gpt-4o-mini_opinionsqa.json
     """
-    import os
-
-    import httpx
-
-    key = api_key or os.environ.get("SYNTHBENCH_API_KEY")
-    if not key:
-        click.echo(
-            "Error: no API key provided. Pass --api-key or set SYNTHBENCH_API_KEY.\n"
-            "Generate one at https://synthbench.org/account.",
-            err=True,
-        )
-        sys.exit(2)
-    if not key.startswith("sb_"):
-        click.echo(
-            "Error: API key must start with 'sb_'. Did you paste a JWT by mistake?",
-            err=True,
-        )
-        sys.exit(2)
-
-    base = (api_url or os.environ.get("SYNTHBENCH_API_URL") or DEFAULT_API_URL).rstrip(
-        "/"
-    )
-    endpoint = f"{base}/submit"
+    from synthbench import submission as sub
 
     path = Path(run_file)
-    try:
-        body = path.read_text()
-    except OSError as exc:
-        click.echo(f"Error: cannot read {path}: {exc}", err=True)
+    body = sub.read_run_body(str(path))
+    if isinstance(body, sub.SubmitError):
+        _echo_submit_error(body)
         sys.exit(1)
 
-    # Cheap parse to fail before the network round-trip if the file isn't
-    # JSON at all. We rely on the Worker's Tier-1 validator for everything
-    # structural — duplicating it client-side would just rot in parallel.
-    try:
-        json.loads(body)
-    except json.JSONDecodeError as exc:
-        click.echo(f"Error: {path} is not valid JSON: {exc}", err=True)
-        sys.exit(1)
-
-    click.echo(f"Uploading {path.name} → {endpoint}", err=True)
-
-    try:
-        resp = httpx.post(
-            endpoint,
-            content=body,
-            headers={
-                "Authorization": f"Bearer {key}",
-                "Content-Type": "application/json",
-                "User-Agent": f"synthbench-cli/{__version__}",
-            },
-            timeout=timeout,
-        )
-    except httpx.HTTPError as exc:
-        click.echo(f"Error: network failure: {exc}", err=True)
-        sys.exit(1)
-
-    try:
-        payload = resp.json()
-    except ValueError:
-        payload = {"raw": resp.text}
-
-    if json_out:
-        # Compact single-line JSON for piping / jq / test capture
-        click.echo(json.dumps(payload))
-
-    if resp.status_code in (200, 202):
-        sub_id = payload.get("submission_id")
-        status = payload.get("status", "unknown")
-        click.echo(f"  ✓ submitted (id={sub_id}, status={status})", err=True)
-        warning = payload.get("warning")
-        if warning:
-            click.echo(f"  ! {warning}", err=True)
-        # Deep-link the user to the in-flight submission so they can poll
-        # status without leaving the terminal-browser loop.
-        site = base.replace("api.", "", 1) if base.startswith("https://api.") else base
-        click.echo(f"  Status URL: {site.rstrip('/')}/account/submissions/", err=True)
-        return
-
-    # Map common Worker errors to actionable messages so users don't have to
-    # cross-reference the OpenAPI spec.
-    error_msg = payload.get("error", resp.text or "unknown error")
-    hint = ""
-    if resp.status_code == 401:
-        hint = "  Hint: API key was rejected. Check it's not revoked at /account.\n"
-    elif resp.status_code == 403:
-        hint = "  Hint: API key lacks the 'submit' scope. Generate a new key with submit access.\n"
-    elif resp.status_code == 413:
-        hint = "  Hint: submission exceeded the 2 MB cap.\n"
-    elif resp.status_code == 429:
-        hint = "  Hint: per-key rate limit (60/hr) exceeded. Wait or use another key.\n"
-    elif resp.status_code >= 500:
-        hint = "  Hint: server error. Re-run; if it persists, check status.synthbench.org.\n"
-    click.echo(
-        f"Error (HTTP {resp.status_code}): {error_msg}\n{hint}".rstrip(), err=True
+    _submit_body(
+        body=body,
+        source_label=path.name,
+        api_key=api_key,
+        api_url=api_url,
+        timeout=timeout,
+        json_out=json_out,
     )
-    sys.exit(1)
 
 
 @main.command()

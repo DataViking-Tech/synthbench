@@ -10,6 +10,12 @@
 //                           to run the full Python validator + commit to
 //                           `leaderboard-results/` on pass.
 //
+//   GET      /submit/<id>  — submission status poll (sb-ymux). `sb_` API-key
+//                           gated (same key used for POST /submit), returns
+//                           status/rejection_reason/leaderboard_entry_id so
+//                           `synthbench run --submit --wait` can block until
+//                           validation completes.
+//
 // Common plumbing (CORS allowlist, JWT verification, Supabase audit writer)
 // is shared across both. Every branch has a matching unit test in tests/.
 
@@ -18,7 +24,12 @@ import { type AuditConfig, clientIpFor, writeAuditLog } from "./audit";
 import { parseBearer, verifySupabaseJwt } from "./auth";
 import { corsHeadersFor, parseAllowedOrigins, preflightResponse } from "./cors";
 import { parseRequestPath } from "./path";
-import { type DispatchConfig, dispatchProcessWorkflow, insertSubmission } from "./submissions";
+import {
+  type DispatchConfig,
+  dispatchProcessWorkflow,
+  getSubmissionForUser,
+  insertSubmission,
+} from "./submissions";
 import { MAX_BODY_BYTES, stagingKeyFor, validateTier1 } from "./submit";
 
 export interface Env {
@@ -84,7 +95,17 @@ export default {
 
     const url = new URL(request.url);
 
-    if (url.pathname === "/submit" || url.pathname.startsWith("/submit/")) {
+    if (url.pathname === "/submit") {
+      return handleSubmit(request, env, ctx, cors);
+    }
+    // sb-ymux: `GET /submit/<id>` polls validation status for one submission.
+    // Other `/submit/...` shapes fall through to the POST handler which will
+    // 405 them, so we don't leak new 404 semantics on the legacy route.
+    const statusId = parseSubmissionStatusPath(url.pathname);
+    if (statusId !== null) {
+      return handleSubmitStatus(request, env, cors, statusId);
+    }
+    if (url.pathname.startsWith("/submit/")) {
       return handleSubmit(request, env, ctx, cors);
     }
 
@@ -168,6 +189,86 @@ async function handleData(
       ...cors,
     },
   });
+}
+
+/**
+ * sb-ymux: Parse `/submit/<id>` for the polling GET route. Returns the numeric
+ * id or null if the path isn't in that shape — the caller falls through to
+ * the POST handler (which returns 405 for non-POST /submit) in that case.
+ */
+function parseSubmissionStatusPath(pathname: string): number | null {
+  // Canonical path is `/submit/<id>` with no trailing slash or extra segments.
+  // Anything else is deliberately rejected so we don't invite ambiguous routes
+  // like `/submit/123/foo` later.
+  const match = /^\/submit\/(\d+)$/.exec(pathname);
+  if (!match) return null;
+  const id = Number(match[1]);
+  return Number.isFinite(id) && id > 0 ? id : null;
+}
+
+async function handleSubmitStatus(
+  request: Request,
+  env: Env,
+  cors: Record<string, string>,
+  submissionId: number,
+): Promise<Response> {
+  if (request.method !== "GET") {
+    return jsonResponse({ error: "method not allowed" }, 405, cors);
+  }
+
+  const token = parseBearer(request.headers.get("Authorization"));
+  if (!token) {
+    return jsonResponse({ error: "sign in or pass an API key to view status" }, 401, cors);
+  }
+
+  // The CLI `run --submit --wait` flow authenticates exclusively with an
+  // `sb_` API key — JWT polling is something the browser already does via
+  // Supabase RLS. Keeping the surface narrow (api-key only) means we don't
+  // have to re-verify RLS semantics here.
+  if (!isApiKey(token)) {
+    return jsonResponse({ error: "status endpoint requires an sb_ API key" }, 401, cors);
+  }
+
+  const apiKeyConfig: ApiKeyConfig = {
+    supabaseUrl: env.SUPABASE_URL,
+    serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
+  };
+  // `submit` scope also grants status reads — the polling step is part of
+  // the same workflow as the write, so forcing a separate scope would just
+  // mean every submit-capable key needs `both`.
+  const auth = await authenticateApiKey(token, "submit", apiKeyConfig);
+  if (!auth.ok) {
+    return jsonResponse({ error: auth.reason }, auth.status, cors);
+  }
+
+  let row: Awaited<ReturnType<typeof getSubmissionForUser>>;
+  try {
+    row = await getSubmissionForUser(submissionId, auth.userId, {
+      supabaseUrl: env.SUPABASE_URL,
+      serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
+    });
+  } catch (err) {
+    return jsonResponse({ error: `status lookup failed: ${(err as Error).message}` }, 502, cors);
+  }
+  // Don't differentiate "no such id" from "id belongs to another user" — both
+  // resolve to 404 so attackers can't enumerate submission ids by status code.
+  if (!row) {
+    return jsonResponse({ error: "not found" }, 404, cors);
+  }
+
+  return jsonResponse(
+    {
+      submission_id: row.id,
+      status: row.status,
+      submitted_at: row.submitted_at,
+      rejection_reason: row.rejection_reason,
+      leaderboard_entry_id: row.leaderboard_entry_id,
+      model_name: row.model_name,
+      dataset: row.dataset,
+    },
+    200,
+    cors,
+  );
 }
 
 async function handleSubmit(

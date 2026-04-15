@@ -76,6 +76,55 @@ export async function insertSubmission(
   return row;
 }
 
+/**
+ * sb-ymux: Fetch a submission by id, scoped to a specific user.
+ *
+ * Returns `null` when either no row matches or the row belongs to another
+ * user — the Worker maps both to 404 so an attacker can't differentiate a
+ * missing id from a cross-user id by status code alone. Only the columns the
+ * CLI poller cares about come back, so an accidentally-leaked service-role
+ * response never exposes more than status + final artifact link.
+ */
+export interface StatusRow {
+  id: number;
+  status: string;
+  submitted_at: string;
+  rejection_reason: string | null;
+  leaderboard_entry_id: string | null;
+  model_name: string | null;
+  dataset: string | null;
+}
+
+export async function getSubmissionForUser(
+  submissionId: number,
+  userId: string,
+  config: SubmissionsConfig,
+): Promise<StatusRow | null> {
+  const url = new URL(`${config.supabaseUrl.replace(/\/+$/, "")}/rest/v1/submissions`);
+  url.searchParams.set("id", `eq.${submissionId}`);
+  url.searchParams.set("user_id", `eq.${userId}`);
+  url.searchParams.set(
+    "select",
+    "id,status,submitted_at,rejection_reason,leaderboard_entry_id,model_name,dataset",
+  );
+  url.searchParams.set("limit", "1");
+
+  const doFetch = config.fetchImpl ?? fetch;
+  const res = await doFetch(url.toString(), {
+    method: "GET",
+    headers: {
+      apikey: config.serviceRoleKey,
+      Authorization: `Bearer ${config.serviceRoleKey}`,
+      Accept: "application/json",
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`submissions lookup ${res.status} ${res.statusText}`);
+  }
+  const rows = (await res.json()) as StatusRow[];
+  return rows[0] ?? null;
+}
+
 /** Mark a row rejected with a reason. Used when inline Tier-1 fails AFTER
  * we've already uploaded — rare, but keeps the audit trail honest. */
 export async function markRejected(

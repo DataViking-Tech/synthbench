@@ -262,6 +262,40 @@ You can also pass the key inline if you don't want it in the env:
 synthbench submit run.json --api-key "$(security find-generic-password -s synthbench)"
 ```
 
+### Run + submit in one command (`--submit` / `--wait`)
+
+`synthbench run --submit` collapses the benchmark + submit steps into a single
+invocation. With `--wait`, the process polls the Worker's
+`GET /submit/<id>` endpoint until the validator reaches a terminal state
+and exits with a code that reflects the outcome (0 = published,
+1 = rejected/error, 2 = timeout). Use this in CI to gate a release on
+leaderboard publication:
+
+```bash
+# Fire-and-forget: exit 0 once the Worker accepts the upload
+synthbench run -p raw-anthropic -m haiku -s 30 -n 100 --submit
+
+# Block until validation completes
+synthbench run -p raw-anthropic -m haiku -s 30 -n 100 --submit --wait \
+  --submit-message "v2 prompt sweep"
+
+# Tighter polling cadence for interactive use
+synthbench run -p raw-anthropic -m haiku --submit --wait \
+  --poll-interval 5 --poll-timeout 600
+```
+
+`--submit-message` is an optional free-form note that gets stamped on the
+uploaded JSON so you can tag experiments without touching `config`
+fields (which would change the `config_id` hash). The result file on
+disk is not rewritten — the annotation lives only in the staged R2 copy
+and the Worker's record of what was uploaded. If the upload fails for
+any reason, the locally-saved JSON is intact and can be re-submitted
+later with `synthbench submit`.
+
+The status endpoint (`GET /submit/<id>`) is the same surface the
+`--wait` poller uses; it requires an `sb_` API key with `submit` scope
+and only returns rows owned by the key holder.
+
 ### Equivalent curl
 
 The Worker endpoint is a plain `POST application/json` so any HTTP client

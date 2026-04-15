@@ -678,6 +678,168 @@ describe("/submit route (sb-me0f)", () => {
       expect(res.status).toBe(429);
     });
 
+    // sb-ymux: poll route exercised through the real router. We want to catch
+    // regressions in both the path parser (`/submit/<id>`) and the api-key-only
+    // gate, so this suite hits `worker.fetch` directly rather than calling the
+    // helper in isolation.
+    describe("GET /submit/<id> status poll (sb-ymux)", () => {
+      async function mockKeyLookup(fetchMock: ReturnType<typeof vi.fn>, keyHash: string) {
+        fetchMock.mockImplementation(async (url: string | URL, init?: RequestInit) => {
+          const u = String(url);
+          const method = (init?.method ?? "GET").toUpperCase();
+          if (u.includes("/rest/v1/api_keys") && method === "GET") {
+            return new Response(
+              JSON.stringify([
+                {
+                  id: 7,
+                  user_id: "user-cli",
+                  scope: "submit",
+                  expires_at: null,
+                  revoked_at: null,
+                  key_hash: keyHash,
+                },
+              ]),
+              { status: 200 },
+            );
+          }
+          if (u.includes("/rest/v1/api_keys") && method === "PATCH") {
+            return new Response(null, { status: 204 });
+          }
+          // rate-limit count
+          if (
+            u.includes("/rest/v1/submissions") &&
+            method === "GET" &&
+            u.includes("submitted_at=gte.")
+          ) {
+            return new Response("[]", { status: 200, headers: { "Content-Range": "*/0" } });
+          }
+          // status lookup for the submission itself
+          if (
+            u.includes("/rest/v1/submissions") &&
+            method === "GET" &&
+            u.includes("id=eq.42") &&
+            u.includes("user_id=eq.user-cli")
+          ) {
+            return new Response(
+              JSON.stringify([
+                {
+                  id: 42,
+                  status: "published",
+                  submitted_at: "2026-04-15T09:00:00Z",
+                  rejection_reason: null,
+                  leaderboard_entry_id: "claude-haiku-4-5__globalopinionqa",
+                  model_name: "claude-haiku-4-5",
+                  dataset: "globalopinionqa",
+                },
+              ]),
+              { status: 200 },
+            );
+          }
+          // Cross-user peek — id matches but user_id filter drops it.
+          if (u.includes("/rest/v1/submissions") && method === "GET" && u.includes("id=eq.99")) {
+            return new Response("[]", { status: 200 });
+          }
+          return new Response("unexpected", { status: 500 });
+        });
+      }
+
+      it("returns 200 + status for the key owner's own submission", async () => {
+        const { env, ctx, fetchMock } = makeHarness();
+        const keyHash = await import("../src/apiKey").then((m) => m.sha256Hex(VALID_KEY));
+        await mockKeyLookup(fetchMock, keyHash);
+
+        const res = await worker.fetch(
+          new Request(`${WORKER_ORIGIN}/submit/42`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${VALID_KEY}` },
+          }),
+          env,
+          ctx,
+        );
+        expect(res.status).toBe(200);
+        const body = (await res.json()) as {
+          submission_id: number;
+          status: string;
+          leaderboard_entry_id: string | null;
+          rejection_reason: string | null;
+        };
+        expect(body.submission_id).toBe(42);
+        expect(body.status).toBe("published");
+        expect(body.leaderboard_entry_id).toBe("claude-haiku-4-5__globalopinionqa");
+        expect(body.rejection_reason).toBeNull();
+      });
+
+      it("returns 404 when the submission id belongs to another user", async () => {
+        const { env, ctx, fetchMock } = makeHarness();
+        const keyHash = await import("../src/apiKey").then((m) => m.sha256Hex(VALID_KEY));
+        await mockKeyLookup(fetchMock, keyHash);
+
+        const res = await worker.fetch(
+          new Request(`${WORKER_ORIGIN}/submit/99`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${VALID_KEY}` },
+          }),
+          env,
+          ctx,
+        );
+        expect(res.status).toBe(404);
+        // Same shape as truly-missing ids — no enumeration side channel.
+        expect(await res.json()).toEqual({ error: "not found" });
+      });
+
+      it("rejects JWT auth with 401 (status endpoint is api-key only)", async () => {
+        const { env, ctx } = makeHarness();
+        const token = await signToken();
+        const res = await worker.fetch(
+          new Request(`${WORKER_ORIGIN}/submit/42`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          env,
+          ctx,
+        );
+        expect(res.status).toBe(401);
+      });
+
+      it("returns 401 when Authorization is missing", async () => {
+        const { env, ctx } = makeHarness();
+        const res = await worker.fetch(
+          new Request(`${WORKER_ORIGIN}/submit/42`, { method: "GET" }),
+          env,
+          ctx,
+        );
+        expect(res.status).toBe(401);
+      });
+
+      it("returns 405 for POST /submit/<id>", async () => {
+        const { env, ctx } = makeHarness();
+        const res = await worker.fetch(
+          new Request(`${WORKER_ORIGIN}/submit/42`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${VALID_KEY}` },
+          }),
+          env,
+          ctx,
+        );
+        expect(res.status).toBe(405);
+      });
+
+      it("falls through to the POST handler (405) for non-numeric /submit/<x>", async () => {
+        // `/submit/abc` is not a status lookup; the router delegates it to
+        // handleSubmit which 405s non-POST.
+        const { env, ctx } = makeHarness();
+        const res = await worker.fetch(
+          new Request(`${WORKER_ORIGIN}/submit/abc`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${VALID_KEY}` },
+          }),
+          env,
+          ctx,
+        );
+        expect(res.status).toBe(405);
+      });
+    });
+
     it("returns 403 when the api key lacks submit scope", async () => {
       const { env, ctx, fetchMock } = makeHarness();
       const keyHash = await import("../src/apiKey").then((m) => m.sha256Hex(VALID_KEY));

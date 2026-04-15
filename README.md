@@ -90,6 +90,40 @@ synthbench run --provider openrouter --model gpt-4o-mini --suite full -o results
 synthbench submit results/openrouter_gpt-4o-mini_opinionsqa.json
 ```
 
+#### End-to-end: run + submit in one command (`--submit`)
+
+Collapse the two steps above into a single invocation. The CLI saves the
+result JSON locally (so a validation rejection doesn't lose your run) and
+then POSTs it to the leaderboard. With `--wait`, the process blocks until
+the validator reaches a terminal state and the exit code mirrors the
+outcome — suitable for dropping into a CI pipeline that gates on
+leaderboard publication:
+
+```bash
+export SYNTHBENCH_API_KEY=sb_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+synthbench run \
+  --provider raw-anthropic --model claude-haiku-4-5 \
+  --dataset globalopinionqa --samples 30 -n 100 \
+  --submit --wait \
+  --submit-message "first pass with new prompt template"
+```
+
+Exit codes with `--wait`:
+
+| Code | Meaning |
+|-----:|---------|
+| 0    | Published — result is live on the leaderboard |
+| 1    | Rejected by the validator OR hard error (bad key, 5xx, etc.) |
+| 2    | Poll deadline exceeded (validation is still running server-side; check [/account/submissions/](https://synthbench.org/account/submissions/)) |
+
+Without `--wait`, the upload exits 0 as soon as the Worker accepts the
+submission (status = `validating`) — useful for fire-and-forget runs
+where you'll check the web dashboard later.
+
+`--submit-message` is optional; it's stored alongside the uploaded JSON
+so you can label experiments (e.g. "v2 prompt", "temp=1.0 sweep") without
+touching your `config` fields and perturbing the `config_id` hash.
+
 The Worker validates the submission, stages it to R2, and dispatches the
 GitHub Actions pipeline. Successful runs publish within ~5 minutes. Keys
 are rate-limited to 60 submissions/hour. See
