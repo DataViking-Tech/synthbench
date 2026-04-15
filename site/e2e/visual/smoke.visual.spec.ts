@@ -6,6 +6,10 @@ import { expect, test } from "@playwright/test";
 // Ubuntu CI via the `vrt-baseline-update` label workflow — do NOT commit
 // baselines generated on macOS.
 //
+// Baselines last refreshed: 2026-04-15 (sb-mu7) — catch-up after color,
+// truncation, anomaly-metadata, license-policy, and noindex landings drifted
+// run-detail-dark.png cumulatively to 9% pixel delta.
+//
 // Representative run id is chosen to be stable across rebuilds: it lives in
 // leaderboard-results/ and survives publish-runs regeneration.
 const SAMPLE_RUN_ID = "opinionsqa_ensemble_3blend_20260412_020745";
