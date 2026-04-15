@@ -15,6 +15,12 @@ supabase db push
   `published` or `rejected` after running the full Python validator against
   the staged R2 object. RLS policies: owner-read, published-row public-read,
   service-role full access.
+- `20260415_api_keys.sql` — creates `public.api_keys` (sb-t61h). Stores
+  `sb_<32-hex>` personal API keys as sha256 hashes (plaintext shown once at
+  creation, never persisted). The Worker `/submit` endpoint accepts these via
+  `Authorization: Bearer sb_<key>` for the `synthbench submit` CLI flow. RLS:
+  authenticated users CRUD their own rows, service role bypasses for the
+  Worker auth lookup + `last_used_at` touch.
 
 ## Pre-existing tables (not in this tree)
 

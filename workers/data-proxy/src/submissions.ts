@@ -19,6 +19,9 @@ export interface InsertRowInput {
   requestIp: string | null;
   userAgent: string | null;
   meta: SubmissionMetadata;
+  /** sb-t61h: id of the api_keys row that authenticated this upload, or
+   *  null for browser/JWT-flow uploads. Powers per-key rate limit + audit. */
+  apiKeyId: number | null;
 }
 
 export interface InsertedRow {
@@ -48,6 +51,7 @@ export async function insertSubmission(
     status: "validating",
     request_ip: input.requestIp,
     user_agent: input.userAgent,
+    api_key_id: input.apiKeyId,
   });
   const doFetch = config.fetchImpl ?? fetch;
   const res = await doFetch(url, {

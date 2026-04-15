@@ -4,15 +4,21 @@ This document describes what every submission must look like, what the
 automated validation pipeline checks, and how to get your run onto the
 public leaderboard.
 
-## Two submission paths
+## Three submission paths
 
-1. **Web upload (recommended, Tier-1 MVP — sb-me0f).** Sign in at
+1. **Web upload (Tier-1 MVP — sb-me0f).** Sign in at
    [synthbench.org/account](https://synthbench.org/account/), then drop
    your result JSON into [/submit/upload](https://synthbench.org/submit/upload/).
    Validation runs server-side; you can track status on
    [/account/submissions](https://synthbench.org/account/submissions/).
    Successful runs land on the leaderboard within ~5 minutes.
-2. **GitHub PR (power-user path).** Fork the repo, drop your file in
+2. **CLI submit with API key (recommended for automation — sb-t61h).** Mint
+   a key at [/account](https://synthbench.org/account/), export it, and
+   `synthbench submit run.json` from the same machine that produced the
+   benchmark output. No browser needed; same server-side validation as the
+   web flow. Rate-limited to 60 submissions/hour per key. See the
+   [API key flow](#api-key-flow-cli-submission) section below.
+3. **GitHub PR (power-user path).** Fork the repo, drop your file in
    `leaderboard-results/`, open a PR. The same validators that guard the
    web upload also run in the `validate-submissions` CI gate.
 
@@ -208,6 +214,111 @@ synthbench validate --tier3 --peers leaderboard-results/ results/myrun.json
 ```
 
 The CLI exits `0` when every file passes, `1` when any file fails.
+
+## API key flow (CLI submission)
+
+`synthbench submit` lets you upload directly from the machine that ran the
+benchmark. Designed for CI pipelines and scripted experiment runners — no
+browser tab required.
+
+### One-time setup
+
+1. Sign in at [synthbench.org/account](https://synthbench.org/account/) and
+   open the **API Keys** section.
+2. Click **Generate new key**, give it a recognizable name
+   (e.g. `laptop-cli`), and pick a scope:
+   - **Submit runs** — write-only; can call `/submit` but not read gated data.
+     Recommended for CI.
+   - **Read gated data** — read-only; can fetch gated-tier datasets via the
+     Worker but cannot upload.
+   - **Read + submit** — both. Use only if you genuinely need both verbs from
+     the same key.
+3. Copy the displayed key. **You will not be able to see it again** — the
+   server stores only its sha256 hash. If you lose it, revoke and mint a new one.
+4. Store it as a secret on the machine that will use it (e.g. shell rc file,
+   GitHub Actions secret, `1Password` item).
+
+You can have up to **5 active keys** per account; revoke unused ones to make
+room.
+
+### Submitting a run
+
+```bash
+export SYNTHBENCH_API_KEY=sb_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Default — POSTs to https://api.synthbench.org/submit
+synthbench submit results/openrouter_gpt-4o-mini_opinionsqa.json
+
+# Override the base URL (preview deploys, self-hosted Workers):
+synthbench submit run.json --api-url https://api.preview.synthbench.org
+
+# Pipe-friendly machine output:
+synthbench submit run.json --json-out
+```
+
+You can also pass the key inline if you don't want it in the env:
+
+```bash
+synthbench submit run.json --api-key "$(security find-generic-password -s synthbench)"
+```
+
+### Equivalent curl
+
+The Worker endpoint is a plain `POST application/json` so any HTTP client
+works:
+
+```bash
+curl -X POST https://api.synthbench.org/submit \
+  -H "Authorization: Bearer $SYNTHBENCH_API_KEY" \
+  -H "Content-Type: application/json" \
+  --data-binary @results/myrun.json
+```
+
+A successful submission returns HTTP 202:
+
+```json
+{
+  "submission_id": 423,
+  "status": "validating",
+  "file_path": "submissions/2026/04/15/<user-id>/...json",
+  "submitted_at": "2026-04-15T12:34:56Z"
+}
+```
+
+### Rate limit and quotas
+
+| Limit | Value | Behavior on hit |
+|-------|-------|-----------------|
+| Submissions per key | 60/hour | HTTP 429 with `rate limit exceeded` body |
+| Submission body size | 2 MB | HTTP 413 |
+| Active keys per user | 5 | UI disables **Generate new key** until you revoke one |
+
+The rate limit is computed against the Supabase `submissions` table, not an
+in-memory counter, so it survives Worker cold starts and is consistent
+across edge nodes.
+
+### Auth error reference
+
+| Status | Body | Meaning | Action |
+|--------|------|---------|--------|
+| 401 | `unknown api key` | Key not in DB or hash mismatch. | Re-check the env var; the key may have been rotated. |
+| 401 | `api key revoked` | Key is in DB but flagged revoked. | Mint a new one at /account. |
+| 401 | `api key expired` | `expires_at` has passed. | Mint a new one. |
+| 403 | `api key lacks submit scope` | Key was generated read-only. | Generate a new key with `submit` or `both` scope. |
+| 429 | `rate limit exceeded: 60 submissions/hour per key` | Per-key ceiling. | Wait or use a second key. |
+
+### Security model
+
+- **Plaintext is never persisted.** Only `sha256(key)` and the first 8 chars
+  (the lookup prefix) live in Supabase. Even a database leak cannot recover
+  a usable key.
+- **Constant-time hash compare** in the Worker prevents timing-based key
+  enumeration.
+- **Per-user RLS** on the `api_keys` table means even a compromised user
+  account can only list and revoke that user's keys.
+- **Audit trail** — every submission stores `api_key_id` so post-hoc you
+  can trace which key uploaded what. Browser-flow uploads have
+  `api_key_id = NULL`.
 
 ## Common failure modes
 

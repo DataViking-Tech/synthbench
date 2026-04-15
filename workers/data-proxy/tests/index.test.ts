@@ -524,4 +524,195 @@ describe("/submit route (sb-me0f)", () => {
     );
     expect(res.status).toBe(502);
   });
+
+  // sb-t61h: API-key auth path. We exercise the full handler so a regression
+  // in the JWT-vs-key router (in handleSubmit) gets caught here, not just in
+  // the apiKey unit suite.
+  describe("API key auth (sb-t61h)", () => {
+    const VALID_KEY = `sb_${"a".repeat(32)}`;
+    const VALID_PREFIX = "sb_aaaaa";
+
+    it("accepts a valid sb_ key, stamps api_key_id on the row, and stages with auth_method=api_key", async () => {
+      const { env, ctx, fetchMock, submissionPuts } = makeHarness();
+
+      // Compute the real sha256 of the test key so the Worker's WebCrypto
+      // path matches the value we hand back from the Supabase double.
+      const keyHash = await import("../src/apiKey").then((m) => m.sha256Hex(VALID_KEY));
+
+      const insertCalls: RequestInit[] = [];
+      fetchMock.mockImplementation(async (url: string | URL, init?: RequestInit) => {
+        const u = String(url);
+        if (u.includes("/rest/v1/api_keys") && u.includes(`key_prefix=eq.${VALID_PREFIX}`)) {
+          return new Response(
+            JSON.stringify([
+              {
+                id: 11,
+                user_id: "user-cli",
+                scope: "submit",
+                expires_at: null,
+                revoked_at: null,
+                key_hash: keyHash,
+              },
+            ]),
+            { status: 200 },
+          );
+        }
+        if (u.includes("/rest/v1/submissions") && (init?.method ?? "GET") === "GET") {
+          return new Response("[]", {
+            status: 200,
+            headers: { "Content-Range": "*/0" },
+          });
+        }
+        if (u.includes("/rest/v1/submissions") && init?.method === "POST") {
+          insertCalls.push(init);
+          return new Response(
+            JSON.stringify([
+              { id: 501, submitted_at: "2026-04-15T12:00:00Z", status: "validating" },
+            ]),
+            { status: 201 },
+          );
+        }
+        if (u.includes("/rest/v1/api_keys") && init?.method === "PATCH") {
+          return new Response(null, { status: 204 });
+        }
+        if (u.includes("api.github.com")) {
+          return new Response(null, { status: 204 });
+        }
+        return new Response("unexpected", { status: 500 });
+      });
+
+      const res = await worker.fetch(
+        new Request(`${WORKER_ORIGIN}/submit`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${VALID_KEY}`,
+            "Content-Type": "application/json",
+            "User-Agent": "synthbench-cli/0.1",
+          },
+          body: validSubmissionJson(),
+        }),
+        env,
+        ctx,
+      );
+      expect(res.status).toBe(202);
+      const body = (await res.json()) as { submission_id: number };
+      expect(body.submission_id).toBe(501);
+
+      // R2 staging marked as api_key auth.
+      expect(submissionPuts).toHaveLength(1);
+      const put = submissionPuts[0];
+      if (!put) throw new Error("expected R2 put");
+      expect(put.customMetadata?.user_id).toBe("user-cli");
+      expect(put.customMetadata?.auth_method).toBe("api_key");
+
+      // Insert payload tagged with api_key_id.
+      expect(insertCalls).toHaveLength(1);
+      const insertCall = insertCalls[0];
+      if (!insertCall) throw new Error("expected insert call");
+      const insertBody = JSON.parse(insertCall.body as string);
+      expect(insertBody.api_key_id).toBe(11);
+      expect(insertBody.user_id).toBe("user-cli");
+    });
+
+    it("returns 401 when the api key is unknown", async () => {
+      const { env, ctx, fetchMock } = makeHarness();
+      fetchMock.mockImplementation(async (url: string | URL) => {
+        const u = String(url);
+        if (u.includes("/rest/v1/api_keys")) return new Response("[]", { status: 200 });
+        return new Response(null, { status: 500 });
+      });
+      const res = await worker.fetch(
+        new Request(`${WORKER_ORIGIN}/submit`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${VALID_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: validSubmissionJson(),
+        }),
+        env,
+        ctx,
+      );
+      expect(res.status).toBe(401);
+      expect(await res.json()).toEqual({ error: "unknown api key" });
+    });
+
+    it("returns 429 when the per-key rate limit is exceeded", async () => {
+      const { env, ctx, fetchMock } = makeHarness();
+      const keyHash = await import("../src/apiKey").then((m) => m.sha256Hex(VALID_KEY));
+      fetchMock.mockImplementation(async (url: string | URL) => {
+        const u = String(url);
+        if (u.includes("/rest/v1/api_keys")) {
+          return new Response(
+            JSON.stringify([
+              {
+                id: 1,
+                user_id: "u",
+                scope: "submit",
+                expires_at: null,
+                revoked_at: null,
+                key_hash: keyHash,
+              },
+            ]),
+            { status: 200 },
+          );
+        }
+        // 60 prior submissions in the last hour → at the ceiling.
+        return new Response("[]", {
+          status: 200,
+          headers: { "Content-Range": "*/60" },
+        });
+      });
+      const res = await worker.fetch(
+        new Request(`${WORKER_ORIGIN}/submit`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${VALID_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: validSubmissionJson(),
+        }),
+        env,
+        ctx,
+      );
+      expect(res.status).toBe(429);
+    });
+
+    it("returns 403 when the api key lacks submit scope", async () => {
+      const { env, ctx, fetchMock } = makeHarness();
+      const keyHash = await import("../src/apiKey").then((m) => m.sha256Hex(VALID_KEY));
+      fetchMock.mockImplementation(async (url: string | URL) => {
+        const u = String(url);
+        if (u.includes("/rest/v1/api_keys")) {
+          return new Response(
+            JSON.stringify([
+              {
+                id: 1,
+                user_id: "u",
+                scope: "read",
+                expires_at: null,
+                revoked_at: null,
+                key_hash: keyHash,
+              },
+            ]),
+            { status: 200 },
+          );
+        }
+        return new Response("[]", { status: 200, headers: { "Content-Range": "*/0" } });
+      });
+      const res = await worker.fetch(
+        new Request(`${WORKER_ORIGIN}/submit`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${VALID_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: validSubmissionJson(),
+        }),
+        env,
+        ctx,
+      );
+      expect(res.status).toBe(403);
+    });
+  });
 });

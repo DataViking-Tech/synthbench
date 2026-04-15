@@ -89,5 +89,7 @@ jobs:
         # CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID env vars directly.
         uses: cloudflare/wrangler-action@v3
         with:
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy site/dist --project-name=synthbench --branch=${{ github.head_ref || github.ref_name }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

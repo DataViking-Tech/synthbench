@@ -13,6 +13,7 @@
 // Common plumbing (CORS allowlist, JWT verification, Supabase audit writer)
 // is shared across both. Every branch has a matching unit test in tests/.
 
+import { type ApiKeyConfig, authenticateApiKey, isApiKey, touchLastUsed } from "./apiKey";
 import { type AuditConfig, clientIpFor, writeAuditLog } from "./audit";
 import { parseBearer, verifySupabaseJwt } from "./auth";
 import { corsHeadersFor, parseAllowedOrigins, preflightResponse } from "./cors";
@@ -84,7 +85,7 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/submit" || url.pathname.startsWith("/submit/")) {
-      return handleSubmit(request, env, cors);
+      return handleSubmit(request, env, ctx, cors);
     }
 
     return handleData(request, env, ctx, cors, url);
@@ -172,6 +173,7 @@ async function handleData(
 async function handleSubmit(
   request: Request,
   env: Env,
+  ctx: ExecutionContext,
   cors: Record<string, string>,
 ): Promise<Response> {
   if (request.method !== "POST") {
@@ -183,14 +185,44 @@ async function handleSubmit(
 
   const token = parseBearer(request.headers.get("Authorization"));
   if (!token) {
-    return jsonResponse({ error: "sign in to submit" }, 401, cors);
+    return jsonResponse({ error: "sign in or pass an API key to submit" }, 401, cors);
   }
-  const claims = await verifySupabaseJwt(token, {
-    supabaseUrl: env.SUPABASE_URL,
-    expectedAudience: env.SUPABASE_JWT_AUD,
-  });
-  if (!claims) {
-    return jsonResponse({ error: "invalid token" }, 401, cors);
+
+  // Two auth modes share /submit:
+  //   • `sb_<32-hex>` → CLI personal API key (sb-t61h). Resolved via Supabase
+  //                     api_keys table, rate-limited 60/hr per key.
+  //   • everything else → Supabase JWT (sb-me0f browser flow).
+  // We pick the path purely by token shape so a malformed JWT never reaches
+  // the api-key lookup and vice versa.
+  let userId: string;
+  let apiKeyId: number | null;
+  if (isApiKey(token)) {
+    const apiKeyConfig: ApiKeyConfig = {
+      supabaseUrl: env.SUPABASE_URL,
+      serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
+    };
+    const auth = await authenticateApiKey(token, "submit", apiKeyConfig);
+    if (!auth.ok) {
+      return jsonResponse({ error: auth.reason }, auth.status, cors);
+    }
+    userId = auth.userId;
+    apiKeyId = auth.keyId;
+    // Best-effort touch of last_used_at — never block the submission on it.
+    ctx.waitUntil(
+      touchLastUsed(auth.keyId, apiKeyConfig).catch((err: unknown) => {
+        console.warn("[apiKey] last_used_at touch failed", (err as Error).message);
+      }),
+    );
+  } else {
+    const claims = await verifySupabaseJwt(token, {
+      supabaseUrl: env.SUPABASE_URL,
+      expectedAudience: env.SUPABASE_JWT_AUD,
+    });
+    if (!claims) {
+      return jsonResponse({ error: "invalid token" }, 401, cors);
+    }
+    userId = claims.sub;
+    apiKeyId = null;
   }
 
   // Enforce a body size ceiling before parse. R2 put is happy with much
@@ -218,15 +250,18 @@ async function handleSubmit(
     return jsonResponse({ error: tier1.error }, 400, cors);
   }
 
-  const key = stagingKeyFor(claims.sub);
+  const key = stagingKeyFor(userId);
 
   try {
     await env.SUBMISSIONS_BUCKET.put(key, rawBody, {
       httpMetadata: { contentType: "application/json" },
       customMetadata: {
-        user_id: claims.sub,
+        user_id: userId,
         model_name: tier1.meta.modelName ?? "",
         dataset: tier1.meta.dataset ?? "",
+        // Stamp the auth path on the staged object so a forensic reader of
+        // the R2 bucket can tell browser uploads from CLI uploads at a glance.
+        auth_method: apiKeyId === null ? "jwt" : "api_key",
       },
     });
   } catch (err) {
@@ -237,11 +272,12 @@ async function handleSubmit(
   try {
     row = await insertSubmission(
       {
-        userId: claims.sub,
+        userId,
         filePath: key,
         requestIp: clientIpFor(request),
         userAgent: request.headers.get("User-Agent"),
         meta: tier1.meta,
+        apiKeyId,
       },
       {
         supabaseUrl: env.SUPABASE_URL,
