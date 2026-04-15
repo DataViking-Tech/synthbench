@@ -1,10 +1,12 @@
 # Cloudflare Worker: Supabase-gated R2 proxy + submissions upload endpoint.
 #
 # Runtime deploy path:
-#   1. `.github/workflows/deploy-worker.yml` runs on merge to main (sb-v09i).
-#      It reconciles SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and
-#      GITHUB_DISPATCH_TOKEN from Doppler via `wrangler secret put` on every
-#      deploy, then runs `wrangler deploy` to apply the bindings below.
+#   1. `.github/workflows/deploy-worker.yml` runs on merge to main (sb-v09i,
+#      sb-svih). It sed-swaps the placeholder `SUPABASE_URL = ""` below with
+#      the real value from Doppler (synthbench/prd) before running
+#      `wrangler deploy`, then reconciles SUPABASE_SERVICE_ROLE_KEY and
+#      GITHUB_DISPATCH_TOKEN via `wrangler secret put`. SUPABASE_URL stays a
+#      plain var because it is not a secret; the other two are secrets.
 #   2. Route api.synthbench.org/* is declared in the `[[routes]]` block below
 #      and applied by the workflow — no dashboard click-ops required.
 #   3. Confirm R2 buckets exist:

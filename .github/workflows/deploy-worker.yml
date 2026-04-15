@@ -1,14 +1,18 @@
 name: Deploy data-proxy Worker
 
-# sb-v09i: build + deploy the synthbench-data-proxy Cloudflare Worker to
-# api.synthbench.org.
+# sb-v09i / sb-svih: build + deploy the synthbench-data-proxy Cloudflare
+# Worker to api.synthbench.org.
 #
-# Split across two wrangler invocations because `wrangler secret put` requires
-# the Worker to already exist:
-#   1. `wrangler deploy` pushes the code, vars, R2 bindings, and the
-#      api.synthbench.org/* route from wrangler.toml.
-#   2. `wrangler secret put` reconciles the three runtime secrets pulled from
-#      Doppler so a rotation in Doppler propagates on the next merge to main.
+# Runtime config split (sb-svih):
+#   - SUPABASE_URL is a plain var (public project URL, not a secret). It is
+#     sed-swapped into wrangler.toml before `wrangler deploy` so the deployed
+#     [vars] block carries the real value instead of the placeholder "". This
+#     avoids the race where the first deploy ships an empty URL and only the
+#     follow-up `wrangler secret put` fills it in.
+#   - SUPABASE_SERVICE_ROLE_KEY and GITHUB_DISPATCH_TOKEN ARE secrets and go
+#     through `wrangler secret put` after deploy (the Worker must exist before
+#     a secret name can be set). A rotation in Doppler therefore propagates on
+#     the next merge to main.
 #
 # Mirrors cf-pages.yml for Doppler sourcing: Cloudflare creds live in
 # dataviking-platform/prd (shared), Supabase + GitHub-dispatch values live in
@@ -86,6 +90,27 @@ jobs:
             echo "GITHUB_DISPATCH_TOKEN=" >> "$GITHUB_ENV"
           fi
 
+      # Populate SUPABASE_URL in wrangler.toml before deploy (sb-svih). The
+      # committed placeholder is `SUPABASE_URL = ""` so local `wrangler dev`
+      # stays inert without Doppler; CI rewrites it to the real project URL so
+      # the deployed [vars] block carries the URL from the very first request.
+      # sed is idempotent against the empty placeholder — re-running after a
+      # manual edit is a no-op. | is used as the delimiter because URLs
+      # contain / but not |.
+      - name: Populate SUPABASE_URL in wrangler.toml
+        working-directory: workers/data-proxy
+        env:
+          SUPABASE_URL_VALUE: ${{ env.SUPABASE_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SUPABASE_URL_VALUE}" ]; then
+            echo "::error::SUPABASE_URL is empty — refusing to deploy Worker with unconfigured Supabase base URL."
+            exit 1
+          fi
+          sed -i.bak "s|^SUPABASE_URL = \"\"|SUPABASE_URL = \"${SUPABASE_URL_VALUE}\"|g" wrangler.toml
+          rm -f wrangler.toml.bak
+          echo "wrangler.toml SUPABASE_URL populated (length=${#SUPABASE_URL_VALUE})."
+
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v3
         with:
@@ -98,13 +123,13 @@ jobs:
       # `wrangler secret put` will accept the name). Values are piped on
       # stdin so they never touch argv or the command log; empty values are
       # skipped with a warning so a missing GITHUB_DISPATCH_TOKEN doesn't
-      # fail the whole run.
+      # fail the whole run. SUPABASE_URL is intentionally NOT in this list —
+      # it is a public var populated at wrangler.toml level above.
       - name: Reconcile Worker secrets
         working-directory: workers/data-proxy
         env:
           CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
-          SUPABASE_URL_VALUE: ${{ env.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY_VALUE: ${{ env.SUPABASE_SERVICE_ROLE_KEY }}
           GITHUB_DISPATCH_TOKEN_VALUE: ${{ env.GITHUB_DISPATCH_TOKEN }}
         run: |
@@ -117,6 +142,5 @@ jobs:
             fi
             printf '%s' "$value" | npx --no-install wrangler secret put "$name"
           }
-          put_secret SUPABASE_URL "$SUPABASE_URL_VALUE"
           put_secret SUPABASE_SERVICE_ROLE_KEY "$SUPABASE_SERVICE_ROLE_KEY_VALUE"
           put_secret GITHUB_DISPATCH_TOKEN "$GITHUB_DISPATCH_TOKEN_VALUE"
