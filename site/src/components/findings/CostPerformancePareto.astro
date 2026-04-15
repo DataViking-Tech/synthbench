@@ -1,0 +1,168 @@
+---
+import Chart from "@/components/shared/Chart.astro";
+import type { LeaderboardData, LeaderboardEntry } from "@/types/leaderboard";
+
+import leaderboardRaw from "@/data/leaderboard.json";
+
+const leaderboard = leaderboardRaw as LeaderboardData;
+
+interface ParetoPoint {
+  name: string;
+  cost: number;
+  sps: number;
+  dominated: boolean;
+}
+
+// Filter: real (non-baseline) entries with both cost and SPS measured.
+const candidates: LeaderboardEntry[] = (leaderboard.entries ?? []).filter(
+  (e) => e.cost_usd != null && e.sps != null && !e.is_baseline,
+);
+
+// Pareto-frontier check: an entry is dominated if some OTHER entry has
+// SPS ≥ this entry's SPS AND cost ≤ this entry's cost, with strict
+// inequality on at least one axis. Equal-on-both points are NOT dominated
+// by each other (so duplicate ties stay on the frontier together).
+function isDominated(e: LeaderboardEntry, others: LeaderboardEntry[]): boolean {
+  for (const o of others) {
+    if (o === e) continue;
+    const oSps = o.sps ?? 0;
+    const oCost = o.cost_usd ?? 0;
+    const eSps = e.sps ?? 0;
+    const eCost = e.cost_usd ?? 0;
+    const sameOrBetter = oSps >= eSps && oCost <= eCost;
+    const strictlyBetter = oSps > eSps || oCost < eCost;
+    if (sameOrBetter && strictlyBetter) return true;
+  }
+  return false;
+}
+
+const points: ParetoPoint[] = candidates.map((e) => ({
+  name: `${e.model} (${e.framework})`,
+  cost: e.cost_usd as number,
+  sps: e.sps,
+  dominated: isDominated(e, candidates),
+}));
+
+// Decide log scale when the cost range spans more than 100×. Excludes zero
+// costs from the ratio because log(0) is undefined.
+const positiveCosts = points.map((p) => p.cost).filter((c) => c > 0);
+const useLogScale =
+  positiveCosts.length > 1 && Math.max(...positiveCosts) / Math.min(...positiveCosts) > 100;
+
+const PARETO_COLOR = "var(--color-accent)";
+const DOMINATED_COLOR = "var(--color-muted)";
+
+const seriesData = points.map((p) => ({
+  name: p.name,
+  value: [p.cost, p.sps] as [number, number],
+  itemStyle: {
+    color: p.dominated ? DOMINATED_COLOR : PARETO_COLOR,
+    opacity: p.dominated ? 0.5 : 1,
+  },
+  symbolSize: p.dominated ? 10 : 14,
+  // Per-point marker for tooltip + a11y; symbol stays default circle.
+  isPareto: !p.dominated,
+}));
+
+function formatCost(c: number): string {
+  if (c === 0) return "$0.00";
+  if (c < 0.01) return `$${c.toFixed(4)}`;
+  if (c < 1) return `$${c.toFixed(3)}`;
+  return `$${c.toFixed(2)}`;
+}
+
+const chartOption = {
+  tooltip: {
+    trigger: "item" as const,
+    formatter: (params: {
+      data: {
+        name: string;
+        value: [number, number];
+        isPareto: boolean;
+      };
+    }) => {
+      const d = params.data;
+      const tag = d.isPareto ? "Pareto-optimal" : "Dominated";
+      return `<div style="font-size:13px">
+        <strong>${d.name}</strong><br/>
+        Cost: ${formatCost(d.value[0])}<br/>
+        SPS: ${d.value[1].toFixed(3)}<br/>
+        <span style="color:#888">${tag}</span>
+      </div>`;
+    },
+  },
+  grid: { left: 60, right: 30, top: 30, bottom: 50, containLabel: true },
+  xAxis: {
+    type: useLogScale ? ("log" as const) : ("value" as const),
+    name: useLogScale ? "Cost (USD, log scale)" : "Cost (USD)",
+    nameLocation: "middle" as const,
+    nameGap: 30,
+    axisLabel: {
+      formatter: (v: number) => formatCost(v),
+    },
+    ...(useLogScale ? { logBase: 10 } : { min: 0 }),
+  },
+  yAxis: {
+    type: "value" as const,
+    name: "SPS",
+    nameLocation: "middle" as const,
+    nameGap: 45,
+    min: 0,
+    max: 1,
+    axisLabel: { formatter: (v: number) => v.toFixed(1) },
+  },
+  series: [
+    {
+      name: "Cost vs SPS",
+      type: "scatter" as const,
+      data: seriesData,
+      emphasis: {
+        focus: "self" as const,
+        itemStyle: { shadowBlur: 10, shadowColor: "rgba(0,0,0,0.3)" },
+      },
+    },
+  ],
+  toolbox: {
+    feature: { saveAsImage: { title: "Save as PNG" } },
+    right: 10,
+    top: 10,
+  },
+};
+
+const dataTable = {
+  caption: "Cost vs SPS: per-configuration cost in USD, Survey Parity Score, and Pareto status.",
+  headers: ["Configuration", "Cost (USD)", "SPS", "Pareto Status"],
+  rows: [...points]
+    .sort((a, b) => b.sps - a.sps)
+    .map((p) => [
+      p.name,
+      formatCost(p.cost),
+      p.sps.toFixed(3),
+      p.dominated ? "Dominated" : "Pareto-optimal",
+    ]),
+};
+
+const hasData = points.length > 0;
+---
+
+<section class="w-full max-w-4xl mx-auto py-8" id="cost-performance-pareto">
+  <h2 class="text-2xl font-bold text-center mb-2">Cost vs Performance Pareto</h2>
+  <p class="text-center text-sm text-muted mb-6">
+    Each point is one configuration. Pareto-optimal configurations (no other run is
+    cheaper AND higher-SPS) are highlighted; dominated runs are muted. Lower-left of
+    the frontier is the cost/quality trade you cannot beat.
+  </p>
+  {hasData ? (
+    <Chart
+      title="Cost vs SPS Pareto frontier"
+      description="Scatter plot of LLM cost in USD against Survey Parity Score for each non-baseline configuration. Pareto-optimal points are highlighted; dominated points are muted."
+      option={chartOption}
+      dataTable={dataTable}
+      height="440px"
+    />
+  ) : (
+    <div class="text-center text-muted py-12 border border-muted/20 rounded-lg">
+      Cost data not yet available. Re-run publish after the cost-tracking pipeline lands.
+    </div>
+  )}
+</section>
