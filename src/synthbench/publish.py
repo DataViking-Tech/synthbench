@@ -1173,9 +1173,7 @@ def _load_question_text_registry(repo_root: Path) -> dict[str, dict[str, str]]:
     return out
 
 
-def _rehydrate_question_text(
-    result: dict, registry: dict[str, dict[str, str]]
-) -> None:
+def _rehydrate_question_text(result: dict, registry: dict[str, dict[str, str]]) -> None:
     """Replace truncated per-question ``text`` from the registry, in place.
 
     Only overwrites when the registry has a *longer* string for the key — a
