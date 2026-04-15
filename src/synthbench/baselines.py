@@ -18,7 +18,7 @@ methodology writeup (hq-wisp-vuom1):
 Citations (per data scientist):
 - Santurkar et al. 2023 (OpinionsQA, arxiv:2303.17548)
 - Durmus et al. 2023 (GlobalOpinionQA, arxiv:2306.16388)
-- Geng & Liu (SubPOP, 2024)
+- Suh et al. (SubPOP, ACL 2025, arxiv:2502.16761)
 - Spearman-Brown prophecy (1910)
 - Efron (1979) bootstrap
 - Lin (1991) Jensen-Shannon divergence

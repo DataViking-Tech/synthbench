@@ -753,7 +753,11 @@ def _build_baselines(results: list[dict], datasets: list[str]) -> dict:
                 "text": "Durmus et al. 2023, GlobalOpinionQA.",
                 "arxiv": "2306.16388",
             },
-            {"key": "geng2024", "text": "Geng & Liu 2024, SubPOP."},
+            {
+                "key": "suh2025",
+                "text": "Suh et al. 2025, SubPOP.",
+                "arxiv": "2502.16761",
+            },
             {
                 "key": "pew_methods",
                 "text": "Pew Research Center, Survey Methodology 101.",
