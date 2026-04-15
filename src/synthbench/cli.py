@@ -1673,6 +1673,24 @@ def ensemble(files, output, weights):
     help="Run only tier 1 (schema + plausibility); skip recomputation.",
 )
 @click.option(
+    "--tier3",
+    is_flag=True,
+    help=(
+        "Run Tier-3 checks: statistical anomaly detection, raw-response "
+        "samples, and reproducibility metadata (warnings by default)."
+    ),
+)
+@click.option(
+    "--peers",
+    "peers_dir",
+    type=click.Path(exists=True, file_okay=False),
+    default=None,
+    help=(
+        "Directory of peer submission JSONs used by the Tier-3 peer-"
+        "distribution outlier detector (same-family, same-dataset runs)."
+    ),
+)
+@click.option(
     "--strict",
     is_flag=True,
     help="Treat warnings as errors (exit non-zero).",
@@ -1683,7 +1701,15 @@ def ensemble(files, output, weights):
     is_flag=True,
     help="Emit a JSON summary instead of a human-readable report.",
 )
-def validate(paths, expected_question_hash, skip_recompute, strict, json_output):
+def validate(
+    paths,
+    expected_question_hash,
+    skip_recompute,
+    tier3,
+    peers_dir,
+    strict,
+    json_output,
+):
     """Validate one or more submission result JSONs against the integrity rules.
 
     Tier 1 checks: JSON schema shape, SPS/score bounds, distribution sums,
@@ -1715,11 +1741,22 @@ def validate(paths, expected_question_hash, skip_recompute, strict, json_output)
         click.echo("No files to validate.", err=True)
         sys.exit(2)
 
+    peer_data: list[dict] = []
+    if peers_dir is not None:
+        peers_path = Path(peers_dir)
+        for jf in sorted(peers_path.glob("*.json")):
+            try:
+                peer_data.append(json.loads(jf.read_text()))
+            except (OSError, json.JSONDecodeError):
+                continue
+
     for target in targets:
         report = validate_file(
             target,
             expected_question_hash=expected_question_hash,
             tier2=not skip_recompute,
+            tier3=tier3,
+            peers=peer_data,
         )
         reports.append(report)
         has_errors = bool(report.errors)

@@ -15,6 +15,7 @@ so callers (CLI, CI scripts) can decide how to surface findings.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -44,6 +45,29 @@ from synthbench.stats import question_set_hash
 DISTRIBUTION_SUM_TOLERANCE = 5e-3
 METRIC_RECOMPUTE_TOLERANCE = 3e-2
 AGGREGATE_RECOMPUTE_TOLERANCE = 1e-2
+
+# Raw-response sample requirements (tier 3). Submissions must ship raw model
+# text for at least this share of questions so that anomaly reviewers can
+# spot-check provider output. Length bounds are loose — real model outputs
+# range from a single option letter ("A") up to multi-paragraph reasoning,
+# but *every* sample being <=1 char or >=10,000 chars is a strong fabrication
+# signal.
+RAW_RESPONSE_MIN_COVERAGE = 0.10
+RAW_RESPONSE_MIN_LENGTH = 1
+RAW_RESPONSE_MAX_LENGTH = 10_000
+RAW_RESPONSE_SHORT_FRACTION_LIMIT = 0.95
+RAW_RESPONSE_LONG_FRACTION_LIMIT = 0.95
+
+# Reproducibility metadata fields required on new submissions. Missing
+# fields are WARNINGS in tier 3 (not ERRORS in tier 1) so existing
+# leaderboard files remain valid until we re-generate them.
+REQUIRED_REPRODUCIBILITY = (
+    "seed",
+    "model_revision_hash",
+    "prompt_template_hash",
+    "framework_version",
+    "submitted_at",
+)
 
 
 class Severity(str, Enum):
@@ -746,6 +770,274 @@ def _validate_aggregate_recomputation(data: Mapping[str, Any]) -> list[Issue]:
 
 
 # ---------------------------------------------------------------------------
+# Tier 3: raw-response samples + reproducibility metadata
+# ---------------------------------------------------------------------------
+
+
+def _validate_raw_responses(data: Mapping[str, Any]) -> list[Issue]:
+    """Check for raw model output samples attached to the submission.
+
+    A legitimate submission carries a ``raw_responses`` list where each
+    entry looks like::
+
+        {"key": "Q_001", "raw_text": "...", "selected_option": "A"}
+
+    At least :data:`RAW_RESPONSE_MIN_COVERAGE` share of questions must
+    have a sample. Each sample's raw text must be a non-empty string
+    within length bounds, and its selected option must agree with the
+    top option of the reported ``model_distribution`` (ties allowed).
+
+    Missing or malformed raw samples surface as WARNINGS so existing
+    leaderboard files without the field still validate. Once the
+    ecosystem has migrated, the bead plans to graduate this to ERROR.
+    """
+    issues: list[Issue] = []
+    per_question = data.get("per_question") or []
+    if not isinstance(per_question, list) or not per_question:
+        return issues
+
+    raw_responses = data.get("raw_responses")
+    if raw_responses is None:
+        issues.append(
+            Issue(
+                code="RAW_RESPONSES_MISSING",
+                severity=Severity.WARNING,
+                message=(
+                    "submission has no 'raw_responses' field — required "
+                    "for Tier-3 integrity review once schema version "
+                    "graduates (see SUBMISSIONS.md)"
+                ),
+                path="raw_responses",
+            )
+        )
+        return issues
+
+    if not isinstance(raw_responses, list):
+        issues.append(
+            Issue(
+                code="RAW_RESPONSES_TYPE",
+                severity=Severity.WARNING,
+                message="'raw_responses' must be a list of samples",
+                path="raw_responses",
+            )
+        )
+        return issues
+
+    # Coverage check: fraction of questions that carry a sample.
+    total_questions = len(per_question)
+    min_required = max(1, int(math.ceil(total_questions * RAW_RESPONSE_MIN_COVERAGE)))
+    if len(raw_responses) < min_required:
+        issues.append(
+            Issue(
+                code="RAW_RESPONSES_COVERAGE",
+                severity=Severity.WARNING,
+                message=(
+                    f"raw_responses has {len(raw_responses)} entries but "
+                    f"{total_questions} questions require at least "
+                    f"{min_required} samples "
+                    f"({RAW_RESPONSE_MIN_COVERAGE:.0%} coverage)"
+                ),
+                path="raw_responses",
+            )
+        )
+
+    # Per-sample shape, length, and mode-agreement checks.
+    model_dist_by_key: dict[str, Mapping[str, Any]] = {}
+    for q in per_question:
+        if not isinstance(q, dict):
+            continue
+        key = q.get("key")
+        dist = q.get("model_distribution")
+        if isinstance(key, str) and isinstance(dist, dict):
+            model_dist_by_key[key] = dist
+
+    lengths: list[int] = []
+    for idx, sample in enumerate(raw_responses):
+        if not isinstance(sample, dict):
+            issues.append(
+                Issue(
+                    code="RAW_RESPONSES_SHAPE",
+                    severity=Severity.WARNING,
+                    message="raw_responses entry must be an object",
+                    path=f"raw_responses[{idx}]",
+                )
+            )
+            continue
+        key = sample.get("key")
+        raw_text = sample.get("raw_text")
+        selected = sample.get("selected_option")
+
+        if not isinstance(key, str) or not key:
+            issues.append(
+                Issue(
+                    code="RAW_RESPONSES_SHAPE",
+                    severity=Severity.WARNING,
+                    message="raw_responses entry missing string 'key'",
+                    path=f"raw_responses[{idx}].key",
+                )
+            )
+            continue
+        if not isinstance(raw_text, str) or not raw_text.strip():
+            issues.append(
+                Issue(
+                    code="RAW_RESPONSES_EMPTY",
+                    severity=Severity.WARNING,
+                    message="raw_text is missing or empty",
+                    path=f"raw_responses[{idx}].raw_text",
+                )
+            )
+            continue
+
+        length = len(raw_text)
+        lengths.append(length)
+        if length > RAW_RESPONSE_MAX_LENGTH:
+            issues.append(
+                Issue(
+                    code="RAW_RESPONSES_LENGTH",
+                    severity=Severity.WARNING,
+                    message=(
+                        f"raw_text length {length} exceeds "
+                        f"{RAW_RESPONSE_MAX_LENGTH}"
+                    ),
+                    path=f"raw_responses[{idx}].raw_text",
+                )
+            )
+
+        # Mode-agreement: the selected option should be in the top set of
+        # the reported model_distribution. We accept any option that is
+        # tied for the max probability (within 1e-6).
+        dist = model_dist_by_key.get(key)
+        if dist is not None and isinstance(selected, str) and dist:
+            numeric_items = [
+                (opt, float(val))
+                for opt, val in dist.items()
+                if _is_number(val)
+            ]
+            if numeric_items:
+                top = max(p for _, p in numeric_items)
+                top_opts = {opt for opt, p in numeric_items if abs(p - top) <= 1e-6}
+                if selected not in top_opts:
+                    issues.append(
+                        Issue(
+                            code="RAW_RESPONSES_MODE",
+                            severity=Severity.WARNING,
+                            message=(
+                                f"selected_option {selected!r} not in top-"
+                                f"probability set {sorted(top_opts)} of "
+                                f"model_distribution for {key}"
+                            ),
+                            path=f"raw_responses[{idx}].selected_option",
+                        )
+                    )
+
+    # Length-distribution sanity: catch the "all 1-char" / "all 10k-char"
+    # fabricator that doesn't bother writing plausible model output.
+    if lengths:
+        short = sum(1 for length in lengths if length <= RAW_RESPONSE_MIN_LENGTH)
+        long_ = sum(1 for length in lengths if length >= RAW_RESPONSE_MAX_LENGTH)
+        n = len(lengths)
+        if short / n >= RAW_RESPONSE_SHORT_FRACTION_LIMIT:
+            issues.append(
+                Issue(
+                    code="RAW_RESPONSES_LENGTH_SHORT",
+                    severity=Severity.WARNING,
+                    message=(
+                        f"{short}/{n} raw_responses are <= "
+                        f"{RAW_RESPONSE_MIN_LENGTH} char(s) — suspiciously "
+                        f"short for natural model output"
+                    ),
+                    path="raw_responses",
+                )
+            )
+        if long_ / n >= RAW_RESPONSE_LONG_FRACTION_LIMIT:
+            issues.append(
+                Issue(
+                    code="RAW_RESPONSES_LENGTH_LONG",
+                    severity=Severity.WARNING,
+                    message=(
+                        f"{long_}/{n} raw_responses are >= "
+                        f"{RAW_RESPONSE_MAX_LENGTH} chars — suspicious"
+                    ),
+                    path="raw_responses",
+                )
+            )
+
+    return issues
+
+
+def _validate_reproducibility_metadata(data: Mapping[str, Any]) -> list[Issue]:
+    """Warn when reproducibility metadata fields are missing or malformed.
+
+    Submissions should carry a ``reproducibility`` block containing
+    :data:`REQUIRED_REPRODUCIBILITY` fields. Each missing or blank field
+    surfaces a separate warning so the reviewer sees exactly which
+    piece of metadata needs to be filled in.
+    """
+    issues: list[Issue] = []
+    repro = data.get("reproducibility")
+
+    if repro is None:
+        issues.append(
+            Issue(
+                code="REPRO_MISSING",
+                severity=Severity.WARNING,
+                message=(
+                    "submission has no 'reproducibility' block — required "
+                    "for Tier-3 spot-check auditing (see SUBMISSIONS.md)"
+                ),
+                path="reproducibility",
+            )
+        )
+        return issues
+
+    if not isinstance(repro, dict):
+        issues.append(
+            Issue(
+                code="REPRO_TYPE",
+                severity=Severity.WARNING,
+                message="'reproducibility' must be an object",
+                path="reproducibility",
+            )
+        )
+        return issues
+
+    for field_name in REQUIRED_REPRODUCIBILITY:
+        if field_name not in repro:
+            issues.append(
+                Issue(
+                    code="REPRO_FIELD_MISSING",
+                    severity=Severity.WARNING,
+                    message=f"reproducibility.{field_name} is required",
+                    path=f"reproducibility.{field_name}",
+                )
+            )
+            continue
+        value = repro[field_name]
+        if field_name == "seed":
+            if value is not None and not isinstance(value, (int, float)):
+                issues.append(
+                    Issue(
+                        code="REPRO_FIELD_TYPE",
+                        severity=Severity.WARNING,
+                        message="reproducibility.seed must be numeric or null",
+                        path="reproducibility.seed",
+                    )
+                )
+        elif not isinstance(value, str) or not value.strip():
+            issues.append(
+                Issue(
+                    code="REPRO_FIELD_EMPTY",
+                    severity=Severity.WARNING,
+                    message=(
+                        f"reproducibility.{field_name} must be a non-empty string"
+                    ),
+                    path=f"reproducibility.{field_name}",
+                )
+            )
+    return issues
+
+
+# ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
 
@@ -757,6 +1049,8 @@ def validate_submission(
     expected_question_hash: str | None = None,
     tier1: bool = True,
     tier2: bool = True,
+    tier3: bool = False,
+    peers: Iterable[Mapping[str, Any]] = (),
 ) -> ValidationReport:
     """Run the configured tiers of validation against a submission.
 
@@ -769,6 +1063,12 @@ def validate_submission(
         tier2: When ``True``, run tier 2 (recomputation). Tier 2 is only
             useful when the schema gate passes, so it is skipped if tier 1
             surfaces any errors.
+        tier3: When ``True``, run tier 3 (statistical anomaly detection,
+            raw-response samples, reproducibility metadata). Tier 3
+            issues are WARNINGS by default — enable ``--strict`` at the
+            CLI to fail the run on any warning.
+        peers: Optional iterable of peer submission dicts used by the
+            peer-distribution outlier detector. Ignored outside tier 3.
     """
 
     report = ValidationReport(source=source)
@@ -788,6 +1088,16 @@ def validate_submission(
         report.extend(_validate_per_question_metrics(data))
         report.extend(_validate_aggregate_recomputation(data))
 
+    if tier3 and isinstance(data, dict):
+        # Import here to avoid a module-load cycle: anomaly.py imports
+        # Issue/Severity from this module.
+        from synthbench.anomaly import tier3_checks
+
+        mapping: Mapping[str, Any] = data  # type: ignore[assignment]
+        report.extend(_validate_raw_responses(mapping))
+        report.extend(_validate_reproducibility_metadata(mapping))
+        report.extend(tier3_checks(mapping, peers=peers))
+
     return report
 
 
@@ -797,6 +1107,8 @@ def validate_file(
     expected_question_hash: str | None = None,
     tier1: bool = True,
     tier2: bool = True,
+    tier3: bool = False,
+    peers: Iterable[Mapping[str, Any]] = (),
 ) -> ValidationReport:
     """Load a JSON file and validate it. Errors are wrapped as report issues."""
 
@@ -831,4 +1143,6 @@ def validate_file(
         expected_question_hash=expected_question_hash,
         tier1=tier1,
         tier2=tier2,
+        tier3=tier3,
+        peers=peers,
     )

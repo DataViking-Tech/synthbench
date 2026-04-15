@@ -37,6 +37,47 @@ def _sum_per_question_usage(per_q: list[QuestionResult]) -> dict | None:
     }
 
 
+def _build_reproducibility_block(result: BenchmarkResult) -> dict:
+    """Build the Tier-3 reproducibility metadata block.
+
+    Fields sourced directly from ``result.config`` when the runner /
+    caller populated them; otherwise populated with safe defaults
+    (framework_version and submitted_at always auto-populated).
+    The remaining hashes (``model_revision_hash``, ``prompt_template_hash``)
+    default to ``""`` — the validator warns when they're blank, so
+    submitters know to fill them in before opening a PR.
+    """
+    cfg = result.config
+    return {
+        "seed": cfg.get("seed"),
+        "model_revision_hash": cfg.get("model_revision_hash", ""),
+        "prompt_template_hash": cfg.get("prompt_template_hash", ""),
+        "framework_version": cfg.get("framework_version", __version__),
+        "submitted_at": cfg.get(
+            "submitted_at", datetime.now(timezone.utc).isoformat()
+        ),
+    }
+
+
+def _build_raw_responses(per_q: list[QuestionResult]) -> list[dict]:
+    """Collect preserved raw response samples for Tier-3 audits."""
+    samples: list[dict] = []
+    for q in per_q:
+        if not q.raw_sample:
+            continue
+        raw_text = q.raw_sample.get("raw_text")
+        if not isinstance(raw_text, str) or not raw_text.strip():
+            continue
+        samples.append(
+            {
+                "key": q.key,
+                "raw_text": raw_text,
+                "selected_option": q.raw_sample.get("selected_option", ""),
+            }
+        )
+    return samples
+
+
 def to_json(result: BenchmarkResult) -> dict:
     """Convert a benchmark result to a JSON-serializable dict."""
     scores: dict[str, object] = {
@@ -76,6 +117,8 @@ def to_json(result: BenchmarkResult) -> dict:
             "parse_failure_rate": round(parse_failure_rate, 6),
             "topic_filter": result.config.get("topic"),
         },
+        "reproducibility": _build_reproducibility_block(result),
+        "raw_responses": _build_raw_responses(result.questions),
         "scores": scores,
         "aggregate": {
             "mean_jsd": round(result.mean_jsd, 6),

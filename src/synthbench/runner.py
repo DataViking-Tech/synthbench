@@ -78,6 +78,14 @@ class QuestionResult:
     Shape: {"input_tokens": int, "output_tokens": int, "call_count": int}.
     None when the provider did not report usage for any sample.
     """
+    raw_sample: dict | None = None
+    """One preserved raw response (text + selected option) for submission audits.
+
+    Shape: ``{"raw_text": str, "selected_option": str}``. ``None`` when the
+    provider didn't return raw text (e.g. native distribution providers that
+    expose probabilities but no per-sample strings). See ``raw_responses``
+    in :mod:`synthbench.validation` for the Tier-3 audit use case.
+    """
 
 
 def _aggregate_token_usage(responses: list[Response]) -> dict | None:
@@ -374,6 +382,7 @@ class BenchmarkRunner:
         """Sample the provider and compute metrics for one question."""
         model_refusal_rate = 0.0
         token_usage: dict | None = None
+        raw_sample: dict | None = None
 
         if self.provider.supports_distribution:
             dist = await self.provider.get_distribution(
@@ -387,12 +396,19 @@ class BenchmarkRunner:
             n_parse_failures = 0
             if dist.metadata:
                 token_usage = dist.metadata.get("usage")
+                sampled = dist.metadata.get("raw_sample")
+                if isinstance(sampled, dict) and sampled.get("raw_text"):
+                    raw_sample = {
+                        "raw_text": str(sampled["raw_text"]),
+                        "selected_option": str(sampled.get("selected_option", "")),
+                    }
         else:
             (
                 responses,
                 refusals,
                 parse_fails,
                 token_usage,
+                raw_sample,
             ) = await self._collect_samples_with_refusals(question)
             counts = Counter(responses)
             total = len(responses) + refusals
@@ -425,6 +441,7 @@ class BenchmarkRunner:
             human_refusal_rate=human_refusal_rate,
             temporal_year=wave_year(question.survey),
             token_usage=token_usage,
+            raw_sample=raw_sample,
         )
 
     async def _run_batched(
@@ -502,12 +519,14 @@ class BenchmarkRunner:
 
     async def _collect_samples_with_refusals(
         self, question: Question, persona: PersonaSpec | None = None
-    ) -> tuple[list[str], int, int, dict | None]:
+    ) -> tuple[list[str], int, int, dict | None, dict | None]:
         """Call the provider samples_per_question times, tracking refusals.
 
         Returns (selected_options, refusal_count, parse_failure_count,
-        token_usage). token_usage is the summed per-sample usage dict, or
-        None if no sample reported usage.
+        token_usage, raw_sample). token_usage is the summed per-sample
+        usage dict, or None if no sample reported usage. raw_sample is
+        the first non-refusal response preserved for Tier-3 auditing, or
+        None if every sample was a refusal / parse failure.
         """
 
         async def _one_sample():
@@ -529,7 +548,20 @@ class BenchmarkRunner:
             if not r.refusal and r.selected_option not in valid_options
         )
         token_usage = _aggregate_token_usage(results)
-        return selected, refusals, parse_failures, token_usage
+
+        # Preserve the first non-refusal raw response as an audit sample.
+        raw_sample: dict | None = None
+        for r in results:
+            if r.refusal:
+                continue
+            if r.raw_text and r.selected_option in valid_options:
+                raw_sample = {
+                    "raw_text": r.raw_text,
+                    "selected_option": r.selected_option,
+                }
+                break
+
+        return selected, refusals, parse_failures, token_usage, raw_sample
 
     async def _sample_distribution(
         self, question: Question, persona: PersonaSpec | None = None
@@ -549,6 +581,7 @@ class BenchmarkRunner:
                 _refusals,
                 _fails,
                 _usage,
+                _raw,
             ) = await self._collect_samples_with_refusals(question, persona=persona)
             total = len(responses) + _refusals
             counts = Counter(responses)
