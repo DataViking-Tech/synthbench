@@ -96,18 +96,25 @@ After a PR that adds a migration merges:
 3. Optional: `supabase migration list --linked` locally (read-only) confirms
    the same.
 
-## Pre-existing remote-only migrations
+## Pre-existing remote-only migrations (backfilled as stubs)
 
-Two migrations exist on the prod remote that are NOT in this repo:
+Two migrations exist on the prod remote that were originally applied via the
+Supabase dashboard before migration tracking moved in-repo (covers
+`user_profiles` sb-8o4, `data_access_log` sb-io1):
 
 - `20260415065524_cf_gate_identity_layer`
 - `20260415065540_harden_touch_updated_at`
 
-These were the original identity-layer provisioning done through the
-dashboard before migration tracking moved in-repo (covers `user_profiles`
-sb-8o4, `data_access_log` sb-io1). They are intentionally not backfilled
-into the repo; the CI drift check only fails on *local-only* drift, not
-*remote-only*, so these are harmless.
+`supabase db push --include-all` rejects *remote-only* drift the same way it
+rejects *local-only* drift — every version in the remote `schema_migrations`
+table needs a matching file. These two are therefore backfilled as **no-op
+stubs** (`select 1;` plus a header comment pointing here). The remote
+`schema_migrations` rows predate the stub files, so `db push` sees the
+versions as already applied and never executes the stub bodies against prod.
+
+The real DDL lives only in the production schema and is not reconstructed
+here. Future changes to those tables must add new migrations in this
+directory like any other schema change.
 
 ## See also
 

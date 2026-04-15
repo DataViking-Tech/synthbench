@@ -1,0 +1,13 @@
+-- Stub backfill: this migration was applied to the remote Supabase prior to
+-- repo-side migration tracking. Real DDL lives in the production schema; this
+-- file exists purely to satisfy `supabase db push` version reconciliation, so
+-- the remote `schema_migrations` row `20260415065524` matches a local file.
+--
+-- Provisioned the cf-gate identity layer: `public.user_profiles` (sb-8o4) and
+-- related policies. Applied via the Supabase dashboard before the in-repo
+-- discipline established in sb-i8yk. See DATABASE-MIGRATIONS.md for history.
+--
+-- `supabase db push` treats this version as already applied (the remote
+-- `schema_migrations` row predates this file), so the SELECT below never runs
+-- against prod — it is here only so the version is not "local-only drift".
+select 1;
