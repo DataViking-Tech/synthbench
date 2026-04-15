@@ -219,11 +219,6 @@ const leaderboardUrl = `${base}/leaderboard`;
     return best ?? "—";
   }
 
-  function truncate(s: string, max: number): string {
-    if (!s) return "";
-    return s.length > max ? `${s.slice(0, max)}…` : s;
-  }
-
   function escapeHtml(s: unknown): string {
     return String(s ?? "")
       .replace(/&/g, "&amp;")
@@ -393,7 +388,7 @@ const leaderboardUrl = `${base}/leaderboard`;
                 <span class="pq-caret mt-0.5 text-xs text-muted" aria-hidden="true">▸</span>
                 <span>
                   <span class="pq-key font-mono text-xs text-muted block">${escapeHtml(row.key)}</span>
-                  <span class="pq-text block max-w-xl text-xs text-muted">${escapeHtml(truncate(row.text ?? "", 110))}</span>
+                  <span class="pq-text block max-w-xl text-xs text-muted">${escapeHtml(row.text ?? "")}</span>
                 </span>
               </button>
             </td>
