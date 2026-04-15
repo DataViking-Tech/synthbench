@@ -211,11 +211,6 @@ const exploreUrl = `${base}/explore`;
       .replace(/'/g, "&#39;");
   }
 
-  function truncate(s: string, max: number): string {
-    if (!s) return "";
-    return s.length > max ? `${s.slice(0, max)}…` : s;
-  }
-
   function modalKey(dist: Record<string, number> | undefined): string {
     if (!dist) return "—";
     let best: string | null = null;
@@ -621,7 +616,7 @@ const exploreUrl = `${base}/explore`;
                 <span class="fq-caret mt-0.5 text-xs text-muted" aria-hidden="true">▸</span>
                 <span>
                   <span class="font-mono text-xs text-muted block">${escapeHtml(row.key)}</span>
-                  <span class="block max-w-xl text-xs text-muted">${escapeHtml(truncate(row.text, 110))}</span>
+                  <span class="block max-w-xl text-xs text-muted">${escapeHtml(row.text ?? "")}</span>
                 </span>
               </button>
             </td>

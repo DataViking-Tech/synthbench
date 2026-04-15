@@ -18,8 +18,11 @@ build/
 .venv/
 venv/
 
-# SynthBench data & results (downloaded, not committed)
-/data/
+# SynthBench data & results (downloaded, not committed). Everything under /data
+# is gitignored *except* the question-text registries — those are committed
+# fixtures used by publish.py to rehydrate historical truncated text (sb-x2k).
+/data/*
+!/data/question-text-registries/
 /results/
 *.json.bak
 
