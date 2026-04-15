@@ -72,6 +72,23 @@ jobs:
       - name: Verify publish integrity (sb-4zy)
         run: python3 scripts/verify-publish-integrity.py
 
+      - name: Load Supabase public keys for Astro build
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Astro client needs PUBLIC_-prefixed env vars baked at build time.
+          # Source from synthbench/prd Doppler (where Supabase product secrets live).
+          for src in SUPABASE_URL:PUBLIC_SUPABASE_URL SUPABASE_ANON_KEY:PUBLIC_SUPABASE_ANON_KEY; do
+            from="${src%%:*}"; to="${src##*:}"
+            value=$(doppler secrets get "$from" --project synthbench --config prd --plain)
+            echo "::add-mask::$value"
+            printf '%s<<__SB_EOF__
+%s
+__SB_EOF__
+' "$to" "$value" >> "$GITHUB_ENV"
+          done
+
       - name: Build Astro site
         working-directory: site
         env:
