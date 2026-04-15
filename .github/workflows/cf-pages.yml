@@ -83,10 +83,7 @@ jobs:
             from="${src%%:*}"; to="${src##*:}"
             value=$(doppler secrets get "$from" --project synthbench --config prd --plain)
             echo "::add-mask::$value"
-            printf '%s<<__SB_EOF__
-%s
-__SB_EOF__
-' "$to" "$value" >> "$GITHUB_ENV"
+            printf '%s<<__SB_EOF__\n%s\n__SB_EOF__\n' "$to" "$value" >> "$GITHUB_ENV"
           done
 
       - name: Build Astro site
