@@ -88,6 +88,10 @@ class OllamaProvider(Provider):
     def name(self) -> str:
         return f"ollama/{self._model}"
 
+    @property
+    def prompt_template_source(self) -> str:
+        return _SYSTEM + "\n" + _PROMPT_TEMPLATE
+
     async def respond(
         self, question: str, options: list[str], *, persona: PersonaSpec | None = None
     ) -> Response:

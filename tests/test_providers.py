@@ -175,3 +175,40 @@ async def test_ollama_usage_none(monkeypatch):
     resp = await provider.respond("Q?", ["alpha", "beta"])
     # Ollama deliberately ignores any usage — keep null for type consistency.
     assert resp.metadata["usage"] is None
+
+
+# ---------- prompt_template_source (sb-okdx) ----------
+#
+# Every provider that sends a prompt to a model must expose a non-empty
+# prompt_template_source so the runner can derive a stable Tier-3
+# prompt_template_hash. If a provider omits this, its submissions will
+# silently hash to the empty-string digest and Tier-3 drift detection
+# becomes useless.
+
+
+def test_raw_anthropic_exposes_prompt_template_source(monkeypatch):
+    pytest.importorskip("anthropic")
+    from synthbench.providers.raw_anthropic import RawAnthropicProvider
+
+    p = RawAnthropicProvider(model="claude-haiku-4-5")
+    p._client = SimpleNamespace(close=AsyncMock())
+    assert "Respond with ONLY the letter" in p.prompt_template_source
+
+
+def test_raw_openai_exposes_prompt_template_source(monkeypatch):
+    pytest.importorskip("openai")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    from synthbench.providers.raw_openai import RawOpenAIProvider
+
+    p = RawOpenAIProvider(model="gpt-4o-mini")
+    p._client = SimpleNamespace(close=AsyncMock())
+    assert "Respond with ONLY the letter" in p.prompt_template_source
+
+
+def test_baseline_providers_have_empty_template():
+    """Baselines don't prompt a model — empty template is the honest answer."""
+    from synthbench.providers.random_baseline import RandomBaselineProvider
+    from synthbench.providers.majority_baseline import MajorityBaselineProvider
+
+    assert RandomBaselineProvider().prompt_template_source == ""
+    assert MajorityBaselineProvider().prompt_template_source == ""

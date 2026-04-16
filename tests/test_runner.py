@@ -574,3 +574,73 @@ class TestAggregateTokenUsage:
 
     def test_empty_responses_returns_none(self):
         assert _aggregate_token_usage([]) is None
+
+
+# --- Reproducibility hashes (sb-okdx) ---
+
+
+class _CustomTemplateProvider(Provider):
+    """Provider whose prompt_template_source is distinct from MockProvider's."""
+
+    @property
+    def name(self) -> str:
+        return "custom/v2"
+
+    @property
+    def prompt_template_source(self) -> str:
+        return "SYSTEM: be terse\nUSER: {question}"
+
+    async def respond(
+        self, question: str, options: list[str], *, persona: PersonaSpec | None = None
+    ) -> Response:
+        return Response(selected_option=options[0])
+
+
+@pytest.mark.asyncio
+async def test_runner_populates_reproducibility_hashes(mock_dataset, mock_provider):
+    """BenchmarkResult.config must carry sha256-prefixed repro hashes."""
+    runner = BenchmarkRunner(
+        dataset=mock_dataset, provider=mock_provider, samples_per_question=2
+    )
+    result = await runner.run(n=1)
+
+    mrh = result.config["model_revision_hash"]
+    pth = result.config["prompt_template_hash"]
+    assert mrh.startswith("sha256:") and len(mrh) == len("sha256:") + 64
+    assert pth.startswith("sha256:") and len(pth) == len("sha256:") + 64
+
+
+@pytest.mark.asyncio
+async def test_reproducibility_hashes_change_with_provider(mock_dataset, mock_provider):
+    """Different providers must produce different revision + template hashes."""
+    runner_a = BenchmarkRunner(
+        dataset=mock_dataset, provider=mock_provider, samples_per_question=2
+    )
+    runner_b = BenchmarkRunner(
+        dataset=mock_dataset,
+        provider=_CustomTemplateProvider(),
+        samples_per_question=2,
+    )
+    a = (await runner_a.run(n=1)).config
+    b = (await runner_b.run(n=1)).config
+
+    assert a["model_revision_hash"] != b["model_revision_hash"]
+    assert a["prompt_template_hash"] != b["prompt_template_hash"]
+
+
+@pytest.mark.asyncio
+async def test_reproducibility_hashes_pass_tier3_strict(mock_dataset, mock_provider):
+    """Runner output must clear the Tier-3 REPRO_FIELD_EMPTY gate under --strict."""
+    from synthbench import report
+    from synthbench.validation import _validate_reproducibility_metadata
+
+    runner = BenchmarkRunner(
+        dataset=mock_dataset, provider=mock_provider, samples_per_question=2
+    )
+    result = await runner.run(n=1)
+    payload = report.to_json(result)
+
+    issues = _validate_reproducibility_metadata(payload)
+    repro_codes = {i.code for i in issues}
+    assert "REPRO_FIELD_EMPTY" not in repro_codes
+    assert "REPRO_FIELD_MISSING" not in repro_codes

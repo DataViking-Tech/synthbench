@@ -118,6 +118,18 @@ class Provider(ABC):
         """
         return False
 
+    @property
+    def prompt_template_source(self) -> str:
+        """Deterministic representation of the prompt surface this provider uses.
+
+        Used by the harness to derive ``reproducibility.prompt_template_hash``
+        so Tier-3 validation can detect prompt drift between submissions.
+        Providers that send text to a model should override this to return
+        the literal system + user template strings. Providers that don't
+        send a prompt (baselines) can leave it empty.
+        """
+        return ""
+
     async def close(self) -> None:
         """Clean up resources (HTTP clients, etc.)."""
         pass

@@ -252,6 +252,28 @@ class SynthPanelProvider(Provider):
     def supports_batch(self) -> bool:
         return True
 
+    @property
+    def prompt_template_source(self) -> str:
+        """Hash-stable representation of the prompt surface.
+
+        Uses a sentinel question + options so we capture the full literal
+        shape of the user prompt without depending on runtime question data.
+        When ``--prompt-template`` points to a file, its contents are
+        appended so the hash reflects that override too.
+        """
+        sentinel_q = "__synthbench_prompt_template_hash_probe__"
+        sentinel_opts = ["__opt_A__", "__opt_B__"]
+        system = _build_system_prompt(None)
+        user_text = _build_question_text(sentinel_q, sentinel_opts)
+        base = system + "\n" + user_text
+        if self._prompt_template:
+            try:
+                override = Path(self._prompt_template).read_text()
+            except OSError:
+                override = ""
+            base += "\n---template---\n" + override
+        return base
+
     # ==================================================================
     # respond()
     # ==================================================================

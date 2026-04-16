@@ -43,9 +43,11 @@ def _build_reproducibility_block(result: BenchmarkResult) -> dict:
     Fields sourced directly from ``result.config`` when the runner /
     caller populated them; otherwise populated with safe defaults
     (framework_version and submitted_at always auto-populated).
-    The remaining hashes (``model_revision_hash``, ``prompt_template_hash``)
-    default to ``""`` — the validator warns when they're blank, so
-    submitters know to fill them in before opening a PR.
+    ``BenchmarkRunner.run()`` populates ``model_revision_hash`` and
+    ``prompt_template_hash`` from the active provider so Tier-3 strict
+    validation passes out of the box. Submitters building ad-hoc
+    BenchmarkResults should populate these explicitly or they will
+    default to ``""`` and the validator will warn.
     """
     cfg = result.config
     return {
