@@ -273,7 +273,17 @@ def tier3_checks(
     *,
     peers: Iterable[Mapping[str, Any]] = (),
 ) -> list[Issue]:
-    """Run every tier-3 anomaly detector and return the list of issues."""
+    """Run every tier-3 anomaly detector and return the list of issues.
+
+    Note: ``check_missing_refusals`` is intentionally *not* called from
+    the default dispatch. Every current provider prompt in
+    ``src/synthbench/providers/`` ends with ``"Respond with ONLY the
+    letter of your choice"`` and gives the model no way to refuse — the
+    harness architecturally produces ``model_refusal_rate == 0`` on
+    every question, so the detector flagged every legitimate submission
+    (sb-a613). The function is kept exported so callers can invoke it
+    directly once a refusal-capable prompt variant exists.
+    """
     per_question = data.get("per_question") or []
     if not isinstance(per_question, list):
         return []
@@ -283,10 +293,6 @@ def tier3_checks(
     perfection = check_suspicious_perfection(per_question)
     if perfection is not None:
         issues.append(perfection)
-
-    no_refusal = check_missing_refusals(per_question)
-    if no_refusal is not None:
-        issues.append(no_refusal)
 
     peer_outlier = check_peer_distribution_outlier(data, peers)
     if peer_outlier is not None:

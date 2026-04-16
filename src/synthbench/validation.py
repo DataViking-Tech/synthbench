@@ -544,48 +544,23 @@ def _validate_counts(data: Mapping[str, Any]) -> list[Issue]:
 def _validate_parse_failure_plausibility(
     data: Mapping[str, Any],
 ) -> list[Issue]:
-    """Warn when reported parse-failure rates look implausibly clean.
+    """Retired detector — retained as a no-op for API compatibility.
 
-    A legitimate run on a non-trivial dataset with >=500 samples that
-    never encounters a single parse failure is suspicious — not wrong,
-    just worth flagging for manual review.
+    The original check flagged zero-parse-failure runs as suspicious. That
+    premise doesn't hold for SynthBench: every provider prompt ends with
+    ``"Respond with ONLY the letter of your choice"``, which reliably
+    produces parseable single-letter output from any well-behaved modern
+    LLM. Zero parse failures is therefore the *expected* baseline, not a
+    fabrication signal, and the detector produced false positives on every
+    honest MCQ run at production scale (sb-a613).
+
+    Left in place to avoid breaking callers that import it directly; the
+    function simply returns no issues. A future iteration that adds a
+    refusal / free-text channel to the prompt can reintroduce a parse-rate
+    check against a per-provider expected floor.
     """
-
-    issues: list[Issue] = []
-    per_question = data.get("per_question") or []
-    if not isinstance(per_question, list) or not per_question:
-        return issues
-
-    config = data.get("config") or {}
-    provider = str(config.get("provider", ""))
-    if "baseline" in provider or provider.startswith("ensemble/"):
-        return issues
-
-    total_samples = 0
-    total_failures = 0
-    for q in per_question:
-        if not isinstance(q, dict):
-            continue
-        n_samples = q.get("n_samples", 0) or 0
-        n_parse_failures = q.get("n_parse_failures", 0) or 0
-        if _is_number(n_samples):
-            total_samples += int(n_samples)
-        if _is_number(n_parse_failures):
-            total_failures += int(n_parse_failures)
-
-    if total_samples >= 500 and total_failures == 0 and len(per_question) >= 50:
-        issues.append(
-            Issue(
-                code="PARSE_SUSPICIOUS",
-                severity=Severity.WARNING,
-                message=(
-                    f"zero parse failures across {total_samples} samples on "
-                    f"{len(per_question)} questions — verify parse pipeline"
-                ),
-                path="per_question",
-            )
-        )
-    return issues
+    del data  # deliberately unused
+    return []
 
 
 def _validate_private_holdout(data: Mapping[str, Any]) -> list[Issue]:
@@ -683,11 +658,27 @@ def _validate_private_holdout(data: Mapping[str, Any]) -> list[Issue]:
         sps_public = split.get("sps_public")
         sps_private = split.get("sps_private")
         delta = split.get("delta")
+        split_n_public = split.get("n_public")
+        split_n_private = split.get("n_private")
+
+        # SPS is a bounded-variance mean over the subset, so per-subset
+        # sampling noise scales as ~1/sqrt(n). At n_private ≈ 13 (the
+        # haiku n=100 case from sb-a613) the observed legitimate delta is
+        # ~0.07 — well above the flat 0.05 floor. Widen the threshold for
+        # small subsets so partial / sampled runs don't false-positive,
+        # but keep the 0.05 floor on production-scale submissions where
+        # sampling noise is negligible and fabrication deltas (~0.2+)
+        # still blow past any reasonable bound.
+        min_side = 1
+        if isinstance(split_n_public, int) and isinstance(split_n_private, int):
+            min_side = max(1, min(split_n_public, split_n_private))
+        effective_threshold = max(SPS_DIVERGENCE_THRESHOLD, 0.5 / math.sqrt(min_side))
+
         if (
             isinstance(delta, (int, float))
             and isinstance(sps_public, (int, float))
             and isinstance(sps_private, (int, float))
-            and float(delta) > SPS_DIVERGENCE_THRESHOLD
+            and float(delta) > effective_threshold
         ):
             issues.append(
                 Issue(
@@ -697,7 +688,8 @@ def _validate_private_holdout(data: Mapping[str, Any]) -> list[Issue]:
                         f"sps_public={float(sps_public):.4f} vs "
                         f"sps_private={float(sps_private):.4f} "
                         f"(delta={float(delta):.4f}) exceeds "
-                        f"threshold {SPS_DIVERGENCE_THRESHOLD}. "
+                        f"threshold {effective_threshold:.4f} "
+                        f"(min_side={min_side}). "
                         "Suspicious — may indicate fabrication, contamination, "
                         "or a legitimate distribution shift worth reviewing."
                     ),
@@ -978,13 +970,17 @@ def _validate_raw_responses(data: Mapping[str, Any]) -> list[Issue]:
 
     # Per-sample shape, length, and mode-agreement checks.
     model_dist_by_key: dict[str, Mapping[str, Any]] = {}
+    n_samples_by_key: dict[str, int] = {}
     for q in per_question:
         if not isinstance(q, dict):
             continue
         key = q.get("key")
         dist = q.get("model_distribution")
+        n_samples = q.get("n_samples")
         if isinstance(key, str) and isinstance(dist, dict):
             model_dist_by_key[key] = dist
+            if isinstance(n_samples, (int, float)) and int(n_samples) > 0:
+                n_samples_by_key[key] = int(n_samples)
 
     lengths: list[int] = []
     for idx, sample in enumerate(raw_responses):
@@ -1037,9 +1033,15 @@ def _validate_raw_responses(data: Mapping[str, Any]) -> list[Issue]:
                 )
             )
 
-        # Mode-agreement: the selected option should be in the top set of
-        # the reported model_distribution. We accept any option that is
-        # tied for the max probability (within 1e-6).
+        # Mode-agreement: the selected option must be plausibly sampled
+        # given the reported model_distribution. At s=n_samples the
+        # argmax is only reliable when it leads by more than binomial
+        # sampling noise — roughly 1/sqrt(s). A distribution like
+        # {A:6/15, B:5/15, C:4/15} has top={A} but any of B or C is a
+        # legitimate raw sample (sb-a613). Flag only when the selected
+        # option's probability is substantially below the top, accounting
+        # for sample-count resolution. Any option that didn't appear in
+        # the distribution at all is still a clear arithmetic mismatch.
         dist = model_dist_by_key.get(key)
         if dist is not None and isinstance(selected, str) and dist:
             numeric_items = [
@@ -1047,15 +1049,30 @@ def _validate_raw_responses(data: Mapping[str, Any]) -> list[Issue]:
             ]
             if numeric_items:
                 top = max(p for _, p in numeric_items)
-                top_opts = {opt for opt, p in numeric_items if abs(p - top) <= 1e-6}
-                if selected not in top_opts:
+                selected_p: float | None = next(
+                    (p for opt, p in numeric_items if opt == selected), None
+                )
+                n_samp = n_samples_by_key.get(key)
+                if n_samp and n_samp > 0:
+                    tolerance = 1.0 / math.sqrt(n_samp)
+                else:
+                    # Unknown / missing n_samples: use a generous default
+                    # equivalent to s=16. Keeps the check firing on
+                    # large, clearly-fabricated gaps without requiring
+                    # every submission to carry n_samples.
+                    tolerance = 0.25
+
+                if selected_p is None or (top - selected_p) > tolerance + 1e-6:
+                    top_opts = {opt for opt, p in numeric_items if abs(p - top) <= 1e-6}
                     issues.append(
                         Issue(
                             code="RAW_RESPONSES_MODE",
                             severity=Severity.WARNING,
                             message=(
-                                f"selected_option {selected!r} not in top-"
-                                f"probability set {sorted(top_opts)} of "
+                                f"selected_option {selected!r} probability "
+                                f"{selected_p if selected_p is not None else 'absent'} "
+                                f"is more than {tolerance:.3f} below top "
+                                f"{top:.4f} (top set {sorted(top_opts)}) in "
                                 f"model_distribution for {key}"
                             ),
                             path=f"raw_responses[{idx}].selected_option",

@@ -150,11 +150,14 @@ class TestTier3Dispatch:
         assert tier3_checks({}) == []
 
     def test_aggregates_multiple_issues(self):
-        """A clearly-fabricated submission trips multiple detectors."""
-        pq = [
-            _q(f"Q{i}", jsd=0.001, human_refusal_rate=0.2, model_refusal_rate=0.0)
-            for i in range(20)
-        ]
+        """A fabricated submission trips the perfection detector.
+
+        ``check_missing_refusals`` is intentionally not wired into
+        ``tier3_checks`` — current provider prompts give the model no
+        way to refuse (see anomaly.py docstring). The perfection
+        detector alone covers this fabrication fixture.
+        """
+        pq = [_q(f"Q{i}", jsd=0.001) for i in range(20)]
         data = {
             "config": {"dataset": "globalopinionqa", "provider": "fake/model"},
             "per_question": pq,
@@ -162,7 +165,8 @@ class TestTier3Dispatch:
         issues = tier3_checks(data)
         codes = {i.code for i in issues}
         assert "ANOMALY_PERFECTION" in codes
-        assert "ANOMALY_NO_REFUSAL" in codes
+        # ANOMALY_NO_REFUSAL is retired from the default dispatch.
+        assert "ANOMALY_NO_REFUSAL" not in codes
 
 
 # ---------------------------------------------------------------------------
@@ -267,9 +271,11 @@ class TestFabricationRejection:
         data = _answer_key_copy_submission()
         issues = tier3_checks(data)
         codes = {i.code for i in issues}
-        # Expect BOTH perfection AND no-refusal to fire on this fixture.
+        # Perfection is the primary signature of an answer-key copy and
+        # still fires on this fixture. ANOMALY_NO_REFUSAL is retired
+        # from the default dispatch (see anomaly.tier3_checks docstring).
         assert "ANOMALY_PERFECTION" in codes, codes
-        assert "ANOMALY_NO_REFUSAL" in codes, codes
+        assert "ANOMALY_NO_REFUSAL" not in codes, codes
         assert all(i.severity is Severity.WARNING for i in issues)
 
     def test_near_perfect_but_varied_still_flagged(self):

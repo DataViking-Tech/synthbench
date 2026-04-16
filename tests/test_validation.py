@@ -9,7 +9,6 @@ import pytest
 
 from synthbench.stats import question_set_hash
 from synthbench.validation import (
-    Severity,
     validate_file,
     validate_submission,
 )
@@ -238,9 +237,21 @@ class TestCountMismatch:
 
 
 class TestParseFailurePlausibility:
-    def test_large_zero_failure_run_warns(self, clean_submission):
+    """PARSE_SUSPICIOUS was retired in sb-a613.
+
+    Every provider prompt in ``src/synthbench/providers/`` ends with
+    ``"Respond with ONLY the letter of your choice"``, which reliably
+    yields zero parse failures from any modern MCQ-capable model. The
+    detector false-positived on every real run at production scale and
+    was never able to catch fabrication (fabricators just report
+    non-zero failures). These tests assert the detector is dormant;
+    they intentionally cover the regression behaviour rather than
+    deleting the class, so a future reinstatement is visible in the
+    test diff.
+    """
+
+    def test_large_zero_failure_run_no_longer_warns(self, clean_submission):
         submission = copy.deepcopy(clean_submission)
-        # Extend to 50+ questions with 10 samples each and zero failures.
         base_q = submission["per_question"][0]
         extra = []
         for i in range(60):
@@ -253,12 +264,9 @@ class TestParseFailurePlausibility:
             [q["key"] for q in extra]
         )
         report = validate_submission(submission, tier2=False)
-        assert any(
-            i.code == "PARSE_SUSPICIOUS" and i.severity is Severity.WARNING
-            for i in report.warnings
-        )
+        assert not any(i.code == "PARSE_SUSPICIOUS" for i in report.issues)
 
-    def test_baseline_exempt(self, clean_submission):
+    def test_baseline_still_not_flagged(self, clean_submission):
         submission = copy.deepcopy(clean_submission)
         submission["config"]["provider"] = "random-baseline"
         base_q = submission["per_question"][0]
@@ -582,17 +590,26 @@ class TestRawResponsesValidator:
         assert any(i.code == "RAW_RESPONSES_EMPTY" for i in report.warnings)
 
     def test_mode_mismatch_warns(self, clean_submission):
-        """Selected option must match the top of the model distribution.
-        Use Q_B (not Q_A) because the fixture Q_A has two options tied
-        at the mode, which the validator correctly accepts."""
+        """Selected option whose probability is well below the top and
+        outside sample-count noise must be flagged. Q_B has
+        ``model_distribution = {A:0.6, B:0.3, C:0.1}`` with n_samples=10
+        so the sampling-noise tolerance is ~0.316; picking ``C`` (gap
+        0.5) sits clearly outside that envelope."""
         sub = _with_raw_and_repro(clean_submission)
-        second_q = sub["per_question"][1]  # Q_B: {A:0.6, B:0.3, C:0.1} — A wins.
-        dist = second_q["model_distribution"]
-        top_prob = max(dist.values())
-        non_top = next(opt for opt, prob in dist.items() if abs(prob - top_prob) > 1e-6)
-        sub["raw_responses"][1]["selected_option"] = non_top
+        sub["raw_responses"][1]["selected_option"] = "C"
         report = validate_submission(sub, tier3=True)
         assert any(i.code == "RAW_RESPONSES_MODE" for i in report.warnings)
+
+    def test_mode_within_sampling_noise_not_flagged(self, clean_submission):
+        """A raw sample that picked the second option on a distribution
+        where the gap is within sampling noise must not trip
+        RAW_RESPONSES_MODE (sb-a613). Q_B's 0.6/0.3/0.1 split at
+        n_samples=10 puts ``B`` at a gap of 0.3, just inside the
+        ~1/sqrt(10) ≈ 0.316 tolerance band."""
+        sub = _with_raw_and_repro(clean_submission)
+        sub["raw_responses"][1]["selected_option"] = "B"
+        report = validate_submission(sub, tier3=True)
+        assert not any(i.code == "RAW_RESPONSES_MODE" for i in report.warnings)
 
     def test_all_short_warns(self, clean_submission):
         """All 1-character samples should fire the short-length detector."""
@@ -678,6 +695,180 @@ class TestTier3FabricationEndToEnd:
         # Tier-3 adds raw_responses + repro warnings.
         assert "RAW_RESPONSES_MISSING" in warning_codes
         assert "REPRO_MISSING" in warning_codes
+
+
+class TestSbA613Regression:
+    """End-to-end regression guarding the sb-a613 false-positive cluster.
+
+    The first real API-key submission (openrouter/anthropic/claude-haiku-4-5,
+    n_questions=100, n_samples=15) was rejected under ``--strict`` because
+    Tier-3 fired four warnings that were all artefacts of the current
+    MCQ-only harness rather than fabrication: PARSE_SUSPICIOUS,
+    ANOMALY_NO_REFUSAL, HOLDOUT_DIVERGENCE, and RAW_RESPONSES_MODE.
+    This test rebuilds a shape-equivalent submission and asserts that the
+    pipeline accepts it cleanly under the full tier-1+2+3 strict path.
+    """
+
+    def _haiku_like_submission(self) -> dict:
+        """Minimal approximation of the sb-0qlc submission shape.
+
+        Uses ``opinionsqa`` so the partitioning deterministically lands
+        enough rows on each side of the 80/20 holdout split, even at
+        n=100. Each question ships ``n_samples=15`` with zero parse
+        failures and zero model refusals (architectural for the current
+        provider prompt). One raw sample per ~10 questions is attached,
+        and for the first ten questions the raw sample deliberately
+        picks the second option on a close-distribution question —
+        exactly the legitimate sampling pattern the original detector
+        rejected.
+        """
+
+        from synthbench.metrics.distributional import jensen_shannon_divergence
+        from synthbench.metrics.ranking import kendall_tau_b
+        from synthbench.private_holdout import is_private_holdout
+
+        dataset = "opinionsqa"
+        q_keys: list[str] = []
+        rows: list[dict] = []
+        # Build 100 questions with realistic three-way distributions.
+        # The human distribution varies slightly so mean_jsd is nonzero
+        # but within plausible model output, not near-perfection.
+        import random
+
+        rng = random.Random(0x_A613)
+        n_private = 0
+        i = 0
+        while len(q_keys) < 100:
+            key = f"Q_{rng.getrandbits(48):012x}"
+            if key in q_keys:
+                continue
+            q_keys.append(key)
+            if is_private_holdout(dataset, key):
+                n_private += 1
+            # Human distribution: three options, slightly skewed.
+            h_a = 0.45 + (i % 5) * 0.02
+            h_b = 0.30 - (i % 3) * 0.02
+            h_c = 1.0 - h_a - h_b
+            human = {"A": round(h_a, 4), "B": round(h_b, 4), "C": round(h_c, 4)}
+            # Model distribution:
+            # - First 10 questions: close 6/5/4-style split at s=15 so the
+            #   argmax is only weakly separated (6/15=0.40 vs 5/15=0.33).
+            #   This is the shape that tripped RAW_RESPONSES_MODE on every
+            #   minority-pick raw sample in sb-0qlc.
+            # - Remaining 90: noisy reflection of the human distribution
+            #   so mean_jsd and its std sit in the observed-honest range
+            #   and ANOMALY_PERFECTION stays dormant.
+            if i < 10:
+                model = {
+                    "A": round(6 / 15, 4),
+                    "B": round(5 / 15, 4),
+                    "C": round(4 / 15, 4),
+                }
+            else:
+                m_a = round(max(0.01, min(0.98, h_a + rng.uniform(-0.2, 0.2))), 4)
+                m_b = round(max(0.01, min(0.98, h_b + rng.uniform(-0.2, 0.2))), 4)
+                m_c_raw = 1.0 - m_a - m_b
+                if m_c_raw < 0.01:
+                    # Renormalise if the first two drew too much mass.
+                    scale = 0.99 / (m_a + m_b)
+                    m_a = round(m_a * scale, 4)
+                    m_b = round(m_b * scale, 4)
+                    m_c_raw = 1.0 - m_a - m_b
+                model = {"A": m_a, "B": m_b, "C": round(m_c_raw, 4)}
+            jsd = jensen_shannon_divergence(human, model)
+            tau = kendall_tau_b(human, model)
+            human_refusal = 0.15 if i < 14 else 0.0
+            rows.append(
+                _pq(
+                    key,
+                    human,
+                    model,
+                    jsd,
+                    tau,
+                    n_samples=15,
+                    n_parse_failures=0,
+                    model_refusal_rate=0.0,  # harness has no refusal channel
+                    human_refusal_rate=human_refusal,
+                )
+            )
+            i += 1
+
+        # Coverage requires ≥10% of questions with raw samples: attach 15.
+        # For the first 10, pick the second option ("B") on a close
+        # 6/5/4-style distribution. Pre-fix, this tripped RAW_RESPONSES_MODE
+        # on every minority pick; post-fix, sampling noise tolerates it.
+        raw_responses: list[dict] = []
+        for idx in range(15):
+            q = rows[idx]
+            selected = "B" if idx < 10 else "A"
+            raw_responses.append(
+                {
+                    "key": q["key"],
+                    "raw_text": "A",
+                    "selected_option": selected,
+                }
+            )
+
+        mean_jsd = sum(q["jsd"] for q in rows) / len(rows)
+        mean_tau = sum(q["kendall_tau"] for q in rows) / len(rows)
+        p_dist = 1.0 - mean_jsd
+        p_rank = (1.0 + mean_tau) / 2.0
+        composite = 0.5 * p_dist + 0.5 * p_rank
+
+        return {
+            "benchmark": "synthbench",
+            "version": "0.1.0",
+            "timestamp": "2026-04-15T18:25:27+00:00",
+            "config": {
+                "dataset": dataset,
+                "provider": "openrouter/anthropic/claude-haiku-4-5",
+                "question_set_hash": question_set_hash(q_keys),
+                "parse_failure_rate": 0.0,
+            },
+            "scores": {
+                "sps": composite,
+                "p_dist": p_dist,
+                "p_rank": p_rank,
+                "p_refuse": 1.0,
+            },
+            "aggregate": {
+                "mean_jsd": mean_jsd,
+                "mean_kendall_tau": mean_tau,
+                "composite_parity": composite,
+                "n_questions": len(rows),
+            },
+            "per_question": rows,
+            "raw_responses": raw_responses,
+            "reproducibility": {
+                "seed": 42,
+                "model_revision_hash": "sha256:deadbeef",
+                "prompt_template_hash": "sha256:cafef00d",
+                "framework_version": "0.1.0",
+                "submitted_at": "2026-04-15T18:25:27+00:00",
+            },
+        }
+
+    def test_strict_tier3_accepts_haiku_shaped_submission(self):
+        submission = self._haiku_like_submission()
+        report = validate_submission(submission, tier3=True)
+        blocked = {
+            "PARSE_SUSPICIOUS",
+            "ANOMALY_NO_REFUSAL",
+            "HOLDOUT_DIVERGENCE",
+            "RAW_RESPONSES_MODE",
+        }
+        fired = {i.code for i in report.issues} & blocked
+        assert fired == set(), (
+            "sb-a613 regression: the following Tier-3 codes falsely fired on a "
+            f"legitimate haiku-shaped submission: {sorted(fired)}\n"
+            + "\n".join(i.format() for i in report.issues if i.code in blocked)
+        )
+        # Under --strict, any warning fails the run — make sure we're clean.
+        # Permit only advisory codes that reflect fixture simplifications.
+        allowed = {"RAW_RESPONSES_LENGTH_SHORT"}
+        unexpected = [i for i in report.warnings if i.code not in allowed]
+        assert unexpected == [], "\n".join(i.format() for i in unexpected)
+        assert report.ok
 
 
 class TestFileIO:
