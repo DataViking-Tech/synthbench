@@ -236,17 +236,16 @@ jobs:
 
   merge-ready:
     if: always()
-    # `visual` is intentionally NOT a required input: VRT diffs are sensitive
-    # to runner-OS font rasterization, and we treat it as a signal that gets
-    # investigated per-PR rather than a hard merge gate. Baselines are still
-    # committed and the job still runs.
+    # `visual` is a required gate as of sb-04v: smoke VRT (sb-o3b) proved stable
+    # across 10+ consecutive PRs with Ubuntu-generated baselines. If this job
+    # legitimately fails on intentional visual changes, apply the
+    # `vrt-baseline-update` label to the PR to regenerate baselines.
     needs: [lint, test, site, validate-submissions, visual, worker-data-proxy]
     runs-on: ubuntu-latest
     steps:
       - name: Check required jobs passed
         run: |
-          if [[ "${{ needs.lint.result }}" != "success" || "${{ needs.test.result }}" != "success" || "${{ needs.site.result }}" != "success" || "${{ needs.validate-submissions.result }}" != "success" || "${{ needs.worker-data-proxy.result }}" != "success" ]]; then
+          if [[ "${{ needs.lint.result }}" != "success" || "${{ needs.test.result }}" != "success" || "${{ needs.site.result }}" != "success" || "${{ needs.validate-submissions.result }}" != "success" || "${{ needs.visual.result }}" != "success" || "${{ needs.worker-data-proxy.result }}" != "success" ]]; then
             echo "Required jobs failed"
             exit 1
           fi
-          echo "VRT status (advisory): ${{ needs.visual.result }}"

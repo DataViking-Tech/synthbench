@@ -133,14 +133,16 @@ against itself.
 
 ## CI gate status
 
-VRT is currently **advisory** — the `merge-ready` job does not require the
-`visual` job to succeed. The rationale: during stabilization we want visual
-diffs to surface as a signal reviewers investigate, not a hard blocker that
-spams the merge queue.
+VRT is a **required** gate (sb-04v) — the `merge-ready` job will fail if the
+`visual` job does not succeed. Smoke VRT proved stable across 10+ consecutive
+PRs after sb-o3b landed, with zero unexplained investigation churn, so the
+advisory period ended.
 
-After 3–5 PRs of green VRT with no investigation churn, we will flip VRT to
-a **required** gate in branch protection. The gate flip is a branch-protection change only; no code
-change is required in this repo.
+If the `visual` job fails on a PR that intentionally changes rendered output,
+apply the `vrt-baseline-update` label to regenerate baselines in CI (see the
+"Updating baselines" section above). If it fails on a PR that does **not**
+touch anything visual, investigate before blessing — the decision table below
+still applies.
 
 ## Why only 3 snapshots
 
