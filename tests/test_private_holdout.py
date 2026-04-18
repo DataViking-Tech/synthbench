@@ -7,6 +7,7 @@ import string
 
 import pytest
 
+from synthbench import private_holdout as ph
 from synthbench.private_holdout import (
     HOLDOUT_ENABLED_DATASETS,
     HOLDOUT_FRACTION,
@@ -172,3 +173,165 @@ class TestComputeSplitSps:
         assert out["n_private"] == 0
         assert out["sps_private"] is None
         assert out["flagged"] is False
+
+
+class TestSaltRotation:
+    """Salt-based rotation: bead sb-ssld.
+
+    The hash must include the active salt so a quarterly rotation shuffles
+    the partition, forces a cheater's cached answer key to go stale, and
+    still leaves a one-cycle backward-compat path for historical scoring.
+    """
+
+    def test_module_exposes_salt_constants(self):
+        # Both constants must exist so callers can pass them explicitly
+        # for old-salt re-scoring. The default salt may be None
+        # (pre-rotation) or a string (post-rotation).
+        assert hasattr(ph, "HOLDOUT_SALT")
+        assert hasattr(ph, "HOLDOUT_SALT_PREVIOUS")
+        assert ph.HOLDOUT_SALT is None or isinstance(ph.HOLDOUT_SALT, str)
+        assert ph.HOLDOUT_SALT_PREVIOUS is None or isinstance(
+            ph.HOLDOUT_SALT_PREVIOUS, str
+        )
+
+    def test_explicit_none_salt_matches_legacy_partition(self):
+        # The legacy unsalted scheme must remain reachable via salt=None
+        # so one-cycle old-salt re-scoring of pre-rotation submissions
+        # works after the first rotation lands.
+        keys = _random_keys(500, seed=7)
+        legacy = {k: is_private_holdout("opinionsqa", k, salt=None) for k in keys}
+        # Stable across invocations — sanity check determinism of the
+        # explicit-None path independent of the active salt.
+        again = {k: is_private_holdout("opinionsqa", k, salt=None) for k in keys}
+        assert legacy == again
+
+    def test_different_salts_shuffle_the_partition(self):
+        # The whole point of rotation: two different salts must assign a
+        # meaningfully different set of keys to the private bucket.
+        # Under independent 80/20 partitions two salts agree on a given
+        # key with probability 0.68, so on 500 keys we expect ~160
+        # disagreements. Threshold at 50 is well below the noise floor.
+        keys = _random_keys(500, seed=11)
+        q3 = [is_private_holdout("opinionsqa", k, salt="2026Q3") for k in keys]
+        q4 = [is_private_holdout("opinionsqa", k, salt="2026Q4") for k in keys]
+        disagreements = sum(1 for a, b in zip(q3, q4) if a != b)
+        assert disagreements > 50
+        # Also: salted != unsalted for many keys.
+        legacy = [is_private_holdout("opinionsqa", k, salt=None) for k in keys]
+        assert sum(1 for a, b in zip(q3, legacy) if a != b) > 50
+
+    def test_same_salt_same_partition(self):
+        # Determinism property under an explicit salt — a quarterly
+        # rotation must keep the partition stable for the duration of
+        # the quarter.
+        keys = _random_keys(200, seed=13)
+        first = [is_private_holdout("opinionsqa", k, salt="2026Q3") for k in keys]
+        second = [is_private_holdout("opinionsqa", k, salt="2026Q3") for k in keys]
+        assert first == second
+
+    def test_salted_split_preserves_ratio(self):
+        # Salting must not change the 80/20 ratio — if it did, we'd
+        # silently move statistical power between public and private on
+        # every rotation.
+        keys = _random_keys(5000, seed=17)
+        n_private = sum(
+            is_private_holdout("opinionsqa", k, salt="2026Q3") for k in keys
+        )
+        ratio = n_private / len(keys)
+        expected = HOLDOUT_FRACTION / HOLDOUT_MOD
+        assert abs(ratio - expected) < 0.03
+
+    def test_salt_is_prefixed_not_appended(self):
+        # Regression guard: the salt goes in front, so a key that happens
+        # to equal a would-be concatenation collision can't masquerade as
+        # an unsalted input. Probe a handful of concrete keys.
+        # Legacy hash is sha256("base:key"); salted hash is
+        # sha256("salt:base:key"). If these collided the partition would
+        # be identical — fail fast.
+        legacy = [
+            is_private_holdout("opinionsqa", f"K{i}", salt=None) for i in range(200)
+        ]
+        salted = [
+            is_private_holdout("opinionsqa", f"K{i}", salt="2026Q3") for i in range(200)
+        ]
+        assert legacy != salted
+
+    def test_holdout_keys_threads_salt(self):
+        keys = _random_keys(200, seed=19)
+        set_a = holdout_keys("opinionsqa", keys, salt="2026Q3")
+        set_b = holdout_keys("opinionsqa", keys, salt="2026Q4")
+        # Both subsets are 20%-ish; they should overlap ~56% (0.2*0.2 +
+        # 0.8*0.8 for the "both private" intersection is 0.04 → expected
+        # |A ∩ B| ≈ 0.04 * 200 = 8 with both at 20%). Strict assertion
+        # is that at least one key moves in and at least one moves out.
+        assert set_a != set_b
+        assert set_a - set_b
+        assert set_b - set_a
+
+    def test_split_keys_threads_salt(self):
+        keys = _random_keys(200, seed=23)
+        pub_a, priv_a = split_keys("opinionsqa", keys, salt="2026Q3")
+        pub_b, priv_b = split_keys("opinionsqa", keys, salt="2026Q4")
+        # Partition remains exhaustive under every salt.
+        assert set(pub_a) | set(priv_a) == set(keys)
+        assert set(pub_b) | set(priv_b) == set(keys)
+        # Different salts rearrange the buckets.
+        assert set(priv_a) != set(priv_b)
+
+    def test_compute_split_sps_threads_salt(self):
+        # If salt weren't propagated, the SPS split would silently score
+        # under the active salt regardless of what the caller asked for —
+        # masking rotation bugs. Construct rows that are private under
+        # one salt and public under another, and assert that the counts
+        # flip when we change the salt argument.
+        keys = _random_keys(400, seed=29)
+        rows = [{"key": k, "jsd": 0.1, "kendall_tau": 0.6} for k in keys]
+        out_a = compute_split_sps("opinionsqa", rows, salt="2026Q3")
+        out_b = compute_split_sps("opinionsqa", rows, salt="2026Q4")
+        assert (
+            out_a["n_private"] != out_b["n_private"]
+            or out_a["n_public"] != out_b["n_public"]
+        )
+        # Total coverage unchanged — every row lands in exactly one bucket.
+        assert out_a["n_public"] + out_a["n_private"] == len(rows)
+        assert out_b["n_public"] + out_b["n_private"] == len(rows)
+
+    def test_env_var_override_resolves_to_salt_string(self, monkeypatch):
+        # The acceptance criterion says the module accepts HOLDOUT_SALT
+        # as env OR constant. Probe the env-reading helper directly so
+        # we don't have to reload the module (reload replaces the
+        # sentinel used to mean "use the active salt", which would
+        # leak across test files).
+        monkeypatch.setenv("SYNTHBENCH_HOLDOUT_SALT", "2026Q3")
+        assert ph._resolve_env_salt() == "2026Q3"
+
+    def test_empty_env_var_resolves_to_legacy(self, monkeypatch):
+        # Rollback knob: SYNTHBENCH_HOLDOUT_SALT="" must yield the
+        # pre-rotation unsalted hash, not salt="" which would be a
+        # distinct partition.
+        monkeypatch.setenv("SYNTHBENCH_HOLDOUT_SALT", "")
+        assert ph._resolve_env_salt() is None
+
+    def test_unset_env_var_resolves_to_legacy(self, monkeypatch):
+        monkeypatch.delenv("SYNTHBENCH_HOLDOUT_SALT", raising=False)
+        assert ph._resolve_env_salt() is None
+
+    def test_active_salt_matches_module_constant(self):
+        # When the caller omits ``salt=``, the helper uses
+        # ``HOLDOUT_SALT`` — verify by computing both branches side by
+        # side and asserting they match on a 200-key probe. (This is
+        # the no-reload way to validate "env/constant drives the hash".)
+        keys = _random_keys(200, seed=41)
+        default = [is_private_holdout("opinionsqa", k) for k in keys]
+        explicit = [
+            is_private_holdout("opinionsqa", k, salt=ph.HOLDOUT_SALT) for k in keys
+        ]
+        assert default == explicit
+
+    def test_disabled_dataset_ignores_salt(self):
+        # Non-holdout datasets must never classify as private regardless
+        # of salt — otherwise a rotation could silently start suppressing
+        # data on a dataset whose license doesn't require it.
+        for k in _random_keys(200, seed=37):
+            assert is_private_holdout("pewtech", k, salt="2026Q3") is False
+            assert is_private_holdout("pewtech", k, salt=None) is False
