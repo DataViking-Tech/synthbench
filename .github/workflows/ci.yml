@@ -50,6 +50,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: pip install -e '.[dev]'
       - run: pytest tests/
+      - name: Null-agent baseline SPS floor (sb-lhoh)
+        # Explicit gate surfacing baseline drift in the CI log even when
+        # the pytest line above is buried in other output. Mirrors the
+        # assertion in tests/test_baseline_floors.py; kept at the end so
+        # the pytest run still executes on matrix failures.
+        run: python3 scripts/baseline-floors-report.py
 
   validate-submissions:
     runs-on: ubuntu-latest

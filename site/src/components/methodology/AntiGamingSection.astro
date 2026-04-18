@@ -1,4 +1,17 @@
 ---
+// Null-agent baseline SPS floors. Numbers are the current canonical
+// (max composite_parity per dataset) under leaderboard-results/ and
+// are enforced in CI by tests/test_baseline_floors.py (sb-lhoh).
+// Keep in sync with docs/baseline-floors-log.md.
+const nullAgentFloors = [
+  { provider: "Random baseline", dataset: "OpinionsQA", sps: "0.763", n: 684 },
+  { provider: "Random baseline", dataset: "SubPOP", sps: "0.758", n: 200 },
+  { provider: "Random baseline", dataset: "GlobalOpinionQA", sps: "0.710", n: 10 },
+  { provider: "Majority baseline", dataset: "OpinionsQA", sps: "0.715", n: 80 },
+  { provider: "Majority baseline", dataset: "GlobalOpinionQA", sps: "0.690", n: 100 },
+  { provider: "Majority baseline", dataset: "SubPOP", sps: "0.673", n: 200 },
+];
+
 const defences = [
   {
     number: 1,
@@ -75,6 +88,48 @@ const defences = [
     must clear to appear non-trivial. An upward drift in baseline SPS on a
     stable dataset is itself a scoring-function bug, not a success, and is
     monitored as part of CI.
+  </p>
+
+  <div class="mb-4 max-w-3xl overflow-x-auto">
+    <table
+      class="w-full text-sm border border-muted/20 rounded-md overflow-hidden"
+    >
+      <thead class="bg-surface/70 dark:bg-surface-dark/70 text-text dark:text-text-dark">
+        <tr>
+          <th class="text-left px-3 py-2 font-semibold">Null agent</th>
+          <th class="text-left px-3 py-2 font-semibold">Dataset</th>
+          <th class="text-right px-3 py-2 font-semibold">SPS floor</th>
+          <th class="text-right px-3 py-2 font-semibold">n</th>
+        </tr>
+      </thead>
+      <tbody class="text-muted">
+        {
+          nullAgentFloors.map((f) => (
+            <tr class="border-t border-muted/20">
+              <td class="px-3 py-2">{f.provider}</td>
+              <td class="px-3 py-2">{f.dataset}</td>
+              <td class="px-3 py-2 text-right font-mono">{f.sps}</td>
+              <td class="px-3 py-2 text-right font-mono">{f.n}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="text-xs text-muted mb-4 max-w-3xl">
+    Canonical floors are the maximum <span class="font-mono">composite_parity</span>
+    observed per (provider, dataset) across every baseline run in
+    <span class="font-mono">leaderboard-results/</span> — mirroring the
+    leaderboard's own display logic, so these are the numbers a new
+    submission must beat to appear non-trivial. CI enforces
+    <span class="font-mono">random-baseline SPS &lt; 0.80</span> and
+    <span class="font-mono">majority-baseline SPS &lt; 0.85</span>; the
+    Berkeley paper's aspirational target for the random baseline is 0.70,
+    with the residual gap attributable to SynthBench's
+    <span class="font-mono">p_refuse</span> term rewarding agreement with
+    human DK/Refused rates. The git log of
+    <span class="font-mono">docs/baseline-floors-log.md</span> is the
+    canonical drift record.
   </p>
   <p class="text-muted mb-8 max-w-3xl">
     We intend this posture to be <em>conservative</em>. The correct failure
