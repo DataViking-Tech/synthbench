@@ -1,20 +1,20 @@
 {
   "aggregate": {
-    "composite_parity": 0.913985,
-    "mean_jsd": 0.017864,
-    "mean_kendall_tau": 0.691667,
+    "composite_parity": 1.0,
+    "mean_jsd": 0.0,
+    "mean_kendall_tau": 1.0,
     "median_jsd": 0.0,
     "n_parse_failures": 0,
-    "n_questions": 40
+    "n_questions": 29
   },
   "benchmark": "synthbench",
   "config": {
     "dataset": "globalopinionqa",
-    "n_evaluated": 40,
-    "n_requested": 40,
+    "n_evaluated": 29,
+    "n_requested": 29,
     "parse_failure_rate": 0.0,
     "provider": "openrouter/anthropic/claude-haiku-4-5",
-    "question_set_hash": "3a1a2fc7fd3c257832f0185f2b779314f54fbba404136a83ac499f4bb4621109",
+    "question_set_hash": "93f75abf1544c79e942b9d6a069ecb30b2aac5cf4ca79b2bb7061329c2a52e6a",
     "samples_per_question": 15,
     "temperature": null,
     "topic_filter": null
@@ -47,96 +47,6 @@
         "D"
       ],
       "parity": 1.0,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
-        "A": 0.2799,
-        "B": 0.3196,
-        "C": 0.1185,
-        "D": 0.282
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.030512,
-      "kendall_tau": 0.0,
-      "key": "GOQA_ADV_001",
-      "model_distribution": {
-        "A": 0.2515,
-        "B": 0.3072,
-        "C": 0.2657,
-        "D": 0.1756
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.734744,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
-        "A": 0.3361,
-        "B": 0.4164,
-        "C": 0.0723,
-        "D": 0.1752
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.051004,
-      "kendall_tau": 0.333333,
-      "key": "GOQA_ADV_002",
-      "model_distribution": {
-        "A": 0.2507,
-        "B": 0.3344,
-        "C": 0.2659,
-        "D": 0.149
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.807831,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
-        "A": 0.0776,
-        "B": 0.4671,
-        "C": 0.4041,
-        "D": 0.0512
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.142035,
-      "kendall_tau": -0.333333,
-      "key": "GOQA_ADV_003",
-      "model_distribution": {
-        "A": 0.2463,
-        "B": 0.2809,
-        "C": 0.1906,
-        "D": 0.2822
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.595649,
       "temporal_year": 2024,
       "text": ""
     },
@@ -262,66 +172,6 @@
     },
     {
       "human_distribution": {
-        "A": 0.262,
-        "B": 0.3392,
-        "C": 0.2419,
-        "D": 0.1569
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.010603,
-      "kendall_tau": 0.333333,
-      "key": "GOQA_ADV_008",
-      "model_distribution": {
-        "A": 0.2323,
-        "B": 0.2593,
-        "C": 0.2763,
-        "D": 0.2321
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.828032,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
-        "A": 0.2799,
-        "B": 0.2794,
-        "C": 0.238,
-        "D": 0.2027
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.002561,
-      "kendall_tau": 0.333333,
-      "key": "GOQA_ADV_009",
-      "model_distribution": {
-        "A": 0.2556,
-        "B": 0.3135,
-        "C": 0.2613,
-        "D": 0.1696
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.832053,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
         "A": 0.33,
         "B": 0.2532,
         "C": 0.3065,
@@ -347,36 +197,6 @@
         "D"
       ],
       "parity": 1.0,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
-        "A": 0.3137,
-        "B": 0.1736,
-        "C": 0.3445,
-        "D": 0.1682
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.043727,
-      "kendall_tau": -0.666667,
-      "key": "GOQA_ADV_011",
-      "model_distribution": {
-        "A": 0.2438,
-        "B": 0.3081,
-        "C": 0.181,
-        "D": 0.2671
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.56147,
       "temporal_year": 2024,
       "text": ""
     },
@@ -442,36 +262,6 @@
     },
     {
       "human_distribution": {
-        "A": 0.0641,
-        "B": 0.3478,
-        "C": 0.4238,
-        "D": 0.1643
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.087549,
-      "kendall_tau": -0.333333,
-      "key": "GOQA_ADV_014",
-      "model_distribution": {
-        "A": 0.3199,
-        "B": 0.2935,
-        "C": 0.2408,
-        "D": 0.1458
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.622892,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
         "A": 0.0594,
         "B": 0.1638,
         "C": 0.4322,
@@ -527,36 +317,6 @@
         "D"
       ],
       "parity": 1.0,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
-        "A": 0.3876,
-        "B": 0.1051,
-        "C": 0.2792,
-        "D": 0.2281
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.11305,
-      "kendall_tau": -0.666667,
-      "key": "GOQA_ADV_017",
-      "model_distribution": {
-        "A": 0.1804,
-        "B": 0.4356,
-        "C": 0.193,
-        "D": 0.191
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.526808,
       "temporal_year": 2024,
       "text": ""
     },
@@ -952,36 +712,6 @@
     },
     {
       "human_distribution": {
-        "A": 0.142,
-        "B": 0.4018,
-        "C": 0.2976,
-        "D": 0.1586
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.050416,
-      "kendall_tau": 0.0,
-      "key": "GOQA_ADV_031",
-      "model_distribution": {
-        "A": 0.3257,
-        "B": 0.3427,
-        "C": 0.1402,
-        "D": 0.1914
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.724792,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
         "A": 0.1625,
         "B": 0.5508,
         "C": 0.0865,
@@ -1037,66 +767,6 @@
         "D"
       ],
       "parity": 1.0,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
-        "A": 0.5996,
-        "B": 0.1586,
-        "C": 0.0428,
-        "D": 0.199
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.10102,
-      "kendall_tau": 0.0,
-      "key": "GOQA_ADV_034",
-      "model_distribution": {
-        "A": 0.2482,
-        "B": 0.3132,
-        "C": 0.1475,
-        "D": 0.2911
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.69949,
-      "temporal_year": 2024,
-      "text": ""
-    },
-    {
-      "human_distribution": {
-        "A": 0.395,
-        "B": 0.0896,
-        "C": 0.1814,
-        "D": 0.334
-      },
-      "human_refusal_rate": 0.0,
-      "jsd": 0.082103,
-      "kendall_tau": -0.333333,
-      "key": "GOQA_ADV_035",
-      "model_distribution": {
-        "A": 0.2669,
-        "B": 0.3478,
-        "C": 0.1943,
-        "D": 0.191
-      },
-      "model_refusal_rate": 0.0,
-      "n_parse_failures": 0,
-      "n_samples": 15,
-      "options": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "parity": 0.625615,
       "temporal_year": 2024,
       "text": ""
     },
@@ -1229,10 +899,10 @@
     "submitted_at": "2026-04-18T00:00:00+00:00"
   },
   "scores": {
-    "p_dist": 0.982136,
-    "p_rank": 0.845834,
+    "p_dist": 1.0,
+    "p_rank": 1.0,
     "p_refuse": 1.0,
-    "sps": 0.913985
+    "sps": 1.0
   },
   "timestamp": "2026-04-18T00:00:00+00:00",
   "version": "0.1.0"

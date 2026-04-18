@@ -1,0 +1,98 @@
+{
+  "_schema": {
+    "description": "Contract tested by tests/adversarial/test_adversarial_suite.py. For each fixture, declare the codes the validator MUST surface and the codes it MUST NOT surface. A future-only code (a detector that's on the roadmap but not yet implemented) lives under 'future_fire': those entries assert that if a matching check method is installed on the validator, it must catch the fixture — otherwise the case is skipped. Doc reference: docs/benchmark-hardening-analysis.md section 5.",
+    "fields": {
+      "must_fire": "codes required to appear in validation.issues (any severity satisfies)",
+      "must_not_fire": "codes that must NOT appear in validation.issues",
+      "must_be_ok": "when true, validator.report.ok must be True (no errors); when false, report.ok must be False; when null, the ok-state is not asserted (use for fixtures whose detectors are still WARNING-tier pending dependency beads)",
+      "future_fire": "codes gated on a detector that doesn't yet ship; suite skips the check when the detector symbol isn't importable",
+      "extra_assertions": "optional named bespoke checks run by the harness"
+    }
+  },
+  "fixtures": {
+    "pure_copy": {
+      "description": "model == human on every question — pure answer-key copy",
+      "must_fire": ["ANOMALY_PERFECTION"],
+      "must_not_fire": ["HOLDOUT_DIVERGENCE", "BOUNDS_RANGE", "AGG_MEAN_JSD", "HOLDOUT_MISSING_PRIVATE", "QSET_HASH"],
+      "must_be_ok": null,
+      "future_fire": [
+        {"code": "ANOMALY_NEAR_COPY_PUBLIC", "detector": "synthbench.anomaly.check_near_copy_public"}
+      ]
+    },
+    "near_pure_copy": {
+      "description": "model == human + small uniform noise",
+      "must_fire": ["ANOMALY_PERFECTION"],
+      "must_not_fire": ["BOUNDS_RANGE", "AGG_MEAN_JSD", "HOLDOUT_MISSING_PRIVATE", "QSET_HASH"],
+      "must_be_ok": null,
+      "future_fire": [
+        {"code": "ANOMALY_NEAR_COPY_PUBLIC", "detector": "synthbench.anomaly.check_near_copy_public"}
+      ]
+    },
+    "public_copy_fake_private": {
+      "description": "public rows copy human; private rows fabricated from marginal",
+      "must_fire": ["HOLDOUT_DIVERGENCE"],
+      "must_not_fire": ["BOUNDS_RANGE", "AGG_MEAN_JSD", "HOLDOUT_MISSING_PRIVATE", "QSET_HASH"],
+      "must_be_ok": null,
+      "future_fire": [
+        {"code": "ANOMALY_NEAR_COPY_PUBLIC", "detector": "synthbench.anomaly.check_near_copy_public"}
+      ]
+    },
+    "constant_offset": {
+      "description": "model[opt] = human[opt] + c, renormalized — constant-offset attack family",
+      "must_fire": ["ANOMALY_PERFECTION"],
+      "must_not_fire": ["BOUNDS_RANGE", "AGG_MEAN_JSD", "HOLDOUT_MISSING_PRIVATE", "QSET_HASH"],
+      "must_be_ok": null,
+      "future_fire": [
+        {"code": "ANOMALY_CONSTANT_OFFSET", "detector": "synthbench.anomaly.check_constant_offset"}
+      ]
+    },
+    "impossible_bounds": {
+      "description": "aggregate fields outside mathematical bounds",
+      "must_fire": ["BOUNDS_RANGE"],
+      "must_not_fire": ["HOLDOUT_MISSING_PRIVATE", "QSET_HASH"],
+      "must_be_ok": false
+    },
+    "lied_aggregate": {
+      "description": "per-question honest; aggregate inflated to favourable values",
+      "must_fire": ["AGG_MEAN_JSD", "AGG_MEAN_TAU", "AGG_COMPOSITE"],
+      "must_not_fire": ["BOUNDS_RANGE", "HOLDOUT_MISSING_PRIVATE", "QSET_HASH", "ANOMALY_PERFECTION"],
+      "must_be_ok": false
+    },
+    "zero_private_rows": {
+      "description": "submission omits the entire private 20% holdout",
+      "must_fire": ["HOLDOUT_MISSING_PRIVATE"],
+      "must_not_fire": ["BOUNDS_RANGE", "AGG_MEAN_JSD", "QSET_HASH"],
+      "must_be_ok": false
+    },
+    "wrong_keys": {
+      "description": "fabricated rows use non-dataset keys + mismatched reported hash",
+      "must_fire": ["QSET_HASH"],
+      "must_not_fire": ["BOUNDS_RANGE", "HOLDOUT_MISSING_PRIVATE", "AGG_MEAN_JSD"],
+      "must_be_ok": false,
+      "extra_assertions": ["qset_hash_dataset_fires_when_expected_hash_supplied"]
+    },
+    "null_agent": {
+      "description": "uniform distributions on every question — a legitimate baseline, NOT a fabrication",
+      "must_fire": [],
+      "must_not_fire": [
+        "ANOMALY_PERFECTION",
+        "HOLDOUT_DIVERGENCE",
+        "BOUNDS_RANGE",
+        "AGG_MEAN_JSD",
+        "AGG_MEAN_TAU",
+        "AGG_COMPOSITE",
+        "HOLDOUT_MISSING_PRIVATE",
+        "QSET_HASH",
+        "RAW_RESPONSES_MODE"
+      ],
+      "must_be_ok": true,
+      "extra_assertions": ["null_agent_baseline_sps_in_band"]
+    },
+    "raw_response_desync": {
+      "description": "raw_text/selected_option disagrees with model_distribution top option",
+      "must_fire": ["RAW_RESPONSES_MODE"],
+      "must_not_fire": ["BOUNDS_RANGE", "AGG_MEAN_JSD", "HOLDOUT_MISSING_PRIVATE", "QSET_HASH"],
+      "must_be_ok": true
+    }
+  }
+}
