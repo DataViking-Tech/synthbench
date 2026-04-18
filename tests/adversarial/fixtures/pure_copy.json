@@ -1,0 +1,838 @@
+{
+  "_adversarial": {
+    "attack": "pure_copy",
+    "description": "model_distribution copied verbatim from human_distribution on every question; jsd==0 across 30 questions.",
+    "expected_codes_error": [
+      "ANOMALY_PERFECTION"
+    ],
+    "reference": "docs/benchmark-hardening-analysis.md \u00a75.3 row 1"
+  },
+  "aggregate": {
+    "composite_parity": 1.0,
+    "mean_jsd": 0.0,
+    "mean_kendall_tau": 1.0,
+    "median_jsd": 0.0,
+    "n_questions": 30
+  },
+  "benchmark": "synthbench",
+  "config": {
+    "dataset": "globalopinionqa",
+    "n_evaluated": 30,
+    "n_requested": 30,
+    "provider": "fabricator/pure-copy",
+    "samples_per_question": 15
+  },
+  "per_question": [
+    {
+      "human_distribution": {
+        "A": 0.5,
+        "B": 0.3,
+        "C": 0.2
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_000",
+      "model_distribution": {
+        "A": 0.5,
+        "B": 0.3,
+        "C": 0.2
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 0"
+    },
+    {
+      "human_distribution": {
+        "A": 0.51,
+        "B": 0.28,
+        "C": 0.21
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_001",
+      "model_distribution": {
+        "A": 0.51,
+        "B": 0.28,
+        "C": 0.21
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 1"
+    },
+    {
+      "human_distribution": {
+        "A": 0.52,
+        "B": 0.26,
+        "C": 0.22
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_002",
+      "model_distribution": {
+        "A": 0.52,
+        "B": 0.26,
+        "C": 0.22
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 2"
+    },
+    {
+      "human_distribution": {
+        "A": 0.53,
+        "B": 0.24,
+        "C": 0.23
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_003",
+      "model_distribution": {
+        "A": 0.53,
+        "B": 0.24,
+        "C": 0.23
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 3"
+    },
+    {
+      "human_distribution": {
+        "A": 0.54,
+        "B": 0.22,
+        "C": 0.24
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_004",
+      "model_distribution": {
+        "A": 0.54,
+        "B": 0.22,
+        "C": 0.24
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 4"
+    },
+    {
+      "human_distribution": {
+        "A": 0.55,
+        "B": 0.3,
+        "C": 0.15
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_005",
+      "model_distribution": {
+        "A": 0.55,
+        "B": 0.3,
+        "C": 0.15
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 5"
+    },
+    {
+      "human_distribution": {
+        "A": 0.56,
+        "B": 0.28,
+        "C": 0.16
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_006",
+      "model_distribution": {
+        "A": 0.56,
+        "B": 0.28,
+        "C": 0.16
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 6"
+    },
+    {
+      "human_distribution": {
+        "A": 0.5,
+        "B": 0.26,
+        "C": 0.24
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_007",
+      "model_distribution": {
+        "A": 0.5,
+        "B": 0.26,
+        "C": 0.24
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 7"
+    },
+    {
+      "human_distribution": {
+        "A": 0.51,
+        "B": 0.24,
+        "C": 0.25
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_008",
+      "model_distribution": {
+        "A": 0.51,
+        "B": 0.24,
+        "C": 0.25
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 8"
+    },
+    {
+      "human_distribution": {
+        "A": 0.52,
+        "B": 0.22,
+        "C": 0.26
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_009",
+      "model_distribution": {
+        "A": 0.52,
+        "B": 0.22,
+        "C": 0.26
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 9"
+    },
+    {
+      "human_distribution": {
+        "A": 0.53,
+        "B": 0.3,
+        "C": 0.17
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_010",
+      "model_distribution": {
+        "A": 0.53,
+        "B": 0.3,
+        "C": 0.17
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 10"
+    },
+    {
+      "human_distribution": {
+        "A": 0.54,
+        "B": 0.28,
+        "C": 0.18
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_011",
+      "model_distribution": {
+        "A": 0.54,
+        "B": 0.28,
+        "C": 0.18
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 11"
+    },
+    {
+      "human_distribution": {
+        "A": 0.55,
+        "B": 0.26,
+        "C": 0.19
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_012",
+      "model_distribution": {
+        "A": 0.55,
+        "B": 0.26,
+        "C": 0.19
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 12"
+    },
+    {
+      "human_distribution": {
+        "A": 0.56,
+        "B": 0.24,
+        "C": 0.2
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_013",
+      "model_distribution": {
+        "A": 0.56,
+        "B": 0.24,
+        "C": 0.2
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 13"
+    },
+    {
+      "human_distribution": {
+        "A": 0.5,
+        "B": 0.22,
+        "C": 0.28
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_014",
+      "model_distribution": {
+        "A": 0.5,
+        "B": 0.22,
+        "C": 0.28
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 14"
+    },
+    {
+      "human_distribution": {
+        "A": 0.51,
+        "B": 0.3,
+        "C": 0.19
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_015",
+      "model_distribution": {
+        "A": 0.51,
+        "B": 0.3,
+        "C": 0.19
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 15"
+    },
+    {
+      "human_distribution": {
+        "A": 0.52,
+        "B": 0.28,
+        "C": 0.2
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_016",
+      "model_distribution": {
+        "A": 0.52,
+        "B": 0.28,
+        "C": 0.2
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 16"
+    },
+    {
+      "human_distribution": {
+        "A": 0.53,
+        "B": 0.26,
+        "C": 0.21
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_017",
+      "model_distribution": {
+        "A": 0.53,
+        "B": 0.26,
+        "C": 0.21
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 17"
+    },
+    {
+      "human_distribution": {
+        "A": 0.54,
+        "B": 0.24,
+        "C": 0.22
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_018",
+      "model_distribution": {
+        "A": 0.54,
+        "B": 0.24,
+        "C": 0.22
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 18"
+    },
+    {
+      "human_distribution": {
+        "A": 0.55,
+        "B": 0.22,
+        "C": 0.23
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_019",
+      "model_distribution": {
+        "A": 0.55,
+        "B": 0.22,
+        "C": 0.23
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 19"
+    },
+    {
+      "human_distribution": {
+        "A": 0.56,
+        "B": 0.3,
+        "C": 0.14
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_020",
+      "model_distribution": {
+        "A": 0.56,
+        "B": 0.3,
+        "C": 0.14
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 20"
+    },
+    {
+      "human_distribution": {
+        "A": 0.5,
+        "B": 0.28,
+        "C": 0.22
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_021",
+      "model_distribution": {
+        "A": 0.5,
+        "B": 0.28,
+        "C": 0.22
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 21"
+    },
+    {
+      "human_distribution": {
+        "A": 0.51,
+        "B": 0.26,
+        "C": 0.23
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_022",
+      "model_distribution": {
+        "A": 0.51,
+        "B": 0.26,
+        "C": 0.23
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 22"
+    },
+    {
+      "human_distribution": {
+        "A": 0.52,
+        "B": 0.24,
+        "C": 0.24
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_023",
+      "model_distribution": {
+        "A": 0.52,
+        "B": 0.24,
+        "C": 0.24
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 23"
+    },
+    {
+      "human_distribution": {
+        "A": 0.53,
+        "B": 0.22,
+        "C": 0.25
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_024",
+      "model_distribution": {
+        "A": 0.53,
+        "B": 0.22,
+        "C": 0.25
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 24"
+    },
+    {
+      "human_distribution": {
+        "A": 0.54,
+        "B": 0.3,
+        "C": 0.16
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_025",
+      "model_distribution": {
+        "A": 0.54,
+        "B": 0.3,
+        "C": 0.16
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 25"
+    },
+    {
+      "human_distribution": {
+        "A": 0.55,
+        "B": 0.28,
+        "C": 0.17
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_026",
+      "model_distribution": {
+        "A": 0.55,
+        "B": 0.28,
+        "C": 0.17
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 26"
+    },
+    {
+      "human_distribution": {
+        "A": 0.56,
+        "B": 0.26,
+        "C": 0.18
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_027",
+      "model_distribution": {
+        "A": 0.56,
+        "B": 0.26,
+        "C": 0.18
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 27"
+    },
+    {
+      "human_distribution": {
+        "A": 0.5,
+        "B": 0.24,
+        "C": 0.26
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_028",
+      "model_distribution": {
+        "A": 0.5,
+        "B": 0.24,
+        "C": 0.26
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 28"
+    },
+    {
+      "human_distribution": {
+        "A": 0.51,
+        "B": 0.22,
+        "C": 0.27
+      },
+      "human_refusal_rate": 0.0,
+      "jsd": 0.0,
+      "kendall_tau": 1.0,
+      "key": "Q_029",
+      "model_distribution": {
+        "A": 0.51,
+        "B": 0.22,
+        "C": 0.27
+      },
+      "model_refusal_rate": 0.0,
+      "n_parse_failures": 0,
+      "n_samples": 15,
+      "options": [
+        "A",
+        "B",
+        "C"
+      ],
+      "parity": 1.0,
+      "temporal_year": 2024,
+      "text": "Fabricator question 29"
+    }
+  ],
+  "version": "0.1.0"
+}

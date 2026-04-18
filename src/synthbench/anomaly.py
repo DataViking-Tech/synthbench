@@ -39,6 +39,14 @@ from synthbench.validation import Issue, Severity
 SUSPICIOUS_MEAN_JSD = 0.005
 SUSPICIOUS_STD_JSD = 0.005
 
+# Minimum JSD sample size at which ANOMALY_PERFECTION is promoted to ERROR.
+# Below this, the detector stays WARNING so small debug/test fixtures are not
+# hard-rejected. At n >= 25 the thresholds are so far below the real-run noise
+# floor (mean_jsd in [0.05, 0.55], std_jsd in [0.10, 0.30]) that tripping them
+# is a statistically reliable fabrication signal — see Wang et al. (Berkeley,
+# 2026) and docs/benchmark-hardening-analysis.md §2.
+ANOMALY_PERFECTION_ERROR_MIN_N = 25
+
 # Share of dataset questions that must have a human refusal rate above this
 # cutoff before a zero-refusal submission is flagged. We require at least
 # one visibly-refusing question in the dataset to avoid false positives on
@@ -81,6 +89,10 @@ def check_suspicious_perfection(
     near-perfect matches (impossible for a real model), and std-near-zero
     implies the per-question distances are all the same, which a real
     sampling pipeline cannot produce.
+
+    Severity is ERROR when the JSD sample size reaches
+    :data:`ANOMALY_PERFECTION_ERROR_MIN_N`; smaller samples stay WARNING
+    so debug fixtures aren't hard-rejected on borderline numerics.
     """
     jsd_values = [
         float(q["jsd"]) for q in per_question if isinstance(q.get("jsd"), (int, float))
@@ -92,13 +104,19 @@ def check_suspicious_perfection(
     std_jsd = _std(jsd_values)
 
     if mean_jsd < SUSPICIOUS_MEAN_JSD or std_jsd < SUSPICIOUS_STD_JSD:
+        severity = (
+            Severity.ERROR
+            if len(jsd_values) >= ANOMALY_PERFECTION_ERROR_MIN_N
+            else Severity.WARNING
+        )
         return Issue(
             code="ANOMALY_PERFECTION",
-            severity=Severity.WARNING,
+            severity=severity,
             message=(
                 f"per-question JSD has mean={mean_jsd:.6f}, "
-                f"std={std_jsd:.6f} — implausibly perfect match to "
-                f"human distribution (thresholds: mean<{SUSPICIOUS_MEAN_JSD}, "
+                f"std={std_jsd:.6f} across n={len(jsd_values)} questions "
+                f"— implausibly perfect match to human distribution "
+                f"(thresholds: mean<{SUSPICIOUS_MEAN_JSD}, "
                 f"std<{SUSPICIOUS_STD_JSD}). Likely answer-key copy."
             ),
             path="per_question",
@@ -304,6 +322,7 @@ def tier3_checks(
 __all__ = [
     "SUSPICIOUS_MEAN_JSD",
     "SUSPICIOUS_STD_JSD",
+    "ANOMALY_PERFECTION_ERROR_MIN_N",
     "HUMAN_REFUSAL_CUTOFF",
     "HUMAN_REFUSAL_MIN_QUESTIONS",
     "PEER_OUTLIER_DELTA",

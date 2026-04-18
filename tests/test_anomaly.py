@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from synthbench.anomaly import (
+    ANOMALY_PERFECTION_ERROR_MIN_N,
     check_missing_refusals,
     check_peer_distribution_outlier,
     check_suspicious_perfection,
@@ -17,6 +18,7 @@ from synthbench.anomaly import (
 from synthbench.validation import Severity
 
 LEADERBOARD_DIR = Path(__file__).resolve().parent.parent / "leaderboard-results"
+ADVERSARIAL_FIXTURES_DIR = Path(__file__).resolve().parent / "adversarial" / "fixtures"
 
 
 def _q(
@@ -65,6 +67,32 @@ class TestSuspiciousPerfection:
         """<5 questions is too small to reason about — skip silently."""
         pq = [_q(f"Q{i}", jsd=0.0) for i in range(3)]
         assert check_suspicious_perfection(pq) is None
+
+    def test_severity_warning_below_error_threshold(self):
+        """Just under ``ANOMALY_PERFECTION_ERROR_MIN_N`` stays WARNING so
+        small debug fixtures aren't hard-rejected."""
+        n = ANOMALY_PERFECTION_ERROR_MIN_N - 1
+        pq = [_q(f"Q{i}", jsd=0.0001) for i in range(n)]
+        issue = check_suspicious_perfection(pq)
+        assert issue is not None
+        assert issue.severity is Severity.WARNING
+
+    def test_severity_error_at_threshold(self):
+        """At the minimum production sample size the thresholds are far
+        enough below the real-run noise floor that the detector is
+        promoted to ERROR — see docs/benchmark-hardening-analysis.md §2."""
+        pq = [_q(f"Q{i}", jsd=0.0001) for i in range(ANOMALY_PERFECTION_ERROR_MIN_N)]
+        issue = check_suspicious_perfection(pq)
+        assert issue is not None
+        assert issue.severity is Severity.ERROR
+        assert issue.code == "ANOMALY_PERFECTION"
+
+    def test_severity_error_on_large_constant_jsd(self):
+        """Std-near-zero on a large-N submission also escalates to ERROR."""
+        pq = [_q(f"Q{i}", jsd=0.1) for i in range(50)]
+        issue = check_suspicious_perfection(pq)
+        assert issue is not None
+        assert issue.severity is Severity.ERROR
 
 
 class TestMissingRefusals:
@@ -286,6 +314,32 @@ class TestFabricationRejection:
             q["jsd"] = 0.0001 * (1 + i * 0.1)  # tiny variation
         issues = tier3_checks(sub)
         assert any(i.code == "ANOMALY_PERFECTION" for i in issues)
+
+
+class TestAdversarialFixtures:
+    """Load on-disk adversarial fixtures and assert the required detectors
+    fire at the required severity. These are the foundation of the
+    adversarial-suite CI gate described in
+    ``docs/benchmark-hardening-analysis.md §5``.
+    """
+
+    def test_pure_copy_trips_anomaly_perfection_as_error(self):
+        fixture_path = ADVERSARIAL_FIXTURES_DIR / "pure_copy.json"
+        assert fixture_path.is_file(), fixture_path
+        with open(fixture_path) as f:
+            data = json.load(f)
+
+        assert len(data["per_question"]) >= ANOMALY_PERFECTION_ERROR_MIN_N
+
+        issues = tier3_checks(data)
+        perfection = [i for i in issues if i.code == "ANOMALY_PERFECTION"]
+        assert perfection, (
+            "pure_copy fixture did not trip ANOMALY_PERFECTION: "
+            f"got codes {[i.code for i in issues]}"
+        )
+        assert all(i.severity is Severity.ERROR for i in perfection), [
+            (i.code, i.severity) for i in perfection
+        ]
 
 
 class TestPeerOutlierWithFabricator:
