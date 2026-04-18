@@ -29,6 +29,7 @@ from __future__ import annotations
 import math
 from typing import Any, Iterable, Mapping, Sequence
 
+from synthbench.private_holdout import is_holdout_enabled, is_private_holdout
 from synthbench.validation import Issue, Severity
 
 
@@ -62,6 +63,18 @@ HUMAN_REFUSAL_MIN_QUESTIONS = 3
 # observed noise and inside the range produced by answer-key attacks.
 PEER_OUTLIER_DELTA = 0.15
 PEER_MIN_OVERLAP = 5
+
+# Near-copy-public detector: the attack is "scrape the public human
+# distribution, add tiny noise, submit." The fingerprint is per-question JSD
+# on the public subset sitting far below what any real LLM can produce.
+# Empirical floor from leaderboard-results/: the best real submission's
+# public-subset mean_jsd ~0.09 with std ~0.08 (claude-sonnet on
+# globalopinionqa). A noise-floor attack with ε ~ U(-0.02, 0.02) yields
+# mean ~0.006 and std ~0.004. Thresholds 0.02 / 0.03 leave ~4x headroom on
+# both sides. Minimum n_public=50 keeps small debug fixtures from tripping.
+NEAR_COPY_MEAN_JSD = 0.02
+NEAR_COPY_STD_JSD = 0.03
+NEAR_COPY_MIN_PUBLIC = 50
 
 
 def _mean(values: Sequence[float]) -> float:
@@ -286,6 +299,77 @@ def check_peer_distribution_outlier(
     )
 
 
+def check_near_copy_public(
+    data: Mapping[str, Any],
+) -> Issue | None:
+    """Flag submissions whose public-subset JSD is implausibly near-zero.
+
+    The attack this closes: scrape published ``human_distribution`` values
+    from the public leaderboard, add small noise, submit as
+    ``model_distribution``. Every tier-1/2 check passes (distributions are
+    valid, aggregates reconcile), and ``ANOMALY_PERFECTION`` can miss it
+    because the attacker's fabricated private rows dilute the full-dataset
+    JSD. Restricting the statistic to the public subset removes that
+    dilution — the attack's fingerprint is uniformly tight JSD across
+    every public question.
+
+    Fires only on holdout-enabled datasets. When the dataset is not
+    partitioned, we have no principled public/private split to restrict
+    to. Returns ``None`` below :data:`NEAR_COPY_MIN_PUBLIC` public rows.
+
+    The detector requires BOTH mean < :data:`NEAR_COPY_MEAN_JSD` AND std <
+    :data:`NEAR_COPY_STD_JSD` to flag. Unlike ``ANOMALY_PERFECTION`` (OR),
+    this AND guard reduces false positives on genuinely strong real
+    models — a real model can have either tight variance or a low mean,
+    but not both simultaneously on 50+ public questions, in every run
+    we've observed.
+    """
+    config = data.get("config") or {}
+    dataset = config.get("dataset")
+    if not isinstance(dataset, str) or not is_holdout_enabled(dataset):
+        return None
+
+    per_question = data.get("per_question") or []
+    if not isinstance(per_question, list):
+        return None
+
+    public_jsd: list[float] = []
+    for q in per_question:
+        if not isinstance(q, dict):
+            continue
+        key = q.get("key")
+        jsd = q.get("jsd")
+        if not isinstance(key, str) or not isinstance(jsd, (int, float)):
+            continue
+        if is_private_holdout(dataset, key):
+            continue
+        public_jsd.append(float(jsd))
+
+    if len(public_jsd) < NEAR_COPY_MIN_PUBLIC:
+        return None
+
+    mean_jsd = _mean(public_jsd)
+    std_jsd = _std(public_jsd)
+
+    if mean_jsd >= NEAR_COPY_MEAN_JSD or std_jsd >= NEAR_COPY_STD_JSD:
+        return None
+
+    return Issue(
+        code="ANOMALY_NEAR_COPY_PUBLIC",
+        severity=Severity.ERROR,
+        message=(
+            f"public-subset JSD has mean={mean_jsd:.6f}, std={std_jsd:.6f} "
+            f"over {len(public_jsd)} public questions (thresholds: "
+            f"mean<{NEAR_COPY_MEAN_JSD}, std<{NEAR_COPY_STD_JSD}). This is "
+            f"the fingerprint of a submission that copied the published "
+            f"human_distribution and added small noise. Real LLM runs "
+            f"produce public mean_jsd >= ~0.09 on every holdout dataset "
+            f"we have on file."
+        ),
+        path="per_question",
+    )
+
+
 def tier3_checks(
     data: Mapping[str, Any],
     *,
@@ -312,6 +396,10 @@ def tier3_checks(
     if perfection is not None:
         issues.append(perfection)
 
+    near_copy = check_near_copy_public(data)
+    if near_copy is not None:
+        issues.append(near_copy)
+
     peer_outlier = check_peer_distribution_outlier(data, peers)
     if peer_outlier is not None:
         issues.append(peer_outlier)
@@ -327,8 +415,12 @@ __all__ = [
     "HUMAN_REFUSAL_MIN_QUESTIONS",
     "PEER_OUTLIER_DELTA",
     "PEER_MIN_OVERLAP",
+    "NEAR_COPY_MEAN_JSD",
+    "NEAR_COPY_STD_JSD",
+    "NEAR_COPY_MIN_PUBLIC",
     "check_suspicious_perfection",
     "check_missing_refusals",
     "check_peer_distribution_outlier",
+    "check_near_copy_public",
     "tier3_checks",
 ]
