@@ -1,0 +1,108 @@
+---
+const defences = [
+  {
+    number: 1,
+    title: "Private holdout",
+    detail:
+      "Each holdout-enabled dataset is deterministically partitioned into a public 80% (whose per-question human distributions are published on the leaderboard) and a private 20% (whose distributions are withheld). A submitter who copies published distributions has no signal for the private subset, so their public-vs-private SPS must diverge. A separation above 0.05 at production scale is flagged as a validation error. The split is keyed on a versioned salt rotated quarterly, so the partition is not permanently fixed.",
+  },
+  {
+    number: 2,
+    title: "Tiered statistical validation",
+    detail:
+      "Every submission runs through three progressively deeper checks. Tier 1 verifies schema, bounds, and distribution validity. Tier 2 recomputes JSD, Kendall's τ, and composite parity from per-question distributions and rejects any submission whose reported aggregates do not reconcile with its claimed per-question data. Tier 3 applies statistical-anomaly detectors that compare the submission against the distribution of legitimate runs — implausibly perfect per-question JSD, suspiciously-close-to-public-human distributions, and same-family peer deviation.",
+  },
+  {
+    number: 3,
+    title: "Adversarial regression suite",
+    detail:
+      "Our test harness maintains a set of fabricated submissions that must fail validation — pure answer-key copies, public-copy-with-fabricated-private attacks, constant-offset noise attacks, aggregate inflation, claimed-model swaps. New detectors are evaluated against this suite before merge, and any tuning of existing detector thresholds must keep the suite passing. The suite is versioned alongside the validator and runs as a CI gate.",
+  },
+];
+---
+
+<section class="w-full max-w-4xl mx-auto py-12" id="anti-gaming">
+  <h2
+    class="text-2xl font-bold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    Anti-gaming and adversarial robustness
+  </h2>
+  <p class="text-muted mb-4 max-w-3xl">
+    SynthBench takes the threat of benchmark gaming seriously. Our threat
+    model and defences are informed directly by recent adversarial analyses of
+    AI benchmarks — in particular, Wang et al. (UC Berkeley, 2026) [<a
+      href="#anti-gaming-ref-1"
+      class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
+      >1</a
+    >], who broke eight widely-used agent benchmarks to near-perfect scores
+    <em>without solving a single task</em>.
+  </p>
+  <p class="text-muted mb-6 max-w-3xl">
+    SynthBench is a submission-artifact benchmark — participants submit a
+    JSON file, we score it — so attacks that assume a co-resident evaluating
+    agent (sandbox escapes, <span class="font-mono">eval()</span> on agent
+    input, binary-trojan wrappers, LLM-judge prompt injection) are
+    structurally inapplicable. But the <em>pattern</em> behind Wang et al.'s
+    attacks — <em>attack the evaluator, not the task</em> — applies to us, and
+    we have designed three lines of defence.
+  </p>
+
+  <ol class="relative border-l border-muted/30 ml-4 mb-10 space-y-6">
+    {
+      defences.map((d) => (
+        <li class="pl-8">
+          <div class="absolute -left-3 flex size-6 items-center justify-center rounded-full bg-primary text-white text-xs font-bold dark:bg-primary-light">
+            {d.number}
+          </div>
+          <h3 class="text-base font-semibold text-text dark:text-text-dark mb-1">
+            {d.title}
+          </h3>
+          <p class="text-sm text-muted max-w-3xl">{d.detail}</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <h3
+    class="text-lg font-semibold tracking-tight text-text dark:text-text-dark mb-2"
+  >
+    Null-agent baselines
+  </h3>
+  <p class="text-muted mb-4 max-w-3xl">
+    Following Wang et al.'s recommendation, we additionally track baseline
+    "null agent" submissions — a uniform-random baseline and a majority-class
+    baseline — over time. These are the floor any benchmark-serious model
+    must clear to appear non-trivial. An upward drift in baseline SPS on a
+    stable dataset is itself a scoring-function bug, not a success, and is
+    monitored as part of CI.
+  </p>
+  <p class="text-muted mb-8 max-w-3xl">
+    We intend this posture to be <em>conservative</em>. The correct failure
+    mode for a scientific leaderboard is to reject a legitimate superhuman
+    submission for human review, not to accept a fabricated one. Submitters
+    whose runs are flagged can appeal, but the null hypothesis at validation
+    time is that suspicious-looking data was fabricated.
+  </p>
+
+  <div
+    class="rounded-lg border border-muted/20 bg-surface p-5 dark:bg-surface-dark"
+    id="anti-gaming-ref-1"
+  >
+    <p class="text-xs text-muted mb-1">Reference [1]</p>
+    <p class="text-sm text-text/90 dark:text-text-dark/90">
+      Wang, Y., Mang, K., Cheung, T., Sen, S., &amp; Song, D. (2026).
+      <em>How We Broke Top AI Agent Benchmarks</em>. UC Berkeley RDI.
+      {" "}
+      <a
+        href="https://rdi.berkeley.edu/blog/trustworthy-benchmarks-cont/"
+        class="text-primary dark:text-primary-light underline underline-offset-2 hover:no-underline"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        rdi.berkeley.edu/blog/trustworthy-benchmarks-cont<span class="sr-only">
+          (opens in a new tab)</span
+        >
+      </a>
+    </p>
+  </div>
+</section>
