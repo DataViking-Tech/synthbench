@@ -72,8 +72,8 @@ for (const ds of leaderboard.datasets) {
               tabindex={href ? 0 : undefined}
               aria-label={href ? label : undefined}
             >
-              <td class="px-4 py-2.5 text-muted">{i + 1}</td>
-              <td class="px-4 py-2.5">
+              <td class="px-4 py-3 text-muted">{i + 1}</td>
+              <td class="px-4 py-3">
                 {href ? (
                   <a href={href} class="hover:underline focus-visible:underline" tabindex={-1}>{entry.model}</a>
                 ) : (
@@ -100,17 +100,17 @@ for (const ds of leaderboard.datasets) {
                   </span>
                 )}
               </td>
-              <td class="px-4 py-2.5 text-muted">{entry.dataset}</td>
-              <td class="px-4 py-2.5 text-right font-mono">
+              <td class="px-4 py-3 text-muted">{entry.dataset}</td>
+              <td class="px-4 py-3 text-right font-mono">
                 {entry.sps.toFixed(3)}
               </td>
-              <td class="px-4 py-2.5 text-right font-mono text-muted" title={entry.normalized_sps != null ? "(SPS − raw-LLM baseline) / (Human Ceiling − raw-LLM baseline)" : "No raw-LLM baseline available for this row"}>
+              <td class="px-4 py-3 text-right font-mono text-muted" title={entry.normalized_sps != null ? "(SPS − raw-LLM baseline) / (Human Ceiling − raw-LLM baseline)" : "No raw-LLM baseline available for this row"}>
                 {formatNormalized(entry.normalized_sps)}
               </td>
-              <td class="px-4 py-2.5 text-right font-mono">
+              <td class="px-4 py-3 text-right font-mono">
                 {entry.p_dist.toFixed(3)}
               </td>
-              <td class="px-4 py-2.5 text-right font-mono">
+              <td class="px-4 py-3 text-right font-mono">
                 {entry.p_rank.toFixed(3)}
               </td>
             </tr>
