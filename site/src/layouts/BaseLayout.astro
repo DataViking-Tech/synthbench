@@ -7,16 +7,66 @@ interface Props {
   title: string;
   description?: string;
   noindex?: boolean;
+  ogImage?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
   title,
   description = "SynthBench: Open benchmark for synthetic survey respondent quality",
   noindex = false,
+  ogImage,
+  jsonLd,
 } = Astro.props;
 
 const rawBase = import.meta.env.BASE_URL || "/";
 const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+
+// Astro.site is configured in astro.config.mjs (SITE_URL env or GH Pages default).
+// Both canonical and og:image need absolute URLs. Site home = origin + base (e.g.
+// https://dataviking-tech.github.io/synthbench/ for GH Pages, https://synthbench.org/
+// for CF Pages).
+const siteOrigin = Astro.site ? new URL(Astro.site).origin : "";
+const siteHome = new URL(base, Astro.site ?? `${siteOrigin}/`).toString();
+const canonical = new URL(Astro.url.pathname, Astro.site ?? `${siteOrigin}/`).toString();
+const defaultOg = new URL(`${base}og-image.png`, Astro.site ?? `${siteOrigin}/`).toString();
+const ogImageUrl = ogImage ?? defaultOg;
+
+// sb-z8zk — default WebSite + Dataset JSON-LD so rich results / AI crawlers have
+// a structured handle on the benchmark. Pages can override by passing `jsonLd`.
+const defaultJsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "SynthBench",
+    url: siteHome,
+    description,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    name: "SynthBench Leaderboard",
+    description:
+      "Open benchmark scoring LLM-generated synthetic survey respondents against human survey distributions. Metrics: SPS, p_dist, p_rank, p_refuse.",
+    url: canonical,
+    license: "https://opensource.org/licenses/MIT",
+    creator: {
+      "@type": "Organization",
+      name: "SynthBench",
+      url: siteHome,
+    },
+    keywords: [
+      "synthetic respondents",
+      "LLM evaluation",
+      "survey benchmark",
+      "SPS",
+      "GlobalOpinionQA",
+      "ANES",
+    ],
+  },
+];
+const ld = jsonLd ?? defaultJsonLd;
+const ldArray = Array.isArray(ld) ? ld : [ld];
 ---
 
 <html lang="en">
@@ -26,7 +76,29 @@ const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SynthBench" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="SynthBench — Open benchmark for synthetic survey quality" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {ldArray.map((entry) => (
+      <script type="application/ld+json" set:html={JSON.stringify(entry)} />
+    ))}
   </head>
   <body
     class="min-h-screen bg-surface text-text dark:bg-surface-dark dark:text-text-dark"
