@@ -90,6 +90,12 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
   }
   return coverage < 2;
 }
+
+// Only surface the badge-explanation banner when at least one row actually
+// carries a verification badge. Otherwise it reads as noise.
+const hasVerificationBadges = entries.some(
+  (e) => e.verification_badge === "verified" || e.verification_badge === "flagged",
+);
 ---
 
 <section class="w-full max-w-5xl mx-auto py-8" id="leaderboard" aria-labelledby="leaderboard-heading">
@@ -100,6 +106,20 @@ function hiddenInDefaultView(entry: LeaderboardEntry): boolean {
 
   <!-- Visually hidden status region announces sort changes. -->
   <p id="leaderboard-sort-status" class="sr-only" role="status" aria-live="polite"></p>
+
+  {hasVerificationBadges && (
+    <aside
+      class="mb-6 rounded-lg border border-muted/20 bg-surface/60 dark:bg-surface-dark/60 px-4 py-3 text-sm text-muted"
+      aria-label="Verification badge key"
+    >
+      <p>
+        <span class="inline-block text-xs px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 mr-1">✓ verified</span>
+        rows matched our hidden 20% private-holdout check.
+        <span class="inline-block text-xs px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 mx-1">⚠ flagged</span>
+        rows diverged beyond the public/private SPS threshold and are under review — not disqualified. Hover any badge for row-specific detail, or read the <a href={`${base}methodology/#private-holdout`} class="underline hover:text-primary focus-visible:text-primary">private-holdout methodology</a>.
+      </p>
+    </aside>
+  )}
 
   <!-- Desktop table -->
   <div class="hidden md:block overflow-x-auto rounded-lg border border-muted/20">
