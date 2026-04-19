@@ -18,18 +18,28 @@
   --color-provider-synthpanel: #4f46e5;
   --color-provider-raw-llm: #0891b2;
   --color-provider-baseline: #a3a3a3;
+  /* Page background — paired with `color-scheme` so iOS Safari overscroll
+     bounce paints the themed color instead of flashing white in dark mode. */
+  --color-bg-page: oklch(0.98 0.005 264);
 }
 
 html {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Tells the UA both themes are supported so form controls, scrollbars,
+     and the iOS overscroll area pick the right palette. */
+  color-scheme: light dark;
+  background-color: var(--color-bg-page);
+}
+
+body {
+  background-color: var(--color-bg-page);
 }
 
 @media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+  :root {
+    --color-bg-page: oklch(0.15 0.01 264);
   }
   body {
-    background-color: oklch(0.15 0.01 264);
     color: oklch(0.92 0.005 264);
   }
   /* Dark-mode contrast (WCAG 1.4.3). We keep --color-primary at its original
