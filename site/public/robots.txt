@@ -7,3 +7,5 @@ Disallow: /data/runs-index.json
 
 # leaderboard.json is not under /data/ on the deployed site (build-time bundled)
 # so this is mainly for the runtime-fetched per-detail JSONs
+
+Sitemap: https://synthbench.org/sitemap.xml
