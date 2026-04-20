@@ -18,6 +18,7 @@ MODEL_MAP: dict[str, tuple[str, str]] = {
     "openrouter/openai/gpt-4o": ("GPT-4o", "raw"),
     "openrouter/anthropic/claude-haiku-4-5": ("Claude Haiku 4.5", "raw"),
     "openrouter/anthropic/claude-sonnet-4": ("Claude Sonnet 4", "raw"),
+    "openrouter/anthropic/claude-sonnet-4.6": ("Claude Sonnet 4.6", "raw"),
     "openrouter/google/gemini-2.5-flash": ("Gemini 2.5 Flash", "raw"),
     "openrouter/google/gemini-2.5-flash-lite": ("Gemini Flash Lite", "raw"),
     # Raw LLMs via direct API — dedupe to the canonical model name.
