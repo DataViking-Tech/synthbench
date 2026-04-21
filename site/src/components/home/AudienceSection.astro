@@ -1,0 +1,38 @@
+---
+const audiences = [
+  {
+    title: "ML researchers",
+    description:
+      "Validate synthetic respondents before citing them. Compare models on distribution fidelity, rank agreement, and persona conditioning across public survey datasets.",
+  },
+  {
+    title: "Survey-tech companies",
+    description:
+      "Prove your product actually mirrors human opinion—not just sounds plausible. Benchmark your pipeline against a public, reproducible standard.",
+  },
+  {
+    title: "Policy & research teams",
+    description:
+      "Audit AI-generated research you commission or consume. Know whether synthetic samples are safe to brief on, or will mislead your decisions.",
+  },
+];
+---
+
+<section class="w-full max-w-5xl mx-auto py-12 px-4" id="who-is-this-for">
+  <h2 class="text-2xl font-bold text-center mb-2">Who is this for?</h2>
+  <p class="text-center text-sm text-muted mb-8 max-w-2xl mx-auto">
+    SynthBench gives three groups a shared source of truth for synthetic
+    survey quality.
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {audiences.map((a) => (
+      <div class="rounded-lg border border-muted/20 p-6 bg-surface dark:bg-surface-dark">
+        <h3 class="text-lg font-semibold mb-2 text-text dark:text-text-dark">
+          {a.title}
+        </h3>
+        <p class="text-sm text-muted leading-relaxed">{a.description}</p>
+      </div>
+    ))}
+  </div>
+</section>

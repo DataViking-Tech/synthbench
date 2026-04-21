@@ -15,7 +15,7 @@ const ensemblePoints = `+${Math.round(ensembleAvgImprovement * 100)}-${Math.roun
   Math.max(...findings.ensemble_comparison.map((e) => e.improvement)) * 100,
 )} SPS points`;
 
-// Card 2: Conditioning Asymmetry
+// Card 2: Persona Prompting Asymmetry
 // Republican vs Democrat p_cond ratio
 const polparty = findings.conditioning_results.filter((c) => c.attribute === "POLPARTY");
 const repCond = polparty.find((c) => c.group === "Republican")?.p_cond ?? 0;
@@ -35,16 +35,16 @@ const cards = [
   {
     title: "Ensemble Advantage",
     stat: ensemblePoints,
-    text: "Blending 3 models beats any single model. Zero additional API cost\u2014just arithmetic on existing responses.",
+    text: "Blending 3 models beats any single model. Zero additional API cost—just arithmetic on existing responses.",
   },
   {
-    title: "Conditioning Asymmetry",
-    stat: `${condRatio}\u00d7 gap`,
-    text: `Republican conditioning shifts responses ${condRatio}\u00d7 more than Democrat\u2014revealing the model\u2019s progressive default lean.`,
+    title: "Persona Prompting Asymmetry",
+    stat: `${condRatio}× gap`,
+    text: `Prompting the model as a Republican shifts responses ${condRatio}× more than prompting as a Democrat—revealing the model’s progressive default lean.`,
   },
   {
     title: "Temperature Matters (Sometimes)",
-    stat: `+${(geminiRange * 100).toFixed(1)}% for Gemini, \u00b1${(haikuRange * 100).toFixed(1)}% for Haiku`,
+    stat: `+${(geminiRange * 100).toFixed(1)}% for Gemini, ±${(haikuRange * 100).toFixed(1)}% for Haiku`,
     text: "Temperature sensitivity is model-specific, not universal. One size does not fit all.",
   },
 ];

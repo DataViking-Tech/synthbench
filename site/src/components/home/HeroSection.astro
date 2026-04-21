@@ -4,6 +4,9 @@ import type { LeaderboardData } from "@/types/leaderboard";
 import leaderboardRaw from "@/data/leaderboard.json";
 
 const leaderboard = leaderboardRaw as LeaderboardData;
+
+const rawBase = import.meta.env.BASE_URL || "/";
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
 ---
 
 <section class="py-16 sm:py-24 px-4 text-center max-w-3xl mx-auto">
@@ -13,9 +16,29 @@ const leaderboard = leaderboardRaw as LeaderboardData;
   </p>
   <p class="mt-6 text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed">
     A single LLM will almost always validate your idea&mdash;even when it
-    shouldn't. Model selection, conditioning, and sampling determine whether
-    synthetic respondents actually represent real human opinions.
+    shouldn&rsquo;t. Model choice, persona prompting, and how you aggregate
+    responses decide whether synthetic respondents actually represent real human
+    opinions. We measure that with a single number.
   </p>
+  <p class="mt-4 text-base text-text dark:text-text-dark max-w-2xl mx-auto leading-relaxed">
+    <strong>Survey Parity Score (SPS)</strong> measures how closely
+    AI-generated survey responses match real human opinion distributions.
+    <span class="font-mono">1.0</span> = perfect match.
+  </p>
+  <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+    <a
+      href={`${base}submit/#quick-start`}
+      class="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 dark:bg-primary-light dark:text-surface-dark dark:hover:bg-primary-light/90 transition-colors"
+    >
+      Run your first benchmark
+    </a>
+    <a
+      href={`${base}submit/`}
+      class="inline-flex items-center justify-center rounded-md border border-muted/40 bg-surface px-5 py-2.5 text-sm font-semibold text-text hover:bg-muted/10 dark:bg-surface-dark dark:text-text-dark dark:hover:bg-muted/10 transition-colors"
+    >
+      Submit your model
+    </a>
+  </div>
   <p class="mt-4 text-xs text-muted" data-vrt-mask>
     v{leaderboard.synthbench_version} &middot; Generated{" "}
     {new Date(leaderboard.generated_at).toLocaleDateString()}

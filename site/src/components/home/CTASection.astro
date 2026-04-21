@@ -4,24 +4,25 @@ const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
 
 const ctas = [
   {
-    title: "Try SynthPanel",
+    title: "Run your first benchmark",
     description:
-      "Run synthetic surveys with built-in best practices. pip install or clone from GitHub.",
-    href: "https://github.com/DataViking-Tech/SynthPanel",
-    label: "Get SynthPanel",
-    external: true,
+      "Three commands to install the CLI, score your model against real survey data, and see where it lands on the leaderboard.",
+    href: `${base}submit/#quick-start`,
+    label: "See the quickstart",
+    external: false,
   },
   {
-    title: "Explore Methodology",
-    description: "How we score models, what SPS measures, and why distribution fidelity matters.",
+    title: "Explore the methodology",
+    description:
+      "How we score models, what the Survey Parity Score measures, and why distribution fidelity matters for synthetic respondents.",
     href: `${base}methodology/`,
     label: "Read methodology",
     external: false,
   },
   {
-    title: "Submit Your Model",
+    title: "Submit your model",
     description:
-      "Run the benchmark on your model and submit results. Open to any provider or framework.",
+      "Run the full benchmark on your model and add your results to the public leaderboard. Open to any provider or framework.",
     href: `${base}submit/`,
     label: "Submit results",
     external: false,
@@ -50,4 +51,15 @@ const ctas = [
       </div>
     ))}
   </div>
+  <p class="mt-8 text-center text-sm text-muted">
+    Using SynthPanel for synthetic surveys?{" "}
+    <a
+      href="https://github.com/DataViking-Tech/SynthPanel"
+      class="text-primary dark:text-primary-light hover:underline"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Get SynthPanel on GitHub<span class="ml-0.5" aria-hidden="true">&nearr;</span>
+    </a>
+  </p>
 </section>
