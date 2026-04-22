@@ -363,6 +363,7 @@ def run_real(
     from synthbench.convergence.real_sampling import compute_real_curve
     from synthbench.datasets import DATASETS
     from synthbench.datasets.base import MicrodataNotAvailable
+    from synthbench.datasets.gss import DatasetDownloadError
     from synthbench.datasets.policy import policy_for
 
     if dataset_name not in DATASETS:
@@ -377,13 +378,22 @@ def run_real(
         raise ValueError(f"--bootstraps must be >= 1, got {B}")
 
     dataset = DATASETS[dataset_name]()
-    question = _resolve_question(dataset, question_key)
-
+    # Resolving the question triggers a full dataset.load() on some adapters
+    # (e.g. OpinionsQA attempts an auto-download). For adapters that ship no
+    # microdata, catching the download error here produces the same clean
+    # "does not provide microdata" message as the dedicated MicrodataNotAvailable
+    # branch below, rather than a confusing download traceback.
     try:
+        question = _resolve_question(dataset, question_key)
         rows = dataset.load_microdata_for_question(question.key)
     except MicrodataNotAvailable as exc:
         raise ValueError(
             f"dataset {dataset_name!r} does not provide microdata: {exc}"
+        ) from exc
+    except DatasetDownloadError as exc:
+        raise ValueError(
+            f"dataset {dataset_name!r} does not provide microdata "
+            f"(aggregate-only; download attempt failed): {exc}"
         ) from exc
 
     if not rows:
@@ -448,6 +458,7 @@ def run_compare(
     from synthbench.convergence.real_sampling import compute_real_curve
     from synthbench.datasets import DATASETS
     from synthbench.datasets.base import MicrodataNotAvailable
+    from synthbench.datasets.gss import DatasetDownloadError
     from synthbench.datasets.policy import policy_for
 
     if dataset_name not in DATASETS:
@@ -462,13 +473,22 @@ def run_compare(
         raise ValueError(f"--bootstraps must be >= 1, got {B}")
 
     dataset = DATASETS[dataset_name]()
-    question = _resolve_question(dataset, question_key)
-
+    # Resolving the question triggers a full dataset.load() on some adapters
+    # (e.g. OpinionsQA attempts an auto-download). For adapters that ship no
+    # microdata, catching the download error here produces the same clean
+    # "does not provide microdata" message as the dedicated MicrodataNotAvailable
+    # branch below, rather than a confusing download traceback.
     try:
+        question = _resolve_question(dataset, question_key)
         rows = dataset.load_microdata_for_question(question.key)
     except MicrodataNotAvailable as exc:
         raise ValueError(
             f"dataset {dataset_name!r} does not provide microdata: {exc}"
+        ) from exc
+    except DatasetDownloadError as exc:
+        raise ValueError(
+            f"dataset {dataset_name!r} does not provide microdata "
+            f"(aggregate-only; download attempt failed): {exc}"
         ) from exc
     if not rows:
         raise ValueError(
