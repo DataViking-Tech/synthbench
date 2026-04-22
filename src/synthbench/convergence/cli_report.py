@@ -327,10 +327,238 @@ def run_bootstrap(
     return payload, pdf_path
 
 
+def _resolve_question(dataset, question_key: str) -> Question:
+    """Find a single question by key, accepting bare or prefixed forms."""
+    questions = dataset.load()
+    matches = [q for q in questions if q.key == question_key]
+    if matches:
+        return matches[0]
+    # Allow callers to pass the bare upstream id (e.g. "SPKATH" for
+    # "GSS_SPKATH"). Useful from the CLI where the dataset prefix is
+    # implicit.
+    suffixed = [q for q in questions if q.key.endswith(f"_{question_key}")]
+    if len(suffixed) == 1:
+        return suffixed[0]
+    raise ValueError(
+        f"no question with key {question_key!r} in dataset {dataset.name!r}"
+    )
+
+
+def run_real(
+    dataset_name: str,
+    question_key: str,
+    output: Path | None = None,
+    bootstraps: int | None = None,
+    sample_sizes: str | None = None,
+    epsilon: float | None = None,
+    delta: float | None = None,
+    seed: int | None = None,
+) -> dict:
+    """Real-sampling convergence for one question. Returns the JSON payload.
+
+    Errors cleanly when the dataset's adapter does not ship microdata. The
+    payload reuses the bootstrap schema's ``parameters`` block plus a
+    ``real_curve`` array so existing renderers can pick it up unchanged.
+    """
+    from synthbench.convergence.real_sampling import compute_real_curve
+    from synthbench.datasets import DATASETS
+    from synthbench.datasets.base import MicrodataNotAvailable
+    from synthbench.datasets.policy import policy_for
+
+    if dataset_name not in DATASETS:
+        known = ", ".join(sorted(DATASETS))
+        raise ValueError(f"unknown dataset {dataset_name!r}; known datasets: {known}")
+
+    sizes = _parse_sample_sizes(sample_sizes)
+    B = DEFAULT_BOOTSTRAP_B if bootstraps is None else int(bootstraps)
+    eps = DEFAULT_EPSILON if epsilon is None else float(epsilon)
+    dlt = DEFAULT_DELTA if delta is None else float(delta)
+    if B < 1:
+        raise ValueError(f"--bootstraps must be >= 1, got {B}")
+
+    dataset = DATASETS[dataset_name]()
+    # Resolving the question triggers a full dataset.load() on some adapters
+    # (e.g. OpinionsQA attempts an auto-download). For adapters that ship no
+    # microdata, convert any per-adapter download error into the same clean
+    # "does not provide microdata" message as the dedicated MicrodataNotAvailable
+    # branch below. Classification is by exception class name because each
+    # adapter defines its own DatasetDownloadError; unifying those is
+    # architecturally better but out of scope for this bead (sb-gh1n follow-up).
+    try:
+        question = _resolve_question(dataset, question_key)
+        rows = dataset.load_microdata_for_question(question.key)
+    except MicrodataNotAvailable as exc:
+        raise ValueError(
+            f"dataset {dataset_name!r} does not provide microdata: {exc}"
+        ) from exc
+    except Exception as exc:
+        if type(exc).__name__ == "DatasetDownloadError":
+            raise ValueError(
+                f"dataset {dataset_name!r} does not provide microdata "
+                f"(aggregate-only; download attempt failed): {exc}"
+            ) from exc
+        raise
+
+    if not rows:
+        raise ValueError(
+            f"no microdata respondents answered question {question.key!r} "
+            f"in dataset {dataset_name!r}"
+        )
+
+    curve = compute_real_curve(
+        rows,
+        question_key=question.key,
+        sample_sizes=sizes,
+        B=B,
+        rng=seed,
+    )
+    convergence_n = find_convergence_n(curve, epsilon=eps, delta=dlt)
+
+    policy = policy_for(dataset_name)
+    payload = {
+        "dataset": dataset_name,
+        "mode": "real",
+        "question_key": question.key,
+        "redistribution_policy": policy.redistribution_policy,
+        "license_url": policy.license_url,
+        "citation": policy.citation,
+        "parameters": {
+            "sample_sizes": list(sizes),
+            "bootstrap_B": B,
+            "epsilon": eps,
+            "delta": dlt,
+        },
+        "n_respondents": len(rows),
+        "real_curve": curve_to_dicts(curve),
+        "convergence_n": convergence_n,
+    }
+
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(payload, indent=2))
+    return payload
+
+
+def run_compare(
+    dataset_name: str,
+    question_key: str,
+    output: Path | None = None,
+    bootstraps: int | None = None,
+    sample_sizes: str | None = None,
+    epsilon: float | None = None,
+    delta: float | None = None,
+    seed: int | None = None,
+) -> dict:
+    """Side-by-side bootstrap vs. real-sampling curves for one question.
+
+    The two curves share ``parameters`` so they can be plotted on the same
+    axes. ``delta_jsd_mean[i] = real - bootstrap`` is precomputed for each
+    sample size present in both curves -- this is the headline number for
+    the marketable claim ("real sampling shows heavier tails than the
+    idealized i.i.d. floor").
+    """
+    from synthbench.convergence.curves import compute_curve
+    from synthbench.convergence.real_sampling import compute_real_curve
+    from synthbench.datasets import DATASETS
+    from synthbench.datasets.base import MicrodataNotAvailable
+    from synthbench.datasets.policy import policy_for
+
+    if dataset_name not in DATASETS:
+        known = ", ".join(sorted(DATASETS))
+        raise ValueError(f"unknown dataset {dataset_name!r}; known datasets: {known}")
+
+    sizes = _parse_sample_sizes(sample_sizes)
+    B = DEFAULT_BOOTSTRAP_B if bootstraps is None else int(bootstraps)
+    eps = DEFAULT_EPSILON if epsilon is None else float(epsilon)
+    dlt = DEFAULT_DELTA if delta is None else float(delta)
+    if B < 1:
+        raise ValueError(f"--bootstraps must be >= 1, got {B}")
+
+    dataset = DATASETS[dataset_name]()
+    # Resolving the question triggers a full dataset.load() on some adapters
+    # (e.g. OpinionsQA attempts an auto-download). For adapters that ship no
+    # microdata, convert any per-adapter download error into the same clean
+    # "does not provide microdata" message as the dedicated MicrodataNotAvailable
+    # branch below. Classification is by exception class name because each
+    # adapter defines its own DatasetDownloadError; unifying those is
+    # architecturally better but out of scope for this bead (sb-gh1n follow-up).
+    try:
+        question = _resolve_question(dataset, question_key)
+        rows = dataset.load_microdata_for_question(question.key)
+    except MicrodataNotAvailable as exc:
+        raise ValueError(
+            f"dataset {dataset_name!r} does not provide microdata: {exc}"
+        ) from exc
+    except Exception as exc:
+        if type(exc).__name__ == "DatasetDownloadError":
+            raise ValueError(
+                f"dataset {dataset_name!r} does not provide microdata "
+                f"(aggregate-only; download attempt failed): {exc}"
+            ) from exc
+        raise
+    if not rows:
+        raise ValueError(
+            f"no microdata respondents answered question {question.key!r} "
+            f"in dataset {dataset_name!r}"
+        )
+
+    bootstrap_curve = compute_curve(
+        question.human_distribution,
+        sample_sizes=sizes,
+        B=B,
+        rng=seed,
+    )
+    real_curve = compute_real_curve(
+        rows,
+        question_key=question.key,
+        sample_sizes=sizes,
+        B=B,
+        rng=seed,
+    )
+
+    bootstrap_by_n = {p.n: p.jsd_mean for p in bootstrap_curve}
+    deltas = [
+        {"n": p.n, "delta_jsd_mean": p.jsd_mean - bootstrap_by_n[p.n]}
+        for p in real_curve
+        if p.n in bootstrap_by_n
+    ]
+
+    policy = policy_for(dataset_name)
+    payload = {
+        "dataset": dataset_name,
+        "mode": "compare",
+        "question_key": question.key,
+        "redistribution_policy": policy.redistribution_policy,
+        "license_url": policy.license_url,
+        "citation": policy.citation,
+        "parameters": {
+            "sample_sizes": list(sizes),
+            "bootstrap_B": B,
+            "epsilon": eps,
+            "delta": dlt,
+        },
+        "n_respondents": len(rows),
+        "bootstrap_curve": curve_to_dicts(bootstrap_curve),
+        "real_curve": curve_to_dicts(real_curve),
+        "convergence_n_bootstrap": find_convergence_n(
+            bootstrap_curve, epsilon=eps, delta=dlt
+        ),
+        "convergence_n_real": find_convergence_n(real_curve, epsilon=eps, delta=dlt),
+        "delta_jsd_mean": deltas,
+    }
+
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(payload, indent=2))
+    return payload
+
+
 __all__ = [
     "QuestionReport",
     "compute_reports",
     "summarize",
     "build_payload",
     "run_bootstrap",
+    "run_real",
+    "run_compare",
 ]

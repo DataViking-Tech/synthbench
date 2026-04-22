@@ -16,12 +16,17 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from synthbench.datasets.base import Dataset, Question
+from synthbench.datasets.base import Dataset, MicrodataRow, Question
 
 _GSS_URL = "https://gss.norc.org/Get-The-Data"
 
 # Expected CSV columns in the pre-aggregated input file.
 _REQUIRED_COLUMNS = ("question_id", "question_text", "year", "option", "count")
+
+# Expected CSV columns in the per-respondent microdata input file. One row per
+# (respondent, question) tuple; subgroup labels are optional sidecar columns.
+_MICRODATA_REQUIRED_COLUMNS = ("respondent_id", "year", "question_id", "option")
+_MICRODATA_SUBGROUP_PREFIX = "subgroup_"
 
 
 def _default_cache_dir() -> Path:
@@ -135,6 +140,38 @@ class GSSDataset(Dataset):
             "  5. Re-run synthbench\n"
         )
 
+    def _microdata_path(self) -> Path:
+        return self._data_dir / "microdata" / "gss_microdata.csv"
+
+    def load_microdata(self, n: int | None = None) -> list[MicrodataRow]:
+        path = self._microdata_path()
+        if not path.exists():
+            raise DatasetDownloadError(
+                "GSS microdata requires manual setup.\n\n"
+                "Steps:\n"
+                f"  1. Visit: {_GSS_URL}\n"
+                "  2. Download the GSS cumulative microdata (STATA / SPSS).\n"
+                "  3. Convert to a long-form CSV with columns:\n"
+                f"       {', '.join(_MICRODATA_REQUIRED_COLUMNS)}\n"
+                "     plus optional 'subgroup_*' columns (e.g. subgroup_age_band).\n"
+                "     One row per (respondent_id, question_id) the respondent\n"
+                "     answered.\n"
+                f"  4. Save as: {path}\n"
+                "  5. Re-run synthbench\n"
+            )
+
+        rows = _load_microdata_csv(path, year_filter=self._year)
+        if n is not None:
+            rows = rows[:n]
+        return rows
+
+    def load_microdata_for_question(self, key: str) -> list[MicrodataRow]:
+        # Accept either the prefixed Question.key ("GSS_SPKATH") or the bare
+        # upstream id ("SPKATH"); microdata rows are stored under the
+        # prefixed form to match the canonical Question.key.
+        canonical = key if key.startswith("GSS_") else f"GSS_{key}"
+        return [r for r in self.load_microdata() if canonical in r.responses]
+
 
 def _aggregate_from_csv(
     path: Path,
@@ -221,6 +258,64 @@ def _aggregate_from_csv(
         )
 
     return questions
+
+
+def _load_microdata_csv(
+    path: Path,
+    year_filter: str | None = None,
+) -> list[MicrodataRow]:
+    """Read a long-form GSS microdata CSV into per-respondent rows.
+
+    Long-form layout: one row per (respondent, question) the respondent
+    actually answered. Subgroup columns prefixed with ``subgroup_`` are
+    collected on the first row seen for each respondent and ignored if they
+    later disagree (the survey-wave ID is the canonical join key).
+    """
+    by_respondent: dict[tuple[str, str], MicrodataRow] = {}
+
+    with open(path, newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = reader.fieldnames or []
+        missing = [c for c in _MICRODATA_REQUIRED_COLUMNS if c not in fieldnames]
+        if missing:
+            raise DatasetDownloadError(
+                f"GSS microdata CSV at {path} is missing columns: {missing}.\n"
+                f"Expected columns: {', '.join(_MICRODATA_REQUIRED_COLUMNS)}"
+            )
+        subgroup_cols = [
+            c for c in fieldnames if c.startswith(_MICRODATA_SUBGROUP_PREFIX)
+        ]
+
+        for row in reader:
+            rid = (row.get("respondent_id") or "").strip()
+            year = (row.get("year") or "").strip()
+            qid = (row.get("question_id") or "").strip()
+            option = (row.get("option") or "").strip()
+            if not rid or not year or not qid or not option:
+                continue
+            if year_filter is not None and year != year_filter:
+                continue
+
+            key = (rid, year)
+            entry = by_respondent.get(key)
+            if entry is None:
+                subgroup = {
+                    c[len(_MICRODATA_SUBGROUP_PREFIX) :]: (row.get(c) or "").strip()
+                    for c in subgroup_cols
+                    if (row.get(c) or "").strip()
+                }
+                entry = MicrodataRow(
+                    respondent_id=f"{rid}@{year}",
+                    survey_wave=f"GSS:{year}",
+                    responses={},
+                    subgroup=subgroup,
+                )
+                by_respondent[key] = entry
+            entry.responses[f"GSS_{qid}"] = option
+
+    # Stable order: sort by (year, respondent_id) so sub-sampling with a
+    # fixed seed is reproducible across runs and platforms.
+    return [by_respondent[k] for k in sorted(by_respondent)]
 
 
 class DatasetDownloadError(Exception):

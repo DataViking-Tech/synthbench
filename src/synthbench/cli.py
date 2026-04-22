@@ -1540,6 +1540,122 @@ def convergence_bootstrap(
         click.echo(json.dumps(payload, indent=2))
 
 
+@convergence_group.command("real")
+@click.option("--dataset", "-d", required=True, help="Dataset name (e.g. gss).")
+@click.option(
+    "--question",
+    "-q",
+    required=True,
+    help="Question key (bare upstream id like 'SPKATH' or prefixed 'GSS_SPKATH').",
+)
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    default=None,
+    help="Write JSON to this path (default: stdout).",
+)
+@click.option(
+    "--bootstraps",
+    "-b",
+    type=int,
+    default=None,
+    help="Sub-sample replicates per sample size (default: 500).",
+)
+@click.option(
+    "--sample-sizes",
+    default=None,
+    help="Comma-separated sample sizes (default: 20,50,100,200,500,1000,2000,5000,10000).",
+)
+@click.option("--epsilon", type=float, default=None)
+@click.option("--delta", type=float, default=None)
+@click.option("--seed", type=int, default=None)
+def convergence_real(
+    dataset, question, output, bootstraps, sample_sizes, epsilon, delta, seed
+):
+    """Real-sampling convergence curve from individual-level microdata.
+
+    Sub-samples actual respondents (without replacement) at each sample size
+    and measures JSD vs. the full-population distribution. Errors cleanly
+    when the dataset's adapter does not provide microdata.
+
+    Example:
+        synthbench convergence real --dataset gss --question SPKATH \\
+            --output /tmp/gss-real.json
+    """
+    from synthbench.convergence.cli_report import run_real
+
+    try:
+        payload = run_real(
+            dataset_name=dataset,
+            question_key=question,
+            output=Path(output) if output else None,
+            bootstraps=bootstraps,
+            sample_sizes=sample_sizes,
+            epsilon=epsilon,
+            delta=delta,
+            seed=seed,
+        )
+    except ValueError as e:
+        click.echo(f"Error: {e}", err=True)
+        sys.exit(1)
+
+    if output:
+        click.echo(f"Wrote {output}", err=True)
+    else:
+        click.echo(json.dumps(payload, indent=2))
+
+
+@convergence_group.command("compare")
+@click.option("--dataset", "-d", required=True)
+@click.option(
+    "--question",
+    "-q",
+    required=True,
+    help="Question key (bare upstream id like 'SPKATH' or prefixed 'GSS_SPKATH').",
+)
+@click.option("--output", "-o", type=click.Path(), default=None)
+@click.option("--bootstraps", "-b", type=int, default=None)
+@click.option("--sample-sizes", default=None)
+@click.option("--epsilon", type=float, default=None)
+@click.option("--delta", type=float, default=None)
+@click.option("--seed", type=int, default=None)
+def convergence_compare(
+    dataset, question, output, bootstraps, sample_sizes, epsilon, delta, seed
+):
+    """Side-by-side bootstrap (idealized) and real-sampling curves.
+
+    Emits both curves under the same parameters with a precomputed
+    ``delta_jsd_mean`` per sample size -- the headline gap between the
+    1/sqrt(n) i.i.d. floor and real sampling under population heterogeneity.
+
+    Example:
+        synthbench convergence compare --dataset gss --question SPKATH \\
+            --output /tmp/gss-compare.json
+    """
+    from synthbench.convergence.cli_report import run_compare
+
+    try:
+        payload = run_compare(
+            dataset_name=dataset,
+            question_key=question,
+            output=Path(output) if output else None,
+            bootstraps=bootstraps,
+            sample_sizes=sample_sizes,
+            epsilon=epsilon,
+            delta=delta,
+            seed=seed,
+        )
+    except ValueError as e:
+        click.echo(f"Error: {e}", err=True)
+        sys.exit(1)
+
+    if output:
+        click.echo(f"Wrote {output}", err=True)
+    else:
+        click.echo(json.dumps(payload, indent=2))
+
+
 @main.command()
 @click.option(
     "--provider",
