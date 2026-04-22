@@ -1303,7 +1303,13 @@ def suite(
     click.echo(format_summary(summaries, resolved_provider))
 
 
-@main.command("convergence")
+@main.group("convergence")
+def convergence_group():
+    """Convergence analysis: cross-model contamination + bootstrap curves."""
+    pass
+
+
+@convergence_group.command("cross-model")
 @click.option(
     "--results-dir",
     "-d",
@@ -1347,10 +1353,10 @@ def contamination_convergence(
     models recall the same memorized data). High variance = genuine reasoning.
 
     Example:
-        synthbench convergence
-        synthbench convergence --results-dir ./results
-        synthbench convergence --dataset opinionsqa --min-models 3
-        synthbench convergence --json
+        synthbench convergence cross-model
+        synthbench convergence cross-model --results-dir ./results
+        synthbench convergence cross-model --dataset opinionsqa --min-models 3
+        synthbench convergence cross-model --json
     """
     from synthbench.contamination import (
         convergence_analysis,
@@ -1413,6 +1419,125 @@ def contamination_convergence(
             json_out = out.with_suffix(".json")
             json_out.write_text(json.dumps(convergence_to_json(analysis), indent=2))
             click.echo(f"\nSaved: {out} + {json_out}", err=True)
+
+
+@convergence_group.command("bootstrap")
+@click.option(
+    "--dataset",
+    "-d",
+    required=True,
+    help="Dataset name (gss, wvs, eurobarometer, opinionsqa, pewtech, "
+    "michigan, ntia, globalopinionqa, subpop).",
+)
+@click.option(
+    "--question",
+    "-q",
+    default=None,
+    help="Restrict to a single question key (default: all questions).",
+)
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    default=None,
+    help="Write JSON to this path (default: stdout).",
+)
+@click.option(
+    "--plot",
+    is_flag=True,
+    help="Also emit a matplotlib PDF of per-question curves "
+    "(requires matplotlib; written alongside --output).",
+)
+@click.option(
+    "--bootstraps",
+    "-b",
+    type=int,
+    default=None,
+    help="Bootstrap replicates per sample size (default: 500).",
+)
+@click.option(
+    "--sample-sizes",
+    default=None,
+    help="Comma-separated sample sizes (default: 20,50,100,200,500,1000,2000,5000,10000).",
+)
+@click.option(
+    "--epsilon",
+    type=float,
+    default=None,
+    help="JSD ceiling for 'convergence n' threshold (default: 0.02).",
+)
+@click.option(
+    "--delta",
+    type=float,
+    default=None,
+    help="Max allowed drop in jsd_mean across next 2 points (default: 0.005).",
+)
+@click.option(
+    "--seed",
+    type=int,
+    default=None,
+    help="Seed for reproducibility (default: non-deterministic).",
+)
+@click.option(
+    "--n",
+    type=int,
+    default=None,
+    help="Limit to first N questions of the dataset (debugging).",
+)
+def convergence_bootstrap(
+    dataset,
+    question,
+    output,
+    plot,
+    bootstraps,
+    sample_sizes,
+    epsilon,
+    delta,
+    seed,
+    n,
+):
+    """Bootstrap convergence curves from aggregate human distributions.
+
+    For each question in DATASET, multinomially sub-samples responses at
+    increasing sample sizes and measures JSD(sample, full_distribution). The
+    resulting curve is the theoretical ~1/sqrt(n) floor an idealized i.i.d.
+    sampler would achieve. Use this as the baseline that real human and
+    synthetic sampling gets compared against.
+
+    Redistribution policy is honored: 'full' and 'gated' datasets emit the
+    full per-question artifact (gated routes to R2 at publish time);
+    'aggregates_only' emits dataset-wide summary stats only; 'citation_only'
+    suppresses all artifacts.
+
+    Example:
+        synthbench convergence bootstrap --dataset opinionsqa --output curves.json
+        synthbench convergence bootstrap --dataset gss --plot --output gss.json
+    """
+    from synthbench.convergence.cli_report import run_bootstrap
+
+    try:
+        payload, pdf_path = run_bootstrap(
+            dataset_name=dataset,
+            question_key=question,
+            output=Path(output) if output else None,
+            plot=plot,
+            bootstraps=bootstraps,
+            sample_sizes=sample_sizes,
+            epsilon=epsilon,
+            delta=delta,
+            seed=seed,
+            n_limit=n,
+        )
+    except ValueError as e:
+        click.echo(f"Error: {e}", err=True)
+        sys.exit(1)
+
+    if output:
+        click.echo(f"Wrote {output}", err=True)
+        if pdf_path:
+            click.echo(f"Wrote {pdf_path}", err=True)
+    else:
+        click.echo(json.dumps(payload, indent=2))
 
 
 @main.command()
