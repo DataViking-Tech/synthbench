@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import inspect
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -20,6 +22,36 @@ from synthbench.publish import (
 synth_panel_cost = pytest.importorskip("synth_panel.cost")
 HAIKU = synth_panel_cost.HAIKU_PRICING
 SONNET = synth_panel_cost.SONNET_PRICING
+
+
+# Dynamic read: extract the pricing snapshot_date from the installed
+# synth_panel.cost source the same way `_build_pricing_snapshot` does.
+# Previously this test hard-coded "2026-04-14", which broke every time
+# the upstream cost.py snapshot comment rolled (observed 2026-04-21 when
+# synth_panel released v0.9.7 — refinery escalation hq-wisp-ll8ti4).
+# Assertions now pin against whatever the installed synth_panel reports,
+# so the test no longer requires per-release maintenance.
+_SNAPSHOT_PATTERN = re.compile(r"pricing snapshot_date:\s*(\d{4}-\d{2}-\d{2})")
+
+
+def _current_snapshot_date() -> str:
+    """Return the snapshot_date reported by the installed synth_panel.
+
+    Reads the same `# pricing snapshot_date: YYYY-MM-DD` anchor comment
+    `_build_pricing_snapshot` parses, from the installed package source.
+    Skips the test (via pytest.skip) if the anchor is missing, which
+    matches the library's own fallback behavior.
+    """
+    source = inspect.getsource(synth_panel_cost)
+    m = _SNAPSHOT_PATTERN.search(source)
+    if not m:
+        pytest.skip(
+            "synth_panel.cost does not expose a `pricing snapshot_date:` anchor comment"
+        )
+    return m.group(1)
+
+
+CURRENT_SNAPSHOT_DATE = _current_snapshot_date()
 
 
 def _agg(input_tokens: int | None = None, output_tokens: int | None = None) -> dict:
@@ -256,8 +288,13 @@ def test_build_pricing_snapshot_shape_and_rates():
     assert rates["haiku"]["input_cost_per_million"] == HAIKU.input_cost_per_million
     assert rates["haiku"]["output_cost_per_million"] == HAIKU.output_cost_per_million
     assert rates["sonnet"]["input_cost_per_million"] == SONNET.input_cost_per_million
-    # snapshot_date is the comment in the installed cost.py source
-    assert snap["snapshot_date"] == "2026-04-14"
+    # snapshot_date is read from the installed cost.py anchor comment;
+    # pin against whatever synth_panel reports today so future releases
+    # don't break this test (see module-level _current_snapshot_date).
+    assert snap["snapshot_date"] == CURRENT_SNAPSHOT_DATE
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", snap["snapshot_date"]), (
+        f"snapshot_date must be ISO YYYY-MM-DD, got {snap['snapshot_date']!r}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -368,7 +405,7 @@ def test_golden_three_entry_leaderboard(tmp_path: Path):
 
     # Top-level shape
     assert "pricing_snapshot" in data
-    assert data["pricing_snapshot"]["snapshot_date"] == "2026-04-14"
+    assert data["pricing_snapshot"]["snapshot_date"] == CURRENT_SNAPSHOT_DATE
 
     by_provider = {e["provider"]: e for e in data["entries"]}
 
