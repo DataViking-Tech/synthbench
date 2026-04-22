@@ -140,8 +140,35 @@ Flags:
 * `--seed` — deterministic bootstraps.
 * `--n` — limit to first N questions (useful for smoke tests).
 
+## Real-sampling convergence
+
+The bootstrap curve above is the idealized `1/√n` floor. The companion
+`synthbench convergence real` command runs the same curve shape over
+**individual-level microdata** instead of multinomial draws from the
+aggregate, so each replicate carries the population heterogeneity
+aggregates discard.
+
+```bash
+synthbench convergence real --dataset gss --question SPKATH \
+    --output /tmp/gss-real.json
+```
+
+Sub-samples actual respondents (without replacement) at each `n`, computes
+`JSD(subsample, full_population)`, and emits the same `CurvePoint` schema
+as the bootstrap CLI -- so plotting code, threshold logic, and downstream
+consumers work unchanged. Sample sizes that exceed the eligible-respondent
+pool are silently dropped from the curve (they cannot be serviced without
+replacement) instead of degrading to a smaller `n`.
+
+`synthbench convergence compare` runs both modes back-to-back and emits
+`{bootstrap_curve, real_curve, delta_jsd_mean}` in one payload -- the
+direct visualization of the gap between the i.i.d. floor and real
+sampling. See `docs/microdata-ingestion.md` for per-dataset setup
+(starting with GSS; WVS and Eurobarometer follow).
+
 ## Cross-reference
 
+* `docs/microdata-ingestion.md` — microdata setup + `MicrodataRow` schema.
 * Sibling bead `sb-gh1n` — microdata adapters for real-population convergence.
 * `src/synthbench/metrics/distributional.py` — the JSD implementation reused
   here.

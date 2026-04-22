@@ -32,6 +32,11 @@ from synthbench.convergence.curves import (
     CurvePoint,
     compute_curve,
 )
+from synthbench.convergence.real_sampling import (
+    compute_real_curve,
+    respondent_distribution,
+    subsample_distribution,
+)
 from synthbench.convergence.thresholds import (
     DEFAULT_DELTA,
     DEFAULT_EPSILON,
@@ -45,6 +50,9 @@ __all__ = [
     "CurvePoint",
     "DEFAULT_SAMPLE_SIZES",
     "DEFAULT_BOOTSTRAP_B",
+    "compute_real_curve",
+    "respondent_distribution",
+    "subsample_distribution",
     "find_convergence_n",
     "DEFAULT_EPSILON",
     "DEFAULT_DELTA",

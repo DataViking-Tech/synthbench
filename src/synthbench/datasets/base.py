@@ -3,10 +3,40 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 RedistributionPolicy = Literal["full", "gated", "aggregates_only", "citation_only"]
+
+
+@dataclass
+class MicrodataRow:
+    """One survey respondent's individual-level answers.
+
+    Microdata enables real-sampling convergence analysis: drawing a random
+    subsample of N actual respondents (without replacement) and measuring
+    JSD vs. the full-population distribution. Aggregates alone cannot
+    support this -- once the per-respondent row is collapsed, the
+    population-heterogeneity signal is gone.
+
+    Attributes:
+        respondent_id: Stable identifier within the dataset (need not be
+            unique across datasets). Used for sub-sampling without
+            replacement and reproducibility.
+        survey_wave: Wave / year identifier (e.g. ``"GSS:2022"``,
+            ``"WVS:wave7"``). Free-form per dataset.
+        responses: ``question_key -> option_key`` answers from this
+            respondent. Sparse: questions the respondent skipped or were not
+            asked are simply absent.
+        subgroup: Optional demographic / cell labels (``age_band``,
+            ``region``, ``education``, ...). Reserved for future stratified
+            convergence; the base sub-sampling pass ignores this field.
+    """
+
+    respondent_id: str
+    survey_wave: str
+    responses: dict[str, str]
+    subgroup: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -84,3 +114,26 @@ class Dataset(ABC):
     def info(self) -> dict:
         """Return metadata about the dataset (source, size, etc.)."""
         ...
+
+    def load_microdata(self, n: int | None = None) -> list[MicrodataRow]:
+        """Return per-respondent rows. Optional capability.
+
+        Datasets that only ship aggregate distributions raise
+        :class:`MicrodataNotAvailable`. Adapters that ingest microdata
+        override to return a list (truncated to ``n`` if given).
+        """
+        raise MicrodataNotAvailable(
+            f"dataset {self.name!r} does not provide individual-level microdata"
+        )
+
+    def load_microdata_for_question(self, key: str) -> list[MicrodataRow]:
+        """Rows whose ``responses`` include the given question key.
+
+        Default implementation filters :meth:`load_microdata`. Adapters with
+        a more efficient column-oriented store should override.
+        """
+        return [r for r in self.load_microdata() if key in r.responses]
+
+
+class MicrodataNotAvailable(NotImplementedError):
+    """Raised by adapters that do not ship individual-level microdata."""
