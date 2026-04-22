@@ -363,7 +363,6 @@ def run_real(
     from synthbench.convergence.real_sampling import compute_real_curve
     from synthbench.datasets import DATASETS
     from synthbench.datasets.base import MicrodataNotAvailable
-    from synthbench.datasets.gss import DatasetDownloadError
     from synthbench.datasets.policy import policy_for
 
     if dataset_name not in DATASETS:
@@ -380,9 +379,11 @@ def run_real(
     dataset = DATASETS[dataset_name]()
     # Resolving the question triggers a full dataset.load() on some adapters
     # (e.g. OpinionsQA attempts an auto-download). For adapters that ship no
-    # microdata, catching the download error here produces the same clean
+    # microdata, convert any per-adapter download error into the same clean
     # "does not provide microdata" message as the dedicated MicrodataNotAvailable
-    # branch below, rather than a confusing download traceback.
+    # branch below. Classification is by exception class name because each
+    # adapter defines its own DatasetDownloadError; unifying those is
+    # architecturally better but out of scope for this bead (sb-gh1n follow-up).
     try:
         question = _resolve_question(dataset, question_key)
         rows = dataset.load_microdata_for_question(question.key)
@@ -390,11 +391,13 @@ def run_real(
         raise ValueError(
             f"dataset {dataset_name!r} does not provide microdata: {exc}"
         ) from exc
-    except DatasetDownloadError as exc:
-        raise ValueError(
-            f"dataset {dataset_name!r} does not provide microdata "
-            f"(aggregate-only; download attempt failed): {exc}"
-        ) from exc
+    except Exception as exc:
+        if type(exc).__name__ == "DatasetDownloadError":
+            raise ValueError(
+                f"dataset {dataset_name!r} does not provide microdata "
+                f"(aggregate-only; download attempt failed): {exc}"
+            ) from exc
+        raise
 
     if not rows:
         raise ValueError(
@@ -458,7 +461,6 @@ def run_compare(
     from synthbench.convergence.real_sampling import compute_real_curve
     from synthbench.datasets import DATASETS
     from synthbench.datasets.base import MicrodataNotAvailable
-    from synthbench.datasets.gss import DatasetDownloadError
     from synthbench.datasets.policy import policy_for
 
     if dataset_name not in DATASETS:
@@ -475,9 +477,11 @@ def run_compare(
     dataset = DATASETS[dataset_name]()
     # Resolving the question triggers a full dataset.load() on some adapters
     # (e.g. OpinionsQA attempts an auto-download). For adapters that ship no
-    # microdata, catching the download error here produces the same clean
+    # microdata, convert any per-adapter download error into the same clean
     # "does not provide microdata" message as the dedicated MicrodataNotAvailable
-    # branch below, rather than a confusing download traceback.
+    # branch below. Classification is by exception class name because each
+    # adapter defines its own DatasetDownloadError; unifying those is
+    # architecturally better but out of scope for this bead (sb-gh1n follow-up).
     try:
         question = _resolve_question(dataset, question_key)
         rows = dataset.load_microdata_for_question(question.key)
@@ -485,11 +489,13 @@ def run_compare(
         raise ValueError(
             f"dataset {dataset_name!r} does not provide microdata: {exc}"
         ) from exc
-    except DatasetDownloadError as exc:
-        raise ValueError(
-            f"dataset {dataset_name!r} does not provide microdata "
-            f"(aggregate-only; download attempt failed): {exc}"
-        ) from exc
+    except Exception as exc:
+        if type(exc).__name__ == "DatasetDownloadError":
+            raise ValueError(
+                f"dataset {dataset_name!r} does not provide microdata "
+                f"(aggregate-only; download attempt failed): {exc}"
+            ) from exc
+        raise
     if not rows:
         raise ValueError(
             f"no microdata respondents answered question {question.key!r} "
