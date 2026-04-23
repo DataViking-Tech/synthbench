@@ -1,18 +1,55 @@
 ---
-const datasets = [
+// Each entry's `slug` MUST match a key in synthbench.datasets.DATASETS
+// (src/synthbench/datasets/__init__.py). The drift-guard test
+// tests/test_site_dataset_cards.py asserts this set equality so a new
+// adapter can't be registered without a methodology card.
+type Tier = "full" | "gated";
+
+type DatasetCard = {
+  slug: string;
+  name: string;
+  tier: Tier;
+  questions?: { full: number; core?: number };
+  source: string;
+  scope: string;
+  temporal: string;
+  demographics: string;
+  description: string;
+  highlight?: boolean;
+  phase?: number;
+};
+
+const datasets: DatasetCard[] = [
   {
+    slug: "opinionsqa",
     name: "OpinionsQA",
+    tier: "gated",
     questions: { full: 1498, core: 300 },
     source: "Pew American Trends Panel",
     scope: "US population",
-    temporal: "2017\u20132022 (15 survey waves)",
+    temporal: "2017–2022 (15 survey waves)",
     demographics: "56 groups across 11 attributes",
     description:
       "The primary ground-truth dataset. Multiple-choice questions covering political, social, and economic attitudes from nationally representative US surveys.",
     highlight: true,
   },
   {
+    slug: "globalopinionqa",
+    name: "GlobalOpinionQA",
+    tier: "gated",
+    questions: { full: 2556 },
+    source: "Pew Global Attitudes",
+    scope: "138 countries",
+    temporal: "Cross-national",
+    demographics: "Country-level cultural variation",
+    description:
+      "Cross-cultural attitudes dataset for Phase 2 expansion. Tests whether models capture cultural differences in opinion beyond US demographics.",
+    phase: 2,
+  },
+  {
+    slug: "subpop",
     name: "SubPOP",
+    tier: "gated",
     questions: { full: 3362 },
     source: "22 US subpopulations",
     scope: "US demographic subgroups",
@@ -23,17 +60,82 @@ const datasets = [
       "Extended dataset focused on demographic subgroup variation. Tests whether models can differentiate between fine-grained population segments.",
   },
   {
-    name: "GlobalOpinionQA",
-    questions: { full: 2556 },
-    source: "Pew Global Attitudes",
-    scope: "138 countries",
-    temporal: "Cross-national",
-    demographics: "Country-level cultural variation",
+    slug: "gss",
+    name: "GSS",
+    tier: "full",
+    source: "NORC General Social Survey",
+    scope: "US population",
+    temporal: "1972–present (cumulative file)",
+    demographics: "Individual-level microdata (microdata-capable)",
     description:
-      "Cross-cultural attitudes dataset for Phase 2 expansion. Tests whether models capture cultural differences in opinion beyond US demographics.",
-    phase: 2,
+      "General Social Survey cumulative microdata from NORC. The only public-domain adapter that ships per-respondent rows, enabling real-sampling convergence curves alongside the bootstrap baseline.",
+  },
+  {
+    slug: "ntia",
+    name: "NTIA Internet Use Supplement",
+    tier: "full",
+    source: "US Census / NTIA CPS Supplement",
+    scope: "US households",
+    temporal: "Biennial waves, 1994–present",
+    demographics: "Standard CPS demographics",
+    description:
+      "NTIA Computer & Internet Use Supplement to the Current Population Survey. U.S. Government public-domain work under 17 USC 105; per-question distributions ship openly.",
+  },
+  {
+    slug: "wvs",
+    name: "WVS (World Values Survey)",
+    tier: "gated",
+    source: "World Values Survey Association",
+    scope: "Cross-national (Wave 7, 2017–2022)",
+    temporal: "Wave 7 (2017–2022)",
+    demographics: "Country + standard demographic cells",
+    description:
+      "World Values Survey Wave 7. Cross-cultural value orientations across national populations. Research-use license; per-question artifacts gated behind JWT auth.",
+  },
+  {
+    slug: "eurobarometer",
+    name: "Eurobarometer",
+    tier: "gated",
+    source: "European Commission / GESIS",
+    scope: "EU member states",
+    temporal: "Quarterly (Standard / Flash / Special)",
+    demographics: "Country + EU-harmonized demographic cells",
+    description:
+      "Eurobarometer Consumer Modules. EU-wide consumer conditions, digital services, and sustainability attitudes. GESIS redistribution restricted; per-question served from gated origin.",
+  },
+  {
+    slug: "michigan",
+    name: "Michigan (Surveys of Consumers)",
+    tier: "gated",
+    source: "University of Michigan SRC",
+    scope: "US consumers",
+    temporal: "Monthly cadence",
+    demographics: "Standard consumer-survey demographics",
+    description:
+      "University of Michigan Surveys of Consumers — consumer sentiment, inflation expectations, and household finance. Academic use terms; per-question gated.",
+  },
+  {
+    slug: "pewtech",
+    name: "Pew Technology",
+    tier: "gated",
+    source: "Pew Research Center Internet & Technology",
+    scope: "US population (American Trends Panel)",
+    temporal: "10 tech waves (W86–W113)",
+    demographics: "ATP demographic weights",
+    description:
+      "Pew Research Internet & Technology waves: tech adoption, digital privacy, social media, and AI attitudes. Pew redistribution terms; per-question gated.",
   },
 ];
+
+const tierStyle: Record<Tier, string> = {
+  full: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  gated: "bg-slate-500/15 text-slate-700 dark:text-slate-300",
+};
+
+const tierLabel: Record<Tier, string> = {
+  full: "full",
+  gated: "gated",
+};
 ---
 
 <section class="w-full max-w-4xl mx-auto py-12" id="datasets">
@@ -43,15 +145,18 @@ const datasets = [
     Datasets
   </h2>
   <p class="text-muted mb-8 max-w-2xl">
-    SynthBench validates models against real human survey data. Each dataset
-    provides ground-truth response distributions from representative
-    populations.
+    SynthBench validates models against real human survey data across nine
+    registered datasets. Each card shows its redistribution tier —
+    <span class="font-mono">full</span> ships per-question distributions
+    publicly, <span class="font-mono">gated</span> requires a research-use
+    sign-in to reach per-question payloads.
   </p>
 
   <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {
       datasets.map((d) => (
         <div
+          data-dataset-slug={d.slug}
           class:list={[
             "rounded-lg border p-6 flex flex-col",
             d.highlight
@@ -59,10 +164,23 @@ const datasets = [
               : "border-muted/20 bg-surface dark:bg-surface-dark",
           ]}
         >
-          <div class="flex items-baseline gap-2 mb-3">
+          <div class="flex items-baseline gap-2 mb-3 flex-wrap">
             <h3 class="text-lg font-semibold text-text dark:text-text-dark">
               {d.name}
             </h3>
+            <span
+              class:list={[
+                "text-xs font-mono px-2 py-0.5 rounded-full",
+                tierStyle[d.tier],
+              ]}
+              title={
+                d.tier === "full"
+                  ? "Per-question distributions published openly"
+                  : "Per-question distributions gated behind research-use sign-in"
+              }
+            >
+              {tierLabel[d.tier]}
+            </span>
             {d.phase && (
               <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
                 Phase {d.phase}
@@ -73,18 +191,20 @@ const datasets = [
           <p class="text-sm text-muted mb-4 flex-1">{d.description}</p>
 
           <dl class="space-y-2 text-sm">
-            <div class="flex justify-between">
-              <dt class="text-muted">Questions</dt>
-              <dd class="font-medium text-text dark:text-text-dark text-right">
-                {d.questions.full.toLocaleString()}
-                {d.questions.core && (
-                  <span class="text-muted font-normal">
-                    {" "}
-                    ({d.questions.core} core)
-                  </span>
-                )}
-              </dd>
-            </div>
+            {d.questions && (
+              <div class="flex justify-between">
+                <dt class="text-muted">Questions</dt>
+                <dd class="font-medium text-text dark:text-text-dark text-right">
+                  {d.questions.full.toLocaleString()}
+                  {d.questions.core && (
+                    <span class="text-muted font-normal">
+                      {" "}
+                      ({d.questions.core} core)
+                    </span>
+                  )}
+                </dd>
+              </div>
+            )}
             <div class="flex justify-between">
               <dt class="text-muted">Source</dt>
               <dd class="font-medium text-text dark:text-text-dark text-right">
