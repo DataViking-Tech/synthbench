@@ -164,9 +164,58 @@ Phase 2 complete: Multi-model benchmarking, ensemble blending, temperature sweep
 
 ## Ground Truth
 
-Built on established academic datasets:
-- [OpinionsQA](https://github.com/tatsu-lab/opinions_qa) (Santurkar et al., ICML 2023) — 1,498 questions from Pew American Trends Panel
-- [GlobalOpinionQA](https://arxiv.org/abs/2306.16388) (Durmus et al., 2024) — cross-national opinion data
+Built on nine registered survey datasets. Each adapter declares a
+redistribution policy; `full` ships `human_distribution` publicly, `gated`
+routes per-question artifacts to a JWT-authenticated Cloudflare R2 origin,
+and `aggregates_only` / `citation_only` contribute to leaderboard aggregates
+only. Canonical source of truth is the `redistribution_policy` attribute on
+each adapter in `src/synthbench/datasets/` (see
+[`src/synthbench/datasets/policy.py`](src/synthbench/datasets/policy.py)).
+
+| Dataset | Tier | Source |
+|---------|------|--------|
+| [OpinionsQA](https://github.com/tatsu-lab/opinions_qa) (Santurkar et al., ICML 2023) | gated | Pew American Trends Panel, 1,498 questions |
+| [GlobalOpinionQA](https://arxiv.org/abs/2306.16388) (Durmus et al., 2024) | gated | Pew Global Attitudes, 138 countries |
+| GSS (General Social Survey) | full | NORC, microdata-capable |
+| NTIA Internet Use Supplement | full | US Census / NTIA |
+| SubPOP | gated | 22 US subpopulations, 3,362 questions |
+| WVS (World Values Survey) | gated | WVSA, cross-national |
+| Eurobarometer | gated | European Commission |
+| Michigan (Surveys of Consumers) | gated | U. of Michigan |
+| Pew Technology | gated | Pew Research |
+
+GSS and NTIA ship with full per-question distributions; the remaining seven
+require a signed-in account to reach per-question payloads.
+
+## Cost tracking
+
+The leaderboard JSON carries per-row cost fields and a top-level
+`pricing_snapshot` object:
+
+- Each row exposes `cost_usd`, `cost_per_100q`, `cost_per_sps_point`, and
+  `is_cost_estimated`. Ensemble rows sum `cost_usd` across constituent
+  runs listed in `config.ensemble_sources`.
+- `pricing_snapshot` records the per-model `input_per_1m` / `output_per_1m`
+  rates used for this publish run, the `snapshot_date` anchor comment, and
+  the installed `synth_panel_version` that produced the rates.
+
+This lets downstream consumers audit which pricing table produced which
+`cost_usd` and reconcile against provider-reported billing without guessing
+at rate drift. See [sb-x8t] and `src/synthbench/publish.py::_build_pricing_snapshot`.
+
+## Convergence analysis
+
+`synthbench convergence bootstrap` computes theoretical ~1/√n convergence
+curves for every question in a dataset by multinomial resampling from the
+aggregate `human_distribution`. `synthbench convergence real` runs the same
+curve shape over individual-level microdata (GSS today; WVS / Eurobarometer
+microdata adapters are a follow-on). `synthbench convergence compare` emits
+both curves side-by-side.
+
+See [`docs/convergence-analysis.md`](docs/convergence-analysis.md) for the
+JSON schema, CLI flags, and the `load_convergence_baseline` integration
+surface that synthpanel's `--calibrate-against DATASET:QUESTION` flag
+consumes.
 
 ## Citation
 

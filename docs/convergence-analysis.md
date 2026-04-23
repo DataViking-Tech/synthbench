@@ -166,6 +166,58 @@ direct visualization of the gap between the i.i.d. floor and real
 sampling. See `docs/microdata-ingestion.md` for per-dataset setup
 (starting with GSS; WVS and Eurobarometer follow).
 
+## Integration: synthpanel `--calibrate-against`
+
+synthpanel (>= 0.9) ships a `--calibrate-against DATASET:QUESTION` flag that
+attaches a `per_question[key].calibration` sub-object to each convergence
+payload. When that flag is set, synthpanel calls into synthbench as a soft
+dependency to resolve the aggregate `human_distribution` used as the
+calibration baseline. The call site is
+`synth_panel.convergence.load_synthbench_baseline(spec)` (see
+`src/synth_panel/convergence.py` in the synthpanel repo).
+
+The loader probes for the following attributes in order and uses the first
+one it finds:
+
+1. `synthbench.load_convergence_baseline(dataset=..., question_key=...)`
+2. `synthbench.load_baseline(...)`
+3. `synthbench.convergence_baseline(...)`
+4. The same three names under `synthbench.convergence.*`
+
+### Expected contract
+
+The loader must accept `dataset: str` and an optional `question_key: str`
+(either as keyword arguments, preferred, or positional) and return a `dict`
+shaped like:
+
+```json
+{
+  "dataset": "opinionsqa",
+  "question_key": "ABANY",
+  "human_distribution": {"Yes": 0.62, "No": 0.38},
+  "redistribution_policy": "gated",
+  "license_url": "...",
+  "citation": "..."
+}
+```
+
+`human_distribution` is the only load-bearing field — synthpanel attaches it
+to every matching question's `calibration` sub-object and computes JSD
+against the model's cumulative distribution using synthpanel's own local JSD
+(deliberately not synthbench's, per the sp-inline-calibration spec).
+`dataset` and `question_key` are filled in by synthpanel if missing. The
+redistribution / license / citation fields are informational and carried
+through into the synthpanel run metadata.
+
+### Status
+
+The loader is **not yet exported** from synthbench. synthpanel falls back
+through the attribute-probe list above and raises
+`SynthbenchUnavailableError` with an install / upgrade hint when none
+resolve. Adding a stable `load_convergence_baseline(dataset, question_key)`
+export that reuses the dataset adapter registry is tracked as a follow-on
+to the bootstrap (`sb-ygp7`) and real-sampling (`sb-gh1n`) beads.
+
 ## Cross-reference
 
 * `docs/microdata-ingestion.md` — microdata setup + `MicrodataRow` schema.
