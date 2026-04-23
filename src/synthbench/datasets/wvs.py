@@ -16,7 +16,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from synthbench.datasets.base import Dataset, Question
+from synthbench.datasets.base import Dataset, DatasetDownloadError, Question
 
 _WVS_URL = "https://worldvaluessurvey.org/WVSDocumentationWV7.jsp"
 
@@ -227,7 +227,3 @@ def _aggregate_from_csv(
         )
 
     return questions
-
-
-class DatasetDownloadError(Exception):
-    """Raised when required WVS data files are missing."""

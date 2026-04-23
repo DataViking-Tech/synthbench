@@ -16,7 +16,12 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from synthbench.datasets.base import Dataset, MicrodataRow, Question
+from synthbench.datasets.base import (
+    Dataset,
+    DatasetDownloadError,
+    MicrodataRow,
+    Question,
+)
 
 _GSS_URL = "https://gss.norc.org/Get-The-Data"
 
@@ -316,7 +321,3 @@ def _load_microdata_csv(
     # Stable order: sort by (year, respondent_id) so sub-sampling with a
     # fixed seed is reproducible across runs and platforms.
     return [by_respondent[k] for k in sorted(by_respondent)]
-
-
-class DatasetDownloadError(Exception):
-    """Raised when required GSS data files are missing."""

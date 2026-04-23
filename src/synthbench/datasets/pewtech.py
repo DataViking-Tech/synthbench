@@ -15,7 +15,7 @@ import json
 from ast import literal_eval
 from pathlib import Path
 
-from synthbench.datasets.base import Dataset, Question
+from synthbench.datasets.base import Dataset, DatasetDownloadError, Question
 
 # Pew Internet & Technology team publications page.
 _PEW_DATASETS_URL = "https://www.pewresearch.org/internet/datasets/"
@@ -332,7 +332,3 @@ def _read_csv(path: Path) -> list[dict[str, str]]:
     with open(path, newline="", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         return list(reader)
-
-
-class DatasetDownloadError(Exception):
-    """Raised when dataset download or setup fails."""

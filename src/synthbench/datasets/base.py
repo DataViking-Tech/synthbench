@@ -137,3 +137,11 @@ class Dataset(ABC):
 
 class MicrodataNotAvailable(NotImplementedError):
     """Raised by adapters that do not ship individual-level microdata."""
+
+
+class DatasetDownloadError(Exception):
+    """Raised when an adapter cannot fetch or load its raw data files.
+
+    Shared across all adapters so callers can catch a single class rather
+    than importing per-adapter variants or duck-typing on class name.
+    """

@@ -22,7 +22,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from synthbench.datasets.base import Dataset, Question
+from synthbench.datasets.base import Dataset, DatasetDownloadError, Question
 
 _SCA_ARCHIVE_URL = "https://data.sca.isr.umich.edu/"
 
@@ -503,7 +503,3 @@ def _read_csv_rows(path: Path) -> list[dict[str, str]]:
     with open(path, newline="", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         return list(reader)
-
-
-class DatasetDownloadError(Exception):
-    """Raised when Michigan data download or setup fails."""

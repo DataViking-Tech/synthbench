@@ -22,7 +22,7 @@ import urllib.request
 from collections import defaultdict
 from pathlib import Path
 
-from synthbench.datasets.base import Dataset, Question
+from synthbench.datasets.base import Dataset, DatasetDownloadError, Question
 
 _ANALYZE_TABLE_URL = (
     "https://www.ntia.gov/sites/default/files/"
@@ -355,7 +355,3 @@ class NTIADataset(Dataset):
         with open(path, "w") as f:
             json.dump(data, f, indent=2)
         return path
-
-
-class DatasetDownloadError(Exception):
-    """Raised when the Analyze Table cannot be fetched."""

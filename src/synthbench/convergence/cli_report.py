@@ -30,7 +30,7 @@ from synthbench.convergence.thresholds import (
     find_convergence_n,
 )
 from synthbench.datasets import DATASETS
-from synthbench.datasets.base import Question
+from synthbench.datasets.base import DatasetDownloadError, Question
 from synthbench.datasets.policy import policy_for
 
 
@@ -379,11 +379,9 @@ def run_real(
     dataset = DATASETS[dataset_name]()
     # Resolving the question triggers a full dataset.load() on some adapters
     # (e.g. OpinionsQA attempts an auto-download). For adapters that ship no
-    # microdata, convert any per-adapter download error into the same clean
+    # microdata, convert any download error into the same clean
     # "does not provide microdata" message as the dedicated MicrodataNotAvailable
-    # branch below. Classification is by exception class name because each
-    # adapter defines its own DatasetDownloadError; unifying those is
-    # architecturally better but out of scope for this bead (sb-gh1n follow-up).
+    # branch below.
     try:
         question = _resolve_question(dataset, question_key)
         rows = dataset.load_microdata_for_question(question.key)
@@ -391,13 +389,11 @@ def run_real(
         raise ValueError(
             f"dataset {dataset_name!r} does not provide microdata: {exc}"
         ) from exc
-    except Exception as exc:
-        if type(exc).__name__ == "DatasetDownloadError":
-            raise ValueError(
-                f"dataset {dataset_name!r} does not provide microdata "
-                f"(aggregate-only; download attempt failed): {exc}"
-            ) from exc
-        raise
+    except DatasetDownloadError as exc:
+        raise ValueError(
+            f"dataset {dataset_name!r} does not provide microdata "
+            f"(aggregate-only; download attempt failed): {exc}"
+        ) from exc
 
     if not rows:
         raise ValueError(
@@ -477,11 +473,9 @@ def run_compare(
     dataset = DATASETS[dataset_name]()
     # Resolving the question triggers a full dataset.load() on some adapters
     # (e.g. OpinionsQA attempts an auto-download). For adapters that ship no
-    # microdata, convert any per-adapter download error into the same clean
+    # microdata, convert any download error into the same clean
     # "does not provide microdata" message as the dedicated MicrodataNotAvailable
-    # branch below. Classification is by exception class name because each
-    # adapter defines its own DatasetDownloadError; unifying those is
-    # architecturally better but out of scope for this bead (sb-gh1n follow-up).
+    # branch below.
     try:
         question = _resolve_question(dataset, question_key)
         rows = dataset.load_microdata_for_question(question.key)
@@ -489,13 +483,11 @@ def run_compare(
         raise ValueError(
             f"dataset {dataset_name!r} does not provide microdata: {exc}"
         ) from exc
-    except Exception as exc:
-        if type(exc).__name__ == "DatasetDownloadError":
-            raise ValueError(
-                f"dataset {dataset_name!r} does not provide microdata "
-                f"(aggregate-only; download attempt failed): {exc}"
-            ) from exc
-        raise
+    except DatasetDownloadError as exc:
+        raise ValueError(
+            f"dataset {dataset_name!r} does not provide microdata "
+            f"(aggregate-only; download attempt failed): {exc}"
+        ) from exc
     if not rows:
         raise ValueError(
             f"no microdata respondents answered question {question.key!r} "

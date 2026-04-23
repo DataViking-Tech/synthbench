@@ -18,7 +18,7 @@ from pathlib import Path
 
 import httpx
 
-from synthbench.datasets.base import Dataset, Question
+from synthbench.datasets.base import Dataset, DatasetDownloadError, Question
 
 _CODALAB_WORKSHEET = "0x6fb693719477478aac73fc07db333f69"
 _CODALAB_API = "https://worksheets.codalab.org/rest"
@@ -410,7 +410,3 @@ class OpinionsQADataset(Dataset):
                     result[qkey] = groups
 
         return result
-
-
-class DatasetDownloadError(Exception):
-    """Raised when dataset download or setup fails."""
